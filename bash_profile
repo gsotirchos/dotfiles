@@ -13,4 +13,4 @@ export PATH=$PATH:~/.bin
 export SHELL='/opt/pkg/bin/bash'
 
 # set the locale to English
-export LANG=en_GB.UTF-8
+export LANG='en_GB.UTF-8'
