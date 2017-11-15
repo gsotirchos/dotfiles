@@ -2,6 +2,28 @@
 " ~/.vimrc
 "
 
+"""""""""""""""""""""""""""""""""""""""""""
+set nocompatible " be iMproved, required
+filetype off     " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+"" plugins start here
+
+Plugin 'lervag/vimtex'
+Plugin 'ervandew/supertab'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'vim-scripts/LanguageTool'
+
+"" plugins end here
+call vundle#end() " required
+"""""""""""""""""""""""""""""""""""""""""""
+
 filetype plugin indent on
 
 " no swap files
@@ -44,6 +66,10 @@ let g:tex_flavor='latex'
 let g:Tex_DefaultTargetFormat='pdf'
 let g:Tex_TreatMacViewerAsUNIX = 1
 let g:Tex_ExecuteUNIXViewerInForeground = 1
-let g:Tex_ViewRule_ps = 'open -a Skim'
-let g:Tex_ViewRule_pdf = 'open -a Skim'
-let g:Tex_ViewRule_dvi = 'open -a Skim'
+"let g:Tex_ViewRule_ps = 'open -a Skim'
+"let g:Tex_ViewRule_pdf = 'open -a Skim'
+"let g:Tex_ViewRule_dvi = 'open -a Skim'
+let g:vimtex_view_general_viewer = '/Applications/Skim.app/Contents/SharedSupport/displayline'
+let g:vimtex_view_general_options = '-r @line @pdf @tex'
+let g:vimtex_view_general_options_latexmk = '-r 1'
+let g:vimtex_compiler_latexmk = {'callback' : 0}
