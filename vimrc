@@ -74,4 +74,4 @@ let g:vimtex_view_general_options = '-r @line @pdf @tex'
 let g:vimtex_view_general_options_latexmk = '-r 1'
 let g:vimtex_compiler_latexmk = {'callback' : 0}
 let g:tex_comment_nospell= 1
-autocmd BufNewFile,BufRead *.tex set spell spelllang=en_us,el " spell check only tex files
+autocmd BufNewFile,BufRead *.tex set spell spelllang=en_us,el " spell check only .tex files
