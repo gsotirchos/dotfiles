@@ -42,6 +42,7 @@ set number
 set showmatch " show matching parentheses
 syntax on
 
+" greek
 set gfs=fixedgr
 
 " enable foldcolumn
@@ -63,7 +64,7 @@ noremap  <buffer> <silent> $ g$
 noremap  <buffer> <silent> <up> g<up>
 noremap  <buffer> <silent> <down> g<down>
 
-"LaTeX"
+" LaTeX
 let g:tex_flavor='latex'
 let g:Tex_DefaultTargetFormat='pdf'
 let g:Tex_TreatMacViewerAsUNIX = 1
