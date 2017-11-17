@@ -36,7 +36,7 @@ set backspace=indent,eol,start
 
 set t_Co=256
 
-colorscheme organic
+colorscheme sunyata
 
 set number
 set showmatch " show matching parentheses
