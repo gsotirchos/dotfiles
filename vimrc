@@ -42,6 +42,8 @@ set number
 set showmatch " show matching parentheses
 syntax on
 
+set gfs=fixedgr
+
 " enable foldcolumn
 set foldcolumn=1
 
