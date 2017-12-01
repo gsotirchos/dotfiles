@@ -4,7 +4,12 @@
 # ~/.bash_profile
 #
 
-[[ -f ~/.bashrc ]] && . ~/.bashrc
+#[[ -f ~/.bashrc ]] && . ~/.bashrc
+
+# aliases
+alias bash='/opt/pkg/bin/bash'
+alias vim='/opt/pkg/bin/vim'
+alias ls='ls -G'
 
 # add ~/.bin to PATH
 export PATH=$PATH:~/.bin
