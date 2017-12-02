@@ -18,7 +18,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'lervag/vimtex'
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
-"Plugin 'reedes/vim-lexical'
+Plugin 'lazywei/vim-matlab'
 
 "" plugins end here
 call vundle#end() " required
