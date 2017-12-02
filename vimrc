@@ -55,8 +55,9 @@ set autoindent
 set smartcase
 set hlsearch
 
+set whichwrap+=h,l,<,>,[,] " fix line border movement
+
 set wrap lbr  " wrap lines by word
-set whichwrap+=h,l,<,>,[,] " and fix movement wrapping
 
 " fix up down movement in wrapped lines
 noremap  <buffer> <silent> k gk
