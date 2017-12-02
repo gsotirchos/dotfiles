@@ -56,6 +56,8 @@ set smartcase
 set hlsearch
 
 set wrap lbr  " wrap lines by word
+set whichwrap+=h,l,<,>,[,] " and fix movement wrapping
+
 " fix up down movement in wrapped lines
 noremap  <buffer> <silent> k gk
 noremap  <buffer> <silent> j gj
@@ -63,6 +65,9 @@ noremap  <buffer> <silent> 0 g0
 noremap  <buffer> <silent> $ g$
 noremap  <buffer> <silent> <up> g<up>
 noremap  <buffer> <silent> <down> g<down>
+
+" other mappings
+noremap O o<Esc>
 
 " LaTeX
 let g:tex_flavor='latex'
