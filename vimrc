@@ -68,7 +68,17 @@ noremap  <buffer> <silent> <up> g<up>
 noremap  <buffer> <silent> <down> g<down>
 
 " other mappings
-noremap O o<Esc>
+nnoremap o o<Esc>
+
+" smart ndent when entering insert mode with i on empty lines
+function! IndentWithI()
+    if len(getline('.')) == 0
+        return "cc"
+    else
+        return "i"
+    endif
+endfunction
+nnoremap <expr> i IndentWithI()
 
 " LaTeX
 let g:tex_flavor='latex'
