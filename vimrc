@@ -45,8 +45,8 @@ syntax on
 " greek
 set gfs=fixedgr
 
-" enable foldcolumn
 set foldcolumn=1
+set cursorline
 
 set sw=4 ts=4 sts=4 " default: 4 spaces per tab
 set expandtab
