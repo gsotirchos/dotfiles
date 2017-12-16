@@ -10,6 +10,7 @@
 alias bash='/opt/pkg/bin/bash'
 alias vim='/opt/pkg/bin/vim'
 alias ls='ls -G'
+alias tex_template='curl https://raw.githubusercontent.com/7555G/Windows-scripts/master/school_report_template.tex'
 
 # add ~/.bin to PATH
 export PATH=$PATH:~/.bin
