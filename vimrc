@@ -38,6 +38,7 @@ set t_Co=256
 
 colorscheme sunyata
 
+set showcmd
 set number
 set showmatch " show matching parentheses
 syntax on
