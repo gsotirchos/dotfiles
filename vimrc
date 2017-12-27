@@ -31,34 +31,37 @@ set noswapfile
 set nobackup
 set nowb
 
-" allow use of backspace in instert mode
-set backspace=indent,eol,start
-
+" colors
 set t_Co=256
-
 colorscheme sunyata
-
-set showcmd
-set number
-set showmatch " show matching parentheses
-syntax on
 
 " greek
 set gfs=fixedgr
 
-set foldcolumn=1
-set cursorline
-
-set sw=4 ts=4 sts=4 " default: 4 spaces per tab
-set expandtab
+syntax on
+set showcmd
+set number
+set showmatch " show matching parentheses
 
 set autoindent
 set smartcase
 set hlsearch
 
-set whichwrap+=h,l,<,>,[,] " fix line border movement
+set sw=4 ts=4 sts=4 " default: 4 spaces per tab
+set expandtab " replace tabs with spaces
 
+set backspace=indent,eol,start " allow backspace in instert mode
+set whichwrap+=h,l,<,>,[,] " fix line border movement
 set wrap lbr  " wrap lines by word
+
+" allow folding
+set foldenable
+set foldmethod=syntax
+set foldlevel=1
+set foldnestmax=2
+set foldcolumn=0
+
+set cursorline
 
 " fix up down movement in wrapped lines
 noremap  <buffer> <silent> k gk
@@ -80,6 +83,13 @@ function! IndentWithI()
     endif
 endfunction
 nnoremap <expr> i IndentWithI()
+
+" Fortran
+let fortran_free_source=1
+let fortran_fold=1
+let fortran_fold_conditionals=1
+let fortran_more_precise=1
+let fortran_do_enddo=1
 
 " LaTeX
 let g:tex_flavor='latex'
