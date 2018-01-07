@@ -50,7 +50,7 @@ set hlsearch
 set sw=4 ts=4 sts=4 " default: 4 spaces per tab
 set expandtab " replace tabs with spaces
 
-set backspace=indent,eol,start " allow backspace in instert mode
+set backspace=2 " allow backspace in instert mode
 set whichwrap+=h,l,<,>,[,] " fix line border movement
 set wrap lbr  " wrap lines by word
 
@@ -63,13 +63,20 @@ set foldcolumn=0
 
 set cursorline
 
-" fix up down movement in wrapped lines
-noremap  <buffer> <silent> k gk
-noremap  <buffer> <silent> j gj
-noremap  <buffer> <silent> 0 g0
-noremap  <buffer> <silent> $ g$
-noremap  <buffer> <silent> <up> g<up>
-noremap  <buffer> <silent> <down> g<down>
+" fix movement in wrapped lines
+noremap  <buffer> <silent> k      gk
+noremap  <buffer> <silent> j      gj
+noremap  <buffer> <silent> <up>   gk
+noremap  <buffer> <silent> <down> gj
+noremap  <buffer> <silent> <home> g<home>
+noremap  <buffer> <silent> <End>  g<End>
+noremap  <buffer> <silent> 0      g0
+noremap  <buffer> <silent> $      g$
+noremap  <buffer> <silent> ^      g^
+inoremap <buffer> <silent> <Down> <C-o>gj
+inoremap <buffer> <silent> <Up>   <C-o>gk
+inoremap  <buffer> <silent> <home> <C-o>g<home>
+inoremap  <buffer> <silent> <End>  <C-o>g<End>
 
 " other mappings
 nnoremap o o<Esc>
