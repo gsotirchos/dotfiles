@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/opt/pkg/bin/bash
 
 #
 # ~/.macos-dotfiles/symlinks.sh
