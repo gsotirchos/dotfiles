@@ -1,10 +1,8 @@
-#!/opt/pkg/bin/bash
-
 #
 # ~/.bash_profile
 #
 
-#[[ -f ~/.bashrc ]] && . ~/.bashrc
+#[[ -r ~/.bashrc ]] && . ~/.bashrc
 
 # aliases
 alias bash='/opt/pkg/bin/bash'
