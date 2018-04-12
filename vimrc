@@ -19,7 +19,7 @@ Plugin 'lervag/vimtex'
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'lazywei/vim-matlab'
-'justinmk/vim-syntax-extra'
+Plugin 'justinmk/vim-syntax-extra'
 
 "" plugins end here
 call vundle#end() " required
