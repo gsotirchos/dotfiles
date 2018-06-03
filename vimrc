@@ -39,6 +39,9 @@ colorscheme sunyata
 " greek
 set gfs=fixedgr
 
+" unix line endings
+set fileformat=unix
+
 syntax on
 set showcmd
 set number
