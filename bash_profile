@@ -8,6 +8,9 @@
 # use color
 export CLICOLOR=1
 
+# custom prompt
+export PS1="\e[0;90m\W\e[0m "
+
 # add ~/.bin to PATH
 export PATH=$PATH:~/.bin
 
