@@ -20,6 +20,7 @@ Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'lazywei/vim-matlab'
 Plugin 'justinmk/vim-syntax-extra'
+Plugin 'vim-python/python-syntax'
 
 "" plugins end here
 call vundle#end() " required
@@ -101,6 +102,8 @@ let fortran_fold=1
 let fortran_fold_conditionals=1
 let fortran_more_precise=1
 let fortran_do_enddo=1
+
+let g:python_highlight_all = 1
 
 " LaTeX
 let g:tex_flavor='latex'
