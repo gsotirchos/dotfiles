@@ -20,7 +20,6 @@ Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'lazywei/vim-matlab'
 Plugin 'justinmk/vim-syntax-extra'
-Plugin 'vim-python/python-syntax'
 
 "" plugins end here
 call vundle#end() " required
@@ -61,27 +60,28 @@ set wrap lbr  " wrap lines by word
 
 " allow folding
 set foldenable
-set foldmethod=syntax
+set foldmethod=indent
 set foldlevel=1
-set foldnestmax=2
+set foldnestmax=99
 set foldcolumn=0
 
 set cursorline
 
 " fix movement in wrapped lines
-noremap  <buffer> <silent> k      gk
-noremap  <buffer> <silent> j      gj
-noremap  <buffer> <silent> <up>   gk
-noremap  <buffer> <silent> <down> gj
-noremap  <buffer> <silent> <home> g<home>
-noremap  <buffer> <silent> <End>  g<End>
-noremap  <buffer> <silent> 0      g0
-noremap  <buffer> <silent> $      g$
-noremap  <buffer> <silent> ^      g^
-inoremap <buffer> <silent> <Down> <C-o>gj
-inoremap <buffer> <silent> <Up>   <C-o>gk
-inoremap <buffer> <silent> <home> <C-o>g<home>
-inoremap <buffer> <silent> <End>  <C-o>g<End>
+noremap  <buffer> <silent> k       gk
+noremap  <buffer> <silent> j       gj
+noremap  <buffer> <silent> <up>    gk
+noremap  <buffer> <silent> <down>  gj
+noremap  <buffer> <silent> <home>  g<home>
+noremap  <buffer> <silent> <End>   g<End>
+noremap  <buffer> <silent> 0       g0
+noremap  <buffer> <silent> $       g$
+noremap  <buffer> <silent> ^       g^
+noremap  <buffer> <silent> <space> za
+inoremap <buffer> <silent> <Down>  <C-o>gj
+inoremap <buffer> <silent> <Up>    <C-o>gk
+inoremap <buffer> <silent> <home>  <C-o>g<home>
+inoremap <buffer> <silent> <End>   <C-o>g<End>
 
 " other mappings
 nnoremap o o<Esc>
