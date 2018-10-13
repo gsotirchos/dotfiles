@@ -61,7 +61,7 @@ set wrap lbr  " wrap lines by word
 " allow folding
 set foldenable
 set foldmethod=indent
-set foldlevel=1
+set foldlevel=0
 set foldnestmax=99
 set foldcolumn=0
 
@@ -114,3 +114,9 @@ let g:vimtex_view_method = 'skim'
 let g:vimtex_compiler_latexmk = {'callback' : 0}
 let g:tex_comment_nospell= 1
 autocmd BufNewFile,BufRead *.tex set spell spelllang=en_us,el " spell check only .tex files
+
+inoremap <D-v> <Space><ESC>"+gPs
+nnoremap <D-v> "+gp
+vnoremap <D-v> "+gp
+cnoremap <D-v> <C-r>+
+vnoremap <D-c> "+y
