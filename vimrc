@@ -48,6 +48,7 @@ set number
 set showmatch " show matching parentheses
 
 set autoindent
+set cindent
 set smartcase
 set hlsearch
 
@@ -83,18 +84,35 @@ inoremap <buffer> <silent> <Up>    <C-o>gk
 inoremap <buffer> <silent> <home>  <C-o>g<home>
 inoremap <buffer> <silent> <End>   <C-o>g<End>
 
-" other mappings
-nnoremap o o<Esc>
-
-" smart ndent when entering insert mode with i on empty lines
+" smart indent when entering insert mode with i on empty lines
 function! IndentWithI()
     if len(getline('.')) == 0
-        return "cc"
+        return "\"_cc"
     else
         return "i"
     endif
 endfunction
 nnoremap <expr> i IndentWithI()
+
+function! IndentWithA()
+    if len(getline('.')) == 0
+        return "\"_cc"
+    else
+        return "a"
+    endif
+endfunction
+nnoremap <expr> a IndentWithA()
+
+" use OS clipboard and copy-paste shortcuts
+set clipboard=unnamed
+inoremap <D-v> <Space><ESC>"+gPs
+nnoremap <D-v> "+p
+vnoremap <D-v> "+p
+cnoremap <D-v> <C-r>+
+vnoremap <D-c> "+y
+
+" other mappings
+nnoremap o o<Esc>
 
 " Fortran
 let fortran_free_source=1
@@ -102,8 +120,6 @@ let fortran_fold=1
 let fortran_fold_conditionals=1
 let fortran_more_precise=1
 let fortran_do_enddo=1
-
-let g:python_highlight_all = 1
 
 " LaTeX
 let g:tex_flavor='latex'
@@ -114,9 +130,3 @@ let g:vimtex_view_method = 'skim'
 let g:vimtex_compiler_latexmk = {'callback' : 0}
 let g:tex_comment_nospell= 1
 autocmd BufNewFile,BufRead *.tex set spell spelllang=en_us,el " spell check only .tex files
-
-inoremap <D-v> <Space><ESC>"+gPs
-nnoremap <D-v> "+gp
-vnoremap <D-v> "+gp
-cnoremap <D-v> <C-r>+
-vnoremap <D-c> "+y
