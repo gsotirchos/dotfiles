@@ -57,7 +57,7 @@ set expandtab " replace tabs with spaces
 
 set backspace=2 " allow backspace in instert mode
 set whichwrap+=h,l,<,>,[,] " fix line border movement
-set wrap lbr  " wrap lines by word
+set wrap lbr " wrap lines by word
 
 " allow folding
 set foldenable
