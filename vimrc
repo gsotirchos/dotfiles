@@ -4,7 +4,6 @@
 
 """""""""""""""""""""""""""""""""""""""""""
 set nocompatible " be iMproved, required
-set history=20 
 filetype off     " required
 
 " set the runtime path to include Vundle and initialize
@@ -32,6 +31,7 @@ filetype plugin indent on
 set noswapfile
 set nobackup
 set nowb
+set history=20 
 
 " colors
 set t_Co=256
