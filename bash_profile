@@ -23,6 +23,8 @@ export LANG=en_US.UTF-8
 
 # aliases
 alias rm='rm -i'
-alias report-template='curl https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates/report_main_template.tex'
-alias subfile-template='curl https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates/subfile_template.tex'
-alias cheatsheet-template='curl https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates/cheatsheet_main_template.tex'
+alias report-template='curl https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates/report.tex'
+alias subfile-template='curl https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates/subfile.tex'
+alias cheatsheet-template='curl https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates/cheatsheet.tex'
+alias appendix-template='curl https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates/appendix.tex'
+alias references-template='curl https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates/references.tex'
