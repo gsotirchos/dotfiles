@@ -19,7 +19,8 @@ Plugin 'lervag/vimtex'
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'lazywei/vim-matlab'
-Plugin 'justinmk/vim-syntax-extra'
+Plugin 'hdima/python-syntax'
+Plugin 'keith/swift.vim'
 
 "" plugins end here
 call vundle#end() " required
@@ -44,11 +45,11 @@ set fileencoding=utf-8
 " unix line endings
 set fileformat=unix
 
-
-
+" behavior
 syntax on
 set showcmd
 set number
+set cursorline
 set showmatch " show matching parentheses
 
 set autoindent
@@ -69,8 +70,6 @@ set foldmethod=indent
 set foldlevel=0
 set foldnestmax=99
 set foldcolumn=0
-
-set cursorline
 
 " fix movement in wrapped lines
 noremap  <buffer> <silent> k       gk
@@ -117,6 +116,10 @@ vnoremap <D-c> "+y
 
 " other mappings
 nnoremap o o<Esc>
+
+" Python
+autocmd BufRead,BufNewFile *.py let python_highlight_all=1
+autocmd BufRead,BufNewFile *.py :Python3Syntax
 
 " Fortran
 let fortran_free_source=1
