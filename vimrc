@@ -30,7 +30,6 @@ call vundle#end() " required
 
 filetype plugin indent on
 
-
 " no swap files
 set noswapfile
 set nobackup
