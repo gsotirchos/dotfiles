@@ -19,14 +19,17 @@ Plugin 'lervag/vimtex'
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'lazywei/vim-matlab'
+Plugin 'vim-syntastic/syntastic'
 Plugin 'hdima/python-syntax'
 Plugin 'keith/swift.vim'
+Plugin 'TheCodedSelf/syntastic-swift'
 
 "" plugins end here
 call vundle#end() " required
 """""""""""""""""""""""""""""""""""""""""""
 
 filetype plugin indent on
+
 
 " no swap files
 set noswapfile
@@ -47,28 +50,29 @@ set fileformat=unix
 
 " behavior
 syntax on
-set showcmd
+set showcmd       " show typed command
 set number
-set cursorline
-set showmatch " show matching parentheses
+set cursorline    " show cursorline
+set numberwidth=3 " number col width
+set showmatch     " show matching parentheses
 
 set autoindent
 set cindent
-set smartcase
-set hlsearch
+set ignorecase
+set smartcase  " case sensitive if Uppercase
+set hlsearch   " highlight search matches
 
 set sw=4 ts=4 sts=4 " default: 4 spaces per tab
-set expandtab " replace tabs with spaces
-
-set backspace=2 " allow backspace in instert mode
-set whichwrap+=h,l,<,>,[,] " fix line border movement
-set wrap lbr " wrap lines by word
+set expandtab       " replace tabs with spaces
+set backspace=2     " allow backspace in instert mode
+set whichwrap+=h,l,<,>,[,] " fix line movement on line borders
+set wrap lbr        " wrap lines by word
 
 " allow folding
 set foldenable
 set foldmethod=indent
-set foldlevel=0
-set foldnestmax=99
+set foldlevel=0    " depth of first folding
+set foldnestmax=99 " depth of last folding
 set foldcolumn=0
 
 " fix movement in wrapped lines
@@ -136,4 +140,22 @@ let g:Tex_ExecuteUNIXViewerInForeground = 1
 let g:vimtex_view_method = 'skim'
 let g:vimtex_compiler_latexmk = {'callback' : 0}
 let g:tex_comment_nospell= 1
-autocmd BufNewFile,BufRead *.tex set spell spelllang=en_us,el " spell check only .tex files
+autocmd BufNewFile,BufRead *.tex,*.txt set spell spelllang=en_us,el " spell check only .tex files
+
+" Syntastic
+let g:syntastic_aggregate_errors = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_always_populate_loc_list = 1
+
+let g:syntastic_swift_checkers = ['swift'] 
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+set signcolumn=yes
+
+let g:syntastic_error_symbol = 'x'
+let g:syntastic_warning_symbol = '▲'
+let g:syntastic_style_error_symbol = '?'
+let g:syntastic_style_warning_symbol = '!?'
