@@ -15,11 +15,12 @@ Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
 
-Plugin 'lervag/vimtex'
+Plugin '907th/vim-auto-save'
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
-Plugin 'lazywei/vim-matlab'
 Plugin 'vim-syntastic/syntastic'
+Plugin 'lervag/vimtex'
+Plugin 'lazywei/vim-matlab'
 Plugin 'hdima/python-syntax'
 Plugin 'keith/swift.vim'
 Plugin 'TheCodedSelf/syntastic-swift'
@@ -31,6 +32,9 @@ call vundle#end() " required
 filetype plugin indent on
 
 " no swap files
+let g:auto_save = 1 " enable autosave
+set undofile        " keep undo file
+set undodir=~/.vim/undo/
 set noswapfile
 set nobackup
 set nowb

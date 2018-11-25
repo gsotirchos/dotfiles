@@ -9,6 +9,7 @@ dotfiles="/Users/$USER/.macos-dotfiles"
 
 # prepare folders
 mkdir -vp ~/.config/ranger/colorschemes
+mkdir -vp ~/.vim/undo
 mkdir -vp ~/.vim/after/syntax
 
 # make soft symlinks
