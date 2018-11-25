@@ -170,6 +170,7 @@ let g:syntastic_tex_chktex_quiet_messages={'regex': [
     \ 'doesn''t match the number of',
     \ 'You should put a space in front of',
     \ 'is normally not',
-    \ 'You should enclose the previous'
+    \ 'You should enclose the previous',
+    \ 'Use either `` or '''''
 \ ]}
 let g:syntastic_tex_lacheck_quiet_messages={'regex': 'unmatched'}
