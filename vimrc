@@ -15,7 +15,6 @@ Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
 
-Plugin '907th/vim-auto-save'
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'vim-syntastic/syntastic'
@@ -31,10 +30,11 @@ call vundle#end() " required
 
 filetype plugin indent on
 
-" no swap files
-let g:auto_save = 1 " enable autosave
-set undofile        " keep undo file
-set undodir=~/.vim/undo/
+" saving settings
+autocmd CursorHold * update " autosave...
+set updatetime=200          " every 200ms
+set undofile             " maintain undo file...
+set undodir=~/.vim/undo/ " in ~/.vim/undo/
 set noswapfile
 set nobackup
 set nowb
@@ -138,27 +138,38 @@ let fortran_do_enddo=1
 " LaTeX
 let g:tex_flavor='latex'
 let g:Tex_DefaultTargetFormat='pdf'
-let g:Tex_TreatMacViewerAsUNIX = 1
-let g:Tex_ExecuteUNIXViewerInForeground = 1
-let g:vimtex_view_method = 'skim'
-let g:vimtex_compiler_latexmk = {'callback' : 0}
-let g:tex_comment_nospell= 1
-autocmd BufNewFile,BufRead *.tex,*.txt set spell spelllang=en_us,el " spell check only .tex files
+let g:Tex_TreatMacViewerAsUNIX=1
+let g:Tex_ExecuteUNIXViewerInForeground=1
+let g:vimtex_view_method='skim'
+let g:vimtex_compiler_latexmk={'callback' : 0}
+let g:tex_comment_nospell=1
+autocmd BufNewFile,BufRead *.tex set spell spelllang=en_us,el " spell check only .tex files
 
 " Syntastic
-let g:syntastic_aggregate_errors = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_aggregate_errors=1
+let g:syntastic_check_on_open=1
+let g:syntastic_check_on_wq=0
+let g:syntastic_always_populate_loc_list=1
 
-let g:syntastic_swift_checkers = ['swift'] 
+let g:syntastic_swift_checkers=['swift'] 
 
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 set signcolumn=yes
 
-let g:syntastic_error_symbol = 'x'
-let g:syntastic_warning_symbol = '▲'
-let g:syntastic_style_error_symbol = '?'
-let g:syntastic_style_warning_symbol = '!?'
+let g:syntastic_error_symbol='x'
+let g:syntastic_warning_symbol='▲'
+let g:syntastic_style_error_symbol='!?'
+let g:syntastic_style_warning_symbol='?'
+
+let g:syntastic_tex_chktex_quiet_messages={'regex': [
+    \ 'Command terminated with space.',
+    \ 'No match found for',
+    \ 'perhaps',
+    \ 'doesn''t match the number of',
+    \ 'You should put a space in front of',
+    \ 'is normally not',
+    \ 'You should enclose the previous'
+\ ]}
+let g:syntastic_tex_lacheck_quiet_messages={'regex': 'unmatched'}
