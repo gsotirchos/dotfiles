@@ -31,9 +31,9 @@ call vundle#end() " required
 filetype plugin indent on
 
 " saving settings
-autocmd CursorHold * update " autosave...
+autocmd CursorHold ?* update " autosave...
 set updatetime=500          " every 500ms
-autocmd BufWritePost * SyntasticCheck " and check syntax
+autocmd BufWritePost ?* SyntasticCheck " and check syntax
 set undofile             " maintain undo file...
 set undodir=~/.vim/undo/ " in ~/.vim/undo/
 set noswapfile
