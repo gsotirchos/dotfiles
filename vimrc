@@ -32,7 +32,7 @@ filetype plugin indent on
 
 " saving settings
 autocmd CursorHold * update " autosave...
-set updatetime=200          " every 200ms
+set updatetime=500          " every 500ms
 autocmd BufWritePost * SyntasticCheck " and check syntax
 set undofile             " maintain undo file...
 set undodir=~/.vim/undo/ " in ~/.vim/undo/
@@ -49,8 +49,9 @@ colorscheme sunyata
 set gfs=fixedgr
 set fileencodings=ucs-bom,utf-8,cp1253 " encodings to be tried when
 set fileencodings+=default,latin1      " starting to edit an existing file
-set encoding=utf-8           " encoding displayed inside vim
-set fileencoding=utf-8       " encoding written to current buffer file
+set encoding=utf-8 " encoding displayed inside vim
+autocmd BufNewFile,BufRead *
+    \ set fileencoding=utf-8 " encoding written to current buffer's file
 set fileformats=dos,unix,mac " format order to be tried on a new buffer
 
 " behavior
@@ -145,7 +146,8 @@ let g:Tex_ExecuteUNIXViewerInForeground=1
 let g:vimtex_view_method='skim'
 let g:vimtex_compiler_latexmk={'callback' : 0}
 let g:tex_comment_nospell=1
-autocmd BufNewFile,BufRead *.tex set spell spelllang=en_us,el " spell check only .tex files
+autocmd BufNewFile,BufRead *.tex
+    \ set spell spelllang=en_us,el " spell check only .tex files
 
 " Syntastic
 let g:syntastic_aggregate_errors=1
