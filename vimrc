@@ -33,6 +33,7 @@ filetype plugin indent on
 " saving settings
 autocmd CursorHold * update " autosave...
 set updatetime=200          " every 200ms
+autocmd BufWritePost * SyntasticCheck " and check syntax
 set undofile             " maintain undo file...
 set undodir=~/.vim/undo/ " in ~/.vim/undo/
 set noswapfile
@@ -44,12 +45,13 @@ set history=20
 set t_Co=256
 colorscheme sunyata
 
-" greek
+" set encodings and line ending formats
 set gfs=fixedgr
-set fileencoding=utf-8
-
-" unix line endings
-set fileformat=unix
+set fileencodings=ucs-bom,utf-8,cp1253 " encodings to be tried when
+set fileencodings+=default,latin1      " starting to edit an existing file
+set encoding=utf-8           " encoding displayed inside vim
+set fileencoding=utf-8       " encoding written to current buffer file
+set fileformats=dos,unix,mac " format order to be tried on a new buffer
 
 " behavior
 syntax on
