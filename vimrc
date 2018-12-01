@@ -75,7 +75,7 @@ set wrap lbr               " wrap lines by word
 set formatoptions+=rawl    " automatic line breaking
 autocmd VimEnter,VimResized,TextChanged,TextChangedI *
     \  let &numberwidth = float2nr(log10(line("$"))) + 2
-    \| let &textwidth = &columns - &numberwidth -1 - 2
+    \| let &textwidth   = &columns - &numberwidth -1 - 2
 
 " allow folding
 set foldenable
