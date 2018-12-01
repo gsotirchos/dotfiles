@@ -32,8 +32,8 @@ filetype plugin indent on
 
 " saving settings
 autocmd CursorHold ?* nested silent! update " autosave...
-set updatetime=300                     " every 300ms
-autocmd BufWritePost ?* SyntasticCheck " and check syntax
+set updatetime=300                          " every 300ms
+autocmd BufWritePost ?* SyntasticCheck      " and check syntax
 set undofile             " maintain undo file...
 set undodir=~/.vim/undo/ " in ~/.vim/undo/
 set noswapfile
@@ -49,17 +49,17 @@ colorscheme sunyata
 set gfs=fixedgr
 set fileencodings=ucs-bom,utf-8,cp1253 " encodings to be tried when
 set fileencodings+=default,latin1      " starting to edit an existing file
-set encoding=utf-8 " encoding displayed inside vim
+set encoding=utf-8                     " encoding displayed inside vim
 autocmd BufNewFile,BufRead * silent!
     \ set fileencoding=utf-8 " encoding written to current buffer's file
 set fileformats=dos,unix,mac " format order to be tried on a new buffer
 
 " behavior
 syntax on
-set showcmd       " show typed command
+set showcmd    " show typed command
 set number
-set cursorline    " show cursorline
-set showmatch     " show matching parentheses
+set cursorline " show cursorline
+set showmatch  " show matching parentheses
 
 set autoindent
 set cindent
@@ -67,15 +67,15 @@ set ignorecase
 set smartcase  " case sensitive if Uppercase
 set hlsearch   " highlight search matches
 
-set sw=4 ts=4 sts=4 " default: 4 spaces per tab
-set expandtab       " replace tabs with spaces
-set backspace=2     " allow backspace in instert mode
+set sw=4 ts=4 sts=4        " default: 4 spaces per tab
+set expandtab              " replace tabs with spaces
+set backspace=2            " allow backspace in instert mode
 set whichwrap+=h,l,<,>,[,] " fix line movement on line borders
-set wrap lbr        " wrap lines by word
-set fo+=a           " automatic line breaking of new text
+set wrap lbr               " wrap lines by word
+set formatoptions+=rawl    " automatic line breaking
 autocmd VimEnter,VimResized,TextChanged,TextChangedI *
     \  let &numberwidth = float2nr(log10(line("$"))) + 2
-    \| let &textwidth   = &columns - &numberwidth - 2
+    \| let &textwidth = &columns - &numberwidth -1 - 2
 
 " allow folding
 set foldenable
