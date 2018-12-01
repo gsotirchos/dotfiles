@@ -72,10 +72,10 @@ set expandtab       " replace tabs with spaces
 set backspace=2     " allow backspace in instert mode
 set whichwrap+=h,l,<,>,[,] " fix line movement on line borders
 set wrap lbr        " wrap lines by word
-set fo+=aw " automatic line breaking of new text
-autocmd VimEnter,VimResized *
+set fo+=a           " automatic line breaking of new text
+autocmd VimEnter,VimResized,TextChanged,TextChangedI *
     \  let &numberwidth = float2nr(log10(line("$"))) + 2
-    \| let &textwidth   = &columns - &numberwidth - 1 - 2
+    \| let &textwidth   = &columns - &numberwidth - 2
 
 " allow folding
 set foldenable
