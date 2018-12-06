@@ -32,7 +32,7 @@ filetype plugin indent on
 
 " saving settings
 autocmd CursorHold ?* nested silent! update " autosave...
-set updatetime=300                          " every 300ms
+set updatetime=500                          " every 500ms
 autocmd BufWritePost ?* SyntasticCheck      " and check syntax
 set undofile             " maintain undo file...
 set undodir=~/.vim/undo/ " in ~/.vim/undo/
@@ -76,6 +76,7 @@ set formatoptions+=rawl    " automatic line breaking
 autocmd VimEnter,VimResized,TextChanged,TextChangedI *
     \  let &numberwidth = float2nr(log10(line("$"))) + 2
     \| let &textwidth   = &columns - &numberwidth -1 - 2
+set nojoinspaces           " don't insert 2 spaces after a '.', '?' or '!'
 
 " allow folding
 set foldenable
