@@ -69,6 +69,7 @@ set backspace=2            " allow backspace in instert mode
 set whichwrap+=h,l,<,>,[,] " fix line movement on line borders
 set wrap lbr               " wrap lines by word
 set formatoptions+=rawl    " automatic line breaking
+set nojoinspaces           " don't insert 2 spaces after a '.', '?' or '!'
 
 " allow folding
 set foldenable
