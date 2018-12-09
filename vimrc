@@ -58,7 +58,6 @@ set number    " show line numbers
 set showmatch " show matching parentheses
 
 set autoindent
-set cindent
 set ignorecase
 set smartcase  " case sensitive only if Uppercase
 set hlsearch   " highlight search matches
@@ -146,7 +145,8 @@ let g:syntastic_check_on_open=1
 let g:syntastic_check_on_wq=0
 let g:syntastic_always_populate_loc_list=1
 
-let g:syntastic_swift_checkers=['swift'] 
+let g:syntastic_swift_swiftlint_use_defaults=1
+let g:syntastic_swift_checkers=['swiftlint', 'swiftpm'] 
 
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -176,11 +176,12 @@ augroup vimrc
     autocmd CursorHold ?* nested silent! update " autosave...
     autocmd BufWritePost ?* SyntasticCheck      " and check syntax
     autocmd BufWinEnter,Syntax * syn sync minlines=200 maxlines=200
-    autocmd BufNewFile,BufRead * silent!
-        \ set fileencoding=utf-8 " always set encoding to utf-8
     autocmd VimEnter,VimResized,TextChanged,TextChangedI *
         \  let &numberwidth = float2nr(log10(line("$"))) + 2
         \| let &textwidth   = &columns - &numberwidth -1 - 2
+        \| :redraw!
+    autocmd BufNewFile,BufRead * silent! set fileencoding=utf-8 " UTF-8
+    autocmd BufRead,BufNewFile *.c  set cindent
     autocmd BufRead,BufNewFile *.py let python_highlight_all=1
     autocmd BufRead,BufNewFile *.py :Python3Syntax 
     autocmd BufNewFile,BufRead *.tex
