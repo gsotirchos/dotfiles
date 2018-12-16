@@ -17,12 +17,13 @@ Plugin 'VundleVim/Vundle.vim'
 
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
-Plugin 'vim-syntastic/syntastic'
+Plugin 'w0rp/ale'
+"Plugin 'vim-syntastic/syntastic'
 Plugin 'lervag/vimtex'
 Plugin 'lazywei/vim-matlab'
 Plugin 'hdima/python-syntax'
 Plugin 'keith/swift.vim'
-Plugin 'TheCodedSelf/syntastic-swift'
+"Plugin 'TheCodedSelf/syntastic-swift'
 
 "" plugins end here
 call vundle#end() " required
@@ -31,7 +32,7 @@ call vundle#end() " required
 filetype plugin indent on
 
 " saving settings
-set updatetime=300       " every 300ms
+set updatetime=750
 set undofile             " maintain undo file...
 set undodir=~/.vim/undo/ " in ~/.vim/undo/
 set noswapfile
@@ -52,10 +53,13 @@ set fileformats=dos,unix,mac " format order to be tried on a new buffer
 
 " behavior
 syntax on
-set re=1      " use old regex engine
-set showcmd   " show typed command
-set number    " show line numbers
-set showmatch " show matching parentheses
+set regexpengine=1  " use old regex engine
+set showcmd         " show typed command
+set number          " show line numbers
+set showmatch       " show matching parentheses
+set laststatus=0    " hide statusline titles
+set splitbelow      " open new windows at bottom
+set previewheight=3 " set preview window height to 3
 
 set autoindent
 set ignorecase
@@ -139,47 +143,22 @@ let g:vimtex_view_method='skim'
 let g:vimtex_compiler_latexmk={'callback' : 0}
 let g:tex_comment_nospell=1
 
-" Syntastic
-let g:syntastic_aggregate_errors=1
-let g:syntastic_check_on_open=1
-let g:syntastic_check_on_wq=0
-let g:syntastic_always_populate_loc_list=1
+" ALE
+let g:ale_cursor_detail=1 " show errors in  preveiew window
+let g:ale_echo_cursor=0   " don't show errors in status line
+let g:ale_echo_msg_format='%s [%linter%]'
+let g:ale_sign_column_always=1
+let g:ale_sign_error='⬤'
+let g:ale_sign_warning ='▲'
 
-let g:syntastic_swift_swiftlint_use_defaults=1
-let g:syntastic_swift_checkers=['swiftlint', 'swiftpm'] 
-
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-set signcolumn=yes
-
-let g:syntastic_error_symbol='x'
-let g:syntastic_warning_symbol='▲'
-let g:syntastic_style_error_symbol='!?'
-let g:syntastic_style_warning_symbol='?'
-
-let g:syntastic_tex_chktex_quiet_messages={'regex': [
-    \ 'Command terminated with space.',
-    \ 'No match found for',
-    \ 'perhaps',
-    \ 'doesn''t match the number of',
-    \ 'You should put a space in front of',
-    \ 'is normally not',
-    \ 'You should enclose the previous',
-    \ 'Use either `` or '''''
-\ ]}
-let g:syntastic_tex_lacheck_quiet_messages={'regex': 'unmatched'}
-
-
+" Autocommands
 augroup vimrc
     autocmd!
-    autocmd CursorHold ?* nested silent! update " autosave...
-    autocmd BufWritePost ?* SyntasticCheck      " and check syntax
+    autocmd CursorHold ?* update " autosave
     autocmd BufWinEnter,Syntax * syn sync minlines=200 maxlines=200
     autocmd VimEnter,VimResized,TextChanged,TextChangedI *
         \  let &numberwidth = float2nr(log10(line("$"))) + 2
         \| let &textwidth   = &columns - &numberwidth -1 - 2
-        \| :redraw!
     autocmd BufNewFile,BufRead * silent! set fileencoding=utf-8 " UTF-8
     autocmd BufRead,BufNewFile *.c  set cindent
     autocmd BufRead,BufNewFile *.py let python_highlight_all=1
