@@ -18,12 +18,10 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'w0rp/ale'
-"Plugin 'vim-syntastic/syntastic'
 Plugin 'lervag/vimtex'
 Plugin 'lazywei/vim-matlab'
 Plugin 'hdima/python-syntax'
 Plugin 'keith/swift.vim'
-"Plugin 'TheCodedSelf/syntastic-swift'
 
 "" plugins end here
 call vundle#end() " required
