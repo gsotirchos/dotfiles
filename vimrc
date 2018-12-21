@@ -124,6 +124,7 @@ vnoremap <D-c> "+y
 
 " other mappings
 nnoremap o o<Esc>
+let g:SuperTabDefaultCompletionType="<c-n>" " reverse supertab order
 
 " Fortran
 let fortran_free_source=1
