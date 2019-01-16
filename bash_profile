@@ -23,4 +23,4 @@ export LANG=en_US.UTF-8
 
 # aliases
 alias rm='rm -i'
-alias dunnet='clear & emacs -batch -l dunnet'
+alias dunnet='clear && emacs -batch -l dunnet'
