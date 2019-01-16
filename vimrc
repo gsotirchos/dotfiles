@@ -158,7 +158,7 @@ augroup vimrc
     autocmd VimEnter,VimResized,TextChanged,TextChangedI *
         \  let &numberwidth = float2nr(log10(line("$"))) + 2
         \| let &textwidth   = &columns - &numberwidth - 1
-        \| let &colorcolumn = min([&textwidth + 2, 78])
+        \| let &colorcolumn = min([&textwidth + 2, 81 - &numberwidth])
     autocmd BufNewFile,BufRead * silent! set fileencoding=utf-8 " UTF-8
     autocmd BufRead,BufNewFile *.c  set cindent
     autocmd BufRead,BufNewFile *.py let python_highlight_all=1
