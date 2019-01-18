@@ -11,8 +11,10 @@ export CLICOLOR=1
 # custom prompt
 export PS1="\[\e[0;90m\]\W\[\e[00m\] "
 
-# add ~/.bin to PATH
-export PATH=/opt/pkg/bin:$PATH:~/.bin
+# add to PATH
+export PATH="$PATH:~/.bin"
+export PATH="/opt/pkg/bin:$PATH"
+export PATH="~/.cargo/bin:$PATH"
 
 # set the updated bash as shell
 export SHELL='/opt/pkg/bin/bash'
