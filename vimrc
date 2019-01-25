@@ -71,6 +71,7 @@ set whichwrap+=h,l,<,>,[,] " fix line movement on line borders
 set wrap lbr               " wrap lines by word
 set formatoptions+=rawl    " automatic line breaking
 set nojoinspaces           " don't insert 2 spaces after a '.', '?' or '!'
+let colorcolumnposition=81 " position of column to mark text width
 
 " allow folding
 set foldenable
@@ -155,10 +156,12 @@ augroup vimrc
     autocmd!
     autocmd CursorHold ?* nested update " autosave
     autocmd BufWinEnter,Syntax * syn sync minlines=200 maxlines=200
-    autocmd VimEnter,VimResized,TextChanged,TextChangedI *
-        \  let &numberwidth = float2nr(log10(line("$"))) + 2
-        \| let &textwidth   = &columns - &numberwidth - 1
-        \| let &colorcolumn = min([&textwidth + 2, 81 - &numberwidth])
+    autocmd VimEnter,VimResized,TextChanged,TextChangedI,OptionSet *
+        \  let gutterwidth  = 2*!empty(@%)
+        \| let &numberwidth = float2nr(log10(line("$"))) + 2
+        \| let &textwidth   = &columns-1-&numberwidth*&number-gutterwidth
+        \| let &colorcolumn = 
+        \    colorcolumnposition - gutterwidth - &numberwidth*&number
     autocmd BufNewFile,BufRead * silent! set fileencoding=utf-8 " UTF-8
     autocmd BufRead,BufNewFile *.c  set cindent
     autocmd BufRead,BufNewFile *.py let python_highlight_all=1
