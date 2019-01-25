@@ -157,7 +157,7 @@ augroup vimrc
     autocmd CursorHold ?* nested update " autosave
     autocmd BufWinEnter,Syntax * syn sync minlines=200 maxlines=200
     autocmd VimEnter,VimResized,TextChanged,TextChangedI,OptionSet *
-        \  let gutterwidth  = 2*!empty(@%)
+        \  let gutterwidth  = 2*!empty(@%)*&modifiable
         \| let &numberwidth = float2nr(log10(line("$"))) + 2
         \| let &textwidth   = &columns-1-&numberwidth*&number-gutterwidth
         \| let &colorcolumn = 
