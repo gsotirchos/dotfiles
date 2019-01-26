@@ -166,18 +166,19 @@ endfunction
 augroup vimrc
     autocmd!
     autocmd CursorHold ?* nested update " autosave
-    autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200 | echo "ok"
-    autocmd BufWinEnter,BufRead,BufWrite * call SetSignColumn(@%, &modifiable)
+    autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200
+    autocmd BufWinEnter,BufRead,BufWrite *
+      \  call SetSignColumn(@%, &modifiable)
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
       \  let &numberwidth = float2nr(log10(line("$"))) + 2
       \| let &textwidth   =
       \    &columns - 1 - &numberwidth*&number - b:gutterwidth
       \| let &colorcolumn = 
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
-    autocmd BufNewFile,BufRead,BufWrite * silent! set fileencoding=utf-8
-    autocmd BufNewFile,BufRead,BufWrite *.c  set cindent
-    autocmd BufNewFile,BufRead,BufWrite *.py let python_highlight_all=1
-    autocmd BufNewFile,BufRead,BufWrite *.py :Python3Syntax 
-    autocmd BufNewFile,BufRead,BufWrite *.tex
+    autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
+    autocmd BufWinEnter,BufRead,BufWrite *.c  set cindent
+    autocmd BufWinEnter,BufRead,BufWrite *.py let python_highlight_all=1
+    autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax 
+    autocmd BufWinEnter,BufRead,BufWrite *.tex
         \ set spell spelllang=en_us,el " spell check only .tex files
 augroup END
