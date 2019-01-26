@@ -151,21 +151,33 @@ let g:ale_sign_column_always=1
 let g:ale_sign_error='⬤'
 let g:ale_sign_warning ='▲'
 
+" functions
+function SetSignColumn(file_name, is_modifiable)
+    if empty(a:file_name) || !a:is_modifiable
+        let &signcolumn = "no"
+        let b:gutterwidth = 0"
+    else
+        let &signcolumn = "yes"
+        let b:gutterwidth = 2
+    endif
+endfunction
+
 " Autocommands
 augroup vimrc
     autocmd!
     autocmd CursorHold ?* nested update " autosave
-    autocmd BufWinEnter,Syntax * syn sync minlines=200 maxlines=200
-    autocmd VimEnter,VimResized,TextChanged,TextChangedI,OptionSet *
-        \  let gutterwidth  = 2*!empty(@%)*&modifiable
-        \| let &numberwidth = float2nr(log10(line("$"))) + 2
-        \| let &textwidth   = &columns-1-&numberwidth*&number-gutterwidth
-        \| let &colorcolumn = 
-        \    colorcolumnposition - gutterwidth - &numberwidth*&number
-    autocmd BufNewFile,BufRead * silent! set fileencoding=utf-8 " UTF-8
-    autocmd BufRead,BufNewFile *.c  set cindent
-    autocmd BufRead,BufNewFile *.py let python_highlight_all=1
-    autocmd BufRead,BufNewFile *.py :Python3Syntax 
-    autocmd BufNewFile,BufRead *.tex
+    autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200
+    autocmd BufWinEnter,BufRead,BufWrite * call SetSignColumn(@%, &modifiable)
+    autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
+      \  let &numberwidth = float2nr(log10(line("$"))) + 2
+      \| let &textwidth   =
+      \    &columns - 1 - &numberwidth*&number - b:gutterwidth
+      \| let &colorcolumn = 
+      \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
+    autocmd BufNewFile,BufRead,BufWrite * silent! set fileencoding=utf-8
+    autocmd BufNewFile,BufRead,BufWrite *.c  set cindent
+    autocmd BufNewFile,BufRead,BufWrite *.py let python_highlight_all=1
+    autocmd BufNewFile,BufRead,BufWrite *.py :Python3Syntax 
+    autocmd BufNewFile,BufRead,BufWrite *.tex
         \ set spell spelllang=en_us,el " spell check only .tex files
 augroup END
