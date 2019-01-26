@@ -166,7 +166,7 @@ endfunction
 augroup vimrc
     autocmd!
     autocmd CursorHold ?* nested update " autosave
-    autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200
+    autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200 | echo "ok"
     autocmd BufWinEnter,BufRead,BufWrite * call SetSignColumn(@%, &modifiable)
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
       \  let &numberwidth = float2nr(log10(line("$"))) + 2
