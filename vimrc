@@ -22,6 +22,7 @@ Plugin 'lervag/vimtex'
 Plugin 'lazywei/vim-matlab'
 Plugin 'hdima/python-syntax'
 Plugin 'keith/swift.vim'
+Plugin 'JuliaEditorSupport/julia-vim'
 
 "" plugins end here
 call vundle#end() " required
@@ -64,14 +65,14 @@ set ignorecase
 set smartcase  " case sensitive only if Uppercase
 set hlsearch   " highlight search matches
 
-set sw=4 ts=4 sts=4        " default: 4 spaces per tab
-set expandtab              " replace tabs with spaces
-set backspace=2            " allow backspace in instert mode
-set whichwrap+=h,l,<,>,[,] " fix line movement on line borders
-set wrap lbr               " wrap lines by word
-set formatoptions+=rawl    " automatic line breaking
-set nojoinspaces           " don't insert 2 spaces after a '.', '?' or '!'
-let colorcolumnposition=81 " position of column to mark text width
+set sw=4 ts=4 sts=4         " default: 4 spaces per tab
+set expandtab               " replace tabs with spaces
+set backspace=2             " allow backspace in instert mode
+set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
+set wrap lbr                " wrap lines by word
+set formatoptions+=tawcroql " automatic line breaking
+set nojoinspaces            " don't insert 2 spaces after a '.', '?' or '!'
+let colorcolumnposition=81  " position of column to mark text width
 
 " allow folding
 set foldenable
