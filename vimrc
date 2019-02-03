@@ -82,20 +82,23 @@ set foldnestmax=99 " depth of last folding
 set foldcolumn=0
 
 " fix movement in wrapped lines
-noremap  <buffer> <silent> k       gk
-noremap  <buffer> <silent> j       gj
-noremap  <buffer> <silent> <up>    gk
-noremap  <buffer> <silent> <down>  gj
-noremap  <buffer> <silent> <home>  g<home>
-noremap  <buffer> <silent> <End>   g<End>
-noremap  <buffer> <silent> 0       g0
-noremap  <buffer> <silent> $       g$
-noremap  <buffer> <silent> ^       g^
-noremap  <buffer> <silent> <space> za
-inoremap <buffer> <silent> <Down>  <C-o>gj
+noremap  <buffer> <silent> <Up>    gk
 inoremap <buffer> <silent> <Up>    <C-o>gk
-inoremap <buffer> <silent> <home>  <C-o>g<home>
+noremap  <buffer> <silent> <Down>  gj
+inoremap <buffer> <silent> <Down>  <C-o>gj
+noremap  <buffer> <silent> j       gj
+noremap  <buffer> <silent> k       gk
+noremap  <buffer> <silent> <Home>  g<home>
+inoremap <buffer> <silent> <Home>  <C-o>g<home>
+noremap  <buffer> <silent> <End>   g<End>
 inoremap <buffer> <silent> <End>   <C-o>g<End>
+noremap  <buffer> <silent> 0       g0
+noremap  <buffer> <silent> ^       g^
+noremap  <buffer> <silent> $       g$
+noremap  <buffer> <silent> <Space> za
+noremap  <buffer> <silent> <C-@>   @:
+inoremap <buffer> <silent> <C-@>   <Esc>@:
+cnoremap <buffer> <silent> <C-@>   @:<CR>
 
 " smart indent when entering insert mode with i on empty lines
 function! IndentWithI()
