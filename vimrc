@@ -96,6 +96,8 @@ noremap  <buffer> <silent> 0       g0
 noremap  <buffer> <silent> ^       g^
 noremap  <buffer> <silent> $       g$
 noremap  <buffer> <silent> <Space> za
+
+" execute last command with C-@
 noremap  <buffer> <silent> <C-@>   :@:<CR>
 inoremap <buffer> <silent> <C-@>   <Esc>:@:<CR>
 cnoremap <buffer> <silent> <C-@>   <C-e><C-u>@:<CR>
