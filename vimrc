@@ -96,9 +96,9 @@ noremap  <buffer> <silent> 0       g0
 noremap  <buffer> <silent> ^       g^
 noremap  <buffer> <silent> $       g$
 noremap  <buffer> <silent> <Space> za
-noremap  <buffer> <silent> <C-@>   @:
-inoremap <buffer> <silent> <C-@>   <Esc>@:
-cnoremap <buffer> <silent> <C-@>   @:<CR>
+noremap  <buffer> <silent> <C-@>   :@:<CR>
+inoremap <buffer> <silent> <C-@>   <Esc>:@:<CR>
+cnoremap <buffer> <silent> <C-@>   <C-e><C-u>@:<CR>
 
 " smart indent when entering insert mode with i on empty lines
 function! IndentWithI()
@@ -164,6 +164,18 @@ function SetSignColumn(file_name, is_modifiable)
         let &signcolumn = "yes"
         let b:gutterwidth = 2
     endif
+endfunction
+
+function CleanTerminal(terminal)
+    silent execute '! echo -en "\ec" >' a:terminal
+    redraw!
+endfunction
+
+function PipeText(text)
+    let pipe = "/tmp/vim_pipe"
+    silent! execute '![[ \! -e' pipe ']] && mkfifo' pipe
+    silent! execute '!echo "' . a:text . '" >' pipe
+    redraw!
 endfunction
 
 " Autocommands
