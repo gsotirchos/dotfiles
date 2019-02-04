@@ -168,18 +168,6 @@ function SetSignColumn(file_name, is_modifiable)
     endif
 endfunction
 
-function CleanTerminal(terminal)
-    silent execute '! echo -en "\ec" >' a:terminal
-    redraw!
-endfunction
-
-function PipeText(text)
-    let pipe = "/tmp/vim_pipe"
-    silent! execute '![[ \! -e' pipe ']] && mkfifo' pipe
-    silent! execute '!echo "' . a:text . '" >' pipe
-    redraw!
-endfunction
-
 " Autocommands
 augroup vimrc
     autocmd!
