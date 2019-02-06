@@ -52,14 +52,14 @@ set fileformats=dos,unix,mac " format order to be tried on a new buffer
 
 " behavior
 syntax on
-set regexpengine=1  " use old regex engine
-set showcmd         " show typed command
-set number          " show line numbers
-set showmatch       " show matching parentheses
-set laststatus=0    " hide statusline titles
-set splitbelow      " open new windows at bottom
-set fillchars+=vert:\ 
-set previewheight=3 " set preview window height to 3
+set regexpengine=1     " use old regex engine
+set showcmd            " show typed command
+set number             " show line numbers
+set showmatch          " show matching parentheses
+set laststatus=0       " hide statusline titles
+set splitbelow         " open new windows at bottom
+set fillchars+=vert:\  " set vertical separator to ' '
+set previewheight=3    " set preview window height to 3
 
 set autoindent
 set ignorecase
