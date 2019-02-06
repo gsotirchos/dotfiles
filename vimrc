@@ -58,6 +58,7 @@ set number          " show line numbers
 set showmatch       " show matching parentheses
 set laststatus=0    " hide statusline titles
 set splitbelow      " open new windows at bottom
+set fillchars+=vert:\ 
 set previewheight=3 " set preview window height to 3
 
 set autoindent
