@@ -34,3 +34,5 @@ alias rm="rm -i" # confirmation before removing
 alias mv="mv -v" # verbose move
 alias tree="tree -NC -L 2 --filelimit 15" # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
+alias julia="clear && 
+    /Applications/Julia-1.1.app/Contents/Resources/julia/bin/julia"
