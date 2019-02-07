@@ -75,7 +75,7 @@ set wrap lbr                " wrap lines by word
 set formatoptions+=tawcroql " automatic line breaking
 set nojoinspaces            " don't insert 2 spaces after '.', '?' or '!'
 let colorcolumnposition=81  " position of column to mark text width
-let &shell="/opt/pkg/bin/bash --login" " terminals source .bash_profile
+let &shell='/opt/pkg/bin/bash --login' " terminals source .bash_profile
 
 " allow folding
 set foldenable
@@ -134,7 +134,7 @@ vnoremap <D-c> "+y
 
 " other mappings
 nnoremap o o<Esc>
-let g:SuperTabDefaultCompletionType="<c-n>" " reverse supertab order
+let g:SuperTabDefaultCompletionType='<c-n>' " reverse supertab order
 
 " Fortran
 let fortran_free_source=1
@@ -163,10 +163,10 @@ let g:ale_sign_warning ='▲'
 " functions
 function SetSignColumn(file_name, is_modifiable)
     if empty(a:file_name) || !a:is_modifiable
-        let &signcolumn = "no"
-        let b:gutterwidth = 0"
+        let &signcolumn = 'no'
+        let b:gutterwidth = 0
     else
-        let &signcolumn = "yes"
+        let &signcolumn = 'yes'
         let b:gutterwidth = 2
     endif
 endfunction
@@ -179,7 +179,7 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite *
       \  call SetSignColumn(@%, &modifiable)
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
-      \  let &numberwidth = float2nr(log10(line("$"))) + 2
+      \  let &numberwidth = float2nr(log10(line('$'))) + 2
       \| let &textwidth   =
       \    &columns - 1 - &numberwidth*&number - b:gutterwidth
       \| let &colorcolumn = 
