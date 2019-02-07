@@ -57,7 +57,8 @@ set showcmd            " show typed command
 set number             " show line numbers
 set showmatch          " show matching parentheses
 set laststatus=0       " hide statusline titles
-set splitbelow         " open new windows at bottom
+set splitbelow         " open new horizontal windows at bottom
+set splitright         " open new vertical windows at right
 set fillchars+=vert:\  " set vertical separator to ' '
 set previewheight=3    " set preview window height to 3
 
@@ -72,8 +73,9 @@ set backspace=2             " allow backspace in instert mode
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr                " wrap lines by word
 set formatoptions+=tawcroql " automatic line breaking
-set nojoinspaces            " don't insert 2 spaces after a '.', '?' or '!'
+set nojoinspaces            " don't insert 2 spaces after '.', '?' or '!'
 let colorcolumnposition=81  " position of column to mark text width
+let &shell="/opt/pkg/bin/bash --login" " terminals source .bash_profile
 
 " allow folding
 set foldenable
