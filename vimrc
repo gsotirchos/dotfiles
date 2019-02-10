@@ -136,6 +136,10 @@ vnoremap <D-c> "+y
 nnoremap o o<Esc>
 let g:SuperTabDefaultCompletionType='<c-n>' " reverse supertab order
 
+" commenting
+let g:NERDDefaultAlign = 'left' " flush left comment delimiters
+let g:NERDCommentEmptyLines = 1 " comment empty lines too
+
 " Fortran
 let fortran_free_source=1
 let fortran_fold=1
