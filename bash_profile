@@ -30,9 +30,9 @@ trash() { # move file(s) to trash folder
 }
 
 # aliases
-alias rm="rm -i" # confirmation before removing
-alias mv="mv -v" # verbose move
-alias cp="cp -v" # verbose copy
+alias rm="rm -i"  # confirmatory remove
+alias mv="mv -iv" # confirmatory, verbose move
+alias cp="cp -iv" # confirmatory, verbose copy
 alias tree="tree -NC -L 2 --filelimit 15" # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
 alias julia="clear && 
