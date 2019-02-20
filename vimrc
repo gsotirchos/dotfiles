@@ -185,7 +185,7 @@ augroup vimrc
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
       \  let &numberwidth = float2nr(log10(line('$'))) + 2
       \| let &textwidth   =
-      \    &columns - 1 - &numberwidth*&number - b:gutterwidth
+      \    0*&columns + 80 - 1 - &numberwidth*&number - b:gutterwidth
       \| let &colorcolumn = 
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
