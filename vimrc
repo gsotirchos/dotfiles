@@ -69,7 +69,7 @@ set hlsearch   " highlight search matches
 
 set sw=4 ts=4 sts=4         " default: 4 spaces per tab
 set expandtab               " replace tabs with spaces
-set backspace=2             " allow backspace in instert mode
+set backspace=2             " allow backspace in insert mode
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr                " wrap lines by word
 set formatoptions+=tawcroql " automatic line breaking
@@ -157,7 +157,7 @@ let g:vimtex_compiler_latexmk={'callback' : 0}
 let g:tex_comment_nospell=1
 
 " ALE
-let g:ale_cursor_detail=1 " show errors in  preveiew window
+let g:ale_cursor_detail=1 " show errors in preview window
 let g:ale_echo_cursor=0   " don't show errors in status line
 let g:ale_echo_msg_format='%s [%linter%]'
 let g:ale_sign_column_always=1
