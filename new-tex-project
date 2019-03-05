@@ -1,0 +1,36 @@
+#!/opt/pkg/bin/bash
+
+#
+# ~/.bin/new-tex-project
+#
+
+# help and correct usage
+USAGE="usage: `basename $0` [project folder name]"
+[[ -n "$2" ]]      && echo -e "${USAGE}" && exit 1
+[[ "$1" == "-h" ]] && echo -e "${USAGE}" && exit 0
+
+# my tex files in a template project
+files=("report"
+       "cheatsheet"
+       "preamble"
+       "subfile"
+       "appendix"
+       "references")
+files_expanded=$(IFS=,; echo "${files[*]}")
+
+# my tex template files repo url
+templates_url="https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates"
+
+# make project folder
+if [[ -n ${1// } ]]; then
+    project_folder="$1"
+else
+    project_folder="tex-project"
+fi
+mkdir "${project_folder}"
+
+# clone template project files
+echo "Cloning template project files..."
+curl -s "${templates_url}/{${files_expanded}}.tex" \
+     -o "${project_folder}/#1.tex" \
+    && echo "New project from template created in \"${project_folder}/\""
