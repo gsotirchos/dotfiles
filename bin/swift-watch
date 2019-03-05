@@ -1,0 +1,39 @@
+#!/opt/pkg/bin/bash
+
+#
+# ~/bin/swift-watch
+#
+
+# Usage
+USAGE="usage: `basename $0` [package name]"
+[[ -z "$1" ]]      && echo -e "${USAGE}" && exit 1
+[[ -n "$2" ]]      && echo -e "${USAGE}" && exit 1
+[[ "$1" == "-h" ]] && echo -e "${USAGE}" && exit 0
+
+# store package name
+PACKAGE="$1"
+
+# function to compile package and execute the binary
+function compile_and_execute() {
+    clear  # clear screen
+    echo -e " --- Compiling ---"
+    swift build &&  # build project
+    echo -e " -----------------\n"
+    echo -e " --- Executing ---"
+    .build/debug/"$1" &&  # execute binary
+    echo -e " -----------------\n"
+}
+export -f compile_and_execute
+
+# exit on ctrl-c
+trap 'echo -e "\nInterrupted" && exit 1' INT
+
+# compile once first
+compile_and_execute "$PACKAGE"
+echo "Watching package \"$PACKAGE\"..."
+
+# watch file
+fswatch "Sources" | while read; do
+    compile_and_execute "$PACKAGE"
+    echo "Watching package \"$PACKAGE\"..."
+done

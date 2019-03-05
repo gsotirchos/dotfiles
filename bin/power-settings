@@ -1,5 +1,9 @@
 #!/opt/pkg/bin/bash
 
+#
+# ~/bin/power-settings
+#
+
 # set some preffered power settings
 sudo pmset -a standby 1         # enable safe slep (hibernate)
 sudo pmset -a hibernatemode 3   # use RAM on sleep, disk on safe sleep
