@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/opt/pkg/bin/bash
+
+#
+# ~/bin/fix-dock
+#
 
 # lock dock size
 defaults write com.apple.Dock size-immutable -bool yes
