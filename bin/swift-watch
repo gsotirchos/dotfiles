@@ -14,26 +14,47 @@ USAGE="usage: `basename $0` [package name]"
 PACKAGE="$1"
 
 # function to compile package and execute the binary
-function compile_and_execute() {
-    clear  # clear screen
-    echo -e " --- Compiling ---"
-    swift build &&  # build project
-    echo -e " -----------------\n"
-    echo -e " --- Executing ---"
-    .build/debug/"$1" &&  # execute binary
-    echo -e " -----------------\n"
-}
-export -f compile_and_execute
+function build_and_execute() {
+    # kill internal processes on exit
+    trap 'jobs -p | xargs kill' EXIT
 
-# exit on ctrl-c
+    # attempt to build package
+    clear # clear screen
+    echo -e " --- Compiling ---"
+    swift build &&
+        echo -e " -----------------\n"
+
+    # execute the built binary
+    echo -e " --- Executing ---"
+    .build/debug/"$1" &&
+        echo -e " -----------------\n"
+
+    echo "Watching package \"$PACKAGE\"..."
+}
+export -f build_and_execute
+
+# exit script on ctrl-c
 trap 'echo -e "\nInterrupted" && exit 1' INT
 
 # compile once first
-compile_and_execute "$PACKAGE"
-echo "Watching package \"$PACKAGE\"..."
+build_and_execute "$PACKAGE" &
+task_pid=$!
 
-# watch file
-fswatch "Sources" | while read; do
-    compile_and_execute "$PACKAGE"
-    echo "Watching package \"$PACKAGE\"..."
+# watch file for changes and forcefully build on detect
+fswatch "Sources" | while read > /dev/null; do
+    kill $task_pid &> /dev/null
+    wait $task_pid &> /dev/null
+    echo "Changes detected! Rebuilding..."
+
+    # wait for file writes to finish 
+    files_changed=true
+    while [[ $files_changed = true ]]; do
+        changed=false
+        [[ -n $(gtimeout 1 fswatch ".build" -1 -l 0.1) ]] && 
+            files_changed=true
+    done
+
+    # build and execute the binary
+    build_and_execute "$PACKAGE" &
+    task_pid=$!
 done
