@@ -126,7 +126,8 @@ nnoremap <expr> a IndentWithA()
 
 " use OS clipboard and copy-paste shortcuts
 set clipboard=unnamed
-inoremap <D-v> <Space><ESC>"+gPi<Delete>
+"inoremap <D-v> <Space><ESC>"+gPi<Delete>
+inoremap <D-v> <C-r>+
 nnoremap <D-v> "+p
 vnoremap <D-v> "+p
 cnoremap <D-v> <C-r>+
