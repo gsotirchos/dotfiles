@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.george.flux</string>
+	<string>com.user.flux</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>/Applications/Flux.app/Contents/MacOS/Flux</string>
