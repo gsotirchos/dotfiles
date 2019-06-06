@@ -40,6 +40,7 @@ alias rm="trash"  # trash file instead of deleting
 #alias rm="rm -i"  # confirmatory remove
 alias mv="mv -iv" # confirmatory, verbose move
 alias cp="cp -iv" # confirmatory, verbose copy
+alias ln="ln -iv" # confirmatory, verbose symlink creaton
 alias tree="tree -NC -L 2 --filelimit 15" # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
 alias julia="clear && 

@@ -20,3 +20,6 @@ ln -sfv $DOTFILES/vimrc                        ~/.vimrc
 ln -sfv $DOTFILES/vim/after/syntax/tex.vim     ~/.vim/after/syntax/tex.vim
 ln -sfv $DOTFILES/config/ranger/*.*            ~/.config/ranger
 ln -sfv $DOTFILES/config/ranger/colorschemes/* ~/.config/ranger/colorschemes
+ln -sfv $DOTFILES/LaunchAgents/com.*           ~/Library/LaunchAgents
+
+echo -e "\nDon't forget to load the .plist files!"
