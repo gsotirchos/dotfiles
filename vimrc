@@ -48,7 +48,7 @@ set gfs=fixedgr
 set fileencodings=ucs-bom,utf-8,cp1253 " encodings to be tried when
 set fileencodings+=default,latin1      " starting to edit an existing file
 set encoding=utf-8                     " encoding displayed inside vim  
-set fileformats=dos,unix,mac " format order to be tried on a new buffer
+set fileformats=unix,mac,dos " format order to be tried on a new buffer
 
 " behavior
 syntax on
