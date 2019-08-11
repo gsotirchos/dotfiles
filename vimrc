@@ -52,6 +52,7 @@ set fileformats=unix,mac,dos " format order to be tried on a new buffer
 
 " behavior
 syntax on
+set mouse=a
 set regexpengine=1     " use old regex engine
 set showcmd            " show typed command
 set number             " show line numbers
@@ -166,7 +167,7 @@ let g:ale_sign_error='⬤'
 let g:ale_sign_warning ='▲'
 
 " functions
-function SetSignColumn(file_name, is_modifiable)
+function! SetSignColumn(file_name, is_modifiable)
     if empty(a:file_name) || !a:is_modifiable
         let &signcolumn = 'no'
         let b:gutterwidth = 0
