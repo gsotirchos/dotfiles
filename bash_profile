@@ -25,8 +25,8 @@ export PATH="$CARGO_BIN:${PATH//":$CARGO_BIN"}"
 export SHELL="/opt/pkg/bin/bash"
 
 # set the locale to English
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
+export LC_ALL="en_US.UTF-8"
+export LANG="en_US.UTF-8"
 
 # functions
 trash() { # move file(s) to trash folder
