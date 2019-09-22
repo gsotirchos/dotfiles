@@ -23,6 +23,10 @@ Plugin 'lazywei/vim-matlab'
 Plugin 'hdima/python-syntax'
 Plugin 'keith/swift.vim'
 Plugin 'JuliaEditorSupport/julia-vim'
+Plugin 'PProvost/vim-ps1'
+Plugin 'neovimhaskell/haskell-vim'
+Plugin 'bitc/vim-hdevtools'
+Plugin 'gregjurman/vim-nc'
 
 "" plugins end here
 call vundle#end() " required
@@ -45,8 +49,7 @@ colorscheme sunyata
 
 " set encodings and line ending formats
 set gfs=fixedgr
-set fileencodings=ucs-bom,utf-8,cp1253 " encodings to be tried when
-set fileencodings+=default,latin1      " starting to edit an existing file
+set fileencodings=ucs-bom,utf-8,cp1253,default,latin1 " tried on open
 set encoding=utf-8                     " encoding displayed inside vim  
 set fileformats=unix,mac,dos " format order to be tried on a new buffer
 
@@ -76,7 +79,9 @@ set wrap lbr                " wrap lines by word
 set formatoptions+=tawcroql " automatic line breaking
 set nojoinspaces            " don't insert 2 spaces after '.', '?' or '!'
 let colorcolumnposition=81  " position of column to mark text width
-let &shell='/opt/pkg/bin/bash --login' " terminals source .bash_profile
+let &shell = '/opt/pkg/bin/bash'
+let &shellcmdflag = '--login -c' " 'login shell' to source profile
+set noshellslash
 
 " allow folding
 set foldenable
@@ -105,6 +110,13 @@ noremap  <buffer> <silent> <Space> za
 noremap  <buffer> <silent> <C-@>   :@:<CR>
 inoremap <buffer> <silent> <C-@>   <Esc>:@:<CR>
 cnoremap <buffer> <silent> <C-@>   <C-e><C-u>@:<CR>
+
+" show highlight group under cursor
+map <F10> :echo
+\ 'hi<' . synIDattr(synID(line("."),col("."),1),"name") . '> ' .
+\ 'trans<' . synIDattr(synID(line("."),col("."),0),"name") . '> ' .
+\ 'lo<' . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . '>'
+\ <CR>
 
 " smart indent when entering insert mode with i on empty lines
 function! IndentWithI()
@@ -187,12 +199,11 @@ augroup vimrc
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
       \  let &numberwidth = float2nr(log10(line('$'))) + 2
       \| let &textwidth   =
-      \    0*&columns + 80 - 1 - &numberwidth*&number - b:gutterwidth
-      \| let &colorcolumn = 
+      \    colorcolumnposition - 2 - &numberwidth*&number - b:gutterwidth
+      \| let &colorcolumn =
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
     autocmd BufWinEnter,BufRead,BufWrite *.c  set cindent
-    autocmd BufWinEnter,BufRead,BufWrite *.py let python_highlight_all=1
     autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax 
     autocmd BufWinEnter,BufRead,BufWrite *.tex
         \ set spell spelllang=en_us,el " spell check only .tex files
