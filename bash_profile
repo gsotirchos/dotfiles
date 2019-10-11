@@ -11,15 +11,17 @@ export CLICOLOR=1
 export PS1="\[\e[0;90m\]\W\[\e[00m\] "
 
 # add to PATH
-PKG_BIN="/opt/pkg/bin"
-PKG_SBIN="/opt/pkg/sbin"
-X11_BIN="/opt/X11/bin"
-CARGO_BIN="~/.cargo/bin"
-export PATH="$PATH:~/.bin"
-export PATH="$X11_BIN:${PATH//":$X11_BIN"}"
-export PATH="$PKG_SBIN:${PATH//":$PKG_SBIN"}"
-export PATH="$PKG_BIN:${PATH//":$PKG_BIN"}"
-export PATH="$CARGO_BIN:${PATH//":$CARGO_BIN"}"
+extra_paths=(
+    "~/.bin"
+    "/opt/pkg/bin"
+    "/opt/pkg/sbin"
+    "/opt/X11/bin"
+    "~/.cargo/bin"
+)
+
+for extra_path in "${extra_paths[@]}"; do
+    export PATH="${extra_path}:${PATH//":$extra_path"}"
+done
 
 # use pkgin's bash
 export SHELL="/opt/pkg/bin/bash"
