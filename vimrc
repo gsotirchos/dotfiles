@@ -20,7 +20,7 @@ Plugin 'scrooloose/nerdcommenter'
 Plugin 'w0rp/ale'
 Plugin 'lervag/vimtex'
 Plugin 'lazywei/vim-matlab'
-Plugin 'hdima/python-syntax'
+Plugin 'vim-python/python-syntax'
 Plugin 'keith/swift.vim'
 Plugin 'JuliaEditorSupport/julia-vim'
 Plugin 'PProvost/vim-ps1'
@@ -50,7 +50,7 @@ colorscheme sunyata
 " set encodings and line ending formats
 set gfs=fixedgr
 set fileencodings=ucs-bom,utf-8,cp1253,default,latin1 " tried on open
-set encoding=utf-8                     " encoding displayed inside vim  
+set encoding=utf-8           " encoding displayed inside vim  
 set fileformats=unix,mac,dos " format order to be tried on a new buffer
 
 " behavior
@@ -79,7 +79,7 @@ set wrap lbr                " wrap lines by word
 set formatoptions+=tawcroql " automatic line breaking
 set nojoinspaces            " don't insert 2 spaces after '.', '?' or '!'
 let colorcolumnposition=81  " position of column to mark text width
-let &shell = '/opt/pkg/bin/bash'
+set shell=/opt/pkg/bin/bash
 let &shellcmdflag = '--login -c' " 'login shell' to source profile
 set noshellslash
 
@@ -175,8 +175,8 @@ let g:ale_cursor_detail=1 " show errors in preview window
 let g:ale_echo_cursor=0   " don't show errors in status line
 let g:ale_echo_msg_format='%s [%linter%]'
 let g:ale_sign_column_always=1
-let g:ale_sign_error='⬤'
-let g:ale_sign_warning ='▲'
+let g:ale_sign_error='x'
+let g:ale_sign_warning ='!'
 
 " functions
 function! SetSignColumn(file_name, is_modifiable)
