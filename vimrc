@@ -53,7 +53,7 @@ set fileencodings=ucs-bom,utf-8,cp1253,default,latin1 " tried on open
 set encoding=utf-8           " encoding displayed inside vim  
 set fileformats=unix,mac,dos " format order to be tried on a new buffer
 
-" behavior
+" behaviour
 syntax on
 set mouse=a
 set regexpengine=1     " use old regex engine
@@ -63,8 +63,11 @@ set showmatch          " show matching parentheses
 set laststatus=0       " hide statusline titles
 set splitbelow         " open new horizontal windows at bottom
 set splitright         " open new vertical windows at right
-set fillchars+=vert:\  " set vertical separator to ' '
 set previewheight=3    " set preview window height to 3
+set fillchars+=vert:\  " set vertical separator to ' '
+set showbreak=...      " show '...' at start of wrapped lines
+set list               " show non-text characters
+let &listchars = 'tab:| ,trail:_'
 
 set autoindent
 set ignorecase
@@ -78,6 +81,7 @@ set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr                " wrap lines by word
 set formatoptions+=tawcroql " automatic line breaking
 set nojoinspaces            " don't insert 2 spaces after '.', '?' or '!'
+set display+=lastline       " show last wrapped line in window
 let colorcolumnposition=81  " position of column to mark text width
 set shell=/opt/pkg/bin/bash
 let &shellcmdflag = '--login -c' " 'login shell' to source profile
