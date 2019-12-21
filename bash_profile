@@ -10,17 +10,21 @@ export CLICOLOR=1
 # custom prompt
 export PS1="\[\e[0;90m\]\W\[\e[00m\] "
 
-# add to PATH
+# extra paths
 extra_paths=(
-    "~/.bin"
-    "/opt/pkg/bin"
-    "/opt/pkg/sbin"
     "/opt/X11/bin"
-    "~/.cargo/bin"
+    "/opt/pkg/sbin"
+    "/opt/pkg/bin"
+    "$HOME/.bin"
+    "$HOME/.local/bin"
+    "$HOME/.cargo/bin"
 )
 
+# append to PATH
 for extra_path in "${extra_paths[@]}"; do
-    export PATH="${extra_path}:${PATH//":$extra_path"}"
+    if [[ -d "${extra_path}" ]]; then
+        export PATH="${extra_path}:${PATH//":$extra_path"}"
+    fi
 done
 
 # use pkgin's bash
@@ -47,3 +51,8 @@ alias tree="tree -NC -L 2 --filelimit 15" # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
 alias julia="clear && 
     /Applications/Julia-1.1.app/Contents/Resources/julia/bin/julia"
+
+# ghc
+if [[ -f "${extra_path}" ]]; then
+    source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"
+fi
