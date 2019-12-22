@@ -1,7 +1,7 @@
 #!/opt/pkg/bin/bash
 
 #
-# ${DOTFILES}/symlinks.sh
+# ${DOTFILES}/setup.sh
 #
 
 # dotfiles path
