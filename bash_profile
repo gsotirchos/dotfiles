@@ -50,7 +50,7 @@ alias ln="ln -iv" # confirmatory, verbose symlink creaton
 alias tree="tree -NC -L 2 --filelimit 15" # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
 alias julia="clear && 
-    /Applications/Julia-1.1.app/Contents/Resources/julia/bin/julia"
+    /Applications/Julia-1.3.app/Contents/Resources/julia/bin/julia"
 
 # ghc
 if [[ -f "${extra_path}" ]]; then
