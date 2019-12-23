@@ -17,7 +17,9 @@ extra_paths=(
     "/opt/pkg/bin"
     "$HOME/.bin"
     "$HOME/.local/bin"
-    "$HOME/.cargo/bin"
+    "$HOME/.cargo/bin" # rust
+    "$HOME/.cabal/bin"                               # haskell
+    "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/bin" # haskell
 )
 
 # append to PATH
@@ -49,10 +51,5 @@ alias cp="cp -iv" # confirmatory, verbose copy
 alias ln="ln -iv" # confirmatory, verbose symlink creaton
 alias tree="tree -NC -L 2 --filelimit 15" # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
-alias julia="clear && 
+alias julia="clear &&
     /Applications/Julia-1.3.app/Contents/Resources/julia/bin/julia"
-
-# ghc
-if [[ -f "${extra_path}" ]]; then
-    source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"
-fi
