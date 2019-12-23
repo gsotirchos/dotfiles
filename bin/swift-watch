@@ -46,7 +46,7 @@ fswatch "Sources" | while read > /dev/null; do
     wait $task_pid &> /dev/null
     echo "Changes detected! Rebuilding..."
 
-    # wait for file writes to finish 
+    # wait for file writes to finish
     files_changed=true
     while [[ $files_changed = true ]]; do
         changed=false
