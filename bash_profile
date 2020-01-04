@@ -20,6 +20,7 @@ extra_paths=(
     "$HOME/.cargo/bin" # rust
     "$HOME/.cabal/bin"                               # haskell
     "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/bin" # haskell
+    "/Applications/Julia-1.3.app/Contents/Resources/julia/bin" # julia
 )
 
 # append to PATH
@@ -51,5 +52,3 @@ alias cp="cp -iv" # confirmatory, verbose copy
 alias ln="ln -iv" # confirmatory, verbose symlink creaton
 alias tree="tree -NC -L 2 --filelimit 15" # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
-alias julia="clear &&
-    /Applications/Julia-1.3.app/Contents/Resources/julia/bin/julia"
