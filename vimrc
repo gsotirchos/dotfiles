@@ -41,7 +41,7 @@ set undodir=~/.vim/undo/ " in ~/.vim/undo/
 set noswapfile
 set nobackup
 set nowb
-set history=20 
+set history=20
 
 " colors
 set t_Co=256
@@ -50,7 +50,7 @@ colorscheme sunyata
 " set encodings and line ending formats
 set gfs=fixedgr
 set fileencodings=ucs-bom,utf-8,cp1253,default,latin1 " tried on open
-set encoding=utf-8           " encoding displayed inside vim  
+set encoding=utf-8           " encoding displayed inside vim
 set fileformats=unix,mac,dos " format order to be tried on a new buffer
 
 " behaviour
@@ -208,7 +208,7 @@ augroup vimrc
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
     autocmd BufWinEnter,BufRead,BufWrite *.c  set cindent
-    autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax 
-    autocmd BufWinEnter,BufRead,BufWrite *.tex
-        \ set spell spelllang=en_us,el " spell check only .tex files
+    autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
+    autocmd BufWinEnter,BufRead,BufWrite *.tex,*.txt
+        \ set spell spelllang=en_us,el " spell check .tex and .txt files
 augroup END
