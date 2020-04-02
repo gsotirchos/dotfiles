@@ -53,3 +53,4 @@ alias cp="cp -iv" # confirmatory, verbose copy
 alias ln="ln -iv" # confirmatory, verbose symlink creaton
 alias tree="tree -NC -L 2 --filelimit 15" # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
+alias pkg_list=" pkgin list | sed 's/\(.*\)-[0-9].*/\1/g'"
