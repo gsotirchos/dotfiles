@@ -17,11 +17,10 @@ extra_paths=(
     "/opt/pkg/bin"
     "$HOME/.bin"
     "$HOME/.local/bin"
-    "$HOME/.cargo/bin" # rust
     "$HOME/.cabal/bin"                               # haskell
     "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/bin" # haskell
-    "/Applications/Julia-1.3.app/Contents/Resources/julia/bin" # julia
-    "/usr/local/texlive/2019/bin/x86_64-darwinlegacy" # MacTex
+    "/Applications/Julia-1.4.app/Contents/Resources/julia/bin" # julia
+    "/usr/local/texlive/2019/bin/x86_64-darwin" # MacTex
 )
 
 # append to PATH

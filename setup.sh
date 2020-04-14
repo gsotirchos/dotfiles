@@ -8,7 +8,9 @@
 DOTFILES="$( dirname $( grealpath "${BASH_SOURCE}" ) )"
 
 # prepare folders
+mkdir -vp ~/.vim/undo
 mkdir -vp ~/.config/lf
+mkdir -vp ~/.local/bin
 
 # make soft symlinks
 ln -sfv ${DOTFILES}/bin/*              ~/.bin

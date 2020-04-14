@@ -157,6 +157,7 @@ let g:SuperTabDefaultCompletionType='<c-n>' " reverse supertab order
 " commenting
 let g:NERDDefaultAlign = 'left' " flush left comment delimiters
 let g:NERDCommentEmptyLines = 1 " comment empty lines too
+let g:NERDAltDelims_swift = 1   " use // instead of /* */ in swift
 
 " Fortran
 let fortran_free_source=1
