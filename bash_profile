@@ -12,6 +12,7 @@ export PS1="\[\e[0;90m\]\W\[\e[00m\] "
 
 # extra paths
 extra_paths=(
+    "/usr/local/bin" # Homebrew
     "/opt/X11/bin"
     "/opt/pkg/sbin"
     "/opt/pkg/bin"
@@ -23,6 +24,13 @@ extra_paths=(
     "/usr/local/texlive/2019/bin/x86_64-darwin"       # MacTex
     "/usr/local/texlive/2019/bin/x86_64-darwinlegacy" # MacTex
 )
+
+# extra paths for older versions (unibody macbook)
+if [[ "$( sw_vers -productVersion )" =~ 10.11.* ]]; then
+    extra_paths+=(
+        "/usr/local/opt/curl/bin"
+    )
+fi
 
 # append to PATH
 for extra_path in "${extra_paths[@]}"; do
