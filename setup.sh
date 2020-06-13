@@ -9,6 +9,7 @@ DOTFILES="$( dirname $( grealpath "${BASH_SOURCE}" ) )"
 
 # prepare folders
 mkdir -vp ~/.vim/undo
+mkdir -vp ~/.vim/spell
 mkdir -vp ~/.config/lf
 mkdir -vp ~/.local/bin
 

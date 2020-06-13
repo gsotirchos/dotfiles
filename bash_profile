@@ -28,7 +28,7 @@ extra_paths=(
 # extra paths for older versions (unibody macbook)
 if [[ "$( sw_vers -productVersion )" =~ 10.11.* ]]; then
     extra_paths+=(
-        "/usr/local/opt/curl/bin"
+#        "/usr/local/opt/curl/bin"
     )
 fi
 
@@ -61,4 +61,4 @@ alias cp="cp -iv" # confirmatory, verbose copy
 alias ln="ln -iv" # confirmatory, verbose symlink creaton
 alias tree="tree -NC -L 2 --filelimit 15" # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
-alias pkg_list=" pkgin list | sed 's/\(.*\)-[0-9].*/\1/g'"
+alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
