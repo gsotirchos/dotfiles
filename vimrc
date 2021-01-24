@@ -27,6 +27,7 @@ Plugin 'PProvost/vim-ps1'
 Plugin 'neovimhaskell/haskell-vim'
 Plugin 'bitc/vim-hdevtools'
 Plugin 'gregjurman/vim-nc'
+Plugin 'bfrg/vim-cpp-modern'
 
 "" plugins end here
 call vundle#end() " required
@@ -64,7 +65,7 @@ set laststatus=0       " hide statusline titles
 set splitbelow         " open new horizontal windows at bottom
 set splitright         " open new vertical windows at right
 set previewheight=3    " set preview window height to 3
-set fillchars+=vert:\  " set vertical separator to ' '
+set fillchars+=fold:\  " set folding separator to ' '
 set showbreak=...      " show '...' at start of wrapped lines
 set list               " show non-text characters
 let &listchars = 'tab:| ,trail:_'
@@ -211,5 +212,5 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite *.c  set cindent
     autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
     autocmd BufWinEnter,BufRead,BufWrite *.tex,*.txt
-        \ set spell spelllang=en_us,el " spell check .tex and .txt files
+        \ set spell spelllang=en_us,el,cjk " spell check .tex and .txt
 augroup END

@@ -16,6 +16,7 @@ extra_paths=(
     "/opt/X11/bin"
     "/opt/pkg/sbin"
     "/opt/pkg/bin"
+    "/opt/pkg/gcc10/bin"
     "$HOME/.bin"
     "$HOME/.local/bin"
     "$HOME/.cabal/bin"                               # haskell
