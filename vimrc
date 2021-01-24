@@ -84,7 +84,7 @@ set formatoptions+=tawcroql " automatic line breaking
 set nojoinspaces            " don't insert 2 spaces after '.', '?' or '!'
 set display+=lastline       " show last wrapped line in window
 let colorcolumnposition=81  " position of column to mark text width
-set shell=/opt/pkg/bin/bash
+set shell=$SHELL
 let &shellcmdflag = '--login -c' " 'login shell' to source profile
 set noshellslash
 
