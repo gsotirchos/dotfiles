@@ -10,10 +10,10 @@ trash() {
         # move file to trash folder, or delete /tmp/* files
         if [[ ${arg} == "/tmp/"* ]]; then
             #echo "rm ${flags} ${arg}"
-            rm ${flags} "${arg}"
+            builtin rm ${flags} "${arg}"
         else
             #echo "mv -v ${flags} ${arg} ${TRASH}"
-            mv -v ${flags} "${arg}" "${TRASH}"
+            builtin mv -v ${flags} "${arg}" "${TRASH}"
         fi
     done
 }
