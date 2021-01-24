@@ -4,7 +4,7 @@
 extra_paths=($@)
 for extra_path in "${extra_paths[@]}"; do
     if [[ -d "${extra_path}" ]]; then
-        #echo "echo -e \"\\n - Append ${extra_path} to PATH\""
-        echo "export PATH=\"${extra_path}:${PATH//\":$extra_path\"}\""
+        export PATH="${extra_path}:${PATH//":$extra_path"}"
     fi
 done
+echo "export PATH=\"${PATH}\""
