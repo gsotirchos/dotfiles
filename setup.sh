@@ -7,7 +7,7 @@
 # dotfiles path
 DOTFILES=$(\
     builtin cd "$(\
-    dirname "$(readlink -f "${BASH_SOURCE[0]}")")"\
+    dirname "$(readlink "${BASH_SOURCE[0]}")")"\
     > /dev/null && pwd)
 
 # prepare folders
