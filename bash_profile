@@ -41,7 +41,7 @@ if [[ "$( sw_vers -productVersion )" =~ 10.11.* ]]; then
 fi
 
 # append extra paths
-eval $(~/.macos-dotfiles/bin/append_paths "${extra_paths[@]}")
+eval $(~/.dotfiles/bin/append_paths "${extra_paths[@]}")
 
 # aliases
 export TRASH="${HOME}/.Trash"
