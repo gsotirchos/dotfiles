@@ -5,7 +5,10 @@
 #
 
 # dotfiles path
-DOTFILES=$(builtin cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)
+DOTFILES=$(\
+    builtin cd "$(\
+    dirname "$(readlink -f "${BASH_SOURCE[0]}")")"\
+    > /dev/null && pwd)
 
 # prepare folders
 mkdir -vp ~/.vim/undo
@@ -14,9 +17,8 @@ mkdir -vp ~/.config/lf
 mkdir -vp ~/.local/bin
 
 # make soft symlinks
-echo "- Symlinking dotfiles"
-bin/ln_dotfiles ${DOTFILES}
-ln -sfv ${DOTFILES}/bin/*              ~/.bin
+echo "- Symlinking dotfiles (${DOTFILES})"
+bin/ln_dotfiles                        ${DOTFILES}
 ln -sfv ${DOTFILES}/LaunchAgents/com.* ~/Library/LaunchAgents
 ln -sfv ${DOTFILES}/vim/*              ~/.vim
 ln -sfv ~/.windows_dotfiles/lfrc       ~/.config/lf/lfrc
