@@ -3,9 +3,8 @@
 DOTFILES="$1"
 
 # make soft symlinks of dotfiles
-echo -e "\n- Symlinking dotfiles"
 for filename in ${DOTFILES}/*; do
     if [[ -f "${filename}" ]]; then
-        echo "ln -sfv ${filename} ~/.$(basename ${filename})"
+        ln -sfv "${filename}" "${HOME}/.$(basename ${filename})"
     fi
 done
