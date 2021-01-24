@@ -10,6 +10,13 @@ export CLICOLOR=1
 # custom prompt
 export PS1="\[\e[0;90m\]\W\[\e[00m\] "
 
+# use pkgin's bash
+export SHELL="/opt/pkg/bin/bash"
+
+# set the locale to English
+export LC_ALL="en_US.UTF-8"
+export LANG="en_US.UTF-8"
+
 # extra paths
 extra_paths=(
     "/usr/local/bin" # Homebrew
@@ -33,19 +40,8 @@ if [[ "$( sw_vers -productVersion )" =~ 10.11.* ]]; then
     )
 fi
 
-# append to PATH
-for extra_path in "${extra_paths[@]}"; do
-    if [[ -d "${extra_path}" ]]; then
-        export PATH="${extra_path}:${PATH//":$extra_path"}"
-    fi
-done
-
-# use pkgin's bash
-export SHELL="/opt/pkg/bin/bash"
-
-# set the locale to English
-export LC_ALL="en_US.UTF-8"
-export LANG="en_US.UTF-8"
+# append extra paths
+eval $(~/.macos-dotfiles/bin/append_paths "${extra_paths[@]}")
 
 # aliases
 export TRASH="${HOME}/.Trash"
