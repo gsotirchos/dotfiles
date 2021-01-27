@@ -2,13 +2,27 @@
 # ~/.bash_profile
 #
 
-#[[ -r ~/.bashrc ]] && . ~/.bashrc
+# if not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
 
-# use color on 'ls'
-export CLICOLOR=1
+# don't put duplicate lines or lines starting with space in the history.
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
 
 # custom prompt
 export PS1="\[\e[0;90m\]\W\[\e[00m\] "
+
+# use color on 'ls'
+export CLICOLOR=1
 
 # use pkgin's bash
 export SHELL="/opt/pkg/bin/bash"
@@ -33,12 +47,12 @@ extra_paths=(
     "/usr/local/texlive/2019/bin/x86_64-darwinlegacy" # MacTex
 )
 
-# extra paths for older versions (unibody macbook)
-if [[ "$( sw_vers -productVersion )" =~ 10.11.* ]]; then
-    extra_paths+=(
+## more extra paths for older versions (unibody macbook)
+#if [[ "$( sw_vers -productVersion )" =~ 10.11.* ]]; then
+#    extra_paths+=(
 #        "/usr/local/opt/curl/bin"
-    )
-fi
+#    )
+#fi
 
 # append extra paths
 eval $(~/.dotfiles/bin/append_paths "${extra_paths[@]}")
