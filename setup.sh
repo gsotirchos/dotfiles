@@ -18,9 +18,9 @@ mkdir -vp ~/.local/bin
 
 # make soft symlinks
 echo "- Symlinking dotfiles (${DOTFILES})"
-bin/ln_dotfiles                        ${DOTFILES}
-ln -sfv ${DOTFILES}/LaunchAgents/com.* ~/Library/LaunchAgents
-ln -sfv ${DOTFILES}/vim/*              ~/.vim
-ln -sfv ~/.windows_dotfiles/lfrc       ~/.config/lf/lfrc
+bin/ln_dotfiles                   ${DOTFILES}
+ln -sfv ${DOTFILES}/LaunchAgents/ ~/Library/LaunchAgents
+ln -sfv ${DOTFILES}/vim/*         ~/.vim
+ln -sfv ~/.windows_dotfiles/lfrc  ~/.config/lf/lfrc
 
 echo -e "\nDon't forget to load the .plist files!"
