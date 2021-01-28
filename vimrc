@@ -198,6 +198,8 @@ endfunction
 " Autocommands
 augroup vimrc
     autocmd!
+    autocmd BufNewFile,BufRead *
+        \ :source $HOME/.vim/after/syntax/default.vim
     autocmd CursorHold ?* nested update " autosave
     autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200
     autocmd BufWinEnter,BufRead,BufWrite *
