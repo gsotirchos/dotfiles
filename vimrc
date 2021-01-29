@@ -209,11 +209,12 @@ augroup vimrc
       \| let &colorcolumn =
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
-    autocmd BufWinEnter,BufRead,BufWrite *.c  set cindent
+    autocmd BufWinEnter,BufRead,BufWrite *.c set cindent
     autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
     autocmd BufWinEnter,BufRead,BufWrite *.tex,*.txt
-        \ set spell spelllang=en_us,el,cjk " spell check .tex and .txt
+      \  set spell spelllang=en_us,el,cjk " spell check .tex and .txt
     let textFiletypes = ['latex', 'text', '']
-    autocmd BufNewFile,BufRead * if index(textFiletypes, &ft) < 0
+    autocmd BufWinEnter,BufRead,BufWrite *
+      \  if index(textFiletypes, &ft) < 0
       \| :source $HOME/.vim/after/syntax/default.vim
 augroup END
