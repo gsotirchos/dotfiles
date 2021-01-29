@@ -198,8 +198,6 @@ endfunction
 " Autocommands
 augroup vimrc
     autocmd!
-    autocmd BufNewFile,BufRead *
-        \ :source $HOME/.vim/after/syntax/default.vim
     autocmd CursorHold ?* nested update " autosave
     autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200
     autocmd BufWinEnter,BufRead,BufWrite *
@@ -215,4 +213,7 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
     autocmd BufWinEnter,BufRead,BufWrite *.tex,*.txt
         \ set spell spelllang=en_us,el,cjk " spell check .tex and .txt
+    let textFiletypes = ['latex', 'text', '']
+    autocmd BufNewFile,BufRead * if index(textFiletypes, &ft) < 0
+      \| :source $HOME/.vim/after/syntax/default.vim
 augroup END
