@@ -1,8 +1,8 @@
-syn match Special "[(){}\[\]<>,;]"  " darker parentheses
-syn match Operator "[-+=?!$%^&*\\|~]"  " brighter operators
-syn match Operator "[/*]\@<!/[/*]\@!"  " brighter '/' operator
-syn match Operator "->\|<-\|<=\|>="  " brighter logicals
-syn match Operator "\s\+[<>]\s\+"  " brighter logicals
+syntax match myParens "[(){}\[\]<>,;]" contains=.*Comment  " parentheses
+syntax match myOperator "[-+=?!$%^&*\\|~]" contains=.*Comment  " operators
+syntax match myOperator "[/*]\@<!/[/*]\@!"  " brighter '/' operator
+syntax match myOperator "->\|<-\|<=\|>="  " brighter logicals
+syntax match myOperator "\s\+[<>]\s\+"  " brighter logicals
 
-" TODO:
-" - haskell comments
+hi def link myParens   Special
+hi def link myOperator Operator
