@@ -1,7 +1,7 @@
 " dark parentheses and punctuation
-syntax match myDots "[0-9]\@<!\.[0-9]\@!"  " darker dots
-syntax match myDots "::"  " darker dots
-syntax match myParens "[(){}\[\]<>,;]" contains=.*Comment  " parentheses
+syntax match myDots "[0-9]\@<!\.[0-9]\@!" contains=.*Operator.*
+syntax match myDots "::" contains=.*Operator.*
+syntax match myParens "[(){}\[\]<>,;]" contains=.*Comment
 
 " bright operators and logicals
 syntax match myOperator "[-+=?!$%^&*\\|~]" contains=.*Comment
