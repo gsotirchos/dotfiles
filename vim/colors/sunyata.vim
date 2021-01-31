@@ -67,12 +67,12 @@ exe "hi! Normal        cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE    
 exe "hi! Comment       cterm=NONE       ctermfg=8     ctermbg=NONE  gui=NONE       guifg=".color_8"   guibg=".color_bg
 exe "hi! Type          cterm=NONE       ctermfg=4     ctermbg=NONE  gui=NONE       guifg=".color_4"   guibg=".color_bg
 exe "hi! PreProc       cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
-exe "hi! Special       cterm=NONE       ctermfg=8     ctermbg=NONE  gui=NONE       guifg=".color_8"   guibg=".color_bg
-exe "hi! Constant      cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
+exe "hi! Special       cterm=NONE       ctermfg=13    ctermbg=NONE  gui=NONE       guifg=".color_13"  guibg=".color_bg
+exe "hi! Constant      cterm=NONE       ctermfg=10    ctermbg=NONE  gui=NONE       guifg=".color_10"  guibg=".color_bg
 exe "hi! Statement     cterm=NONE       ctermfg=6     ctermbg=NONE  gui=NONE       guifg=".color_6"   guibg=".color_bg
 exe "hi! Identifier    cterm=NONE       ctermfg=2     ctermbg=NONE  gui=NONE       guifg=".color_2"   guibg=".color_bg
 exe "hi! MatchParen    cterm=NONE       ctermfg=0     ctermbg=3     gui=NONE       guifg=".color_0"   guibg=".color_3
-exe "hi! Directory     cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
+exe "hi! Directory     cterm=NONE       ctermfg=12    ctermbg=NONE  gui=NONE       guifg=".color_12"  guibg=".color_bg
 exe "hi! NonText       cterm=NONE       ctermfg=15    ctermbg=NONE  gui=NONE       guifg=".color_15"  guibg=".color_bg
 exe "hi! Operator      cterm=NONE       ctermfg=5     ctermbg=NONE  gui=NONE       guifg=".color_5"   guibg=".color_bg
 
