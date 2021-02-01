@@ -8,6 +8,6 @@ syntax match myOperator "[<>]*[-=]\+[<>]*" contains=.*Comment.*
 syntax match myOperator "[/*]\@<!/[/*]\@!"  " '/' operator
 syntax match myOperator "\s[<>]\+\s"
 
-hi def link myParens   Special
-hi def link myMemberOperator     Special
-hi def link myOperator Operator
+hi def link myParens         Comment
+hi def link myMemberOperator Comment
+hi def link myOperator       Operator
