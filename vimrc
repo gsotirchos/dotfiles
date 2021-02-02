@@ -80,7 +80,7 @@ set expandtab               " replace tabs with spaces
 set backspace=2             " allow backspace in insert mode
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr                " wrap lines by word
-set formatoptions+=tawcroql " automatic line breaking
+set formatoptions=ro        " no automatic line breaking
 set nojoinspaces            " don't insert 2 spaces after '.', '?' or '!'
 set display+=lastline       " show last wrapped line in window
 let colorcolumnposition=81  " position of column to mark text width
