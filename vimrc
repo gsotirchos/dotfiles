@@ -212,9 +212,9 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
     autocmd BufWinEnter,BufRead,BufWrite *.c set cindent
     autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
-    autocmd BufWinEnter,BufRead,BufWrite *.tex,*.txt
+    autocmd FileType tex,latex,text
       \  set spell spelllang=en_us,el,cjk " spell check .tex and .txt
-    let textFiletypes = ['latex', 'text', '']
+    let textFiletypes = ['tex', 'latex', 'text', '']
     autocmd BufWinEnter,BufRead,BufWrite *
       \  if index(textFiletypes, &ft) < 0
       \| :source $HOME/.vim/after/syntax/default.vim
