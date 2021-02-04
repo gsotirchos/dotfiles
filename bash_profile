@@ -31,6 +31,10 @@ export SHELL="/opt/pkg/bin/bash"
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 
+# gtest environment
+export CPLUS_INCLUDE_PATH="/usr/local/include"
+export LIBRARY_PATH="/usr/local/lib"
+
 # extra paths
 extra_paths=(
     "/usr/local/bin" # Homebrew
