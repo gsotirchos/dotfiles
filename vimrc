@@ -214,7 +214,7 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
     autocmd FileType tex,latex,text
       \  set spell spelllang=en_us,el,cjk " spell check .tex and .txt
-    let textFiletypes = ['tex', 'latex', 'text', '']
+    let textFiletypes = ['tex', 'latex', 'text', 'sh', '']
     autocmd BufWinEnter,BufRead,BufWrite *
       \  if index(textFiletypes, &ft) < 0
       \| :source $HOME/.vim/after/syntax/default.vim
