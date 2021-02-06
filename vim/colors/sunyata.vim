@@ -109,9 +109,9 @@ exe "hi! TabLine       cterm=NONE       ctermfg=8     ctermbg=NONE  gui=NONE    
 exe "hi! WildMenu      cterm=NONE       ctermfg=0     ctermbg=3     gui=NONE       guifg=".color_0"   guibg=".color_3
 exe "hi! Title         cterm=NONE       ctermfg=6     ctermbg=NONE  gui=NONE       guifg=".color_6"   guibg=".color_bg
 exe "hi! ModeMsg       cterm=NONE       ctermfg=6     ctermbg=NONE  gui=NONE       guifg=".color_6"   guibg=".color_bg
-exe "hi! Pmenu         cterm=NONE       ctermfg=NONE  ctermbg=8     gui=NONE       guifg=".color_fg"  guibg=".color_8
-exe "hi! PmenuSel      cterm=NONE       ctermfg=8     ctermbg=6     gui=NONE       guifg=".color_8"   guibg=".color_6
-exe "hi! PmenuThumb    cterm=reverse    ctermfg=NONE  ctermbg=NONE  gui=reverse    guifg=".color_fg"  guibg=".color_bg
+exe "hi! Pmenu         cterm=NONE       ctermfg=15    ctermbg=8     gui=NONE       guifg=".color_15"  guibg=".color_8
+exe "hi! PmenuSel      cterm=NONE       ctermfg=15    ctermbg=7     gui=NONE       guifg=".color_15"  guibg=".color_7
+exe "hi! PmenuThumb    cterm=reverse    ctermfg=15    ctermbg=NONE  gui=reverse    guifg=".color_15"  guibg=".color_bg
 exe "hi! link          PmenuSbar        Pmenu"
 exe "hi! link          SpecialKey       NonText"
 exe "hi! link          MoreMsg          ModeMsg"

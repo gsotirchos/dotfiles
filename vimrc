@@ -96,25 +96,25 @@ set foldnestmax=99 " depth of last folding
 set foldcolumn=0
 
 " fix movement in wrapped lines
-noremap  <buffer> <silent> <Up>    gk
-inoremap <buffer> <silent> <Up>    <C-o>gk
-noremap  <buffer> <silent> <Down>  gj
-inoremap <buffer> <silent> <Down>  <C-o>gj
-noremap  <buffer> <silent> j       gj
-noremap  <buffer> <silent> k       gk
-noremap  <buffer> <silent> <Home>  g<home>
-inoremap <buffer> <silent> <Home>  <C-o>g<home>
-noremap  <buffer> <silent> <End>   g<End>
-inoremap <buffer> <silent> <End>   <C-o>g<End>
-noremap  <buffer> <silent> 0       g0
-noremap  <buffer> <silent> ^       g^
-noremap  <buffer> <silent> $       g$
-noremap  <buffer> <silent> <Space> za
+noremap  <silent> <Up>    gk
+inoremap <silent> <Up>    <C-o>gk
+noremap  <silent> <Down>  gj
+inoremap <silent> <Down>  <C-o>gj
+noremap  <silent> j       gj
+noremap  <silent> k       gk
+noremap  <silent> <Home>  g<home>
+inoremap <silent> <Home>  <C-o>g<home>
+noremap  <silent> <End>   g<End>
+inoremap <silent> <End>   <C-o>g<End>
+noremap  <silent> 0       g0
+noremap  <silent> ^       g^
+noremap  <silent> $       g$
+noremap  <silent> <Space> za
 
 " execute last command with C-@
-noremap  <buffer> <silent> <C-@>   :@:<CR>
-inoremap <buffer> <silent> <C-@>   <Esc>:@:<CR>
-cnoremap <buffer> <silent> <C-@>   <C-e><C-u>@:<CR>
+noremap  <silent> <C-@>   :@:<CR>
+inoremap <silent> <C-@>   <Esc>:@:<CR>
+cnoremap <silent> <C-@>   <C-e><C-u>@:<CR>
 
 " show highlight group under cursor
 map <F10> :echo
@@ -152,8 +152,18 @@ cnoremap <D-v> <C-r>+
 vnoremap <D-c> "+y
 
 " other mappings
+let mapleader = ";"
 nnoremap o o<Esc>
 let g:SuperTabDefaultCompletionType='<c-n>' " reverse supertab order
+
+function! LocListToggle()
+    if get(getloclist(0, {'winid':0}), 'winid', 0)
+        lclose
+    else
+        lopen
+    endif
+endfunction
+nnoremap <silent> <leader>l :call LocListToggle()<CR>
 
 " commenting
 let g:NERDDefaultAlign = 'left' " flush left comment delimiters
@@ -177,9 +187,10 @@ let g:vimtex_compiler_latexmk={'callback' : 0}
 let g:tex_comment_nospell=1
 
 " ALE
-let g:ale_cursor_detail=1 " show errors in preview window
-let g:ale_echo_cursor=0   " don't show errors in status line
-let g:ale_echo_msg_format='%s [%linter%]'
+"let g:ale_cursor_detail=1 " show errors in preview window
+"let g:ale_echo_cursor=0   " don't show errors in status line
+let g:ale_list_window_size=6
+let g:ale_echo_msg_format='%severity%: %s'
 let g:ale_sign_column_always=1
 let g:ale_sign_error='x'
 let g:ale_sign_warning ='!'
@@ -217,5 +228,6 @@ augroup vimrc
     let textFiletypes = ['tex', 'latex', 'text', 'sh', '']
     autocmd BufWinEnter,BufRead,BufWrite *
       \  if index(textFiletypes, &ft) < 0
-      \| :source $HOME/.vim/after/syntax/default.vim
+      \  | :source $HOME/.vim/after/syntax/default.vim
+    autocmd QuitPre * if empty(&buftype) | lclose | endif
 augroup END
