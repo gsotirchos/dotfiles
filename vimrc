@@ -96,20 +96,20 @@ set foldnestmax=99 " depth of last folding
 set foldcolumn=0
 
 " fix movement in wrapped lines
-noremap  <silent> <Up>    gk
-inoremap <silent> <Up>    <C-o>gk
-noremap  <silent> <Down>  gj
-inoremap <silent> <Down>  <C-o>gj
-noremap  <silent> j       gj
-noremap  <silent> k       gk
-noremap  <silent> <Home>  g<home>
-inoremap <silent> <Home>  <C-o>g<home>
-noremap  <silent> <End>   g<End>
-inoremap <silent> <End>   <C-o>g<End>
-noremap  <silent> 0       g0
-noremap  <silent> ^       g^
-noremap  <silent> $       g$
-noremap  <silent> <Space> za
+noremap  <buffer> <silent> <Up>    gk
+inoremap <buffer> <silent> <Up>    <C-o>gk
+noremap  <buffer> <silent> <Down>  gj
+inoremap <buffer> <silent> <Down>  <C-o>gj
+noremap  <buffer> <silent> j       gj
+noremap  <buffer> <silent> k       gk
+noremap  <buffer> <silent> <Home>  g<home>
+inoremap <buffer> <silent> <Home>  <C-o>g<home>
+noremap  <buffer> <silent> <End>   g<End>
+inoremap <buffer> <silent> <End>   <C-o>g<End>
+noremap  <buffer> <silent> 0       g0
+noremap  <buffer> <silent> ^       g^
+noremap  <buffer> <silent> $       g$
+noremap  <buffer> <silent> <Space> za
 
 " execute last command with C-@
 noremap  <silent> <C-@>   :@:<CR>
