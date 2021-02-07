@@ -7,7 +7,8 @@ syntax match myOperator "[-+=?!$%^&*\\|~]" contains=.*Comment.*
 syntax match myOperator "[<>]*[-=]\+[<>]*" contains=.*Comment.*
 syntax match myOperator "[/*]\@<!/[/*]\@!"  " '/' operator
 syntax match myOperator "\s[<>]\+\s"
-syntax region Mark start='%' end='%' containedin=.*Comment.* contained oneline
+syntax region Mark start="\(\".*\)\@<!%\@<=" end="%\@="
+    \ containedin=.*Comment.* contained oneline
 
 hi link myParens         MembOperator
 hi link myMemberOperator MembOperator
