@@ -7,7 +7,9 @@ syntax match myOperator "[-+=?!$%^&*\\|~]" contains=.*Comment.*
 syntax match myOperator "[<>]*[-=]\+[<>]*" contains=.*Comment.*
 syntax match myOperator "[/*]\@<!/[/*]\@!"  " '/' operator
 syntax match myOperator "\s[<>]\+\s"
+syntax region Mark start='%' end='%' containedin=.*Comment.* contained
 
-hi def link myParens         Comment
-hi def link myMemberOperator Comment
-hi def link myOperator       Operator
+hi link myParens         Comment
+hi link myMemberOperator Comment
+hi link myOperator       Operator
+hi link Mark             NonText
