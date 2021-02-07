@@ -91,7 +91,7 @@ set noshellslash
 " allow folding
 set foldenable
 set foldmethod=indent
-set foldlevel=0    " depth of first folding
+set foldlevel=99    " depth of first folding
 set foldnestmax=99 " depth of last folding
 set foldcolumn=0
 
@@ -209,10 +209,18 @@ endfunction
 " Autocommands
 augroup vimrc
     autocmd!
-    autocmd CursorHold ?* nested update " autosave
+
+    " autosave named files
+    autocmd CursorHold ?* nested update
+
+    " limit amount of syntax lines
     autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200
+
+    " enable sign column when appropriate
     autocmd BufWinEnter,BufRead,BufWrite *
       \  call SetSignColumn(@%, &modifiable)
+
+    " set color column to 80th character
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
       \  let &numberwidth = float2nr(log10(line('$'))) + 2
       \| let &textwidth   =
@@ -220,6 +228,8 @@ augroup vimrc
       \    &columns - 2 - &numberwidth*&number - b:gutterwidth
       \| let &colorcolumn =
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
+
+    " custom syntax rules
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
     autocmd BufWinEnter,BufRead,BufWrite *.c set cindent
     autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
@@ -229,5 +239,11 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite *
       \  if index(textFiletypes, &ft) < 0
       \  | :source $HOME/.vim/after/syntax/default.vim
+
+    " close loclists with buffer
     autocmd QuitPre * if empty(&buftype) | lclose | endif
+
+    " remember folds
+    au BufWinLeave * mkview
+    au BufWinEnter * silent loadview
 augroup END
