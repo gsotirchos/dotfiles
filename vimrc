@@ -244,6 +244,6 @@ augroup vimrc
     autocmd QuitPre * if empty(&buftype) | lclose | endif
 
     " remember folds
-    au BufWinLeave * mkview
-    au BufWinEnter * silent loadview
+    au BufWinLeave * silent! mkview
+    au BufWinEnter * silent! loadview
 augroup END
