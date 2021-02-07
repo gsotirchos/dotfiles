@@ -61,7 +61,7 @@ set regexpengine=1     " use old regex engine
 set showcmd            " show typed command
 set number             " show line numbers
 set showmatch          " show matching parentheses
-set laststatus=0       " hide statusline titles
+set laststatus=1       " hide statusline titles
 set splitbelow         " open new horizontal windows at bottom
 set splitright         " open new vertical windows at right
 set previewheight=3    " set preview window height to 3

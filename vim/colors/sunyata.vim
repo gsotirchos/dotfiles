@@ -92,8 +92,6 @@ exe "hi! link          IncSearch        Search"
 exe "hi! SignColumn    cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
 exe "hi! Ignore        cterm=NONE       ctermfg=5     ctermbg=NONE  gui=NONE       guifg=".color_5"   guibg=".color_bg
 exe "hi! Visual        cterm=reverse    ctermfg=NONE  ctermbg=NONE  gui=reverse    guifg=".color_fg"  guibg=".color_bg
-exe "hi! StatusLine    cterm=NONE       ctermfg=0     ctermbg=8     gui=NONE       guifg=".color_0"   guibg=".color_8
-exe "hi! StatusLineNC  cterm=NONE       ctermfg=8     ctermbg=8     gui=NONE       guifg=".color_8"   guibg=".color_8
 exe "hi! LineNr        cterm=NONE       ctermfg=8     ctermbg=NONE  gui=NONE       guifg=".color_8"   guibg=".color_bg
 exe "hi! CursorLineNr  cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
 exe "hi! EndOfBuffer   cterm=NONE       ctermfg=0     ctermbg=NONE  gui=NONE       guifg=".color_0"   guibg=".color_bg
@@ -114,6 +112,8 @@ exe "hi! Pmenu         cterm=NONE       ctermfg=15    ctermbg=8     gui=NONE    
 exe "hi! PmenuSel      cterm=NONE       ctermfg=15    ctermbg=7     gui=NONE       guifg=".color_15"  guibg=".color_7
 exe "hi! PmenuThumb    cterm=reverse    ctermfg=15    ctermbg=NONE  gui=reverse    guifg=".color_15"  guibg=".color_bg
 exe "hi! link          PmenuSbar        Pmenu"
+exe "hi! link          StatusLine       NonText"
+exe "hi! link          StatusLineNC     Comment"
 exe "hi! link          SpecialKey       NonText"
 exe "hi! link          MoreMsg          ModeMsg"
 exe "hi! link          cIncluded        Statement"
