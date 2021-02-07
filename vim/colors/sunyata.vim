@@ -78,9 +78,9 @@ exe "hi! Operator      cterm=bold       ctermfg=5     ctermbg=NONE  gui=NONE    
 exe "hi! MembOperator  cterm=bold       ctermfg=8     ctermbg=NONE  gui=bold       guifg=".color_8"   guibg=".color_bg
 
 exe "hi! Search        cterm=NONE       ctermfg=0     ctermbg=3     gui=NONE       guifg=".color_0"   guibg=".color_3
-exe "hi! Error         cterm=NONE       ctermfg=1     ctermbg=NONE  gui=NONE       guifg=".color_1"   guibg=".color_bg
+exe "hi! Error         cterm=bold       ctermfg=1     ctermbg=NONE  gui=bold       guifg=".color_1"   guibg=".color_bg
 exe "hi! ErrorMsg      cterm=NONE       ctermfg=1     ctermbg=NONE  gui=NONE       guifg=".color_1"   guibg=".color_bg
-exe "hi! Todo          cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
+exe "hi! Todo          cterm=bold       ctermfg=3     ctermbg=NONE  gui=bold       guifg=".color_3"   guibg=".color_bg
 exe "hi! WarningMsg    cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
 exe "hi! underlined    cterm=underline  ctermfg=NONE  ctermbg=NONE  gui=underline  guifg=".color_fg"  guibg=".color_bg
 exe "hi! SpellBad      cterm=underline  ctermfg=1     ctermbg=NONE  gui=underline  guifg=".color_1"   guibg=".color_bg
