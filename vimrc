@@ -216,11 +216,12 @@ augroup vimrc
     " limit amount of syntax lines
     autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200
 
-    " enable sign column when appropriate
+    " enable sign column (when appropriate) and set status-line
     autocmd BufWinEnter,BufRead,BufWrite *
       \  call SetSignColumn(@%, &modifiable)
+      \| let &statusline = '%h%w%F%m%a%=%l, %c'
 
-    " set color column to 80th character
+    " set color column to 81th character
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
       \  let &numberwidth = float2nr(log10(line('$'))) + 2
       \| let &textwidth   =
@@ -231,14 +232,14 @@ augroup vimrc
 
     " custom syntax rules
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
+    let textFiletypes = ['qf', 'help', 'tex', 'latex', 'text', 'sh', '']
+    autocmd BufWinEnter,BufRead,BufWrite *
+      \  if index(textFiletypes, &ft) < 0
+      \  | :source $HOME/.vim/after/syntax/default.vim  " generic syntax
     autocmd BufWinEnter,BufRead,BufWrite *.c set cindent
     autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
     autocmd FileType tex,latex,text
       \  set spell spelllang=en_us,el,cjk " spell check .tex and .txt
-    let textFiletypes = ['tex', 'latex', 'text', 'sh', '']
-    autocmd BufWinEnter,BufRead,BufWrite *
-      \  if index(textFiletypes, &ft) < 0
-      \  | :source $HOME/.vim/after/syntax/default.vim
 
     " close loclists with buffer
     autocmd QuitPre * if empty(&buftype) | lclose | endif
