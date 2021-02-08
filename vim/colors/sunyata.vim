@@ -66,27 +66,27 @@ let color_bg=color_0
 exe "hi! Normal        cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
 exe "hi! Comment       cterm=NONE       ctermfg=8     ctermbg=NONE  gui=NONE       guifg=".color_8"   guibg=".color_bg
 exe "hi! Type          cterm=bold       ctermfg=4     ctermbg=NONE  gui=bold       guifg=".color_4"   guibg=".color_bg
-exe "hi! PreProc       cterm=NONE       ctermfg=2     ctermbg=NONE  gui=NONE       guifg=".color_2"   guibg=".color_bg
-exe "hi! Special       cterm=NONE       ctermfg=13    ctermbg=NONE  gui=NONE       guifg=".color_13"  guibg=".color_bg
-exe "hi! Constant      cterm=NONE       ctermfg=2     ctermbg=NONE  gui=NONE       guifg=".color_2"  guibg=".color_bg
+exe "hi! PreProc       cterm=NONE       ctermfg=14    ctermbg=NONE  gui=NONE       guifg=".color_14"  guibg=".color_bg
+exe "hi! Special       cterm=NONE       ctermfg=10    ctermbg=NONE  gui=NONE       guifg=".color_10"  guibg=".color_bg
+exe "hi! Constant      cterm=NONE       ctermfg=2     ctermbg=NONE  gui=NONE       guifg=".color_2"   guibg=".color_bg
 exe "hi! Statement     cterm=bold       ctermfg=6     ctermbg=NONE  gui=bold       guifg=".color_6"   guibg=".color_bg
 exe "hi! Identifier    cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
-exe "hi! MatchParen    cterm=NONE       ctermfg=0     ctermbg=3     gui=NONE       guifg=".color_0"   guibg=".color_3
 exe "hi! Directory     cterm=NONE       ctermfg=10    ctermbg=NONE  gui=NONE       guifg=".color_10"  guibg=".color_bg
 exe "hi! NonText       cterm=bold       ctermfg=15    ctermbg=NONE  gui=bold       guifg=".color_15"  guibg=".color_bg
 exe "hi! Operator      cterm=bold       ctermfg=5     ctermbg=NONE  gui=NONE       guifg=".color_5"   guibg=".color_bg
 exe "hi! MembOperator  cterm=bold       ctermfg=8     ctermbg=NONE  gui=bold       guifg=".color_8"   guibg=".color_bg
 
 exe "hi! Search        cterm=NONE       ctermfg=0     ctermbg=3     gui=NONE       guifg=".color_0"   guibg=".color_3
+exe "hi! MatchParen    cterm=NONE       ctermfg=0     ctermbg=3     gui=NONE       guifg=".color_0"   guibg=".color_3
 exe "hi! Error         cterm=bold       ctermfg=1     ctermbg=NONE  gui=bold       guifg=".color_1"   guibg=".color_bg
 exe "hi! ErrorMsg      cterm=NONE       ctermfg=1     ctermbg=NONE  gui=NONE       guifg=".color_1"   guibg=".color_bg
 exe "hi! Todo          cterm=bold       ctermfg=3     ctermbg=NONE  gui=bold       guifg=".color_3"   guibg=".color_bg
 exe "hi! WarningMsg    cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
-exe "hi! underlined    cterm=underline  ctermfg=NONE  ctermbg=NONE  gui=underline  guifg=".color_fg"  guibg=".color_bg
 exe "hi! SpellBad      cterm=underline  ctermfg=1     ctermbg=NONE  gui=underline  guifg=".color_1"   guibg=".color_bg
 exe "hi! SpellCap      cterm=underline  ctermfg=3     ctermbg=NONE  gui=underline  guifg=".color_3"   guibg=".color_bg
 exe "hi! SpellLocal    cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
 exe "hi! SpellRare     cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
+exe "hi! underlined    cterm=underline  ctermfg=NONE  ctermbg=NONE  gui=underline  guifg=".color_fg"  guibg=".color_bg
 exe "hi! link          IncSearch        Search"
 
 exe "hi! SignColumn    cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
@@ -116,4 +116,3 @@ exe "hi! link          StatusLine       NonText"
 exe "hi! link          StatusLineNC     Comment"
 exe "hi! link          SpecialKey       NonText"
 exe "hi! link          MoreMsg          ModeMsg"
-exe "hi! link          cIncluded        Statement"
