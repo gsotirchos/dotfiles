@@ -1,3 +1,4 @@
-"syn match swiftOptional /[?|!]/ contains=NONE
-"hi! link swiftOptional Identifier
+syntax match swiftMark "\(MARK:\s\)\@<=.*" containedin=.*Comment.* contained
+
+hi! link swiftMark NonText
 hi! link swiftOperator Operator
