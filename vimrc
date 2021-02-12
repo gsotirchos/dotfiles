@@ -230,21 +230,27 @@ augroup vimrc
       \| let &colorcolumn =
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
 
-    " custom syntax rules
+    " convert everything to utf-8
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
+
+    " load generic syntax file for non-text files
     let textFiletypes = ['qf', 'help', 'tex', 'latex', 'text', 'sh', '']
     autocmd BufWinEnter,BufRead,BufWrite *
       \  if index(textFiletypes, &ft) < 0
-      \  | :source $HOME/.vim/after/syntax/default.vim  " generic syntax
+      \  | :source $HOME/.vim/after/syntax/default.vim
+
+    " custom syntax rules
     autocmd BufWinEnter,BufRead,BufWrite *.c set cindent
     autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
+
+    " spell check only text files
     autocmd FileType tex,latex,text
-      \  set spell spelllang=en_us,el,cjk " spell check .tex and .txt
+      \  set spell spelllang=en_us,el,cjk
 
     " close loclists with buffer
     autocmd QuitPre * if empty(&buftype) | lclose | endif
 
-    " remember folds
+    " remember state
     au BufWinLeave * silent! mkview
     au BufWinEnter * silent! loadview
 augroup END
