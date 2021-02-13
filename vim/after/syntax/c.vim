@@ -5,4 +5,5 @@ syntax region Mark start="\(\".*\)\@<!%\@<=" end="%\@="
     \ containedin=.*Comment.* contained oneline
 
 hi! link cMemberAccess myMemberOperator
+hi! link cCustomScope myMemberOperator
 hi! link cFormat Type
