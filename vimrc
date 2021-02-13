@@ -27,7 +27,8 @@ Plugin 'PProvost/vim-ps1'
 Plugin 'neovimhaskell/haskell-vim'
 Plugin 'bitc/vim-hdevtools'
 Plugin 'gregjurman/vim-nc'
-Plugin 'bfrg/vim-cpp-modern'
+"Plugin 'bfrg/vim-cpp-modern'
+Plugin 'octol/vim-cpp-enhanced-highlight'
 
 "" plugins end here
 call vundle#end() " required
@@ -251,6 +252,6 @@ augroup vimrc
     autocmd QuitPre * if empty(&buftype) | lclose | endif
 
     " remember state
-    au BufWinLeave * silent! mkview
-    au BufWinEnter * silent! loadview
+    au BufWinLeave,BufWrite * silent! mkview
+    au BufWinEnter,BufRead * silent! loadview
 augroup END
