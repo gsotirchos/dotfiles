@@ -63,56 +63,93 @@ let color_bg=color_0
 " Cursor         xxx guifg=bg guibg=fg
 
 
-exe "hi! Normal        cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
-exe "hi! Comment       cterm=NONE       ctermfg=8     ctermbg=NONE  gui=NONE       guifg=".color_8"   guibg=".color_bg
-exe "hi! Type          cterm=bold       ctermfg=4     ctermbg=NONE  gui=bold       guifg=".color_4"   guibg=".color_bg
-exe "hi! PreProc       cterm=NONE       ctermfg=9     ctermbg=NONE  gui=NONE       guifg=".color_9"   guibg=".color_bg
-exe "hi! Special       cterm=NONE       ctermfg=10    ctermbg=NONE  gui=NONE       guifg=".color_10"  guibg=".color_bg
-exe "hi! Constant      cterm=NONE       ctermfg=2     ctermbg=NONE  gui=NONE       guifg=".color_2"   guibg=".color_bg
-exe "hi! Statement     cterm=bold       ctermfg=5     ctermbg=NONE  gui=bold       guifg=".color_5"   guibg=".color_bg
-exe "hi! Identifier    cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
-exe "hi! Directory     cterm=NONE       ctermfg=10    ctermbg=NONE  gui=NONE       guifg=".color_10"  guibg=".color_bg
-exe "hi! NonText       cterm=bold       ctermfg=15    ctermbg=NONE  gui=bold       guifg=".color_15"  guibg=".color_bg
-exe "hi! Operator      cterm=bold       ctermfg=13    ctermbg=NONE  gui=NONE       guifg=".color_13"  guibg=".color_bg
-exe "hi! MembOperator  cterm=bold       ctermfg=8     ctermbg=NONE  gui=bold       guifg=".color_8"   guibg=".color_bg
+exe "hi! Normal         cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
 
-exe "hi! Search        cterm=NONE       ctermfg=0     ctermbg=3     gui=NONE       guifg=".color_0"   guibg=".color_3
-exe "hi! MatchParen    cterm=NONE       ctermfg=0     ctermbg=3     gui=NONE       guifg=".color_0"   guibg=".color_3
-exe "hi! Error         cterm=bold       ctermfg=1     ctermbg=NONE  gui=bold       guifg=".color_1"   guibg=".color_bg
-exe "hi! ErrorMsg      cterm=NONE       ctermfg=1     ctermbg=NONE  gui=NONE       guifg=".color_1"   guibg=".color_bg
-exe "hi! Todo          cterm=bold       ctermfg=3     ctermbg=NONE  gui=bold       guifg=".color_3"   guibg=".color_bg
-exe "hi! WarningMsg    cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
-exe "hi! SpellBad      cterm=underline  ctermfg=1     ctermbg=NONE  gui=underline  guifg=".color_1"   guibg=".color_bg
-exe "hi! SpellCap      cterm=underline  ctermfg=3     ctermbg=NONE  gui=underline  guifg=".color_3"   guibg=".color_bg
-exe "hi! SpellLocal    cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
-exe "hi! SpellRare     cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
-exe "hi! underlined    cterm=underline  ctermfg=NONE  ctermbg=NONE  gui=underline  guifg=".color_fg"  guibg=".color_bg
-exe "hi! link          IncSearch        Search"
+" comments
+exe "hi! Comment        cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
 
-exe "hi! SignColumn    cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
-exe "hi! Ignore        cterm=NONE       ctermfg=5     ctermbg=NONE  gui=NONE       guifg=".color_5"   guibg=".color_bg
-exe "hi! Visual        cterm=reverse    ctermfg=NONE  ctermbg=NONE  gui=reverse    guifg=".color_fg"  guibg=".color_bg
-exe "hi! LineNr        cterm=NONE       ctermfg=8     ctermbg=NONE  gui=NONE       guifg=".color_8"   guibg=".color_bg
-exe "hi! CursorLineNr  cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
-exe "hi! EndOfBuffer   cterm=NONE       ctermfg=0     ctermbg=NONE  gui=NONE       guifg=".color_0"   guibg=".color_bg
-exe "hi! Folded        cterm=NONE       ctermfg=NONE  ctermbg=8     gui=NONE       guifg=".color_fg"  guibg=".color_8
-exe "hi! VertSplit     cterm=NONE       ctermfg=0     ctermbg=NONE  gui=NONE       guifg=".color_bg"  guibg=".color_bg
-exe "hi! ColorColumn   cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
-exe "hi! link          FoldColumn       EndOfBuffer"
-exe "hi! link          Conceal          Folded"
+" constants
+exe "hi! Constant       cterm=NONE      ctermfg=9    ctermbg=NONE gui=NONE      guifg=".color_9"  guibg=".color_bg
+exe "hi! link String Constant"
+exe "hi! Character      cterm=NONE      ctermfg=11   ctermbg=NONE gui=NONE      guifg=".color_11" guibg=".color_bg
+exe "hi! link Number Character"
+exe "hi! link Boolean Statement"
+exe "hi! link Float Number"
 
-exe "hi! Question      cterm=NONE       ctermfg=3     ctermbg=NONE  gui=NONE       guifg=".color_3"   guibg=".color_bg
-exe "hi! TabLineFill   cterm=NONE       ctermfg=NONE  ctermbg=NONE  gui=NONE       guifg=".color_fg"  guibg=".color_bg
-exe "hi! TabLineSel    cterm=NONE       ctermfg=0     ctermbg=8     gui=NONE       guifg=".color_0"   guibg=".color_8
-exe "hi! TabLine       cterm=NONE       ctermfg=8     ctermbg=NONE  gui=NONE       guifg=".color_8"   guibg=".color_bg
-exe "hi! WildMenu      cterm=NONE       ctermfg=0     ctermbg=3     gui=NONE       guifg=".color_0"   guibg=".color_3
-exe "hi! Title         cterm=NONE       ctermfg=6     ctermbg=NONE  gui=NONE       guifg=".color_6"   guibg=".color_bg
-exe "hi! ModeMsg       cterm=NONE       ctermfg=6     ctermbg=NONE  gui=NONE       guifg=".color_6"   guibg=".color_bg
-exe "hi! Pmenu         cterm=NONE       ctermfg=15    ctermbg=8     gui=NONE       guifg=".color_15"  guibg=".color_8
-exe "hi! PmenuSel      cterm=NONE       ctermfg=15    ctermbg=7     gui=NONE       guifg=".color_15"  guibg=".color_7
-exe "hi! PmenuThumb    cterm=reverse    ctermfg=15    ctermbg=NONE  gui=reverse    guifg=".color_15"  guibg=".color_bg
-exe "hi! link          PmenuSbar        Pmenu"
-exe "hi! link          StatusLine       NonText"
-exe "hi! link          StatusLineNC     Comment"
-exe "hi! link          SpecialKey       NonText"
-exe "hi! link          MoreMsg          ModeMsg"
+" variable names
+exe "hi! Identifier     cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=".color_6"  guibg=".color_bg
+exe "hi! link Function Identifier"
+
+" statements
+exe "hi! Statement      cterm=bold      ctermfg=5    ctermbg=NONE gui=bold      guifg=".color_5"  guibg=".color_bg
+exe "hi! link Conditional Statement"
+exe "hi! link Repeat Statement"
+exe "hi! link Label Statement"
+exe "hi! Operator       cterm=bold      ctermfg=13   ctermbg=NONE gui=NONE      guifg=".color_13" guibg=".color_bg
+exe "hi! link Keyword Statement"
+exe "hi! link Exception Statement"
+
+" generic Preprocessor
+exe "hi! PreProc        cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
+exe "hi! link Include PreProc"
+exe "hi! link Define PreProc"
+exe "hi! link Macro PreProc"
+exe "hi! link PreCondit PreProc"
+
+" types
+exe "hi! link Type Statement"
+exe "hi! link StorageClass Type"
+exe "hi! link Structure Type"
+exe "hi! link Typedef Type"
+
+" special symbols
+exe "hi! Special        cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
+exe "hi! link SpecialChar Special"
+exe "hi! link Tag Special"
+exe "hi! link Delimiter Special"
+exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      guifg=".color_15" guibg=".color_bg
+
+" my custom groups
+exe "hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=NONE gui=bold      guifg=".color_8"  guibg=".color_bg
+
+exe "hi! Search         cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
+exe "hi! link IncSearch Search"
+exe "hi! MatchParen     cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
+exe "hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE gui=bold      guifg=".color_1"  guibg=".color_bg
+exe "hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE gui=NONE      guifg=".color_1"  guibg=".color_bg
+exe "hi! Todo           cterm=bold      ctermfg=3    ctermbg=NONE gui=bold      guifg=".color_3"  guibg=".color_bg
+exe "hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
+exe "hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE gui=underline guifg=".color_1"  guibg=".color_bg
+exe "hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE gui=underline guifg=".color_3"  guibg=".color_bg
+exe "hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
+exe "hi! SpellRare      cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
+exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_4"  guibg=".color_bg
+exe "hi! Ignore         cterm=NONE      ctermfg=5    ctermbg=NONE gui=NONE      guifg=".color_5"  guibg=".color_bg
+exe "hi! Directory      cterm=NONE      ctermfg=2    ctermbg=NONE gui=NONE      guifg=".color_2"  guibg=".color_bg
+
+exe "hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
+exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   guifg=".color_fg" guibg=".color_bg
+exe "hi! LineNr         cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
+exe "hi! CursorLineNr   cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
+exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
+exe "hi! Folded         cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      guifg=".color_fg" guibg=".color_8
+exe "hi! VertSplit      cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_bg" guibg=".color_bg
+exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
+exe "hi! link FoldColumn EndOfBuffer"
+exe "hi! link Conceal Folded"
+
+exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
+exe "hi! TabLineFill    cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
+exe "hi! TabLineSel     cterm=NONE      ctermfg=0    ctermbg=8    gui=NONE      guifg=".color_0"  guibg=".color_8
+exe "hi! TabLine        cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
+exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
+exe "hi! Title          cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=".color_6"  guibg=".color_bg
+exe "hi! ModeMsg        cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
+exe "hi! link MoreMsg ModeMsg"
+exe "hi! Pmenu          cterm=NONE      ctermfg=15   ctermbg=8    gui=NONE      guifg=".color_15" guibg=".color_8
+exe "hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=7    gui=NONE      guifg=".color_15" guibg=".color_7
+exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=".color_15" guibg=".color_bg
+exe "hi! link PmenuSbar Pmenu"
+exe "hi! link StatusLine SpecialComment"
+exe "hi! link StatusLineNC Comment"
+exe "hi! link SpecialKey SpecialComment"
