@@ -18,7 +18,6 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'w0rp/ale'
-Plugin 'severin-lemaignan/vim-minimap'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'vim-python/python-syntax'
 Plugin 'neovimhaskell/haskell-vim'
@@ -67,7 +66,7 @@ set splitbelow         " open new horizontal windows at bottom
 set splitright         " open new vertical windows at right
 set previewheight=3    " set preview window height to 3
 set fillchars+=fold:\  " set folding separator to ' '
-"set showbreak=...      " show '...' at start of wrapped lines
+set showbreak=...      " show '...' at start of wrapped lines
 set list               " show non-text characters
 let &listchars = 'tab:| ,trail:_'
 
@@ -195,10 +194,6 @@ let g:ale_echo_msg_format='%severity%: %s'
 let g:ale_sign_column_always=1
 let g:ale_sign_error='x'
 let g:ale_sign_warning ='!'
-
-" Minimap
-let g:minimap_toggle='<leader>mm'
-let g:minimap_highlight='SpecialComment'
 
 " functions
 function! SetSignColumn(file_name, is_modifiable)
