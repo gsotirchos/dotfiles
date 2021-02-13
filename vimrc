@@ -18,17 +18,17 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'w0rp/ale'
-Plugin 'lervag/vimtex'
-Plugin 'lazywei/vim-matlab'
+Plugin 'severin-lemaignan/vim-minimap'
+Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'vim-python/python-syntax'
-Plugin 'keith/swift.vim'
-Plugin 'JuliaEditorSupport/julia-vim'
-Plugin 'PProvost/vim-ps1'
 Plugin 'neovimhaskell/haskell-vim'
 Plugin 'bitc/vim-hdevtools'
-Plugin 'gregjurman/vim-nc'
-Plugin 'octol/vim-cpp-enhanced-highlight'
-Plugin 'severin-lemaignan/vim-minimap'
+Plugin 'keith/swift.vim'
+Plugin 'JuliaEditorSupport/julia-vim'
+Plugin 'lazywei/vim-matlab'
+Plugin 'lervag/vimtex'
+Plugin 'PProvost/vim-ps1'
+"Plugin 'gregjurman/vim-nc'
 
 "" plugins end here
 call vundle#end() " required
@@ -67,7 +67,7 @@ set splitbelow         " open new horizontal windows at bottom
 set splitright         " open new vertical windows at right
 set previewheight=3    " set preview window height to 3
 set fillchars+=fold:\  " set folding separator to ' '
-set showbreak=...      " show '...' at start of wrapped lines
+"set showbreak=...      " show '...' at start of wrapped lines
 set list               " show non-text characters
 let &listchars = 'tab:| ,trail:_'
 
@@ -195,6 +195,10 @@ let g:ale_echo_msg_format='%severity%: %s'
 let g:ale_sign_column_always=1
 let g:ale_sign_error='x'
 let g:ale_sign_warning ='!'
+
+" Minimap
+let g:minimap_toggle='<leader>mm'
+let g:minimap_highlight='SpecialComment'
 
 " functions
 function! SetSignColumn(file_name, is_modifiable)
