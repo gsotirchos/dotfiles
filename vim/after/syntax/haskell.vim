@@ -22,3 +22,5 @@ let g:cabal_indent_section = 2
 "hi! link haskellWhere Statement
 "hi! link haskellConditional Statement
 hi! link haskellChar Character
+hi! link haskellDelimiter myParens
+hi! link haskellSeparator myParens
