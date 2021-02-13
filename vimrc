@@ -27,8 +27,8 @@ Plugin 'PProvost/vim-ps1'
 Plugin 'neovimhaskell/haskell-vim'
 Plugin 'bitc/vim-hdevtools'
 Plugin 'gregjurman/vim-nc'
-"Plugin 'bfrg/vim-cpp-modern'
 Plugin 'octol/vim-cpp-enhanced-highlight'
+Plugin 'severin-lemaignan/vim-minimap'
 
 "" plugins end here
 call vundle#end() " required
