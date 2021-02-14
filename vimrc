@@ -243,7 +243,7 @@ augroup vimrc
 
     " load generic syntax file for non-text files
     let textFiletypes =
-      \  ['xml', 'yaml', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
+      \  ['yaml', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
     autocmd BufWinEnter,BufRead,BufWrite *
       \  if index(textFiletypes, &ft) < 0
       \  | :source $HOME/.vim/after/syntax/default.vim

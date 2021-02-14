@@ -1,5 +1,5 @@
 " dark parentheses and member operators
-syntax match myParens "[(){}\[\]<>,;]" contains=.*Comment.*
+syntax match myParens "[(){}\[\]<>,;]" contains=TOP
 syntax match myMemberOperator "\." containedin=NONE
 
 " bright operators and logicals
