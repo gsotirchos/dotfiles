@@ -242,7 +242,8 @@ augroup vimrc
       \  set spell spelllang=en_us,el,cjk
 
     " load generic syntax file for non-text files
-    let textFiletypes = ['qf', 'help', 'tex', 'latex', 'text', 'sh', '']
+    let textFiletypes =
+      \  ['xml', 'yaml', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
     autocmd BufWinEnter,BufRead,BufWrite *
       \  if index(textFiletypes, &ft) < 0
       \  | :source $HOME/.vim/after/syntax/default.vim

@@ -35,6 +35,9 @@ export LANG="en_US.UTF-8"
 export CPLUS_INCLUDE_PATH="/usr/local/include"
 export LIBRARY_PATH="/usr/local/lib"
 
+# MacBook's local ip
+export macbook="192.168.1.2"
+
 # extra paths
 extra_paths=(
     "/usr/local/bin" # Homebrew
