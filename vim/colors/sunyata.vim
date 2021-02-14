@@ -77,7 +77,7 @@ exe "hi! link Boolean Statement"
 exe "hi! link Float Number"
 
 " variable names
-exe "hi! Identifier     cterm=NONE      ctermfg=4    ctermbg=NONE gui=NONE      guifg=".color_4"  guibg=".color_bg
+exe "hi! Identifier     cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=".color_6"  guibg=".color_bg
 exe "hi! link Function Identifier"
 
 " statements
@@ -143,7 +143,6 @@ exe "hi! TabLineFill    cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      
 exe "hi! TabLineSel     cterm=NONE      ctermfg=0    ctermbg=8    gui=NONE      guifg=".color_0"  guibg=".color_8
 exe "hi! TabLine        cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
-exe "hi! Title          cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=".color_6"  guibg=".color_bg
 exe "hi! ModeMsg        cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
 exe "hi! link MoreMsg ModeMsg"
 exe "hi! Pmenu          cterm=NONE      ctermfg=15   ctermbg=8    gui=NONE      guifg=".color_15" guibg=".color_8
