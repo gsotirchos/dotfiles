@@ -11,8 +11,13 @@ if [[ "$(sysctl hw.model)" != *"iMac"* ]]; then
 fi
 
 # set some preffered power settings
-sudo pmset -a standby 0         # disable safe slep (hibernate)
+sudo pmset -a displaysleep 10
+sudo pmset -a sleep 10
+sudo pmset -a hibernatemode 0   # classic sleep (wake from RAM)
+sudo pmset -a standby 0         # disable hibernating
+sudo pmset -a autopoweroff 0    # disable lower power chipset sleep
+sudo pmset -a disksleep 0       # disable disk spin-down
+sudo pmset -a powernap 0        # disable power nap
 sudo pmset -a autorestart 1     # reboot on power loss
-sudo pmset -a autopoweroff 0    # disable safe sleep
 
 echo "Power settings modified"
