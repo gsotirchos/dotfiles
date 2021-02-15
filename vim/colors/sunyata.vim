@@ -85,7 +85,8 @@ exe "hi! Statement      cterm=bold      ctermfg=5    ctermbg=NONE gui=bold      
 exe "hi! link Conditional Statement"
 exe "hi! link Repeat Statement"
 exe "hi! link Label Statement"
-exe "hi! Operator       cterm=bold      ctermfg=13   ctermbg=NONE gui=NONE      guifg=".color_13" guibg=".color_bg
+"exe "hi! Operator       cterm=bold      ctermfg=13   ctermbg=NONE gui=NONE      guifg=".color_13" guibg=".color_bg
+exe "hi! link Operator Normal"
 exe "hi! link Keyword Statement"
 exe "hi! link Exception Statement"
 
@@ -106,7 +107,7 @@ exe "hi! link Typedef Type"
 exe "hi! Special        cterm=NONE      ctermfg=2    ctermbg=NONE gui=NONE      guifg=".color_2"  guibg=".color_bg
 exe "hi! link SpecialChar Special"
 exe "hi! link Tag Special"
-exe "hi! link Delimiter Special"
+exe "hi! Delimiter      cterm=bold      ctermfg=13   ctermbg=NONE gui=NONE      guifg=".color_13" guibg=".color_bg
 exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      guifg=".color_15" guibg=".color_bg
 
 " my custom groups

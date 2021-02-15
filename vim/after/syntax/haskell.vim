@@ -24,3 +24,4 @@ let g:cabal_indent_section = 2
 hi! link haskellChar Character
 hi! link haskellDelimiter myParens
 hi! link haskellSeparator myParens
+hi! link Operator Delimiter
