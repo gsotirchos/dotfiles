@@ -55,7 +55,6 @@ set encoding=utf-8           " encoding displayed inside vim
 set fileformats=unix,mac,dos " format order to be tried on a new buffer
 
 " behaviour
-syntax on
 set mouse=a
 set regexpengine=1     " use old regex engine
 set showcmd            " show typed command
@@ -213,9 +212,6 @@ augroup vimrc
     " autosave named files
     autocmd CursorHold ?* nested update
 
-    " limit amount of syntax lines
-    autocmd BufEnter,Syntax * syn sync minlines=200 maxlines=200
-
     " enable sign column (when appropriate) and set status-line
     autocmd BufWinEnter,BufRead,BufWrite *
       \  call SetSignColumn(@%, &modifiable)
@@ -233,20 +229,21 @@ augroup vimrc
     " convert everything to utf-8
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
 
-    " custom syntax rules
-    autocmd BufWinEnter,BufRead,BufWrite *.c set cindent
-    autocmd BufWinEnter,BufRead,BufWrite *.py :Python3Syntax
-
     " spell check only text files
     autocmd FileType tex,latex,text
       \  set spell spelllang=en_us,el,cjk
 
-    " load generic syntax file for non-text files
+    " limit amount of syntax lines
+    autocmd Syntax * syn sync minlines=200 maxlines=200
+
+    " enable syntax & load default syntax for non-text files
     let textFiletypes =
       \  ['xml', 'yaml', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
     autocmd BufWinEnter,BufRead,BufWrite *
-      \  if index(textFiletypes, &ft) < 0
-      \  | :source $HOME/.vim/after/syntax/default.vim
+      \   syntax on
+      \|  if index(textFiletypes, &filetype) < 0
+      \|   source $HOME/.vim/after/syntax/default.vim
+      \| endif
 
     " close loclists with buffer
     autocmd QuitPre * if empty(&buftype) | lclose | endif

@@ -29,5 +29,19 @@ let g:cpp_concepts_highlight = 1
 " Highlighting of user defined functions can be disabled by
 "let g:cpp_no_function_highlight = 1
 
+"let c_no_curly_error=1
+
+
+syntax region myMark start="\(\".*\)\@<!%\@<=" end="%\@=" containedin=.*Comment.* contained oneline
+"syntax match myMemberOperator "::" containedin=NONE
+"syntax match myMemberOperator "\([a-zA-Z_][a-zA-Z0-9_]*\)\@<=->\([a-zA-Z_]\)\@=" containedin=NONE
+"syntax match myMemberOperator "\([a-zA-Z_][a-zA-Z0-9_]*\)\@<=->\([a-zA-Z_]\)\@=" containedin=NONE
+
+"hi! link cMemberAccess MemOperator
+hi! link myMark SpecialComment
+hi! link cCustomScope MembOperator
+hi! link cCustomDot MembOperator
+hi! link cCustomPtr MembOperator
+hi! link cFormat Special
 hi! link cppSTLconstant Statement
 hi! link cppSTLnamespace Statement
