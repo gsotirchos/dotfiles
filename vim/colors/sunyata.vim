@@ -77,8 +77,8 @@ exe "hi! link Boolean Statement"
 exe "hi! link Float Number"
 
 " variable names
-exe "hi! Identifier     cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=".color_6"  guibg=".color_bg
-exe "hi! link Function Identifier"
+exe "hi! Function       cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=".color_6"  guibg=".color_bg
+exe "hi! Identifier     cterm=NONE      ctermfg=14   ctermbg=NONE gui=NONE      guifg=".color_14"  guibg=".color_bg
 
 " statements
 exe "hi! Statement      cterm=bold      ctermfg=5    ctermbg=NONE gui=bold      guifg=".color_5"  guibg=".color_bg

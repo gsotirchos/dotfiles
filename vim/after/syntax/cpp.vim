@@ -43,5 +43,8 @@ hi! link cCustomScope MembOperator
 hi! link cCustomDot MembOperator
 hi! link cCustomPtr MembOperator
 hi! link cFormat Special
-hi! link cppSTLconstant Statement
-hi! link cppSTLnamespace Statement
+hi! link cppSTLconstant Function
+hi! link cppSTLnamespace Function
+hi! link cppSTLException Function
+hi! link cCustomClassName Identifier
+"hi! link cCustomMemVar Normal
