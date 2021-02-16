@@ -2,7 +2,20 @@
 # ~/.inputrc
 #
 
-#set show-all-if-ambiguous on
-set completion-ignore-case on
-set menu-complete-display-prefix on
+# don't store modified history entries
 set revert-all-at-newline on
+
+# don't display options as a more-style list
+set page-completions off
+
+# ignore case
+set completion-ignore-case on
+
+# color items by type
+set colored-stats On
+set mark-symlinked-directories On
+
+# on first TAB complete common prefix, on second TAB show options
+set menu-complete-display-prefix on
+set show-all-if-unmodified On
+#set completion-prefix-display-length 3

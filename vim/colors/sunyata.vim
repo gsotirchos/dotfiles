@@ -85,7 +85,6 @@ exe "hi! Statement      cterm=bold      ctermfg=5    ctermbg=NONE gui=bold      
 exe "hi! link Conditional Statement"
 exe "hi! link Repeat Statement"
 exe "hi! link Label Statement"
-"exe "hi! Operator       cterm=bold      ctermfg=13   ctermbg=NONE gui=NONE      guifg=".color_13" guibg=".color_bg
 exe "hi! link Operator Normal"
 exe "hi! link Keyword Statement"
 exe "hi! link Exception Statement"
@@ -123,7 +122,7 @@ exe "hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      
 exe "hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE gui=underline guifg=".color_1"  guibg=".color_bg
 exe "hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE gui=underline guifg=".color_3"  guibg=".color_bg
 exe "hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
-exe "hi! SpellRare      cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
+exe "hi! link SpellRare SpellLocal"
 exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_4"  guibg=".color_bg
 exe "hi! Ignore         cterm=NONE      ctermfg=5    ctermbg=NONE gui=NONE      guifg=".color_5"  guibg=".color_bg
 exe "hi! Directory      cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
