@@ -1,10 +1,12 @@
 hi! clear CursorLine
 hi! clear CursorColumn
 hi! link vimOption    vimVar
-hi! link vimMapModKey Normal
-hi! link vimNotation  vimMap
-hi! link vimMapLhs    vimMap
-hi! link vimMapRhs    vimMap
+hi! link vimParenSep  MembOperator
+hi! link vimBracket   MembOperator
+hi! link vimMapMod    MembOperator
+hi! link vimSetSep    MembOperator
+hi! link vimMapModKey PreProc
+hi! link vimNotation  Normal
 
 " ALE
 hi! link ALEErrorLine   Normal
