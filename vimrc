@@ -209,9 +209,6 @@ endfunction
 augroup vimrc
     autocmd!
 
-    " autosave named files
-    autocmd CursorHold ?* nested update
-
     " enable sign column (when appropriate) and set status-line
     autocmd BufWinEnter,BufRead,BufWrite *
       \  call SetSignColumn(@%, &modifiable)
@@ -226,10 +223,13 @@ augroup vimrc
       \| let &colorcolumn =
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
 
+    " autosave named files
+    autocmd CursorHold ?* nested update
+
     " convert everything to utf-8
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
 
-    " spell check only text files
+    " spell check text files
     autocmd FileType tex,latex,text
       \  set spell spelllang=en_us,el,cjk
 
@@ -239,11 +239,14 @@ augroup vimrc
     " enable syntax & load default syntax for non-text files
     let textFiletypes =
       \  ['xml', 'yaml', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
-    autocmd BufWinEnter,BufRead,BufWrite *
+    autocmd BufWinEnter *
       \   syntax on
       \|  if index(textFiletypes, &filetype) < 0
       \|   source $HOME/.vim/after/syntax/default.vim
       \| endif
+
+    autocmd BufWinEnter,BufRead,BufWrite
+      \ *.world,*.model,*.config,*.sdf set ft=xml
 
     " close loclists with buffer
     autocmd QuitPre * if empty(&buftype) | lclose | endif
