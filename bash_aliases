@@ -13,7 +13,7 @@ trash() {
             env rm -rf "${arg}"
         else
             #echo "mv -v ${flags} ${arg} ${TRASH}"
-            mv -v ${flags} "${arg}" "${TRASH}"
+            env mv ${flags} -v --backup=numbered "${arg}" "${TRASH}"
         fi
     done
 }
@@ -33,9 +33,10 @@ empty_trash() {
 
 # aliases
 alias rm=trash  # trash file instead of deleting
-alias mv="mv -iv" # confirmatory, verbose move
-alias cp="cp -iv" # confirmatory, verbose copy
-alias ln="ln -iv" # confirmatory, verbose symlink creaton
-alias tree="tree -NC -L 3 --filelimit 15" # cleaner tree
+alias mv="mv -iv"  # confirmatory, verbose move
+alias cp="cp -iv"  # confirmatory, verbose copy
+alias ln="ln -iv"  # confirmatory, verbose symlink creaton
+alias ls="ls --color"  # colors in ls
+alias tree="tree -NC -L 3 --filelimit 15"  # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
