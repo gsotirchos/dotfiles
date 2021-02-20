@@ -10,7 +10,7 @@ trash() {
         # move file to trash folder, or delete /tmp/* files
         if [[ ${arg} == "/tmp/"* ]]; then
             #echo "unlink ${arg}"
-            unlink "${arg}"
+            env rm -rf "${arg}"
         else
             #echo "mv -v ${flags} ${arg} ${TRASH}"
             mv -v ${flags} "${arg}" "${TRASH}"
@@ -21,7 +21,7 @@ trash() {
 # function to empty trash
 empty_trash() {
     for file in ${TRASH}/*; do
-        unlink ${file}
+        env rm -rf ${file} && \
         echo "Deleted: ${file}"
     done
 }
