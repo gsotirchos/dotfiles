@@ -21,9 +21,6 @@ HISTFILESIZE=2000
 # custom prompt
 export PS1="\[\e[0;90m\]\W\[\e[00m\] "
 
-# use color on 'ls'
-export CLICOLOR=1
-
 # use pkgin's bash
 export SHELL="/opt/pkg/bin/bash"
 
@@ -42,6 +39,7 @@ export macbook="192.168.1.2"
 extra_paths=(
     "/usr/local/bin" # Homebrew
     "/opt/X11/bin"
+    "/opt/pkg/gnu/bin"
     "/opt/pkg/sbin"
     "/opt/pkg/bin"
     "/opt/pkg/gcc10/bin"
