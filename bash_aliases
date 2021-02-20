@@ -20,15 +20,19 @@ trash() {
 
 # function to empty trash
 empty_trash() {
-    for file in ${TRASH}/*; do
-        env rm -rf ${file} && \
-        echo "Deleted: ${file}"
-    done
+    read -p "Empty trash? [y/N] " -r
+    if [[ ${REPLY} =~ ^[Yy]$ ]]; then
+        for file in "${TRASH}"/*; do
+            if [[ -f "${file}" ]]; then
+                env rm -rf "${file}" && \
+                echo "Deleted: ${file}"
+            fi
+        done
+    fi
 }
 
 # aliases
 alias rm=trash  # trash file instead of deleting
-#alias rm="rm -i"  # confirmatory remove
 alias mv="mv -iv" # confirmatory, verbose move
 alias cp="cp -iv" # confirmatory, verbose copy
 alias ln="ln -iv" # confirmatory, verbose symlink creaton
