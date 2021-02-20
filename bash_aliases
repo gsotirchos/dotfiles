@@ -18,8 +18,16 @@ trash() {
     done
 }
 
+# function to empty trash
+empty_trash() {
+    for file in ${TRASH}/*; do
+        unlink ${file}
+        echo "Deleted: ${file}"
+    done
+}
+
 # aliases
-alias rm="trash"  # trash file instead of deleting
+alias rm=trash  # trash file instead of deleting
 #alias rm="rm -i"  # confirmatory remove
 alias mv="mv -iv" # confirmatory, verbose move
 alias cp="cp -iv" # confirmatory, verbose copy
