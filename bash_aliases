@@ -23,7 +23,7 @@ empty_trash() {
     read -p "Empty trash? [y/N] " -r
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         for file in "${TRASH}"/*; do
-            if [[ -f "${file}" ]]; then
+            if [[ -e "${file}" ]]; then
                 env rm -rf "${file}" && \
                 echo "Deleted: ${file}"
             fi
