@@ -239,7 +239,7 @@ augroup vimrc
     " enable syntax & load default syntax for non-text files
     let textFiletypes =
       \  ['xml', 'yaml', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
-    autocmd BufWinEnter *
+    autocmd BufWinEnter,BufRead *
       \   syntax on
       \|  if index(textFiletypes, &filetype) < 0
       \|   source $HOME/.vim/after/syntax/default.vim

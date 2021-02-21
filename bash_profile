@@ -19,7 +19,7 @@ HISTSIZE=1000
 HISTFILESIZE=2000
 
 # custom prompt
-export PS1="\[\e[0;90m\]\W\[\e[00m\] "
+export PS1="\[\e[0;90m\]\h::\W\[\e[00m\] "
 
 # use pkgin's bash
 export SHELL="/opt/pkg/bin/bash"
