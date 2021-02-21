@@ -75,7 +75,11 @@ set_prompt() {
     OnIWhite='\[\e[0;107m\]'
 
     # set the prompt
-    echo "$IBlack\h$BIBlack::$IBlack\W$ColorOff "
+    if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
+        echo "${IBlack}\h${BIBlack}::${IBlack}\w${ColorOff} "
+    else
+        echo "${IBlack}\W${ColorOff} "
+    fi
 }
 
 export PS1="$(set_prompt)"

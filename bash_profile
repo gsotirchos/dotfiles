@@ -8,6 +8,15 @@ case $- in
       *) return;;
 esac
 
+# check if this is a ssh session
+if [ -n "${SSH_CLIENT}" ] || [ -n "${SSH_TTY}" ]; then
+  SESSION_TYPE="remote_ssh"
+else
+  case $(ps -o comm= -p $PPID) in
+    sshd|*/sshd) SESSION_TYPE="remote_ssh";;
+  esac
+fi
+
 # don't put duplicate lines or lines starting with space in the history.
 HISTCONTROL=ignoreboth
 
