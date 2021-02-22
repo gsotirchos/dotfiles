@@ -33,11 +33,9 @@ let g:cpp_concepts_highlight = 1
 
 
 syntax region myMark start="\(\".*\)\@<!%\@<=" end="%\@=" containedin=.*Comment.* contained oneline
-"syntax match myMemberOperator "::" containedin=NONE
-"syntax match myMemberOperator "\([a-zA-Z_][a-zA-Z0-9_]*\)\@<=->\([a-zA-Z_]\)\@=" containedin=NONE
-"syntax match myMemberOperator "\([a-zA-Z_][a-zA-Z0-9_]*\)\@<=->\([a-zA-Z_]\)\@=" containedin=NONE
+syntax match bracketComma "," containedin=.*Custom.*
 
-"hi! link cMemberAccess MemOperator
+"hi! link cCustomMemVar Normal
 hi! link myMark SpecialComment
 hi! link cCustomScope MembOperator
 hi! link cCustomDot MembOperator
@@ -47,4 +45,4 @@ hi! link cppSTLconstant Function
 hi! link cppSTLnamespace Function
 hi! link cppSTLException Function
 hi! link cCustomClassName Identifier
-"hi! link cCustomMemVar Normal
+hi! link bracketComma MembOperator
