@@ -242,7 +242,7 @@ augroup vimrc
     autocmd BufWinEnter,BufRead *
       \  nested syntax on
       \| if index(textFiletypes, &filetype) < 0
-      \|   source /Users/george/.vim/after/syntax/default.vim
+      \|   source $HOME/.vim/after/syntax/default.vim
       \| endif
 
     autocmd BufWinEnter,BufRead,BufWrite
