@@ -224,7 +224,7 @@ augroup vimrc
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
 
     " autosave named files
-    autocmd CursorHold ?* nested update
+    autocmd CursorHold ?* if empty(&buftype) | nested update | endif
 
     " convert everything to utf-8
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
