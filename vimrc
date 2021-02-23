@@ -224,7 +224,7 @@ augroup vimrc
       \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
 
     " autosave named files
-    autocmd CursorHold ?* if empty(&buftype) | nested update | endif
+    autocmd CursorHold ?* nested if empty(&buftype) | update | endif
 
     " convert everything to utf-8
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
@@ -240,9 +240,9 @@ augroup vimrc
     let textFiletypes =
       \  ['xml', 'yaml', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
     autocmd BufWinEnter,BufRead *
-      \   syntax on
-      \|  if index(textFiletypes, &filetype) < 0
-      \|   source $HOME/.vim/after/syntax/default.vim
+      \  nested syntax on
+      \| if index(textFiletypes, &filetype) < 0
+      \|   source /Users/george/.vim/after/syntax/default.vim
       \| endif
 
     autocmd BufWinEnter,BufRead,BufWrite
