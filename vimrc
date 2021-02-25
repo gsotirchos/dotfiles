@@ -246,7 +246,7 @@ augroup vimrc
       \| endif
 
     autocmd BufWinEnter,BufRead,BufWrite
-      \ *.sdf,*.world,*.model,*.config,*.conf set ft=xml
+      \ *.sdf,*.world,*.model,*.config set ft=xml
 
     " close loclists with buffer
     autocmd QuitPre * if empty(&buftype) | lclose | endif

@@ -15,6 +15,7 @@ mkdir -vp ~/.vim/undo
 mkdir -vp ~/.vim/spell
 mkdir -vp ~/.config/lf
 mkdir -vp ~/.local/bin
+touch ~/.hushlogin
 
 # make soft symlinks
 echo "- Symlinking dotfiles (${DOTFILES})"
