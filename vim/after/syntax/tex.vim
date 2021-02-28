@@ -8,3 +8,4 @@ hi! link texRefZone      Type
 hi! link texMathMatcher  Normal
 hi! link texMathZoneX    texDocZone
 hi! link texMathZoneX    texDocZone
+hi! link texDelim        MembOperator

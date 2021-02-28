@@ -230,15 +230,16 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
 
     " spell check text files
-    autocmd FileType tex,latex,text
-      \  set spell spelllang=en_us,el,cjk
+    autocmd FileType tex,latex,text,markdown
+      \  set formatoptions+=tawcroql
+      \| set spell spelllang=en_us,el,cjk
 
     " limit amount of syntax lines
     autocmd Syntax * syn sync minlines=200 maxlines=200
 
     " enable syntax & load default syntax for non-text files
     let textFiletypes =
-      \  ['xml', 'yaml', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
+      \  ['xml', 'yaml', 'markdown', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
     autocmd BufWinEnter,BufRead *
       \  nested syntax on
       \| if index(textFiletypes, &filetype) < 0
