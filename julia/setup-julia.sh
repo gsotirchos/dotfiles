@@ -9,4 +9,4 @@ mkdir -p ~/.julia/config
 
 ln -sfv ${DIR}/*.jl ~/.julia/config
 
-julia .julia/config/install_base_packages.jl
+julia --startup-file=no ~/.julia/config/install_base_packages.jl
