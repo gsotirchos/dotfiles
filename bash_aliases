@@ -37,6 +37,6 @@ alias mv="mv -iv"  # confirmatory, verbose move
 alias cp="cp -iv"  # confirmatory, verbose copy
 alias ln="ln -iv"  # confirmatory, verbose symlink creaton
 alias ls="ls --color"  # colors in ls
-alias tree="tree -aNC -L 2 --filelimit 15"  # cleaner tree
+alias tree="tree -aNC -L 2 --filelimit 20"  # cleaner tree
 alias dunnet="clear && emacs -batch -l dunnet"
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
