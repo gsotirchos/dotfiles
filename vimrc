@@ -26,7 +26,6 @@ Plugin 'keith/swift.vim'
 Plugin 'JuliaEditorSupport/julia-vim'
 Plugin 'lervag/vimtex'
 Plugin 'PProvost/vim-ps1'
-"Plugin 'gregjurman/vim-nc'
 
 "" plugins end here
 call vundle#end() " required

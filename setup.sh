@@ -1,8 +1,14 @@
-#!/opt/pkg/bin/bash
+#!/usr/bin/env bash
 
 #
 # ${DOTFILES}/setup.sh
 #
+
+# check for `realpath` command
+if ! command -v grh &> /dev/null; then
+    echo 'Error: `realpath` command could not be found. Aborted'
+    exit
+fi
 
 # dotfiles path
 DOTFILES=$(\
