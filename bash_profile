@@ -32,28 +32,30 @@ if [ -f ~/.bash_prompt ]; then
    source ~/.bash_prompt
 fi
 
-# use pkgin's bash
-export SHELL="/opt/pkg/bin/bash"
+# use homebrew bash
+export SHELL="/opt/homebrew/bin/bash"
 
 # set the locale to English
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 
+# iMac's local ip
+export macbook="192.168.1.2"
+
 # gtest environment
 export CPLUS_INCLUDE_PATH="/usr/local/include"
 export LIBRARY_PATH="/usr/local/lib"
 
-# MacBook's local ip
-export macbook="192.168.1.2"
+# homebrew path
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # extra paths
 extra_paths=(
-    "/usr/local/bin" # Homebrew
-    "/opt/X11/bin"
-    "/opt/pkg/gnu/bin"
-    "/opt/pkg/sbin"
-    "/opt/pkg/bin"
-    "/opt/pkg/gcc10/bin"
+#    "/opt/pkg/gnu/bin"
+#    "/opt/pkg/sbin"
+#    "/opt/pkg/bin"
+#    "/opt/pkg/gcc10/bin"
+    "/opt/homebrew/opt/coreutils/libexec/gnubin"
     "$HOME/.bin"
     "$HOME/.dotfiles/bin"
     "$HOME/.local/bin"
@@ -62,13 +64,6 @@ extra_paths=(
     "/usr/local/texlive/2019/bin/x86_64-darwin"       # MacTex
     "/usr/local/texlive/2019/bin/x86_64-darwinlegacy" # MacTex
 )
-
-## more extra paths for older versions (unibody macbook)
-#if [[ "$( sw_vers -productVersion )" =~ 10.11.* ]]; then
-#    extra_paths+=(
-#        "/usr/local/opt/curl/bin"
-#    )
-#fi
 
 # append extra paths
 eval $(~/.dotfiles/bin/append_paths "${extra_paths[@]}")
