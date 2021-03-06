@@ -1,4 +1,4 @@
-#!/opt/pkg/bin/bash
+#!/usr/bin/env bash
 
 CROP=true
 SPLIT=true
