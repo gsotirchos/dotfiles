@@ -40,7 +40,7 @@ export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 
 # iMac's local ip
-export macbook="192.168.1.2"
+export imac="192.168.1.2"
 
 # gtest environment
 export CPLUS_INCLUDE_PATH="/usr/local/include"
