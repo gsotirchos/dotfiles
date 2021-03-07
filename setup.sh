@@ -33,5 +33,7 @@ ln -sfv ~/.windows_dotfiles/lfrc     ~/.config/lf/lfrc
 echo -e "\n!! Don't forget to load the .plist files!"
 
 # setup julia
-echo -e "\n- Setting up Julia"
-"${DOTFILES}"/julia/setup-julia.sh
+if command -v "julia" &> /dev/null; then
+    echo -e "\n- Setting up Julia"
+    "${DOTFILES}"/julia/setup-julia.sh
+fi
