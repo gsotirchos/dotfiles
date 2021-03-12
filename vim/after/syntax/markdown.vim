@@ -1,2 +1,2 @@
-hi! link htmlTag Normal
+hi! link htmlTag    Normal
 hi! link htmlEndTag Normal
