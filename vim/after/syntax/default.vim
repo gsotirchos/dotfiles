@@ -8,7 +8,7 @@ syntax match myMemberOperator "\." containedin=NONE contains=TOP
 syntax match myOperator "\s[<>]\+\s" containedin=NONE
 syntax match myMark "\(MARK:\s\)\@<=.*" containedin=.*Comment.* contained
 
-hi link myParens MembOperator
-hi link myMemberOperator MembOperator
-hi link myOperator Operator
-hi link myMark SpecialComment
+hi! link myParens MembOperator
+hi! link myMemberOperator MembOperator
+hi! link myOperator Operator
+hi! link myMark SpecialComment

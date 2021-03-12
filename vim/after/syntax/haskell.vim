@@ -18,10 +18,10 @@ let g:haskell_indent_after_bare_where = 2
 let g:haskell_indent_case_alternative = 2
 let g:cabal_indent_section = 2
 
-"hi! link haskellKeyword Statement
-"hi! link haskellWhere Statement
+"hi! link haskellKeyword   Statement
+"hi! link haskellWhere     Statement
 "hi! link haskellConditional Statement
-hi! link haskellChar Character
+hi! link haskellChar      Character
 hi! link haskellDelimiter myParens
 hi! link haskellSeparator myParens
-hi! link Operator Delimiter
+hi! link Operator         Delimiter
