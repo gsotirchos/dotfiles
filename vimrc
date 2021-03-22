@@ -75,6 +75,7 @@ set hlsearch   " highlight search matches
 set sw=4 ts=4 sts=4         " default: 4 spaces per tab
 set expandtab               " replace tabs with spaces
 set backspace=2             " allow backspace in insert mode
+set scrolloff=3             " scroll before reaching last line
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr                " wrap lines by word
 set formatoptions=ro        " no automatic line breaking
@@ -238,7 +239,7 @@ augroup vimrc
 
     " enable syntax & load default syntax for non-text files
     let textFiletypes =
-      \  ['xml', 'yaml', 'markdown', 'qf', 'help', 'tex', 'latex', 'text', 'sh', '']
+      \  ['xml', 'yaml', 'markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
     autocmd BufWinEnter,BufRead *
       \  nested syntax on
       \| if index(textFiletypes, &filetype) < 0

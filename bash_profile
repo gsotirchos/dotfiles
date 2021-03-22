@@ -39,8 +39,9 @@ export SHELL="/opt/homebrew/bin/bash"
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 
-# iMac's local ip
+# local ip shortcuts
 export imac="192.168.1.2"
+export npower_pi="npower@192.168.1.20"
 
 # gtest environment
 export CPLUS_INCLUDE_PATH="/usr/local/include"
