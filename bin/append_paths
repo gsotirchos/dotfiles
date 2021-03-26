@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# TODO: read paths from file
 # append extra paths to PATH
 extra_paths=($@)
 for extra_path in "${extra_paths[@]}"; do
