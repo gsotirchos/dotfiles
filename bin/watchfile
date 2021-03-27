@@ -23,7 +23,7 @@ function build_and_execute() {
     # execute the built binary
     echo -e "--- Building & executing ---"
     eval ${COMMAND} &&
-        echo -e "-----------------\n"
+        echo -e "----------------------------\n"
 
     echo "Watching \"${FILE_PATH}\"..."
 }
@@ -37,7 +37,7 @@ function watch_file() {
         echo "Rebuilding..."
 
         # wait $delay seconds for file writes to finish
-        delay=0.5
+        delay=1
         files_changed=true
         while [[ ${files_changed} = true ]]; do
             files_changed=false
