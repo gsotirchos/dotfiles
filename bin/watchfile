@@ -23,9 +23,8 @@ function build_and_execute() {
     # execute the built binary
     echo -e "--- Building & executing ---"
     eval ${COMMAND} &&
-        echo -e "----------------------------\n"
-
-    echo "Watching \"${FILE_PATH}\"..."
+        echo -e "----------------------------\n" &&
+        echo "Watching \"${FILE_PATH}\"..."
 }
 export -f build_and_execute
 
