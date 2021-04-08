@@ -82,8 +82,8 @@ set formatoptions=ro        " no automatic line breaking
 set nojoinspaces            " don't insert 2 spaces after '.', '?' or '!'
 set display+=lastline       " show last wrapped line in window
 let colorcolumnposition=81  " position of column to mark text width
-set shell=$SHELL
-let &shellcmdflag = '--login -c' " 'login shell' to source profile
+set shell=$SHELL\ -l        " login shell for 'term'
+set shellcmdflag=-l\ -c     " login shell for '!'
 set noshellslash
 
 " allow folding
