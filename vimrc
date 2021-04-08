@@ -241,8 +241,8 @@ augroup vimrc
     let textFiletypes =
       \  ['xml', 'yaml', 'markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
     autocmd BufWinEnter,BufRead *
-      \  if !exists("g:syntax_on")
-      \|     nested syntax on
+      \  nested if !exists("g:syntax_on")
+      \|     syntax on
       \| endif
       \| if index(textFiletypes, &filetype) < 0
       \|   source $HOME/.vim/after/syntax/default.vim
