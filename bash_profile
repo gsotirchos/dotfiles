@@ -8,6 +8,19 @@ case $- in
       *) return;;
 esac
 
+# don't put duplicate lines or lines starting with space in the history.
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# instantly append to history every command
+export PROMPT_COMMAND="history -a"
+
 # check if this is a ssh session
 if [ -n "${SSH_CLIENT}" ] || [ -n "${SSH_TTY}" ]; then
   SESSION_TYPE="remote_ssh"
@@ -16,19 +29,6 @@ else
     sshd|*/sshd) SESSION_TYPE="remote_ssh";;
   esac
 fi
-
-# don't put duplicate lines or lines starting with space in the history.
-HISTCONTROL=ignoreboth
-
-# append to the history file, don't overwrite it
-shopt -s histappend
-
-# append instantly every command
-export PROMPT_COMMAND="history -a"
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
 
 # custom prompt
 if [ -f ~/.bash_prompt ]; then
@@ -41,6 +41,10 @@ export SHELL="/opt/homebrew/bin/bash"
 # set the locale to English
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
+
+# use gcc instead of gcc
+export CC=gcc
+export CXX=g++
 
 # local ip shortcuts
 export imac="192.168.1.2"
