@@ -15,9 +15,10 @@ Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
 
-Plugin 'ervandew/supertab'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'w0rp/ale'
+Plugin 'ervandew/supertab'
+Plugin 'xavierd/clang_complete'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'vim-python/python-syntax'
 Plugin 'neovimhaskell/haskell-vim'
@@ -72,18 +73,18 @@ set ignorecase
 set smartcase  " case sensitive only if Uppercase
 set hlsearch   " highlight search matches
 
-set sw=4 ts=4 sts=4         " default: 4 spaces per tab
-set expandtab               " replace tabs with spaces
-set backspace=2             " allow backspace in insert mode
-set scrolloff=3             " scroll before reaching last line
-set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
-set wrap lbr                " wrap lines by word
-set formatoptions=ro        " no automatic line breaking
-set nojoinspaces            " don't insert 2 spaces after '.', '?' or '!'
-set display+=lastline       " show last wrapped line in window
-let colorcolumnposition=81  " position of column to mark text width
-set shell=$SHELL\ -l        " login shell for 'term'
-set shellcmdflag=-l\ -c     " login shell for '!'
+set sw=4 ts=4 sts=4           " default: 4 spaces per tab
+set expandtab                 " replace tabs with spaces
+set backspace=2               " allow backspace in insert mode
+set scrolloff=3               " scroll before reaching last line
+set whichwrap+=h,l,<,>,[,]    " fix line movement on line borders
+set wrap lbr                  " wrap lines by word
+set formatoptions=ro          " no automatic line breaking
+set nojoinspaces              " don't insert 2 spaces after '.', '?' or '!'
+set display+=lastline         " show last wrapped line in window
+let colorcolumnposition = 81  " position of column to mark text width
+set shell=$SHELL\ -l          " login shell for 'term'
+set shellcmdflag=-l\ -c       " login shell for '!'
 set noshellslash
 
 " allow folding
@@ -152,7 +153,7 @@ vnoremap <D-c> "+y
 " other mappings
 let mapleader = ";"
 nnoremap o o<Esc>
-let g:SuperTabDefaultCompletionType='<c-n>' " reverse supertab order
+let g:SuperTabDefaultCompletionType = '<c-n>' " reverse supertab order
 
 function! LocListToggle()
     if get(getloclist(0, {'winid':0}), 'winid', 0)
@@ -169,30 +170,38 @@ let g:NERDCommentEmptyLines = 1 " comment empty lines too
 let g:NERDAltDelims_swift = 1   " use // instead of /* */ in swift
 
 " Fortran
-let fortran_free_source=1
-let fortran_fold=1
-let fortran_fold_conditionals=1
-let fortran_more_precise=1
-let fortran_do_enddo=1
+let fortran_free_source = 1
+let fortran_fold = 1
+let fortran_fold_conditionals = 1
+let fortran_more_precise = 1
+let fortran_do_enddo = 1
 
 " LaTeX
-let g:tex_flavor='latex'
-let g:Tex_DefaultTargetFormat='pdf'
-let g:Tex_TreatMacViewerAsUNIX=1
-let g:Tex_ExecuteUNIXViewerInForeground=1
-let g:vimtex_view_method='skim'
-let g:vimtex_compiler_latexmk={'callback' : 0}
-let g:tex_comment_nospell=1
+let g:tex_flavor = 'latex'
+let g:Tex_DefaultTargetFormat = 'pdf'
+let g:Tex_TreatMacViewerAsUNIX = 1
+let g:Tex_ExecuteUNIXViewerInForeground = 1
+let g:vimtex_view_method = 'skim'
+let g:vimtex_compiler_latexmk = {'callback' : 0}
+let g:tex_comment_nospell = 1
 
 " ALE
-"let g:ale_cursor_detail=1 " show errors in preview window
-"let g:ale_echo_cursor=0   " don't show errors in status line
-let g:ale_list_window_size=6
-"let g:ale_echo_msg_format='%severity%: %s'
+let g:ale_list_window_size = 6
 let g:ale_echo_msg_format = '%linter%::%severity%% code% -- %s'
-let g:ale_sign_column_always=1
-let g:ale_sign_error='x'
-let g:ale_sign_warning ='!'
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = 'x'
+let g:ale_sign_warning = '!'
+
+" clang_complete
+set completeopt=menu,longest
+if has('mac')
+    let g:clang_library_path =
+        \'/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+else
+    let g:clang_library_path =
+        \'/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+endif
+
 
 " functions
 function! SetSignColumn(file_name, is_modifiable)
@@ -212,7 +221,7 @@ augroup vimrc
     " enable sign column (when appropriate) and set status-line
     autocmd BufWinEnter,BufRead,BufWrite *
       \  call SetSignColumn(@%, &modifiable)
-      \| let &statusline = '%h%w%F%m%a%=%l, %c'
+      \| let &statusline = '%h%w%F%m%a% = %l, %c'
 
     " set color column to 81th character
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
