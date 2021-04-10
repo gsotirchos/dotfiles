@@ -40,5 +40,6 @@ alias ls="ls --color"  # colors in ls
 alias tree="tree -lNFC -L 2 \
     --dirsfirst --filelimit 15 \
     -I '.DS_Store|.localized|._*' --matchdirs"  # cleaner tree
+alias sftp="with-readline sftp"
 alias dunnet="clear && emacs -batch -l dunnet"
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
