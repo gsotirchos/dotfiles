@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
-# TODO: read paths from file
-# append extra paths to PATH
-extra_paths=($@)
-for extra_path in "${extra_paths[@]}"; do
-    if [[ -d "${extra_path}" ]]; then
+# function to append last input line to PATH
+append_last_path () {
+    local extra_path
+    while IFS= read -r extra_path; do
+        append_last_path
         export PATH="${extra_path}:${PATH//":$extra_path"}"
-    fi
-done
-echo "export PATH=\"${PATH}\""
+    done
+
+    echo "export PATH=\"${PATH}\""
+}
+
+extra_paths_file="$1"
+append_last_path < "${extra_paths_file}"

@@ -1,0 +1,5 @@
+$HOME/.bin
+$HOME/.dotfiles/bin
+$HOME/.local/bin
+$HOME/.cabal/bin
+${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/bin
