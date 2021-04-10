@@ -57,24 +57,8 @@ export LIBRARY_PATH="/usr/local/lib"
 # homebrew path
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# extra paths
-extra_paths=(
-#    "/opt/pkg/gnu/bin"
-#    "/opt/pkg/sbin"
-#    "/opt/pkg/bin"
-#    "/opt/pkg/gcc10/bin"
-    "/opt/homebrew/opt/coreutils/libexec/gnubin"
-    "$HOME/.bin"
-    "$HOME/.dotfiles/bin"
-    "$HOME/.local/bin"
-    "$HOME/.cabal/bin"                               # haskell
-    "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/bin" # haskell
-    "/usr/local/texlive/2019/bin/x86_64-darwin"       # MacTex
-    "/usr/local/texlive/2019/bin/x86_64-darwinlegacy" # MacTex
-)
-
-# append extra paths
-eval $(~/.dotfiles/bin/append_paths "${extra_paths[@]}")
+# append extra paths from file
+eval $(~/.dotfiles/bin/append_paths ~/.dotfiles/extra_paths.txt)
 
 # aliases
 export TRASH="${HOME}/.Trash"
