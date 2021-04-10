@@ -58,7 +58,7 @@ export LIBRARY_PATH="/usr/local/lib"
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # append extra paths from file
-eval $(~/.dotfiles/bin/append_paths ~/.dotfiles/extra_paths.txt)
+eval "$(~/.dotfiles/bin/append_paths ~/.dotfiles/extra_paths.txt)"
 
 # aliases
 export TRASH="${HOME}/.Trash"
