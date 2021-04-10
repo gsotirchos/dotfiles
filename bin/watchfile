@@ -9,7 +9,7 @@ USAGE="Usage:
 [[ "$2" == "-h" ]] && echo -e "${USAGE}" && exit 0
 
 # store file info
-FILE_PATH="$(grealpath $1)"
+FILE_PATH="$(realpath $1)"
 DIR="$(dirname "${FILE_PATH}")"
 COMMAND="$2"
 
@@ -41,7 +41,7 @@ function watch_file() {
         while [[ ${files_changed} = true ]]; do
             files_changed=false
             [[ -n \
-                "$(gtimeout ${delay} fswatch "${FILE_PATH}" -1 -l 0.1)"
+                "$(timeout ${delay} fswatch "${FILE_PATH}" -1 -l 0.1)"
             ]] &&
                 files_changed=true
         done
