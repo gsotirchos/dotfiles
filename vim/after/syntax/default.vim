@@ -1,14 +1,15 @@
-" dark parentheses and member operators
-syntax match myParens "[(){}\[\],;]" contains=.*Comment.*,.*Operator.*
-syntax match myMemberOperator "\." containedin=NONE contains=TOP
+"" dark parentheses and member operators
+"syntax match myMemberOperator "\( \)\@<!\.\( \)\@!"
+"syntax match myMemberOperator "[(){}\[\],;]"
 
-" bright operators and logicals
+syntax enable
+
+" bright marks, operators, logicals
+syntax match myMark "\(MARK:\s\)\@<=.*" containedin=.*Comment.* contained
 "syntax match myOperator "[-+=?!$%^&*\\|~/:]" contains=TOP
 "syntax match myOperator "[<>]*[-=]\+[<>]*" contains=TOP
-syntax match myOperator "\s[<>]\+\s" containedin=NONE
-syntax match myMark "\(MARK:\s\)\@<=.*" containedin=.*Comment.* contained
+"syntax match myOperator "\s[<>]\+\s" containedin=NONE
 
-hi! link myParens MembOperator
 hi! link myMemberOperator MembOperator
 hi! link myOperator Operator
 hi! link myMark SpecialComment
