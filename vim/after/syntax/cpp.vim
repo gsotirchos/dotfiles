@@ -33,10 +33,11 @@ let g:cpp_concepts_highlight = 1
 
 
 syntax region myMark start="\(\".*\)\@<!\(%.*Tag(\)\@<=" end="\()%\)\@=" containedin=.*Comment.* contained oneline
-syntax match bracketComma "," containedin=.*Custom.*
+syntax match myMemberOperator ";"
+""syntax match bracketComma "," containedin=.*Custom.*
 
-"hi! link cCustomMemVar    Normal
 hi! link myMark           SpecialComment
+hi! link myMemberOperator MembOperator
 hi! link cCustomScope     MembOperator
 hi! link cCustomDot       MembOperator
 hi! link cCustomPtr       MembOperator
@@ -45,4 +46,4 @@ hi! link cppSTLconstant   Function
 hi! link cppSTLnamespace  Function
 hi! link cppSTLException  Function
 hi! link cCustomClassName Identifier
-hi! link bracketComma     MembOperator
+"hi! link bracketComma     MembOperator
