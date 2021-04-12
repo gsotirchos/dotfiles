@@ -23,6 +23,7 @@ DOTFILES=$(\
 mkdir -vp ~/Library/LaunchAgents
 mkdir -vp ~/.vim/undo
 mkdir -vp ~/.vim/spell
+mkdir -vp ~/.vim/words
 mkdir -vp ~/.config/lf
 mkdir -vp ~/.local/bin
 touch ~/.hushlogin
