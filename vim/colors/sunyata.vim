@@ -152,5 +152,5 @@ exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   
 exe "hi! link PmenuSbar Pmenu"
 exe "hi! link StatusLine SpecialComment"
 exe "hi! link StatusLineNC Comment"
-exe "hi! link SpecialKey SpecialComment"
-exe "hi! link NonText SpecialComment"
+exe "hi! link SpecialKey Comment"
+exe "hi! link NonText Comment"
