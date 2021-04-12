@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+OUTPUT_FILE="$1"
+
+if [[ -z "${OUTPUT_FILE}" ]]; then
+    echo "Error: no output file, exited."
+    return
+fi
+
+rm "${OUTPUT_FILE}" &> /dev/null
+touch "${OUTPUT_FILE}"
+
+# get command keywords
+function get_keywords() {
+    command="$1"
+
+    keywords="$(
+        cmake --help-command $1 |
+            awk "/$1\(/,/.*\)/" |
+            sed -r "s/[[{<|]/\n/g" |
+            sed -n -r 's/^ *([A-Z_][A-Z_-]*[^])}>:a-z ]).*$/\1/p'
+    )"
+
+    echo "${keywords}"
+}
+
+# iterate over every help list
+cmake --help | grep -- --help.*list | xargs -L1 echo |
+while IFS= read -r help_option; do
+    help_option="${help_option% \[<f>\]*}"
+
+    if [[ "${help_option}" == *"manual"* ||
+        "${help_option}" == *"module"* ||
+        "${help_option}" == *"policy"* ]]; then
+        # ignore manual, module, and policy help lists
+        continue
+    elif [[ "${help_option}" == *"command"* ]]; then
+        # for commands: after the command name append its keywords
+        cmake "${help_option}" |
+        while IFS= read command; do
+            echo ${command} >> "${OUTPUT_FILE}"
+
+            keywords="$(get_keywords ${command})"
+            if [[ "${keywords}" == [A-Z_-]* ]]; then
+                echo "${keywords}" >> "${OUTPUT_FILE}"
+            fi
+        done
+    else
+        # append help list entries
+        cmake "${help_option}" >> "${OUTPUT_FILE}"
+    fi
+done
