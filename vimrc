@@ -7,7 +7,7 @@ set nocompatible " be iMproved, required
 filetype off     " required
 
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=$HOME/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 " let Vundle manage Vundle, required
@@ -17,7 +17,7 @@ Plugin 'VundleVim/Vundle.vim'
 
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'w0rp/ale'
-Plugin 'ervandew/supertab'
+Plugin 'lifepillar/vim-mucomplete'
 Plugin 'xavierd/clang_complete'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'vim-python/python-syntax'
@@ -34,65 +34,78 @@ call vundle#end() " required
 
 filetype plugin indent on
 
-" saving settings
+" saving
 set updatetime=750
-set undofile             " maintain undo file...
-set undodir=~/.vim/undo/ " in ~/.vim/undo/
+set undofile  " maintain undo file...
+set undodir=$HOME/.vim/undo/  " in ~/.vim/undo/
 set noswapfile
 set nobackup
 set nowb
 set history=20
 
-" colors
+" appearance
 set t_Co=256
 colorscheme sunyata
-
-" set encodings and line ending formats
-set gfs=fixedgr
-set fileencodings=ucs-bom,utf-8,cp1253,default,latin1 " tried on open
-set encoding=utf-8           " encoding displayed inside vim
-set fileformats=unix,mac,dos " format order to be tried on a new buffer
-
-" behaviour
-set mouse=a
-set regexpengine=1     " use old regex engine
-set showcmd            " show typed command
+set noshowcmd          " hide typed command
 set number             " show line numbers
 set showmatch          " show matching parentheses
 set laststatus=1       " hide statusline titles
-set splitbelow         " open new horizontal windows at bottom
-set splitright         " open new vertical windows at right
-set previewheight=3    " set preview window height to 3
 set fillchars+=fold:\  " set folding separator to ' '
 set showbreak=...      " show '...' at start of wrapped lines
 set list               " show non-text characters
 let &listchars = 'tab:| ,trail:_'
 
-set autoindent
-set ignorecase
-set smartcase  " case sensitive only if Uppercase
-set hlsearch   " highlight search matches
+" set encodings and line ending formats
+set gfs=fixedgr
+set fileencodings=ucs-bom,utf-8,cp1253,default,latin1  " tried on open
+set encoding=utf-8  " encoding displayed inside vim
+set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 
-set sw=4 ts=4 sts=4           " default: 4 spaces per tab
-set expandtab                 " replace tabs with spaces
-set backspace=2               " allow backspace in insert mode
-set scrolloff=3               " scroll before reaching last line
-set whichwrap+=h,l,<,>,[,]    " fix line movement on line borders
-set wrap lbr                  " wrap lines by word
-set formatoptions=ro          " no automatic line breaking
-set nojoinspaces              " don't insert 2 spaces after '.', '?' or '!'
-set display+=lastline         " show last wrapped line in window
+" behaviour
+set regexpengine=1   " use old regex engine
+set mouse=a          " enable mouse
+set splitbelow       " open new horizontal windows at bottom
+set splitright       " open new vertical windows at right
+set previewheight=3  " set preview window height to 3
+set autoindent       " autointent
+set sw=4 ts=4 sts=4  " default: 4 spaces per tab
+set expandtab        " replace tabs with spaces
+set nojoinspaces     " don't insert 2 spaces after '.', '?' or '!'
+set backspace=2      " allow backspace in insert mode
+set scrolloff=3      " scroll before reaching last line
+set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
+set wrap lbr             " wrap lines by word
+set formatoptions=ro     " no automatic line breaking
+set display+=lastline    " show last wrapped line in window
 let colorcolumnposition = 81  " position of column to mark text width
-set shell=$SHELL\ -l          " login shell for 'term'
-set shellcmdflag=-l\ -c       " login shell for '!'
+set shell=$SHELL\ -l     " login shell for 'term'
+set shellcmdflag=-l\ -c  " login shell for '!'
 set noshellslash
 
-" allow folding
+" folding
 set foldenable
 set foldmethod=indent
 set foldlevel=99    " depth of first folding
 set foldnestmax=99 " depth of last folding
 set foldcolumn=0
+
+" searching
+set ignorecase
+set smartcase  " case sensitive only if Uppercase
+set hlsearch   " highlight search matches
+
+" autocompletion
+set completeopt-=preview
+set completeopt+=menuone,noselect
+set complete-=u,t
+set shortmess+=c  " shut off completion messages
+set belloff+=ctrlg  " silent completion
+let g:mucomplete#enable_auto_at_startup = 1
+let g:mucomplete#chains = {
+\   'default' : ['path', 'omni', 'keyn', 'dict', 'uspl'],
+\   'cmake'   : ['dict', 'path', 'omni', 'keyn', 'uspl'],
+\   'vim'     : ['path', 'cmd', 'keyn']
+\}
 
 " fix movement in wrapped lines
 noremap  <buffer> <silent> <Up>    gk
@@ -111,16 +124,16 @@ noremap  <buffer> <silent> $       g$
 noremap  <buffer> <silent> <Space> za
 
 " execute last command with C-@
-noremap  <silent> <C-@>   :@:<CR>
-inoremap <silent> <C-@>   <Esc>:@:<CR>
-cnoremap <silent> <C-@>   <C-e><C-u>@:<CR>
+noremap  <silent> <C-@> :@:<CR>
+inoremap <silent> <C-@> <Esc>:@:<CR>
+cnoremap <silent> <C-@> <C-e><C-u>@:<CR>
 
 " show highlight group under cursor
 map <F10> :echo
-\ 'hi<' . synIDattr(synID(line("."),col("."),1),"name") . '> ' .
-\ 'trans<' . synIDattr(synID(line("."),col("."),0),"name") . '> ' .
-\ 'lo<' . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . '>'
-\ <CR>
+\   'hi<' . synIDattr(synID(line("."),col("."),1),"name") . '> ' .
+\   'trans<' . synIDattr(synID(line("."),col("."),0),"name") . '> ' .
+\   'lo<' . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . '>'
+\   <CR>
 
 " smart indent when entering insert mode with i on empty lines
 function! IndentWithI()
@@ -150,11 +163,7 @@ vnoremap <D-v> "+p
 cnoremap <D-v> <C-r>+
 vnoremap <D-c> "+y
 
-" other mappings
-let mapleader = ";"
-nnoremap o o<Esc>
-let g:SuperTabDefaultCompletionType = '<c-n>' " reverse supertab order
-
+" show loclist
 function! LocListToggle()
     if get(getloclist(0, {'winid':0}), 'winid', 0)
         lclose
@@ -163,6 +172,10 @@ function! LocListToggle()
     endif
 endfunction
 nnoremap <silent> <leader>l :call LocListToggle()<CR>
+
+" other mappings
+let mapleader = ";"
+nnoremap o o<Esc>
 
 " commenting
 let g:NERDDefaultAlign = 'left' " flush left comment delimiters
@@ -193,13 +206,12 @@ let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '!'
 
 " clang_complete
-set completeopt=menu,longest
 if has('mac')
     let g:clang_library_path =
-        \'/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+    \   '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
 else
     let g:clang_library_path =
-        \'/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+    \   '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
 endif
 
 
@@ -220,17 +232,17 @@ augroup vimrc
 
     " enable sign column (when appropriate) and set status-line
     autocmd BufWinEnter,BufRead,BufWrite *
-      \  call SetSignColumn(@%, &modifiable)
-      \| let &statusline = '%h%w%F%m%a% = %l, %c'
+    \   call SetSignColumn(@%, &modifiable)
+    \|  let &statusline = '%h%w%F%m%a% = %l, %c'
 
     " set color column to 81th character
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
-      \  let &numberwidth = float2nr(log10(line('$'))) + 2
-      \| let &textwidth   =
-      "\    colorcolumnposition - 2 - &numberwidth*&number - b:gutterwidth
-      \    &columns - 2 - &numberwidth*&number - b:gutterwidth
-      \| let &colorcolumn =
-      \    colorcolumnposition - b:gutterwidth - &numberwidth*&number
+    \   let &numberwidth = float2nr(log10(line('$'))) + 2
+    \|  let &textwidth   =
+    "\     colorcolumnposition - 2 - &numberwidth*&number - b:gutterwidth
+    \     &columns - 2 - &numberwidth*&number - b:gutterwidth
+    \|  let &colorcolumn =
+    \     colorcolumnposition - b:gutterwidth - &numberwidth*&number
 
     " autosave named files
     autocmd CursorHold ?* nested if empty(&buftype) | update | endif
@@ -240,30 +252,35 @@ augroup vimrc
 
     " spell check text files
     autocmd FileType tex,latex,text,markdown
-      \  set formatoptions+=tawcroql
-      \| set spell spelllang=en_us,el,cjk
+    \   set formatoptions+=tawcroql
+    \|  set spell spelllang=en_us,el,cjk
 
     " limit amount of syntax lines
     autocmd Syntax * syn sync minlines=200 maxlines=200
 
     " enable syntax & load default syntax for non-text files
     let textFiletypes =
-      \  ['xml', 'yaml', 'markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
+    \   ['xml', 'yaml', 'markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
     autocmd BufWinEnter,BufRead *
-      \  nested if !exists("g:syntax_on")
-      \|     syntax on
-      \| endif
-      \| if index(textFiletypes, &filetype) < 0
-      \|   source $HOME/.vim/after/syntax/default.vim
-      \| endif
+    \   nested if !exists("g:syntax_on")
+    \|      syntax on
+    \|  endif
+    \|  if index(textFiletypes, &filetype) < 0
+    \|      source $HOME/.vim/after/syntax/default.vim
+    \|  endif
 
+    " use xml syntax for some extensions
     autocmd BufWinEnter,BufRead,BufWrite
-      \ *.sdf,*.world,*.model,*.config,*.launch set ft=xml
+    \   *.sdf,*.world,*.model,*.config,*.launch set ft=xml
+
+    autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt
+    \   set complete=.,k
+    \|  set dictionary=$HOME/.vim/words/cmake.txt
 
     " close loclists with buffer
     autocmd QuitPre * if empty(&buftype) | lclose | endif
 
     " remember state
     au BufWinLeave,BufWrite * silent! mkview
-    au BufWinEnter,BufRead * silent! loadview
+    au BufReadPre * silent! loadview
 augroup END
