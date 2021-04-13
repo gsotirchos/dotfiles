@@ -90,13 +90,12 @@ set foldnestmax=99 " depth of last folding
 set foldcolumn=0
 
 " searching
-set ignorecase
 set smartcase  " case sensitive only if Uppercase
 set hlsearch   " highlight search matches
 
 " autocompletion
 set completeopt-=preview
-set completeopt+=menuone,noselect
+set completeopt+=menuone,noselect,noinsert
 set complete-=u,t
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
@@ -135,7 +134,7 @@ noremap  <silent> <C-@> :@:<CR>
 inoremap <silent> <C-@> <Esc>:@:<CR>
 cnoremap <silent> <C-@> <C-e><C-u>@:<CR>
 
-" show highlight group under cursor
+" print highlight group under cursor
 map <F10> :echo
 \   'hi<' . synIDattr(synID(line("."),col("."),1),"name") . '> ' .
 \   'trans<' . synIDattr(synID(line("."),col("."),0),"name") . '> ' .
@@ -179,6 +178,10 @@ function! LocListToggle()
     endif
 endfunction
 nnoremap <silent> <leader>l :call LocListToggle()<CR>
+
+" ignorecase when searching by using '\c'
+noremap <silent> / :echo '/'<CR>/\c
+noremap <silent> ? :echo '?'<CR>?\c
 
 " other mappings
 let mapleader = ";"
