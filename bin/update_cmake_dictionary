@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-OUTPUT_FILE="$1"
-
-if [[ -z "${OUTPUT_FILE}" ]]; then
-    echo "Error: no output file, exited."
-    return
+if [[ -z "$1" ]]; then
+    OUTPUT_FILE="$(pwd)/cmake.txt"
+else
+    OUTPUT_FILE="$1"
 fi
 
 rm "${OUTPUT_FILE}" &> /dev/null
@@ -50,3 +49,9 @@ while IFS= read -r help_option; do
         cmake "${help_option}" >> "${OUTPUT_FILE}"
     fi
 done
+
+if [ $? -eq 0 ]; then
+  echo "CMake keyword list written in ${OUTPUT_FILE}"
+else
+  echo "Error: failed to write to ${OUTPUT_FILE}"
+fi

@@ -107,7 +107,14 @@ let g:mucomplete#chains = {
 \   'vim'     : ['path', 'cmd', 'keyn']
 \}
 
-" fix movement in wrapped lines
+" autocompletion mappings
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+inoremap <expr> <C-n> pumvisible() ? "\<Down>" : ""
+inoremap <expr> <C-j> pumvisible() ? "" : "\<C-j>"
+inoremap <expr> <C-p> pumvisible() ? "\<Up>" : ""
+inoremap <expr> <C-k> pumvisible() ? "" : "\<C-k>"
+
+" wrapped lines movement mappings
 noremap  <buffer> <silent> <Up>    gk
 inoremap <buffer> <silent> <Up>    <C-o>gk
 noremap  <buffer> <silent> <Down>  gj
@@ -177,7 +184,7 @@ nnoremap <silent> <leader>l :call LocListToggle()<CR>
 let mapleader = ";"
 nnoremap o o<Esc>
 
-" commenting
+" nerdcommenter
 let g:NERDDefaultAlign = 'left' " flush left comment delimiters
 let g:NERDCommentEmptyLines = 1 " comment empty lines too
 let g:NERDAltDelims_swift = 1   " use // instead of /* */ in swift
@@ -282,5 +289,5 @@ augroup vimrc
 
     " remember state
     au BufWinLeave,BufWrite * silent! mkview
-    au BufReadPre * silent! loadview
+    au BufRead * silent! loadview
 augroup END
