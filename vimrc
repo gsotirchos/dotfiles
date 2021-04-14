@@ -95,7 +95,7 @@ set hlsearch   " highlight search matches
 
 " autocompletion
 set completeopt-=preview
-set completeopt+=menuone,noselect,noinsert
+set completeopt+=menuone,noinsert
 set complete-=u,t
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
@@ -104,6 +104,7 @@ let g:mucomplete#chains = {
 \   'default': ['path', 'omni', 'keyn', 'dict', 'uspl'],
 \   'cmake': {
 \       'cmakeComment': [],
+\       'cmakeString': [],
 \       'default': ['dict', 'path', 'omni', 'keyn', 'uspl']
 \   },
 \   'vim': ['path', 'cmd', 'keyn']
