@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
+# output file
 if [[ -z "$1" ]]; then
     OUTPUT_FILE="$(pwd)/cmake.txt"
 else
     OUTPUT_FILE="$1"
 fi
 
+# prepare output file
 rm "${OUTPUT_FILE}" &> /dev/null
 touch "${OUTPUT_FILE}"
 
-# get command keywords
+# function to get some command's keywords
 function get_keywords() {
     command="$1"
 
@@ -20,36 +22,62 @@ function get_keywords() {
             sed -n -r 's/^ *([A-Z_][A-Z_-]*[^])}>:a-z ]).*$/\1/p'
     )"
 
-    echo "${keywords}"
+    # return keywords if the format is correct
+    if [[ "${keywords}" == [A-Z_-]* ]]; then
+        echo "${keywords}"
+    fi
 }
 
-# iterate over every help list
-cmake --help | grep -- --help.*list | xargs -L1 echo |
-while IFS= read -r help_option; do
-    help_option="${help_option% \[<f>\]*}"
+# function to echo every keyword from cmake help lists
+function echo_keywords() {
+    local IFS=$'\n'
 
-    if [[ "${help_option}" == *"manual"* ||
-        "${help_option}" == *"module"* ||
-        "${help_option}" == *"policy"* ]]; then
-        # ignore manual, module, and policy help lists
-        continue
-    elif [[ "${help_option}" == *"command"* ]]; then
-        # for commands: after the command name append its keywords
-        cmake "${help_option}" |
-        while IFS= read command; do
-            echo ${command} >> "${OUTPUT_FILE}"
+    # iterate over every help list
+    help_options="$(cmake --help | grep -- --help.*list | xargs -L1 echo)"
+    for help_option in ${help_options}; do
+        help_option="${help_option% \[<f>\]*}"
 
-            keywords="$(get_keywords ${command})"
-            if [[ "${keywords}" == [A-Z_-]* ]]; then
-                echo "${keywords}" >> "${OUTPUT_FILE}"
-            fi
-        done
-    else
-        # append help list entries
-        cmake "${help_option}" >> "${OUTPUT_FILE}"
-    fi
-done
+        if [[ "${help_option}" == *"manual"* ||
+            "${help_option}" == *"module"* ||
+            "${help_option}" == *"policy"* ]]; then
+            # ignore manual, module, and policy help lists
+            continue
+        elif [[ "${help_option}" == *"command"* ]]; then
+            # for commands list: after the command name append its keywords
+            for command in $(cmake "${help_option}"); do
+                # return the command name
+                echo "${command}"
 
+                # return the command keywords
+                get_keywords "${command}"
+            done
+        else
+            for entry in "$(cmake ${help_option})"; do
+                # return the other help lists' entries
+                echo "${entry}"
+            done
+        fi
+    done
+}
+
+function main() {
+    # declare a set to store keywords
+    declare -A keywords_set
+
+    # store the discovered keywords in the set
+    for keyword in $(echo_keywords); do
+        keywords_set["${keyword}"]=1
+    done
+
+    # write the set to output file
+    for keyword in "${!keywords_set[@]}"; do
+        echo "${keyword}" >> "${OUTPUT_FILE}"
+    done
+}
+
+main
+
+# show exit status
 if [ $? -eq 0 ]; then
   echo "CMake keyword list written in ${OUTPUT_FILE}"
 else
