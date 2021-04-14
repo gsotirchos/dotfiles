@@ -19,15 +19,15 @@ function get_keywords() {
     command_names="$(
         # get command names
         cmake "$1" "$2" |
-            sed -n -r "s/^ *([a-z_-]+)\(.*$/\1/p"
+            sed -n -r "s/^ *([A-Za-z_][A-Za-z_-]+)\(.*$/\1/p"
     )"
 
     # get command keywords
     keywords="$(
         cmake "$1" "$2" |
-            awk "/[a-z_-]+\(/,/.*\)/" |
+            awk "/[A-Za-z_-]+\(/,/.*\)/" |
             sed -r "s/[[({<|]/\n/g" |
-            sed -n -r 's/^ *([A-Z_][A-Z0-9_-]*[^])}>\":a-z ]).*$/\1/p'
+            sed -n -r 's/^ *([A-Z_][A-Z0-9_-]+)[^A-Z].*$/\1/p'
     )"
 
     # return if the format is correct
@@ -68,6 +68,9 @@ function echo_keywords() {
             done
         fi
     done
+
+    # additional, manual keywords
+    echo "TRUE"
 }
 
 function main() {
