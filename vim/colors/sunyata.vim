@@ -137,7 +137,6 @@ exe "hi! Folded         cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      
 exe "hi! VertSplit      cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_bg" guibg=".color_bg
 exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link FoldColumn EndOfBuffer"
-exe "hi! link Conceal Folded"
 
 exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! TabLineFill    cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
@@ -154,3 +153,4 @@ exe "hi! link StatusLine SpecialComment"
 exe "hi! link StatusLineNC Comment"
 exe "hi! link SpecialKey Comment"
 exe "hi! link NonText Comment"
+exe "hi! link Conceal Comment"

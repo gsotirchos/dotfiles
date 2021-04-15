@@ -51,9 +51,11 @@ set number             " show line numbers
 set showmatch          " show matching parentheses
 set laststatus=1       " hide statusline titles
 set fillchars+=fold:\  " set folding separator to ' '
-set showbreak=...      " show '...' at start of wrapped lines
+set showbreak=…        " show '…' at start of wrapped lines
 set list               " show non-text characters
-let &listchars = 'tab:| ,trail:_'
+let &listchars = 'tab:┊ ,trail:·,conceal:*'
+set concealcursor=inc
+set conceallevel=1
 
 " set encodings and line ending formats
 set gfs=fixedgr
@@ -68,11 +70,13 @@ set splitbelow       " open new horizontal windows at bottom
 set splitright       " open new vertical windows at right
 set previewheight=3  " set preview window height to 3
 set autoindent       " autointent
-set sw=4 ts=4 sts=4  " default: 4 spaces per tab
 set expandtab        " replace tabs with spaces
+let &sw=4            " ┐
+let &ts=&sw          " ├ 4 spaces per tab
+let &sts=&sw         " ┘
 set nojoinspaces     " don't insert 2 spaces after '.', '?' or '!'
 set backspace=2      " allow backspace in insert mode
-set scrolloff=3      " scroll before reaching last line
+set scrolloff=3      " scroll 3 lines before the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr             " wrap lines by word
 set formatoptions=ro     " no automatic line breaking
@@ -272,7 +276,7 @@ augroup vimrc
     " limit amount of syntax lines
     autocmd Syntax * syn sync minlines=200 maxlines=200
 
-    " enable syntax & load default syntax for non-text files
+    " enable syntax, load default syntax, * show guides for non-text files
     let textFiletypes =
     \   ['xml', 'yaml', 'markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
     autocmd BufWinEnter,BufRead *
@@ -281,6 +285,7 @@ augroup vimrc
     \|  endif
     \|  if index(textFiletypes, &filetype) < 0
     \|      source $HOME/.vim/after/syntax/default.vim
+    \|      source $HOME/.vim/after/syntax/indent_guides.vim
     \|  endif
 
     " use xml syntax for some extensions
