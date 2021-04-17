@@ -257,7 +257,6 @@ augroup vimrc
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
     \   let &numberwidth = float2nr(log10(line('$'))) + 2
     \|  let &textwidth   =
-    "\     colorcolumnposition - 2 - &numberwidth*&number - b:gutterwidth
     \     &columns - 2 - &numberwidth*&number - b:gutterwidth
     \|  let &colorcolumn =
     \     colorcolumnposition - b:gutterwidth - &numberwidth*&number
@@ -279,8 +278,8 @@ augroup vimrc
     " enable syntax, load default syntax, * show guides for non-text files
     let textFiletypes =
     \   ['xml', 'yaml', 'markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
-    autocmd BufWinEnter,BufRead *
-    \   nested if !exists("g:syntax_on")
+    autocmd BufWinEnter,BufRead * nested
+    \   if !exists("g:syntax_on")
     \|      syntax on
     \|  endif
     \|  if index(textFiletypes, &filetype) < 0
