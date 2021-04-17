@@ -111,7 +111,7 @@ exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      
 
 " my custom groups
 exe "hi! MembOperator   cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
-exe "hi! otherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=".color_12"  guibg=".color_bg
+exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=".color_12"  guibg=".color_bg
 
 exe "hi! Search         cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link IncSearch Search"
