@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 
 # function to append last input line to PATH
-append_last_path () {
-    local extra_path
-    while IFS= read -r extra_path; do
-        append_last_path
-        export PATH="${extra_path}:${PATH//":$extra_path"}"
+append_paths () {
+    local current_path="$1"
+    shift
+
+    for extra_path in $@; do
+        if [[ -d ${extra_path} ]]; then current_path="${extra_path}:${current_path//$extra_path:}"
+        fi
     done
 
-    echo "export PATH=\"${PATH}\""
+    echo "${current_path}"
 }
 
-extra_paths_file="$1"
-append_last_path < "${extra_paths_file}"
+extra_paths_file="$2"
+current_path="$1"
+
+append_paths "${current_path}" "$(envsubst < ${extra_paths_file})"
