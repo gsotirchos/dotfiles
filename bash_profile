@@ -46,9 +46,10 @@ export LANG="en_US.UTF-8"
 export imac="192.168.1.2"
 export npower_pi="npower@192.168.1.20"
 
-# use clang with CMake
-export CC=/usr/bin/clang
-export CXX=/usr/bin/clang++
+# use clang and Ninja with CMake
+export CC="/usr/bin/clang"
+export CXX="/usr/bin/clang++"
+export CMAKE_GENERATOR="Ninja"
 
 # gtest environment
 export CPLUS_INCLUDE_PATH="/usr/local/include"
