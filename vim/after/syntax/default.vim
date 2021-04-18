@@ -6,6 +6,7 @@ syntax enable
 
 " bright marks, operators, logicals
 syntax match myMark "\(MARK:\s\)\@<=.*" containedin=.*Comment.* contained
+syntax match myUrl "\(URL:\s\)\@<=.*" containedin=.*Comment.* contained
 "syntax match myOperator "[-+=?!$%^&*\\|~/:]" contains=TOP
 "syntax match myOperator "[<>]*[-=]\+[<>]*" contains=TOP
 "syntax match myOperator "\s[<>]\+\s" containedin=NONE
@@ -13,3 +14,4 @@ syntax match myMark "\(MARK:\s\)\@<=.*" containedin=.*Comment.* contained
 hi! link myMemberOperator MembOperator
 hi! link myOperator Operator
 hi! link myMark SpecialComment
+hi! link myUrl underlined
