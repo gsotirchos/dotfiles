@@ -46,15 +46,21 @@ export LANG="en_US.UTF-8"
 export imac="192.168.1.2"
 export npower_pi="npower@192.168.1.20"
 
+# use clang with CMake
+export CC=/usr/bin/clang
+export CXX=/usr/bin/clang++
+
 # gtest environment
 export CPLUS_INCLUDE_PATH="/usr/local/include"
 export LIBRARY_PATH="/usr/local/lib"
 
 # homebrew path
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if [[ -z "${HOMEBREW_PREFIX}" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 # append extra paths from file
-eval "$(~/.dotfiles/bin/append_paths ~/.dotfiles/extra_paths.txt)"
+export PATH="$(~/.dotfiles/bin/append_paths ${PATH} ~/.dotfiles/extra_paths.txt)"
 
 # aliases
 export TRASH="${HOME}/.Trash"
