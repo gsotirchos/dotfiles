@@ -42,6 +42,13 @@ set noswapfile
 set nobackup
 set nowb
 set history=20
+set autoread
+
+" set encodings and line ending formats
+set gfs=fixedgr
+set fileencodings=ucs-bom,utf-8,cp1253,default,latin1  " tried on open
+set encoding=utf-8  " encoding displayed inside vim
+set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 
 " appearance
 set t_Co=256
@@ -56,12 +63,6 @@ set list               " show non-text characters
 let &listchars = 'tab:┊ ,trail:·,conceal:*'
 set concealcursor=inc
 set conceallevel=1
-
-" set encodings and line ending formats
-set gfs=fixedgr
-set fileencodings=ucs-bom,utf-8,cp1253,default,latin1  " tried on open
-set encoding=utf-8  " encoding displayed inside vim
-set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 
 " behaviour
 set regexpengine=1   " use old regex engine
@@ -89,7 +90,7 @@ set noshellslash
 " folding
 set foldenable
 set foldmethod=indent
-set foldlevel=99    " depth of first folding
+set foldlevel=99   " depth of first folding
 set foldnestmax=99 " depth of last folding
 set foldcolumn=0
 
