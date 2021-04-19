@@ -2,7 +2,7 @@
 "syntax match myMemberOperator "\( \)\@<!\.\( \)\@!"
 "syntax match myMemberOperator "[(){}\[\],;]"
 
-syntax enable
+"syntax enable
 
 " bright marks, operators, logicals
 syntax match myMark "\(MARK:\s\)\@<=.*" containedin=.*Comment.* contained
