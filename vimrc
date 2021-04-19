@@ -60,7 +60,7 @@ set laststatus=1       " hide statusline titles
 set fillchars+=fold:\  " set folding separator to ' '
 set showbreak=…        " show '…' at start of wrapped lines
 set list               " show non-text characters
-let &listchars = 'tab:┊ ,trail:·,conceal:*'
+let &listchars = 'tab:╵ ,trail:·,conceal:*'
 set concealcursor=inc
 set conceallevel=1
 
@@ -114,6 +114,10 @@ let g:mucomplete#chains = {
 \   },
 \   'vim': ['path', 'cmd', 'keyn']
 \}
+
+
+" change leader
+let mapleader = ";"
 
 " autocompletion mappings
 inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
@@ -197,9 +201,13 @@ let mapleader = ";"
 nnoremap o o<Esc>
 
 " nerdcommenter
-let g:NERDDefaultAlign = 'left' " flush left comment delimiters
-let g:NERDCommentEmptyLines = 1 " comment empty lines too
-let g:NERDAltDelims_swift = 1   " use // instead of /* */ in swift
+let g:NERDDefaultAlign = 'left'  " flush left comment delimiters
+let g:NERDCommentEmptyLines = 1  " comment empty lines too
+let g:NERDAltDelims_swift = 1    " use // instead of /* */ in swift
+let g:NERDRemoveAltComs = 1      " also remove alternative comments
+let g:NERDSpaceDelims = 1        " add extra spaces around delimiters
+let g:NERDRemoveExtraSpaces = 1  " always remove extra spaces
+let g:NERDTrimTrailingWhitespace  = 1
 
 " Fortran
 let fortran_free_source = 1
@@ -228,9 +236,9 @@ let g:ale_sign_warning = '!'
 if has('mac')
     let g:clang_library_path =
     \   '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
-else
+elseif has('linux')
     let g:clang_library_path =
-    \   '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+    \   '/usr/lib/llvm-10/lib/libclang.so.1'
 endif
 
 
