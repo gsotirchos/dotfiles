@@ -1,5 +1,5 @@
-let g:cpp_class_scope_highlight = 1
-let g:cpp_member_variable_highlight = 1
+let g:cpp_class_scope_highlight = 1  " for '::'
+let g:cpp_member_variable_highlight = 1  " for '->'
 let g:cpp_class_decl_highlight = 1
 let g:cpp_posix_standard = 1
 "let g:cpp_experimental_simple_template_highlight = 1
@@ -24,10 +24,11 @@ hi! link cCustomPtr       MembOperator
 hi! link cFormat          Special
 hi! link cOperator        Statement
 hi! link cppOperator      Statement
-hi! link cppSTLconstant   Statement
-hi! link cppSTLnamespace  Normal
-hi! link cppSTLException  Function
 hi! link cppSTLFunction   Function
+hi! link cppSTLconstant   Function
+hi! link cppSTLnamespace  Function
+hi! link cppSTLException  Function
+hi! link cppSTLType       Function
 hi! link cCustomFunc      Function
 hi! link cCustomClass     Function
 hi! link cCustomClassName Identifier
