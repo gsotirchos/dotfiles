@@ -8,12 +8,16 @@ let g:cpp_concepts_highlight = 1
 "let g:cpp_no_function_highlight = 1
 "let c_no_curly_error=1
 
-"syntax match cppName "\(^\(.*;\+\)*[ \n]*\S\+[^({][ \n]\+\)\@<=\(\h\w::\)*\h\w*\([ \n]*[({=]\)\@="
-syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(namespace\|enum\)[ \n]\+\)\@<=\h\w*"
+
+"syntax region Normal keepend extend
+"\   start="{"hs=e+1
+"\   end="}"he=s-1
+"\   contains=TOP,.*Func.*,.*Class.*,.*STL.*
+syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(namespace\|enum\|struct\)[ \n]\+\)\@<=\h\w*"
 syntax region myMark
-\    start="\(\".*\)\@<!\(%.*Tag(\)\@<="
-\    end="\()%\)\@="
-\    containedin=.*Comment.* contained oneline
+\   start="\(\".*\)\@<!\(%.*Tag(\)\@<="
+\   end="\()%\)\@="
+\   containedin=.*Comment.* contained oneline
 syntax match myMemberOperator ";"
 
 hi! link myMark           SpecialComment
