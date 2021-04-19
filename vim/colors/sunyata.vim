@@ -124,7 +124,7 @@ exe "hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE gui=underline 
 exe "hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE gui=underline guifg=".color_3"  guibg=".color_bg
 exe "hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link SpellRare SpellLocal"
-exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_4"  guibg=".color_bg
+exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_12"  guibg=".color_bg
 exe "hi! Ignore         cterm=NONE      ctermfg=5    ctermbg=NONE gui=NONE      guifg=".color_5"  guibg=".color_bg
 exe "hi! Directory      cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
 
@@ -143,11 +143,11 @@ exe "hi! TabLineFill    cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      
 exe "hi! TabLineSel     cterm=NONE      ctermfg=0    ctermbg=8    gui=NONE      guifg=".color_0"  guibg=".color_8
 exe "hi! TabLine        cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
-exe "hi! ModeMsg        cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
 exe "hi! link MoreMsg ModeMsg"
 exe "hi! Pmenu          cterm=NONE      ctermfg=15   ctermbg=8    gui=NONE      guifg=".color_15" guibg=".color_8
 exe "hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=7    gui=NONE      guifg=".color_15" guibg=".color_7
 exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=".color_15" guibg=".color_bg
+exe "hi! link ModeMsg OtherType"
 exe "hi! link PmenuSbar Pmenu"
 exe "hi! link StatusLine SpecialComment"
 exe "hi! link StatusLineNC Comment"
