@@ -112,7 +112,6 @@ let g:mucomplete#chains = {
 \   'default': ['path', 'omni', 'keyn', 'dict', 'uspl'],
 \   'cmake': {
 \       'cmakeComment': [],
-\       'cmakeString': [],
 \       'default': ['dict', 'path', 'omni', 'keyn', 'uspl']
 \   },
 \   'vim': ['cmd', 'path', 'keyn']
