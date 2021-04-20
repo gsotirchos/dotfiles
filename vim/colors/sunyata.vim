@@ -147,10 +147,10 @@ exe "hi! link MoreMsg ModeMsg"
 exe "hi! Pmenu          cterm=NONE      ctermfg=15   ctermbg=8    gui=NONE      guifg=".color_15" guibg=".color_8
 exe "hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=7    gui=NONE      guifg=".color_15" guibg=".color_7
 exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=".color_15" guibg=".color_bg
-exe "hi! link ModeMsg OtherType"
 exe "hi! link PmenuSbar Pmenu"
+exe "hi! link ModeMsg OtherType"
 exe "hi! link StatusLine SpecialComment"
 exe "hi! link StatusLineNC Comment"
+exe "hi! link Conceal Comment"
 exe "hi! link SpecialKey Comment"
 exe "hi! link NonText Comment"
-exe "hi! link Conceal Comment"
