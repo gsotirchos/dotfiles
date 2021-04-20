@@ -105,6 +105,7 @@ set complete-=u,t
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
 let g:mucomplete#enable_auto_at_startup = 1
+let g:mucomplete#completion_delay = 500
 let g:mucomplete#chains = {
 \   'default': ['path', 'omni', 'keyn', 'dict', 'uspl'],
 \   'cmake': {
