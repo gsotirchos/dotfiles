@@ -15,6 +15,7 @@ Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
 
+Plugin 'tpope/vim-rsi'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'w0rp/ale'
 Plugin 'lifepillar/vim-mucomplete'
@@ -57,7 +58,7 @@ set noshowcmd          " hide typed command
 set number             " show line numbers
 set showmatch          " show matching parentheses
 set laststatus=2       " hide statusline titles
-let &statusline = '  %h%w %F%m%a%=%#Comment# ⊨ %l/%L  ⫪ %c  '
+let &statusline = '  %h%w %F%m%a%=%#Comment# ⫩ %l/%L  ⟛ %c  '
 set fillchars+=fold:\  " set folding separator to ' '
 set showbreak=…        " show '…' at start of wrapped lines
 set list               " show non-text characters
