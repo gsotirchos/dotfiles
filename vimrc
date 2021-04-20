@@ -56,7 +56,8 @@ colorscheme sunyata
 set noshowcmd          " hide typed command
 set number             " show line numbers
 set showmatch          " show matching parentheses
-set laststatus=1       " hide statusline titles
+set laststatus=2       " hide statusline titles
+let &statusline = '  %h%w %F%m%a%=%#Comment# ⊨ %l/%L  ⫪ %c  '
 set fillchars+=fold:\  " set folding separator to ' '
 set showbreak=…        " show '…' at start of wrapped lines
 set list               " show non-text characters
@@ -105,7 +106,7 @@ set complete-=u,t
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
 let g:mucomplete#enable_auto_at_startup = 1
-let g:mucomplete#completion_delay = 500
+let g:mucomplete#completion_delay = 500  " 0.5 sec
 let g:mucomplete#chains = {
 \   'default': ['path', 'omni', 'keyn', 'dict', 'uspl'],
 \   'cmake': {
@@ -113,9 +114,8 @@ let g:mucomplete#chains = {
 \       'cmakeString': [],
 \       'default': ['dict', 'path', 'omni', 'keyn', 'uspl']
 \   },
-\   'vim': ['path', 'cmd', 'keyn']
+\   'vim': ['cmd', 'path', 'keyn']
 \}
-
 
 " change leader
 let mapleader = ";"
@@ -261,7 +261,6 @@ augroup vimrc
     " enable sign column (when appropriate) and set status-line
     autocmd BufWinEnter,BufRead,BufWrite *
     \   call SetSignColumn(@%, &modifiable)
-    \|  let &statusline = '%h%w%F%m%a% = %l, %c'
 
     " set color column to 81th character
     autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
