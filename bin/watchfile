@@ -21,9 +21,9 @@ function build_and_execute() {
     # attempt to build project
     clear # clear screen
     # execute the built binary
-    echo -e "--- Building & executing ---"
+    echo -e       "--------- Executing ---------\n"
     eval ${COMMAND} &&
-        echo -e "----------------------------\n" &&
+        echo -e "\n-----------------------------\n" &&
         echo "Watching \"${FILE_PATH}\"..."
 }
 export -f build_and_execute
@@ -33,7 +33,7 @@ function watch_file() {
     fswatch "${FILE_PATH}" | while read > /dev/null; do
         kill ${task_pid} &> /dev/null
         wait ${task_pid} &> /dev/null
-        echo "Rebuilding..."
+        echo "Re-execugin..."
 
         # wait $delay seconds for file writes to finish
         delay=1
