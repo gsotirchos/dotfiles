@@ -4,3 +4,4 @@ $HOME/.local/bin
 $HOME/.cabal/bin
 ${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/bin
 /opt/homebrew/opt/coreutils/libexec/gnubin
+/opt/homebrew/opt/llvm/bin
