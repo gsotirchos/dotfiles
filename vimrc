@@ -58,7 +58,7 @@ set noshowcmd          " hide typed command
 set number             " show line numbers
 set showmatch          " show matching parentheses
 set laststatus=2       " hide statusline titles
-let &statusline = '  %h%w %F%m%a%=%#Comment# ⫩ %l/%L  ⟛ %c  '
+let &statusline = '  %h%w %F%#Todo#%m%##%a%=%#Comment# ⫩ %l/%L  ⟛ %c  '
 set fillchars+=fold:\  " set folding separator to ' '
 set showbreak=…        " show '…' at start of wrapped lines
 set list               " show non-text characters
@@ -84,7 +84,7 @@ set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr             " wrap lines by word
 set formatoptions=ro     " no automatic line breaking
 set display+=lastline    " show last wrapped line in window
-let colorcolumnposition = 81  " position of column to mark text width
+let colorcolumn = 81     " color column on 81st character
 set shell=$SHELL\ -l     " login shell for 'term'
 set shellcmdflag=-l\ -c  " login shell for '!'
 set noshellslash
@@ -232,6 +232,7 @@ let g:ale_echo_msg_format = '%linter%::%severity%% code% -- %s'
 let g:ale_sign_column_always = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '!'
+let g:ale_linters = {'cpp': ['clangtidy']}
 
 " clang_complete
 if has('mac')
@@ -261,14 +262,6 @@ augroup vimrc
     " enable sign column (when appropriate) and set status-line
     autocmd BufWinEnter,BufRead,BufWrite *
     \   call SetSignColumn(@%, &modifiable)
-
-    " set color column to 81th character
-    autocmd BufWinEnter,VimResized,TextChanged,TextChangedI,OptionSet *
-    \   let &numberwidth = float2nr(log10(line('$'))) + 2
-    \|  let &textwidth   =
-    \     &columns - 2 - &numberwidth*&number - b:gutterwidth
-    \|  let &colorcolumn =
-    \     colorcolumnposition - b:gutterwidth - &numberwidth*&number
 
     " autosave named files
     autocmd CursorHold ?* nested if empty(&buftype) | update | endif
