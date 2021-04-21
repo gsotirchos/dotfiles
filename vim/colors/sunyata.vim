@@ -111,7 +111,7 @@ exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      
 
 " my custom groups
 exe "hi! MembOperator   cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
-exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=".color_12"  guibg=".color_bg
+exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=".color_12" guibg=".color_bg
 
 exe "hi! Search         cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link IncSearch Search"
@@ -124,7 +124,7 @@ exe "hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE gui=underline 
 exe "hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE gui=underline guifg=".color_3"  guibg=".color_bg
 exe "hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link SpellRare SpellLocal"
-exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_12"  guibg=".color_bg
+exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_12" guibg=".color_bg
 exe "hi! Ignore         cterm=NONE      ctermfg=5    ctermbg=NONE gui=NONE      guifg=".color_5"  guibg=".color_bg
 exe "hi! Directory      cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
 
