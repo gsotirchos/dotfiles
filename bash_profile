@@ -47,8 +47,8 @@ export imac="192.168.1.2"
 export npower_pi="npower@192.168.1.20"
 
 # use clang and Ninja with CMake
-export CC="/usr/bin/clang"
-export CXX="/usr/bin/clang++"
+export CC="/opt/homebrew/opt/llvm/bin/clang"
+export CXX="${CC}++"
 export CMAKE_GENERATOR="Ninja"
 
 # gtest environment
