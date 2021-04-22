@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-BRIGHT_COLOR='\033[0;97m'
-NORMAL_COLOR='\033[0m'
-
 #
 # ${DOTFILES}/setup.sh
 #
+
+BRIGHT_COLOR='\033[0;97m'
+NORMAL_COLOR='\033[0m'
 
 # check for `realpath` command
 if ! command -v realpath &> /dev/null; then
@@ -16,26 +16,31 @@ fi
 # dotfiles path
 DOTFILES=$(\
     builtin cd "$(\
-    dirname "$(realpath "${BASH_SOURCE[0]}")"\
+        dirname "$(realpath ${BASH_SOURCE[0]})"\
     )" > /dev/null && pwd)
 
 # prepare folders
-mkdir -vp ~/Library/LaunchAgents
 mkdir -vp ~/.vim/undo
 mkdir -vp ~/.vim/spell
 mkdir -vp ~/.vim/words
-mkdir -vp ~/.config/lf
 mkdir -vp ~/.local/bin
 touch ~/.hushlogin
+sudo chown root:wheel .dotfiles/LaunchDaemons/*
 
 # make soft symlinks
 echo -e "${BRIGHT_COLOR}- Symlinking dotfiles (${DOTFILES})${NORMAL_COLOR}"
-"${DOTFILES}"/bin/ln_dotfiles "${DOTFILES}"
-ln -sfv "${DOTFILES}"/LaunchAgents/* ~/Library/LaunchAgents
-ln -sfv "${DOTFILES}"/vim/*          ~/.vim
-ln -sfv ~/.windows_dotfiles/lfrc     ~/.config/lf/lfrc
+"${DOTFILES}"/bin/ln_dotfiles "${DOTFILES}" "${HOME}/."
+ln -sfv "${DOTFILES}"/vim/* ~/.vim
 
-echo -e "${BRIGHT_COLOR}\n!! Don't forget to load the .plist files!${NORMAL_COLOR}"
+# setup launch daemons
+for plist_file in "${HOME}/.dotfiles/LaunchDaemons/"*.plist; do
+    sudo ln -sfv "${plist_file}"\
+        "/Library/LaunchDaemons/$(basename ${plist_file})"
+    sudo chown root:wheel\
+        "/Library/LaunchDaemons/$(basename ${plist_file})"
+    sudo launchctl load -w\
+        "/Library/LaunchDaemons/$(basename ${plist_file})"
+done
 
 # setup julia
 if command -v "julia" &> /dev/null; then
