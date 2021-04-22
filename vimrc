@@ -292,7 +292,7 @@ augroup vimrc
 
     " use xml syntax for some extensions
     autocmd BufWinEnter,BufRead,BufWrite
-    \   *.sdf,*.world,*.model,*.config,*.launch set ft=xml
+    \   *.sdf,*.world,*.model,*.config,*.launch,*.plist set ft=xml
 
     autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt
     \   set complete=.,k
