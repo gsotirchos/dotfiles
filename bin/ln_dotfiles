@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-DOTFILES="$1"
+target_dir="$(realpath $1)"
+destination_prefix="$2"
 
 # make soft symlinks of dotfiles
-for filename in ${DOTFILES}/*; do
+for filename in ${target_dir}/*; do
     if [[ -f "${filename}" ]]; then
         ln -sfv "${filename}" "${HOME}/.$(basename ${filename})"
     fi
