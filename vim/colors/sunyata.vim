@@ -115,7 +115,7 @@ exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      
 
 exe "hi! Search         cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link IncSearch Search"
-exe "hi! MatchParen     cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
+exe "hi! MatchParen     cterm=bold      ctermfg=3    ctermbg=8    gui=bold      guifg=".color_3"  guibg=".color_8
 exe "hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE gui=bold      guifg=".color_1"  guibg=".color_bg
 exe "hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE gui=NONE      guifg=".color_1"  guibg=".color_bg
 exe "hi! Todo           cterm=bold      ctermfg=3    ctermbg=NONE gui=bold      guifg=".color_3"  guibg=".color_bg
@@ -140,7 +140,7 @@ exe "hi! link FoldColumn EndOfBuffer"
 
 exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! TabLineFill    cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
-exe "hi! TabLineSel     cterm=NONE      ctermfg=0    ctermbg=8    gui=NONE      guifg=".color_0"  guibg=".color_8
+exe "hi! TabLineSel     cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=".color_7"  guibg=".color_8
 exe "hi! TabLine        cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link MoreMsg ModeMsg"
@@ -149,8 +149,8 @@ exe "hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=7    gui=NONE      
 exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=".color_15" guibg=".color_bg
 exe "hi! link PmenuSbar Pmenu"
 exe "hi! link ModeMsg OtherType"
-exe "hi! link StatusLine SpecialComment"
-exe "hi! link StatusLineNC Comment"
+exe "hi! link StatusLine Folded"
+exe "hi! link StatusLineNC TabLineSel"
 exe "hi! link Conceal Comment"
 exe "hi! link SpecialKey Comment"
 exe "hi! link NonText Comment"
