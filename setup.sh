@@ -25,7 +25,6 @@ mkdir -vp ~/.vim/spell
 mkdir -vp ~/.vim/words
 mkdir -vp ~/.local/bin
 touch ~/.hushlogin
-sudo chown root:wheel .dotfiles/LaunchDaemons/*
 
 # make soft symlinks
 echo -e "${BRIGHT_COLOR}- Symlinking dotfiles (${DOTFILES})${NORMAL_COLOR}"
@@ -41,6 +40,13 @@ for plist_file in "${HOME}/.dotfiles/LaunchDaemons/"*.plist; do
     sudo launchctl load -w\
         "/Library/LaunchDaemons/$(basename ${plist_file})"
 done
+
+# setup vundle
+if [[ ! -d ~/.vim/bundle/Vundle.vim ]]; then
+    echo -e "${BRIGHT_COLOR}- Couldn't locate ~/.vim/bundle/Vundle.vim, setting up...${NORMAL_COLOR}"
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    vim +PluginInstall +qall
+fi
 
 # setup julia
 if command -v "julia" &> /dev/null; then
