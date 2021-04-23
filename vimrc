@@ -58,7 +58,7 @@ set noshowcmd          " hide typed command
 set number             " show line numbers
 set showmatch          " show matching parentheses
 set laststatus=2       " hide statusline titles
-let &statusline = '  %h%w %F%#Todo#%m%##%a%=%#Comment# ⫩ %l/%L  ⟛ %c  '
+let &statusline = '%#Normal#  %##%h%w %F%#MatchParen#%m%##%a%=%##⫩ %l/%L  ⟛ %c %#Normal#  %##'
 set fillchars+=fold:\  " set folding separator to ' '
 set showbreak=…        " show '…' at start of wrapped lines
 set list               " show non-text characters
