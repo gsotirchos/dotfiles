@@ -3,8 +3,8 @@
 "
 
 """""""""""""""""""""""""""""""""""""""""""
-set nocompatible " be iMproved, required
-filetype off     " required
+set nocompatible  " be iMproved, required
+filetype off  " required
 
 " set the runtime path to include Vundle and initialize
 set rtp+=$HOME/.vim/bundle/Vundle.vim
@@ -30,84 +30,88 @@ Plugin 'lervag/vimtex'
 Plugin 'PProvost/vim-ps1'
 
 "" plugins end here
-call vundle#end() " required
+call vundle#end()  " required
 """""""""""""""""""""""""""""""""""""""""""
 
 filetype plugin indent on
 
 " saving
-set updatetime=750
-set undofile  " maintain undo file...
-set undodir=$HOME/.vim/undo/  " in ~/.vim/undo/
-set noswapfile
-set nobackup
-set nowb
-set history=20
-set autoread
+set updatetime=750  " autoupdate delay
+set undofile  " maintain undo file
+set undodir=$HOME/.vim/undo/  " undo file location
+set noswapfile  " don't write swap file
+set nowritebackup  " no backup before overwriting
+set nobackup  " no persistent backups
+set autoread  " auto-read modified open files
 
 " set encodings and line ending formats
-set gfs=fixedgr
 set fileencodings=ucs-bom,utf-8,cp1253,default,latin1  " tried on open
-set encoding=utf-8  " encoding displayed inside vim
+set encoding=utf-8  " encoding used for displaying inside vim
 set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 
 " appearance
 set t_Co=256
 colorscheme sunyata
-set noshowcmd          " hide typed command
-set number             " show line numbers
-set showmatch          " show matching parentheses
-set laststatus=2       " hide statusline titles
-let &statusline = '%#Normal#  %##%h%w %F%#MatchParen#%m%##%a%=%##⫩ %l/%L  ⟛ %c %#Normal#  %##'
-set fillchars+=fold:\  " set folding separator to ' '
-set showbreak=…        " show '…' at start of wrapped lines
-set list               " show non-text characters
+set number  " show line numbers
+set wrap  " wrap long lines
+set showmatch  " show matching parentheses
+set noshowcmd  " hide typed command
+set laststatus=2  " always show statusline
+let &statusline = '%##%h%w %F%#MatchParen#%m%##%a%=%##⫩ %l/%L  ⟛ %c '
+let &fillchars = 'vert:│,diff:-,eob: '
+set showbreak=…  " show '…' at start of wrapped lines
+set list  " show non-text characters
 let &listchars = 'tab:╵ ,trail:·,conceal:*'
-set concealcursor=inc
-set conceallevel=1
+set concealcursor=inc  " enable conceal on cursor line in i, n, c modes
+set conceallevel=1  " enable conceal
+function! MyFoldText()  " custom fold text
+set gfs=fixedgr
+    let line = getline(v:foldstart)
+    let sub = substitute(line, '\S\+.*', '...', 'g')
+    return sub
+endfunction
 
 " behaviour
-set regexpengine=1   " use old regex engine
-set mouse=a          " enable mouse
-set splitbelow       " open new horizontal windows at bottom
-set splitright       " open new vertical windows at right
+set regexpengine=1  " use old regex engine
+set mouse=a  " enable mouse
+set splitbelow  " open new horizontal windows at bottom
+set splitright  " open new vertical windows at right
 set previewheight=3  " set preview window height to 3
-set autoindent       " autointent
-set expandtab        " replace tabs with spaces
-let &sw=4            " ┐
-let &ts=&sw          " ├ 4 spaces per tab
-let &sts=&sw         " ┘
-set nojoinspaces     " don't insert 2 spaces after '.', '?' or '!'
-set backspace=2      " allow backspace in insert mode
-set scrolloff=3      " scroll 3 lines before the last
+set autoindent  " autointent
+set expandtab  " replace tabs with spaces
+let &sw=4     " ┐
+let &ts=&sw   " ├ 4 spaces per tab
+let &sts=&sw  " ┘
+set nojoinspaces  " don't insert 2 spaces after '.', '?' or '!'
+set backspace=2  " allow backspace in insert mode
+set scrolloff=3  " scroll 3 lines before the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
-set wrap lbr             " wrap lines by word
-set formatoptions=ro     " no automatic line breaking
-set display+=lastline    " show last wrapped line in window
-let colorcolumn = 81     " color column on 81st character
-set shell=$SHELL\ -l     " login shell for 'term'
+set wrap lbr  " wrap lines by word
+set formatoptions=ro  " no automatic line breaking
+set display+=lastline  " show last wrapped line in window
+let colorcolumn = 81  " color column on 81st character
+set shell=$SHELL\ -l  " login shell for 'term'
 set shellcmdflag=-l\ -c  " login shell for '!'
-set noshellslash
 
 " folding
-set foldenable
-set foldmethod=indent
-set foldlevel=99   " depth of first folding
-set foldnestmax=99 " depth of last folding
-set foldcolumn=0
+set foldenable  " enable folding
+set foldmethod=indent  " fold only based on intentation
+set foldlevel=99  " depth of first folding
+set foldnestmax=99  " depth of last folding
+set foldcolumn=0  " hide fold column
 
 " searching
 set smartcase  " case sensitive only if Uppercase
-set hlsearch   " highlight search matches
+set hlsearch  " highlight search matches
 
 " autocompletion
-set completeopt-=preview
-set completeopt+=menuone,noinsert
-set complete-=u,t
+set completeopt-=preview  " don't show preview window with info
+set completeopt+=menuone,noinsert  " single-item popup & don't auto-insert
+set complete-=u,t  " disable completion based on tags and unloaded buffers
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
-let g:mucomplete#enable_auto_at_startup = 1
-let g:mucomplete#completion_delay = 500  " 0.5 sec
+let g:mucomplete#enable_auto_at_startup = 1  " always autocomplete
+let g:mucomplete#completion_delay = 500  " after 0.5 sec
 let g:mucomplete#chains = {
 \   'default': ['path', 'omni', 'keyn', 'dict', 'uspl'],
 \   'cmake': {
@@ -118,14 +122,14 @@ let g:mucomplete#chains = {
 \}
 
 " change leader
-let mapleader = ";"
+let mapleader =  ";"
 
 " autocompletion mappings
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-inoremap <expr> <C-n> pumvisible() ? "\<Down>" : ""
-inoremap <expr> <C-j> pumvisible() ? "" : "\<C-j>"
-inoremap <expr> <C-p> pumvisible() ? "\<Up>" : ""
-inoremap <expr> <C-k> pumvisible() ? "" : "\<C-k>"
+inoremap <expr> <CR> pumvisible() ?  "\<C-y>" :  "\<C-g>u\<CR>"
+inoremap <expr> <C-n> pumvisible() ?  "\<Down>" :  ""
+inoremap <expr> <C-j> pumvisible() ?  "" :  "\<C-j>"
+inoremap <expr> <C-p> pumvisible() ?  "\<Up>" :  ""
+inoremap <expr> <C-k> pumvisible() ?  "" :  "\<C-k>"
 
 " wrapped lines movement mappings
 noremap  <buffer> <silent> <Up>    gk
@@ -158,18 +162,18 @@ map <F10> :echo
 " smart indent when entering insert mode with i on empty lines
 function! IndentWithI()
     if len(getline('.')) == 0
-        return "\"_cc"
+        return  "\"_cc"
     else
-        return "i"
+        return  "i"
     endif
 endfunction
 nnoremap <expr> i IndentWithI()
 
 function! IndentWithA()
     if len(getline('.')) == 0
-        return "\"_cc"
+        return  "\"_cc"
     else
-        return "a"
+        return  "a"
     endif
 endfunction
 nnoremap <expr> a IndentWithA()
@@ -178,10 +182,11 @@ nnoremap <expr> a IndentWithA()
 set clipboard=unnamed,unnamedplus
 "inoremap <D-v> <Space><ESC>"+gPi<Delete>
 inoremap <D-v> <C-r>+
-nnoremap <D-v> "+p
-vnoremap <D-v> "+p
+nnoremap <D-v>  "+p
+vnoremap <D-v>  "+p
 cnoremap <D-v> <C-r>+
-vnoremap <D-c> "+y
+"vnoremap <D-c>  "+y
+nnoremap <D-c>  :echo "ok"
 
 " show loclist
 function! LocListToggle()
@@ -198,24 +203,17 @@ noremap <silent> / :echo '/'<CR>/\c
 noremap <silent> ? :echo '?'<CR>?\c
 
 " other mappings
-let mapleader = ";"
 nnoremap o o<Esc>
+nnoremap O O<Esc>
 
 " nerdcommenter
 let g:NERDDefaultAlign = 'left'  " flush left comment delimiters
 let g:NERDCommentEmptyLines = 1  " comment empty lines too
-let g:NERDAltDelims_swift = 1    " use // instead of /* */ in swift
-let g:NERDRemoveAltComs = 1      " also remove alternative comments
-" let g:NERDSpaceDelims = 1        " add extra spaces around delimiters
+let g:NERDAltDelims_swift = 1  " use // instead of /* */ in swift
+let g:NERDRemoveAltComs = 1  " also remove alternative comments
+" let g:NERDSpaceDelims = 1  " add extra spaces around delimiters
 let g:NERDRemoveExtraSpaces = 1  " always remove extra spaces
 let g:NERDTrimTrailingWhitespace  = 1
-
-" Fortran
-let fortran_free_source = 1
-let fortran_fold = 1
-let fortran_fold_conditionals = 1
-let fortran_more_precise = 1
-let fortran_do_enddo = 1
 
 " LaTeX
 let g:tex_flavor = 'latex'
@@ -259,9 +257,10 @@ endfunction
 augroup vimrc
     autocmd!
 
-    " enable sign column (when appropriate) and set status-line
+    " enable sign column (when appropriate) and set foldtext
     autocmd BufWinEnter,BufRead,BufWrite *
     \   call SetSignColumn(@%, &modifiable)
+    \|  set foldtext=MyFoldText()
 
     " autosave named files
     autocmd CursorHold ?* nested if empty(&buftype) | update | endif
