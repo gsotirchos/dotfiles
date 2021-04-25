@@ -33,7 +33,7 @@ function watch_file() {
     fswatch "${FILE_PATH}" | while read > /dev/null; do
         kill ${task_pid} &> /dev/null
         wait ${task_pid} &> /dev/null
-        echo "Re-execuging..."
+        echo "Re-executing..."
 
         # wait $delay seconds for file writes to finish
         delay=1
