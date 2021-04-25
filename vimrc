@@ -28,6 +28,7 @@ Plugin 'keith/swift.vim'
 Plugin 'JuliaEditorSupport/julia-vim'
 Plugin 'lervag/vimtex'
 Plugin 'PProvost/vim-ps1'
+Plugin 'yuezk/vim-js'
 
 "" plugins end here
 call vundle#end()  " required
@@ -50,14 +51,14 @@ set encoding=utf-8  " encoding used for displaying inside vim
 set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 
 " appearance
-set t_Co=256
+set t_Co=16
 colorscheme sunyata
 set number  " show line numbers
 set wrap  " wrap long lines
 set showmatch  " show matching parentheses
 set noshowcmd  " hide typed command
 set laststatus=2  " always show statusline
-let &statusline = '%##%h%w %F%#MatchParen#%m%##%a%=%##⫩ %l/%L  ⟛ %c '
+let &statusline = '%##%h%w %F%#MatchParen#%m%##%a%=%#StatusLineNC#⫩ %l/%L  ⟛ %c '
 let &fillchars = 'vert:│,diff:-,eob: '
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
@@ -235,10 +236,10 @@ let g:ale_linters = {'cpp': ['clangtidy']}
 " clang_complete
 if has('mac')
     let g:clang_library_path =
-    \   '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+    \   '/opt/homebrew/opt/llvm/lib/'
 elseif has('linux')
     let g:clang_library_path =
-    \   '/usr/lib/llvm-10/lib/libclang.so.1'
+    \   '/usr/lib/llvm-10/lib/'
 endif
 
 
@@ -270,7 +271,7 @@ augroup vimrc
 
     " spell check text files
     autocmd FileType tex,latex,text,markdown
-    \   set formatoptions+=tawcroql
+    "\   set formatoptions+=tawcroql
     \|  set spell spelllang=en_us,el,cjk
 
     " limit amount of syntax lines
@@ -293,7 +294,11 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite
     \   *.sdf,*.world,*.model,*.config,*.launch,*.plist set ft=xml
 
-    autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt
+    " syntax for qml extensions
+    autocmd BufWinEnter,BufRead,BufWrite *.qml set ft=javascript
+
+    " cmake custom autocompletion
+    autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt,*.cmake
     \   set complete=.,k
     \|  set dictionary=$HOME/.vim/words/cmake.txt
 
