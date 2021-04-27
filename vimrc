@@ -239,7 +239,7 @@ if has('mac')
     \   '/opt/homebrew/opt/llvm/lib/'
 elseif has('linux')
     let g:clang_library_path =
-    \   '/usr/lib/llvm-10/lib/'
+    \   '/usr/lib/llvm-10/lib/libclang.so.1'
 endif
 
 
