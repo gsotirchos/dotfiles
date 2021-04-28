@@ -80,9 +80,9 @@ set splitright  " open new vertical windows at right
 set previewheight=3  " set preview window height to 3
 set autoindent  " autointent
 set expandtab  " replace tabs with spaces
-let &sw=4     " ┐
-let &ts=&sw   " ├ 4 spaces per tab
-let &sts=&sw  " ┘
+set sw=2   " ┐
+set ts=4   " ├ 4 spaces per tab, fold every 2
+set sts=4  " ┘
 set nojoinspaces  " don't insert 2 spaces after '.', '?' or '!'
 set backspace=2  " allow backspace in insert mode
 set scrolloff=3  " scroll 3 lines before the last
