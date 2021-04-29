@@ -26,14 +26,13 @@ hi! link myMemberOperator MembOperator
 hi! link cCustomScope     MembOperator
 hi! link cCustomDot       MembOperator
 hi! link cCustomPtr       MembOperator
-"hi! link cFormat          Special
+hi! link cFormat          Special
 hi! link cOperator        Statement
 hi! link cppOperator      Statement
 hi! link cppSTLfunction   Function
 hi! link cppSTLconstant   Function
 hi! link cppSTLnamespace  Function
 hi! link cppSTLexception  Function
-"hi! link cppSTLType       Function
 hi! link cCustomFunc      Function
 hi! link cCustomClass     Function
 hi! link cCustomClassName Identifier
