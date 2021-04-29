@@ -8,30 +8,31 @@ let g:cpp_concepts_highlight = 1
 "let g:cpp_no_function_highlight = 1
 "let c_no_curly_error=1
 
-
-"syntax region Normal keepend extend
-"\   start="{"hs=e+1
-"\   end="}"he=s-1
+"syntax region myNormal keepend extend
+"\   start="("hs=e+1
+"\   end=")"he=s-1
 "\   contains=TOP,.*Func.*,.*Class.*,.*STL.*
-syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(namespace\|enum\|struct\)[ \n]\+\)\@<=\h\w*"
+syntax match cppNamespace
+\   "\(^\(.*;\+\)*[ \n]*\(namespace\|enum\|struct\)[ \n]\+\)\@<=\h\w*"
 syntax region myMark
 \   start="\(\".*\)\@<!\(%.*Tag(\)\@<="
 \   end="\()%\)\@="
 \   containedin=.*Comment.* contained oneline
 syntax match myMemberOperator ";"
+syntax clear cAnsiFunction
 
 hi! link myMark           SpecialComment
 hi! link myMemberOperator MembOperator
 hi! link cCustomScope     MembOperator
 hi! link cCustomDot       MembOperator
 hi! link cCustomPtr       MembOperator
-hi! link cFormat          Special
+"hi! link cFormat          Special
 hi! link cOperator        Statement
 hi! link cppOperator      Statement
-hi! link cppSTLFunction   Function
+hi! link cppSTLfunction   Function
 hi! link cppSTLconstant   Function
 hi! link cppSTLnamespace  Function
-hi! link cppSTLException  Function
+hi! link cppSTLexception  Function
 "hi! link cppSTLType       Function
 hi! link cCustomFunc      Function
 hi! link cCustomClass     Function
