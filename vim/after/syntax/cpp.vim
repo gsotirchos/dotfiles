@@ -19,7 +19,9 @@ syntax region myMark
 \   end="\()%\)\@="
 \   containedin=.*Comment.* contained oneline
 syntax match myMemberOperator ";"
-syntax clear cAnsiFunction
+if hlexists("cAnsiFunction")
+    syntax clear cAnsiFunction
+endif
 
 hi! link myMark           SpecialComment
 hi! link myMemberOperator MembOperator
