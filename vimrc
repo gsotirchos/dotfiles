@@ -58,7 +58,7 @@ set wrap  " wrap long lines
 set showmatch  " show matching parentheses
 set noshowcmd  " hide typed command
 set laststatus=2  " always show statusline
-let &statusline = '%##%h%w %F%#MatchParen#%m%##%a%=%#StatusLineNC#⫩ %l/%L  ⟛ %c/%{strwidth(getline("."))} '
+let &statusline = '%##%h%w %F%#MatchParen#%m%##%a%=%#StatusLineNC#⫩ %l/%L  ⟛ %c/%{Pad(strwidth(getline(".")), 3)} '
 let &fillchars = 'vert:│,diff:-,eob: '
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
@@ -66,10 +66,12 @@ let &listchars = 'tab:╵ ,trail:·,conceal:*'
 set concealcursor=inc  " enable conceal on cursor line in i, n, c modes
 set conceallevel=1  " enable conceal
 function! MyFoldText()  " custom fold text
-set gfs=fixedgr
     let line = getline(v:foldstart)
     let sub = substitute(line, '\S\+.*', '...', 'g')
     return sub
+endfunction
+function! Pad(s,amt)  " add right padding to string
+    return a:s . repeat(' ',a:amt - len(a:s))
 endfunction
 
 " behaviour
