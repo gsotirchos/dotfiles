@@ -198,6 +198,7 @@ noremap <silent> ? :echo '?'<CR>?\c
 " other mappings
 nnoremap o o<Esc>
 nnoremap O O<Esc>
+nnoremap <silent> <leader>d :ALEGoToDefinition \| new<CR>
 
 " nerdcommenter
 let g:NERDDefaultAlign = 'left'  " flush left comment delimiters
@@ -223,7 +224,7 @@ let g:ale_echo_msg_format = '%linter%::%severity%% code% -- %s'
 let g:ale_sign_column_always = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '!'
-let g:ale_linters = {'cpp': ['ccls']}
+let g:ale_linters = {'cpp': ['ccls', 'clangtidy']}
 let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = 400
