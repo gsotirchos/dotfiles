@@ -113,16 +113,17 @@ set complete-=u,t  " disable completion based on tags and unloaded buffers
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
 let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup
+let g:apc_cr_confirm = 1  " return inserts selected
 
 " change leader
 let mapleader =  ";"
 
 " autocompletion mappings
-inoremap <expr> <CR> pumvisible() ?  "\<C-y>" :  "\<C-g>u\<CR>"
-"inoremap <expr> <C-n> pumvisible() ?  "\<Down>" :  ""
-inoremap <expr> <C-j> pumvisible() ?  "" :  "\<C-j>"
-"inoremap <expr> <C-p> pumvisible() ?  "\<Up>" :  ""
-inoremap <expr> <C-k> pumvisible() ?  "" :  "\<C-k>"
+"inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+"inoremap <expr> <C-n> pumvisible() ? "\<Down>" : ""
+inoremap <expr> <C-j> pumvisible() ? "" :  "\<C-j>"
+"inoremap <expr> <C-p> pumvisible() ? "\<Up>" : ""
+inoremap <expr> <C-k> pumvisible() ? "" : "\<C-k>"
 
 " wrapped lines movement mappings
 noremap  <buffer> <silent> <Up>    gk
@@ -224,7 +225,7 @@ let g:ale_echo_msg_format = '%linter%::%severity%% code% -- %s'
 let g:ale_sign_column_always = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '!'
-let g:ale_linters = {'cpp': ['ccls', 'clangtidy']}
+let g:ale_linters = {'cpp': ['ccls']}
 let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = 400
