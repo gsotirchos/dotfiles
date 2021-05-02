@@ -11,7 +11,7 @@ syntax match myUrl "http.:\/\/\S*" containedin=.*Comment.* contained
 "syntax match myOperator "[<>]*[-=]\+[<>]*" contains=TOP
 "syntax match myOperator "\s[<>]\+\s" containedin=NONE
 
-hi! link myMemberOperator MembOperator
-hi! link myOperator Operator
+"hi! link myMemberOperator MembOperator
+"hi! link myOperator Operator
 hi! link myMark SpecialComment
 hi! link myUrl underlined
