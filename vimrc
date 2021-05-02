@@ -14,7 +14,6 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
-
 Plugin 'tpope/vim-rsi'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'w0rp/ale'
@@ -29,6 +28,7 @@ Plugin 'JuliaEditorSupport/julia-vim'
 Plugin 'lervag/vimtex'
 Plugin 'PProvost/vim-ps1'
 Plugin 'yuezk/vim-js'
+Plugin 'peterhoeg/vim-qml'
 
 "" plugins end here
 call vundle#end()  " required
@@ -297,7 +297,7 @@ augroup vimrc
     \   *.sdf,*.world,*.model,*.config,*.launch,*.plist set ft=xml
 
     " syntax for qml extensions
-    autocmd BufWinEnter,BufRead,BufWrite *.qml set ft=javascript
+    "autocmd BufWinEnter,BufRead,BufWrite *.qml set ft=yaml
 
     " cmake custom autocompletion
     autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt,*.cmake
