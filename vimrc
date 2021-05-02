@@ -17,8 +17,7 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'tpope/vim-rsi'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'w0rp/ale'
-Plugin 'lifepillar/vim-mucomplete'
-Plugin 'xavierd/clang_complete'
+Plugin 'skywind3000/vim-auto-popmenu'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'vim-python/python-syntax'
 Plugin 'neovimhaskell/haskell-vim'
@@ -113,25 +112,16 @@ set completeopt+=menuone,noinsert  " single-item popup & don't auto-insert
 set complete-=u,t  " disable completion based on tags and unloaded buffers
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
-let g:mucomplete#enable_auto_at_startup = 1  " always autocomplete
-let g:mucomplete#completion_delay = 500  " after 0.5 sec
-let g:mucomplete#chains = {
-\   'default': ['path', 'omni', 'keyn', 'dict', 'uspl'],
-\   'cmake': {
-\       'cmakeComment': [],
-\       'default': ['dict', 'path', 'omni', 'keyn', 'uspl']
-\   },
-\   'vim': ['cmd', 'path', 'keyn']
-\}
+let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup
 
 " change leader
 let mapleader =  ";"
 
 " autocompletion mappings
 inoremap <expr> <CR> pumvisible() ?  "\<C-y>" :  "\<C-g>u\<CR>"
-inoremap <expr> <C-n> pumvisible() ?  "\<Down>" :  ""
+"inoremap <expr> <C-n> pumvisible() ?  "\<Down>" :  ""
 inoremap <expr> <C-j> pumvisible() ?  "" :  "\<C-j>"
-inoremap <expr> <C-p> pumvisible() ?  "\<Up>" :  ""
+"inoremap <expr> <C-p> pumvisible() ?  "\<Up>" :  ""
 inoremap <expr> <C-k> pumvisible() ?  "" :  "\<C-k>"
 
 " wrapped lines movement mappings
@@ -233,7 +223,15 @@ let g:ale_echo_msg_format = '%linter%::%severity%% code% -- %s'
 let g:ale_sign_column_always = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '!'
-let g:ale_linters = {'cpp': ['clangtidy']}
+let g:ale_linters = {'cpp': ['ccls']}
+let &omnifunc = 'ale#completion#OmniFunc'
+let g:ale_completion_enabled = 1
+let g:ale_completion_delay = 400
+let g:ale_cpp_ccls_init_options = {
+\   'cache': {
+\       'directory': '/tmp/ccls/cache'
+\   }
+\}
 
 " clang_complete
 if has('mac')
