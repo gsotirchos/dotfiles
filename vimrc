@@ -235,15 +235,6 @@ let g:ale_cpp_ccls_init_options = {
 \   }
 \}
 
-" clang_complete
-if has('mac')
-    let g:clang_library_path =
-    \   '/opt/homebrew/opt/llvm/lib/'
-elseif has('linux')
-    let g:clang_library_path =
-    \   '/usr/lib/llvm-10/lib/libclang.so.1'
-endif
-
 
 " functions
 function! SetSignColumn(file_name, is_modifiable)
