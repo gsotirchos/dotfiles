@@ -1,0 +1,3 @@
+/usr/local/include
+/opt/homebrew/include
+/opt/homebrew/opt/sqlite/include

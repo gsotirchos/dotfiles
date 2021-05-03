@@ -35,33 +35,37 @@ if [ -f ~/.bash_prompt ]; then
    source ~/.bash_prompt
 fi
 
-# use homebrew bash
-export SHELL="/opt/homebrew/bin/bash"
-
-# set the locale to English
-export LC_ALL="en_US.UTF-8"
-export LANG="en_US.UTF-8"
-
 # local ip shortcuts
 export imac="192.168.1.2"
 export npower_pi="npower@192.168.1.20"
 
-# use clang and Ninja with CMake
-export CC="/opt/homebrew/opt/llvm/bin/clang"
-export CXX="${CC}++"
-export CMAKE_GENERATOR="Ninja"
-
-# gtest environment
-export CPLUS_INCLUDE_PATH="/usr/local/include"
-export LIBRARY_PATH="/usr/local/lib"
+# set the locale to English
+export LC_ALL="en_US.UTF-8"
+export LANG="en_US.UTF-8"
 
 # homebrew path
 if [[ -z "${HOMEBREW_PREFIX}" ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# append extra paths from file
-export PATH="$(~/.dotfiles/bin/append_paths ${PATH} ~/.dotfiles/extra_paths.txt)"
+# append extra paths from files
+export PATH="$(~/.dotfiles/bin/append_paths \
+    ~/.dotfiles/extra_paths/PATH.txt \
+    ${PATH})"
+export CPATH="$(~/.dotfiles/bin/append_paths \
+    ~/.dotfiles/extra_paths/CPATH.txt \
+    ${CPATH})"
+export LIBRARY_PATH="$(~/.dotfiles/bin/append_paths \
+    ~/.dotfiles/extra_paths/LIBRARY_PATH.txt \
+    ${LIBRARY_PATH})"
+
+# use homebrew bash
+export SHELL="$(which bash)"
+
+# use clang and Ninja with CMake
+export CC="$(which clang)"
+export CXX="${CC}++"
+export CMAKE_GENERATOR="Ninja"
 
 # aliases
 export TRASH="${HOME}/.Trash"
