@@ -1,3 +1,5 @@
+syn clear bashSpecialVariables
+
 hi! link shQuote       shDoubleQuote
 hi! link shTestPattern Normal
 hi! link shTestOpr     Normal
