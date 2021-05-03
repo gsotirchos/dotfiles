@@ -10,10 +10,10 @@ append_paths () {
         fi
     done
 
-    echo "${current_path}"
+    echo "${current_path%:}"
 }
 
-extra_paths_file="$2"
-current_path="$1"
+extra_paths_file="$1"
+current_path="$2"
 
 append_paths "${current_path}" "$(envsubst < ${extra_paths_file})"
