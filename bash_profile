@@ -49,15 +49,7 @@ if [[ -z "${HOMEBREW_PREFIX}" ]]; then
 fi
 
 # append extra paths from files
-export PATH="$(~/.dotfiles/bin/append_paths \
-    ~/.dotfiles/extra_paths/PATH.txt \
-    ${PATH})"
-export CPATH="$(~/.dotfiles/bin/append_paths \
-    ~/.dotfiles/extra_paths/CPATH.txt \
-    ${CPATH})"
-export LIBRARY_PATH="$(~/.dotfiles/bin/append_paths \
-    ~/.dotfiles/extra_paths/LIBRARY_PATH.txt \
-    ${LIBRARY_PATH})"
+source ~/.dotfiles/bin/append_paths ~/.dotfiles/extra_paths
 
 # use homebrew bash
 export SHELL="$(which bash)"

@@ -1,19 +1,33 @@
 #!/usr/bin/env bash
 
-# function to append last input line to PATH
-append_paths () {
-    local current_path="$1"
+# function to append argument list, in reverse order, to an environment var
+append_paths() {
+    # fist argument is the name of the environment variable
+    local global_var_name="$1"
+    local current_paths="${!global_var_name}"
     shift
 
+    # gather in reverse order the rest of the arguments-paths that exist
     for extra_path in $@; do
-        if [[ -d ${extra_path} ]]; then current_path="${extra_path}:${current_path//$extra_path:}"
+        if [[ -d ${extra_path} ]]; then
+            current_paths="${extra_path}:${current_paths//$extra_path:}"
         fi
     done
 
-    echo "${current_path%:}"
+    export "${global_var_name}=${current_paths%:}"
 }
 
-extra_paths_file="$1"
-current_path="$2"
+main() {
+    # input argument is the dir containing text files each named according
+    # to the environment var to which its contents are to be appended
+    extra_paths_dir="$(realpath $1)"
 
-append_paths "${current_path}" "$(envsubst < ${extra_paths_file})"
+    for extra_paths_file in ${extra_paths_dir}/*; do
+        #echo ${extra_paths_file}
+        global_var_name="$(basename ${extra_paths_file%.*})"
+
+        append_paths "${global_var_name}" "$(envsubst < ${extra_paths_file})"
+    done
+}
+
+main $@
