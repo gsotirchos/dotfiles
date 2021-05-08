@@ -36,7 +36,7 @@ call vundle#end()  " required
 filetype plugin indent on
 
 " saving
-set updatetime=750  " autoupdate delay
+set updatetime=400  " autoupdate delay
 set undofile  " maintain undo file
 set undodir=$HOME/.vim/undo/  " undo file location
 set noswapfile  " don't write swap file
@@ -58,7 +58,7 @@ set wrap  " wrap long lines
 set showmatch  " show matching parentheses
 set noshowcmd  " hide typed command
 set laststatus=2  " always show statusline
-let &statusline = '%##%h%w %F%#MatchParen#%m%##%a%=%#StatusLineNC#⫩ %l/%L  ⟛ %c/%{Pad(strwidth(getline(".")), 3)} '
+let &statusline = ' %(%#StatusLineNC#%h%w%## %)%F%#MatchParen#%m%##%a%=%#StatusLineNC#⫩ %l/%L  ⟛ %c/%{Pad(strwidth(getline(".")), 3)} '
 let &fillchars = 'vert:│,diff:-,eob: '
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
