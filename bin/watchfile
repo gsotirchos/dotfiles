@@ -48,7 +48,6 @@ function watch_file() {
         files_changed=true
         while [[ ${files_changed} = true ]]; do
             if [[ -n "$(timeout ${delay} fswatch ${FILE_PATH} -1 -l 0.1)" ]]; then
-                echo "keep changin'"
                 files_changed=true
             else
                 files_changed=false
