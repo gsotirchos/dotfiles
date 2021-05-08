@@ -53,6 +53,7 @@ set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 set t_Co=16
 colorscheme sunyata
 set number  " show line numbers
+set numberwidth=1  " smallest width at start
 set wrap  " wrap long lines
 set showmatch  " show matching parentheses
 set noshowcmd  " hide typed command
