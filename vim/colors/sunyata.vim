@@ -135,7 +135,7 @@ exe "hi! CursorLineNr   cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      
 exe "hi! Folded   cterm=NONE      ctermfg=7    ctermbg=NONE    gui=NONE      guifg=".color_7"  guibg=".color_bg
 exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
 exe "hi! StatusLine     cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      guifg=".color_fg" guibg=".color_8
-exe "hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=".color_7"  guibg=".color_8
+exe "hi! StatusLineNC   cterm=NONE      ctermfg=0    ctermbg=8    gui=NONE      guifg=".color_7"  guibg=".color_8
 exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link VertSplit Comment"
 exe "hi! link StatusLineTerm StatusLine"
