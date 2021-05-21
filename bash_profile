@@ -37,7 +37,7 @@ fi
 
 # local ip shortcuts
 export imac="192.168.1.2"
-export npower_pi="npower@192.168.1.20"
+export npower_pi="root@192.168.1.20"
 
 # set the locale to English
 export LC_ALL="en_US.UTF-8"

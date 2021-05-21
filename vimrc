@@ -265,7 +265,7 @@ augroup vimrc
 
     " spell check text files
     autocmd FileType tex,latex,text,markdown
-    "\   set formatoptions+=tawcroql
+    \   set formatoptions=tawcroql
     \|  set spell spelllang=en_us,el,cjk
 
     " limit amount of syntax lines
