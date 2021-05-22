@@ -64,3 +64,6 @@ export TRASH="${HOME}/.Trash"
 if [ -f ~/.bash_aliases ]; then
    source ~/.bash_aliases
 fi
+
+# conda initialization
+source ~/.conda_init
