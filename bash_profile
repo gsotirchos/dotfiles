@@ -22,7 +22,7 @@ HISTFILESIZE=2000
 export PROMPT_COMMAND="history -a"
 
 # check if this is a ssh session
-if [ -n "${SSH_CLIENT}" ] || [ -n "${SSH_TTY}" ]; then
+if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
   SESSION_TYPE="remote_ssh"
 else
   case $(ps -o comm= -p $PPID) in
@@ -31,7 +31,7 @@ else
 fi
 
 # custom prompt
-if [ -f ~/.bash_prompt ]; then
+if [[ -f ~/.bash_prompt ]]; then
    source ~/.bash_prompt
 fi
 
@@ -61,9 +61,11 @@ export CMAKE_GENERATOR="Ninja"
 
 # aliases
 export TRASH="${HOME}/.Trash"
-if [ -f ~/.bash_aliases ]; then
+if [[ -f ~/.bash_aliases ]]; then
    source ~/.bash_aliases
 fi
 
 # conda initialization
-source ~/.conda_init
+if [[ -f ~/.conda_init ]]; then
+    source ~/.conda_init
+fi
