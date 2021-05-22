@@ -146,7 +146,7 @@ exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link MoreMsg ModeMsg"
 exe "hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      guifg=".color_fg" guibg=".color_8
-exe "hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=7    gui=NONE      guifg=".color_15" guibg=".color_7
+exe "hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=4    gui=NONE      guifg=".color_15" guibg=".color_4
 exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=".color_15" guibg=".color_bg
 exe "hi! link PmenuSbar Pmenu"
 exe "hi! link ModeMsg OtherType"
