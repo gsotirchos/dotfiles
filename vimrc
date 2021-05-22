@@ -58,7 +58,7 @@ set wrap  " wrap long lines
 set showmatch  " show matching parentheses
 set noshowcmd  " hide typed command
 set laststatus=2  " always show statusline
-let &statusline = ' %(%#StatusLineNC#%h%w%## %)%F%#MatchParen#%m%##%a%=%#StatusLineNC#⫩ %l/%L  ⟛ %c/%{Pad(strwidth(getline(".")), 3)} '
+let &statusline = ' %(%#StatusLineNC#%h%w%## %)%F%#MatchParen#%m%##%a%=%#StatusLineNC#L: %l/%L  C: %c/%{Pad(strwidth(getline(".")), 3)} '
 let &fillchars = 'vert:│,diff:-,eob: '
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
