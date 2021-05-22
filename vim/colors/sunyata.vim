@@ -132,10 +132,10 @@ exe "hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      
 exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   guifg=".color_fg" guibg=".color_bg
 exe "hi! LineNr         cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
 exe "hi! CursorLineNr   cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
-exe "hi! Folded   cterm=NONE      ctermfg=7    ctermbg=NONE    gui=NONE      guifg=".color_7"  guibg=".color_bg
+exe "hi! Folded         cterm=NONE      ctermfg=7    ctermbg=NONE gui=NONE      guifg=".color_7"  guibg=".color_bg
 exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
 exe "hi! StatusLine     cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      guifg=".color_fg" guibg=".color_8
-exe "hi! StatusLineNC   cterm=NONE      ctermfg=0    ctermbg=8    gui=NONE      guifg=".color_7"  guibg=".color_8
+exe "hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=".color_7"  guibg=".color_8
 exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link VertSplit Comment"
 exe "hi! link StatusLineTerm StatusLine"
@@ -145,7 +145,7 @@ exe "hi! link FoldColumn EndOfBuffer"
 exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link MoreMsg ModeMsg"
-exe "hi! Pmenu          cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=".color_7" guibg=".color_8
+exe "hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      guifg=".color_fg" guibg=".color_8
 exe "hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=7    gui=NONE      guifg=".color_15" guibg=".color_7
 exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=".color_15" guibg=".color_bg
 exe "hi! link PmenuSbar Pmenu"
