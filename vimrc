@@ -63,8 +63,6 @@ let &fillchars = 'vert:│,diff:-,eob: '
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
 let &listchars = 'tab:╵ ,trail:·,conceal:*'
-set concealcursor=inc  " enable conceal on cursor line in i, n, c modes
-set conceallevel=1  " enable conceal
 function! MyFoldText()  " custom fold text
     let line = getline(v:foldstart)
     let sub = substitute(line, '\S\+.*', '...', 'g')
@@ -279,6 +277,8 @@ augroup vimrc
     \|      syntax on
     \|      syntax enable
     \|  endif
+    \|  set concealcursor=inc
+    \|  set conceallevel=1
     \|  if index(textFiletypes, &filetype) < 0
     \|      source $HOME/.vim/after/syntax/default.vim
     \|      source $HOME/.vim/after/syntax/indent_guides.vim
