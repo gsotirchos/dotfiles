@@ -4,12 +4,13 @@
 # ${DOTFILES}/setup.sh
 #
 
-BRIGHT_COLOR='\033[0;97m'
-NORMAL_COLOR='\033[0m'
+# styling
+BR_TEXT='\033[0;97m'
+DEF_TEXT='\033[0m'
 
 # check for `realpath` command
 if ! command -v realpath &> /dev/null; then
-    echo -e "${BRIGHT_COLOR}Error: \`realpath\` command could not be found. Aborted${NORMAL_COLOR}"
+    echo -e "${BR_TEXT}Error: \`realpath\` command could not be found. Aborted${DEF_TEXT}"
     exit
 fi
 
@@ -27,9 +28,9 @@ mkdir -vp ~/.local/bin
 touch ~/.hushlogin
 
 # make soft symlinks
-echo -e "${BRIGHT_COLOR}- Symlinking dotfiles (${DOTFILES})${NORMAL_COLOR}"
-"${DOTFILES}"/bin/ln_dotfiles "${DOTFILES}" "${HOME}/."
-ln -sfv "${DOTFILES}"/vim/* ~/.vim
+echo -e "${BR_TEXT}- Symlinking dotfiles (${DOTFILES})${DEF_TEXT}"
+"${DOTFILES}"/bin/ln_dotfiles "${DOTFILES}" "${HOME}/."  # dotfiles root
+ln -sfv "${DOTFILES}"/vim/* ~/.vim  # vim
 
 # setup launch daemons
 for plist_file in "${HOME}/.dotfiles/LaunchDaemons/"*.plist; do
@@ -43,13 +44,13 @@ done
 
 # setup vundle
 if [[ ! -d ~/.vim/bundle/Vundle.vim ]]; then
-    echo -e "${BRIGHT_COLOR}- Couldn't locate ~/.vim/bundle/Vundle.vim, setting up...${NORMAL_COLOR}"
+    echo -e "${BR_TEXT}- Couldn't locate ~/.vim/bundle/Vundle.vim, setting up...${DEF_TEXT}"
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
     vim +PluginInstall +qall
 fi
 
 # setup julia
 if command -v "julia" &> /dev/null; then
-    echo -e "${BRIGHT_COLOR}\n- Setting up Julia${NORMAL_COLOR}"
+    echo -e "${BR_TEXT}\n- Setting up Julia${DEF_TEXT}"
     "${DOTFILES}"/julia/setup-julia.sh
 fi

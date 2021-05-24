@@ -1,3 +1,5 @@
+# vim: set ft=sh:
+
 /usr/local/lib
 /opt/homebrew/lib
 /opt/homebrew/opt/sqlite/lib
