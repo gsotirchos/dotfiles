@@ -1,0 +1,123 @@
+"
+" ~/.vim/vimrc
+"
+
+"""""""""""""""""""""""""""""""""""""""""""
+set nocompatible  " be iMproved, required
+filetype off  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=$HOME/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+"" plugins start here
+Plugin 'tpope/vim-rsi'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'w0rp/ale'
+Plugin 'skywind3000/vim-auto-popmenu'
+Plugin 'octol/vim-cpp-enhanced-highlight'
+Plugin 'vim-python/python-syntax'
+Plugin 'neovimhaskell/haskell-vim'
+Plugin 'keith/swift.vim'
+Plugin 'JuliaEditorSupport/julia-vim'
+Plugin 'lervag/vimtex'
+Plugin 'PProvost/vim-ps1'
+Plugin 'yuezk/vim-js'
+Plugin 'peterhoeg/vim-qml'
+
+"" plugins end here
+call vundle#end()  " required
+"""""""""""""""""""""""""""""""""""""""""""
+
+filetype plugin indent on
+
+" saving
+set updatetime=400  " autoupdate delay
+set undofile  " maintain undo file
+set undodir=$HOME/.vim/undo/  " undo file location
+set noswapfile  " don't write swap file
+set nowritebackup  " no backup before overwriting
+set nobackup  " no persistent backups
+set autoread  " auto-read modified open files
+
+" set encodings and line ending formats
+set fileencodings=ucs-bom,utf-8,cp1253,default,latin1  " tried on open
+set encoding=utf-8  " encoding used for displaying inside vim
+set fileformats=unix,mac,dos  " format order to be tried on a new buffer
+
+" appearance
+set t_Co=16
+colorscheme sunyata
+set number  " show line numbers
+set numberwidth=1  " smallest width at start
+set wrap  " wrap long lines
+set showmatch  " show matching parentheses
+set noshowcmd  " hide typed command
+let &fillchars = 'vert:│,diff:-,eob: '
+set showbreak=…  " show '…' at start of wrapped lines
+set list  " show non-text characters
+let &listchars = 'tab:╵ ,trail:·,conceal:*'
+function! MyFoldText()  " custom fold text
+    let line = getline(v:foldstart)
+    let sub = substitute(line, '\S\+.*', '...', 'g')
+    return sub
+endfunction
+set foldtext=MyFoldText()
+function! Pad(s,amt)  " add right padding to string
+    return a:s . repeat(' ',a:amt - len(a:s))
+endfunction
+set laststatus=2  " always show statusline
+let &statusline = ' %(%#StatusLineNC#%h%w%## %)%F%#MatchParen#%m%##%a%=%#StatusLineNC#L: %l/%L  C: %c/%{Pad(strwidth(getline(".")), 3)} '
+
+" behaviour
+set regexpengine=1  " use old regex engine
+set mouse=a  " enable mouse
+set splitbelow  " open new horizontal windows at bottom
+set splitright  " open new vertical windows at right
+set previewheight=3  " set preview window height to 3
+set autoindent  " autointent
+set expandtab  " replace tabs with spaces
+set sw=2   " ┐
+set ts=4   " ├ 4 spaces per Tab, fold every 2
+set sts=4  " ┘
+set nojoinspaces  " don't insert 2 spaces after '.', '?' or '!'
+set backspace=2  " allow backspace in insert mode
+set scrolloff=3  " scroll 3 lines before the last
+set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
+set wrap lbr  " wrap lines by word
+set formatoptions=ro  " no automatic line breaking
+set breakindent  " wrap preserving indentation
+let &breakindentopt = "shift:" . &ts  " deeper wrapping indent
+set display+=lastline  " show last wrapped line in window
+let colorcolumn = 81  " color column on 81st character
+set shell=$SHELL\ -l  " login shell for 'term'
+set shellcmdflag=-l\ -c  " login shell for '!'
+
+" folding
+set foldenable  " enable folding
+set foldmethod=indent  " fold only based on intentation
+set foldlevel=99  " depth of first folding
+set foldnestmax=99  " depth of last folding
+set foldcolumn=0  " hide fold column
+
+" searching
+set smartcase  " case sensitive only if Uppercase
+set hlsearch  " highlight search matches
+
+" autocompletion
+set completeopt-=preview  " don't show preview window with info
+set completeopt+=menuone,noinsert  " single-item popup & don't auto-insert
+set complete-=u,t  " disable completion based on tags and unloaded buffers
+set shortmess+=c  " shut off completion messages
+set belloff+=ctrlg  " silent completion
+let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup
+let g:apc_cr_confirm = 1  " return inserts selected
+
+" mappings
+runtime vimrc.d/mappings.vim
+
+" autocommands
+runtime vimrc.d/autocommands.vim
