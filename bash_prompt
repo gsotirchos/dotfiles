@@ -76,7 +76,7 @@ set_prompt() {
 
     # set the prompt
     if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
-        echo "${IBlack}\h${BIBlack}::${IBlack}\w${ColorOff} "
+        echo "${IBlack}\h::\w${ColorOff} "
     else
         echo "${IBlack}\W${ColorOff} "
     fi
