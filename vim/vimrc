@@ -27,6 +27,8 @@ Plugin 'lervag/vimtex'
 Plugin 'PProvost/vim-ps1'
 Plugin 'yuezk/vim-js'
 Plugin 'peterhoeg/vim-qml'
+Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-easytags'
 
 "" plugins end here
 call vundle#end()  " required

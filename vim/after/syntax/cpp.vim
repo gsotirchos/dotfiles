@@ -23,6 +23,9 @@ if hlexists("cAnsiFunction")
     syntax clear cAnsiFunction
 endif
 
+syntax keyword Statement nullptr
+syntax keyword Statement nullopt
+
 hi! link myMark           SpecialComment
 hi! link myMemberOperator MembOperator
 hi! link cCustomScope     MembOperator

@@ -1,10 +1,18 @@
 let python_highlight_all=1
 
-hi! link PythonOperator   Operator
-hi! link PythonDot        MembOperator
-hi! link PythonImport     Statement
-hi! link PythonClass      Identifier
-hi! link PythonDecorator  Identifier
-hi! link PythonBuiltinObj Function
+syntax region pythonLongComment
+\   start="\"\"\""
+\   end="\"\"\""
+\   containedin=.*String.*
 
-Python3Syntax
+syntax match myOperator "[-+=?!$%^&*\\|~/:<>]" containedIn=pythonOperator
+
+hi! link pythonLongComment Comment
+hi! link myOperator        Normal
+hi! link pythonOperator    Statement
+hi! link pythonDot         MembOperator
+hi! link pythonImport      Statement
+hi! link pythonNone        Identifier
+hi! link pythonClass       Identifier
+hi! link pythonDecorator   Identifier
+hi! link pythonBuiltinObj  Function
