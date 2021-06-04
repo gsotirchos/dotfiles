@@ -24,6 +24,7 @@ DOTFILES=$(\
 mkdir -vp ~/.vim/undo
 mkdir -vp ~/.vim/spell
 mkdir -vp ~/.vim/words
+mkdir -vp ~/.vim/tags
 mkdir -vp ~/.local/bin
 touch ~/.hushlogin
 

@@ -76,10 +76,24 @@ set_prompt() {
 
     # set the prompt
     if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
-        echo "${IBlack}\h::\w${ColorOff} "
+        echo " ${IBlack}\h::\w${ColorOff}"
     else
-        echo "${IBlack}\W${ColorOff} "
+        echo " ${IBlack}\W${ColorOff}"
     fi
 }
 
-export PS1="$(set_prompt)"
+# git prompt command
+if [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh" ]]; then
+    source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh"
+fi
+
+# git prompt options
+export GIT_PS1_SHOWCOLORHINTS=true
+export GIT_PS1_SHOWDIRTYSTATE=true
+export GIT_PS1_SHOWSTASHSTATE=true
+export GIT_PS1_DESCRIBE_STYLE="contains"
+export GIT_PS1_SHOWUNTRACKEDFILES=true
+export GIT_PS1_SHOWUPSTREAM="auto"
+
+#export PS1="$(set_prompt)"
+export PROMPT_COMMAND+='__git_ps1 "$(set_prompt)" " "; '
