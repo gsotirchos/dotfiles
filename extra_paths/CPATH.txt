@@ -2,6 +2,7 @@
 
 /usr/local/include
 /opt/homebrew/include
-/opt/homebrew/opt/llvm/include
-/opt/homebrew/opt/sqlite/include
-/opt/homebrew/opt/curl/include
+/opt/homebrew/*/include
+#/opt/homebrew/opt/llvm/include
+#/opt/homebrew/opt/sqlite/include
+#/opt/homebrew/opt/curl/include
