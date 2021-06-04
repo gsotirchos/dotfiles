@@ -4,9 +4,9 @@ ${HOME}/.bin
 ${HOME}/.dotfiles/bin
 ${HOME}/.macos-dotfiles/bin
 ${HOME}/.local/bin
-${HOME}/.ghcup/env
+${HOME}/.ghcup/bin
 ${HOME}/.cabal/bin
-${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/bin
 /opt/homebrew/opt/coreutils/libexec/gnubin
 /opt/homebrew/opt/llvm/bin
 /opt/homebrew/opt/sqlite/bin
+/opt/homebrew/opt/curl/bin
