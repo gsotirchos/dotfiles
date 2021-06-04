@@ -74,11 +74,16 @@ set_prompt() {
     OnICyan='\[\e[0;106m\]'
     OnIWhite='\[\e[0;107m\]'
 
+    # get active conda environment
+    if [[ -n ${CONDA_DEFAULT_ENV} ]]; then
+        conda_env="[${IBlue}${CONDA_DEFAULT_ENV}${ColorOff}] "
+    fi
+
     # set the prompt
     if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
-        echo " ${IBlack}\h::\w${ColorOff}"
+        echo " ${conda_env}${IBlack}\h::\w${ColorOff}"
     else
-        echo " ${IBlack}\W${ColorOff}"
+        echo " ${conda_env}${IBlack}\W${ColorOff}"
     fi
 }
 
