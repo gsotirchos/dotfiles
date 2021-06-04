@@ -77,3 +77,5 @@ fi
 if [[ -f ~/.conda_init ]]; then
     source ~/.conda_init
 fi
+
+source ~/.dotfiles/bin/source_dirs_list ~/.dotfiles/completion_dirs
