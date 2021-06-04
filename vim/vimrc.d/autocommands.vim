@@ -38,12 +38,17 @@ augroup vimrc
     \|      syntax on
     \|      syntax enable
     \|  endif
-    \|  set concealcursor=inc
-    \|  set conceallevel=1
     \|  if index(textFiletypes, &filetype) < 0
     \|      source $HOME/.vim/after/syntax/default.vim
     \|      source $HOME/.vim/after/syntax/indent_guides.vim
+    \|      let g:easytags_auto_update = 1
     \|  endif
+    \|  let b:easytags_file =
+    \       $HOME . "/.vim/tags/"
+    \           . substitute(expand('%:p'), "/", "_", "g")
+    \           . ".ctags"
+    \|  set concealcursor=inc
+    \|  set conceallevel=1
 
     " use xml syntax for some extensions
     autocmd BufWinEnter,BufRead,BufWrite
