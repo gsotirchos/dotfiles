@@ -11,7 +11,7 @@ Pkg.add("FileWatching")
 Pkg.add("UnicodePlots")
 Pkg.add("Plots")
 Pkg.add("LinearAlgebra")
-Pkg.add("SymPy")
+Pkg.add("SymEngine")
 Pkg.add("ControlSystems")
 
 exit()
