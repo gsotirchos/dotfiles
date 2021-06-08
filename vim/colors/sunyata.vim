@@ -115,7 +115,7 @@ exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      
 
 exe "hi! Search         cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link IncSearch Search"
-exe "hi! MatchParen     cterm=bold      ctermfg=3    ctermbg=0    gui=bold      guifg=".color_3"  guibg=".color_0
+exe "hi! MatchParen     cterm=bold      ctermfg=3    ctermbg=8    gui=bold      guifg=".color_3"  guibg=".color_8
 exe "hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE gui=bold      guifg=".color_1"  guibg=".color_bg
 exe "hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE gui=NONE      guifg=".color_1"  guibg=".color_bg
 exe "hi! Todo           cterm=bold      ctermfg=3    ctermbg=NONE gui=bold      guifg=".color_3"  guibg=".color_bg
@@ -133,8 +133,8 @@ exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   
 exe "hi! LineNr         cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
 exe "hi! CursorLineNr   cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
 exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
-exe "hi! StatusLine     cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
-exe "hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0    gui=NONE      guifg=".color_7"  guibg=".color_0
+exe "hi! StatusLine     cterm=NONE      ctermfg=15   ctermbg=8    gui=NONE       guifg=".color_15"  guibg=".color_8
+exe "hi! StatusLineNC   cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
 exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link Folded Comment"
 exe "hi! link VertSplit Comment"
