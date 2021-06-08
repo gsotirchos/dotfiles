@@ -72,7 +72,7 @@ function! Pad(s,amt)  " add right padding to string
     return a:s . repeat(' ',a:amt - len(a:s))
 endfunction
 set laststatus=2  " always show statusline
-let &statusline = ' %(%#StatusLineNC#%h%w%## %)%F%#MatchParen#%m%##%a%=%#StatusLineNC# L: %l/%L  C: %c/%{Pad(strwidth(getline(".")), 3)} '
+let &statusline = ' %(%#StatusLineNC#%h%w%## %)%F%#MatchParen#%m%##%a%=%## L: %l/%L  C: %c/%{Pad(strwidth(getline(".")), 3)} '
 
 " behaviour
 set regexpengine=1  " use old regex engine
