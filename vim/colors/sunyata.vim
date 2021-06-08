@@ -34,8 +34,8 @@ let color_13=color_5
 let color_14=color_6
 let color_15='#FFFFFF'
 
-let color_fg=color_7
-let color_bg=color_0
+let color_fg='#959595'
+let color_bg='#000000'
 
 "hi Normal
 "
@@ -78,7 +78,7 @@ exe "hi! link Float Number"
 
 " variable names
 exe "hi! Function       cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=".color_6"  guibg=".color_bg
-exe "hi! Identifier     cterm=NONE      ctermfg=14   ctermbg=NONE gui=NONE      guifg=".color_14"  guibg=".color_bg
+exe "hi! Identifier     cterm=NONE      ctermfg=14   ctermbg=NONE gui=NONE      guifg=".color_14" guibg=".color_bg
 
 " statements
 exe "hi! Statement      cterm=bold      ctermfg=5    ctermbg=NONE gui=bold      guifg=".color_5"  guibg=".color_bg
@@ -130,12 +130,12 @@ exe "hi! Directory      cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      
 
 exe "hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
 exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   guifg=".color_fg" guibg=".color_bg
-exe "hi! LineNr         cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
+exe "hi! LineNr         cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
 exe "hi! CursorLineNr   cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
-exe "hi! Folded         cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg"  guibg=".color_bg
+exe "hi! Folded         cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
 exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
-exe "hi! StatusLine     cterm=NONE      ctermfg=15   ctermbg=8    gui=NONE      guifg=".color_15" guibg=".color_8
-exe "hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=".color_7"  guibg=".color_8
+exe "hi! StatusLine     cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
+exe "hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0    gui=NONE      guifg=".color_7"  guibg=".color_0
 exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link VertSplit Comment"
 exe "hi! link StatusLineTerm StatusLine"
@@ -145,7 +145,7 @@ exe "hi! link FoldColumn EndOfBuffer"
 exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link MoreMsg ModeMsg"
-exe "hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      guifg=".color_fg" guibg=".color_8
+exe "hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
 exe "hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=4    gui=NONE      guifg=".color_15" guibg=".color_4
 exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=".color_15" guibg=".color_bg
 exe "hi! link PmenuSbar Pmenu"
