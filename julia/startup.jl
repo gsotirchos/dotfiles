@@ -5,8 +5,7 @@
 using FileWatching
 using LinearAlgebra
 using UnicodePlots
-#using Plots
-#plotly()
+#using PyPlot
 #using SymEngine
 #using ControlSystems
 
