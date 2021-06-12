@@ -24,7 +24,7 @@ if [[ -f ~/.bash_extra ]]; then
 fi
 
 # append extra paths from files
-source ~/.dotfiles/bin/append_paths ~/.dotfiles/extra_paths
+source ~/.dotfiles/etc/append_paths.sh ~/.dotfiles/extra_paths
 
 # auto-completion
-source ~/.dotfiles/bin/source_dirs_list ~/.dotfiles/completion_dirs
+source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
