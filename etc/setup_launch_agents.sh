@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
 for plist_file in "${1}/"*.plist; do
-    sudo ln -sfv "${plist_file}" \
+    ln -sfv "${plist_file}" \
         ~/Library/LaunchAgents/"$(basename ${plist_file})"
-    sudo launchctl load -w \
+    launchctl unload -w \
+        ~/Library/LaunchAgents/"$(basename ${plist_file})"
+    launchctl load -w \
         ~/Library/LaunchAgents/"$(basename ${plist_file})"
 done

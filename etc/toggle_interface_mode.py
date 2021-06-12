@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess
 from datetime import datetime
 
@@ -33,6 +35,18 @@ TIME_FORMAT = "%H:%M"
 TOGGLE_TIME = datetime.strptime("20:00",
                                 TIME_FORMAT)
 
+def current_mode() -> str:
+    """ return the current Dark Mode status """
+    result = subprocess.run(
+        ["defaults", "read", "-g", "AppleInterfaceStyle"],
+        text=True,
+        capture_output=True,
+    )
+
+    if result.returncode == 0 and result.stdout.strip() == "Dark":
+        return "Dark"
+    else:
+        return "Light"
 
 def mode() -> str:
     """ get current time """
@@ -46,27 +60,25 @@ def mode() -> str:
     else:
         time = time_query.stdout.strip()
 
-    """ determine mode """
+    """ return desired mode """
     if datetime.strptime(time, TIME_FORMAT) > TOGGLE_TIME:
        return "Dark"
     else:
        return "Light"
 
-def set_interface_style(mode: str):
-    # Enable/disable dark mode.
-    script = OSASCRIPT.format(
-       mode = IS_DARK_MODE[mode],
-       theme = TERMINAL_THEMES[mode])
-    print(script)
+def set_interface_style(mode: str, current_mode: str):
+    """ enable/disable dark mode """
+    if current_mode != mode:
+        script = OSASCRIPT.format(
+            mode = IS_DARK_MODE[mode],
+            theme = TERMINAL_THEMES[mode])
 
-    #result = subprocess.run(
-    #    ['osascript', '-e', script],
-    #    text = True,
-    #    capture_output = True)
-
-    #assert result.returncode == 0, result
-    print("ok")
+        result = subprocess.run(
+            ['osascript', '-e', script],
+            text = True,
+            capture_output = True)
+        assert result.returncode == 0, result
 
 
 if __name__ == "__main__":
-    set_interface_style(mode())
+    set_interface_style(mode(), current_mode())
