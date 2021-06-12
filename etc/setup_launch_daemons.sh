@@ -4,7 +4,9 @@ for plist_file in "${1}/"*.plist; do
     sudo ln -sfv "${plist_file}" \
         "/Library/LaunchDaemons/$(basename ${plist_file})"
     sudo chown root:wheel \
-       "/Library/LaunchDaemons/$(basename ${plist_file})"
+        "/Library/LaunchDaemons/$(basename ${plist_file})"
+    sudo launchctl unload -w \
+        "/Library/LaunchDaemons/$(basename ${plist_file})"
     sudo launchctl load -w \
         "/Library/LaunchDaemons/$(basename ${plist_file})"
 done
