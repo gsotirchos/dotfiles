@@ -39,6 +39,7 @@ alias mv="mv -iv"  # confirmatory, verbose move
 alias cp="cp -iv"  # confirmatory, verbose copy
 alias ln="ln -iv"  # confirmatory, verbose symlink creaton
 alias ls="ls --color"  # colors in ls
+alias grep="grep --color"
 alias tree="tree -lNFC -L 2 \
     --dirsfirst --filelimit 15 \
     -I '.DS_Store|.localized|._*' --matchdirs"  # cleaner tree
