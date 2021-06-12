@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # command to sync files with remote pi (used with some file watch utility)
 dir="$(realpath $1)"
 target="$2"
