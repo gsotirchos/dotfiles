@@ -30,18 +30,12 @@ touch ~/.hushlogin
 
 # make soft symlinks
 echo -e "${BR_TEXT}- Symlinking dotfiles (${DOTFILES})${DEF_TEXT}"
-"${DOTFILES}"/bin/ln_dotfiles "${DOTFILES}" "${HOME}/."  # dotfiles root
-ln -sfv "${DOTFILES}"/vim/* ~/.vim  # vim
+source "${DOTFILES}/etc/ln_dotfiles.sh" "${DOTFILES}" "${HOME}/."  # ~/.*
+ln -sfv "${DOTFILES}/vim/"* ~/.vim  # ~/.vim/*
 
-# setup launch daemons
-for plist_file in "${HOME}/.dotfiles/LaunchDaemons/"*.plist; do
-    sudo ln -sfv "${plist_file}"\
-        "/Library/LaunchDaemons/$(basename ${plist_file})"
-    sudo chown root:wheel\
-        "/Library/LaunchDaemons/$(basename ${plist_file})"
-    sudo launchctl load -w\
-        "/Library/LaunchDaemons/$(basename ${plist_file})"
-done
+# setup launch daemons and launch agents
+source "${DOTFILES}/etc/setup_launch_daemons.sh" "${DOTFILES}/LaunchDaemons"
+source "${DOTFILES}/etc/setup_launch_agents.sh" "${DOTFILES}/LaunchAgents"
 
 # setup vundle
 if [[ ! -d ~/.vim/bundle/Vundle.vim ]]; then
