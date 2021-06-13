@@ -115,7 +115,7 @@ exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      
 
 exe "hi! Search         cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link IncSearch Search"
-exe "hi! MatchParen     cterm=bold      ctermfg=3    ctermbg=8    gui=bold      guifg=".color_3"  guibg=".color_8
+exe "hi! MatchParen     cterm=bold      ctermfg=11    ctermbg=8    gui=bold      guifg=".color_11"  guibg=".color_8
 exe "hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE gui=bold      guifg=".color_1"  guibg=".color_bg
 exe "hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE gui=NONE      guifg=".color_1"  guibg=".color_bg
 exe "hi! Todo           cterm=bold      ctermfg=3    ctermbg=NONE gui=bold      guifg=".color_3"  guibg=".color_bg
@@ -133,7 +133,7 @@ exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   
 exe "hi! LineNr         cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
 exe "hi! CursorLineNr   cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
 exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
-exe "hi! StatusLine     cterm=NONE      ctermfg=15   ctermbg=8    gui=NONE       guifg=".color_15"  guibg=".color_8
+exe "hi! StatusLine     cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=".color_7"  guibg=".color_8
 exe "hi! StatusLineNC   cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
 exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link Folded Comment"
@@ -146,10 +146,10 @@ exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link MoreMsg ModeMsg"
 exe "hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
-exe "hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=4    gui=NONE      guifg=".color_15" guibg=".color_4
+exe "hi! PmenuSel       cterm=NONE      ctermfg=7    ctermbg=4    gui=NONE      guifg=".color_7"  guibg=".color_4
 exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=".color_15" guibg=".color_bg
 exe "hi! link PmenuSbar Pmenu"
 exe "hi! link ModeMsg OtherType"
-exe "hi! link Conceal Comment"
-exe "hi! link SpecialKey Comment"
+exe "hi! link Conceal LineNr"
+exe "hi! link SpecialKey LineNr"
 exe "hi! link NonText Comment"

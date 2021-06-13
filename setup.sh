@@ -5,7 +5,7 @@
 #
 
 # styling
-BR_TEXT='\033[0;97m'
+BR_TEXT='\033[1;97m'
 DEF_TEXT='\033[0m'
 
 # check for `realpath` command
