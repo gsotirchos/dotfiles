@@ -22,28 +22,30 @@ OSASCRIPT = """
 
 TERMINAL_THEMES = {
     "Light": "Yorha",
-    "Dark": "Dracula"
-}
+    "Dark": "Dracula"}
 
 IS_DARK_MODE = {
     "Dark": "true",
-    "Light": "false"
-}
+    "Light": "false"}
 
 TIME_FORMAT = "%H:%M"
 
-TOGGLE_TIME = datetime.strptime("20:00",
-                                TIME_FORMAT)
+ON_TIME = datetime.strptime(
+    "20:00",
+    TIME_FORMAT)
+OFF_TIME = datetime.strptime(
+    "07:30",
+    TIME_FORMAT)
 
 def current_mode() -> str:
     """ return the current Dark Mode status """
     result = subprocess.run(
         ["defaults", "read", "-g", "AppleInterfaceStyle"],
         text=True,
-        capture_output=True,
-    )
+        capture_output=True)
 
-    if result.returncode == 0 and result.stdout.strip() == "Dark":
+    if result.returncode == 0 \
+            and result.stdout.strip() == "Dark":
         return "Dark"
     else:
         return "Light"
@@ -58,10 +60,12 @@ def mode() -> str:
     if time_query.returncode != 0:
         raise OSError('Could not get time.')
     else:
-        time = time_query.stdout.strip()
+        time = datetime.strptime(
+            time_query.stdout.strip(),
+            TIME_FORMAT)
 
     """ return desired mode """
-    if datetime.strptime(time, TIME_FORMAT) > TOGGLE_TIME:
+    if time < OFF_TIME or time > ON_TIME:
        return "Dark"
     else:
        return "Light"
