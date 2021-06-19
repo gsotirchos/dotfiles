@@ -16,3 +16,4 @@ hi! link pythonNone        Identifier
 hi! link pythonClass       Identifier
 hi! link pythonDecorator   Identifier
 hi! link pythonBuiltinObj  Function
+hi! link pythonBuiltinType OtherType

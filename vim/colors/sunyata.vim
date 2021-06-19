@@ -113,9 +113,9 @@ exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      
 exe "hi! MembOperator   cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
 exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=".color_12" guibg=".color_bg
 
-exe "hi! Search         cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
+exe "hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link IncSearch Search"
-exe "hi! MatchParen     cterm=bold      ctermfg=11    ctermbg=8    gui=bold      guifg=".color_11"  guibg=".color_8
+exe "hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=8    gui=bold      guifg=".color_11" guibg=".color_8
 exe "hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE gui=bold      guifg=".color_1"  guibg=".color_bg
 exe "hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE gui=NONE      guifg=".color_1"  guibg=".color_bg
 exe "hi! Todo           cterm=bold      ctermfg=3    ctermbg=NONE gui=bold      guifg=".color_3"  guibg=".color_bg

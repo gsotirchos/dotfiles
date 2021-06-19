@@ -27,6 +27,9 @@ augroup vimrc
     \   set formatoptions=tawcroql
     \|  set spell spelllang=en_us,el,cjk
 
+    " don't spell check help files
+    autocmd FileType help set nospell
+
     " syntax highlight a minimum of 2000 lines (faster scrolling)
     autocmd Syntax * syn sync minlines=2000 maxlines=2000
 
