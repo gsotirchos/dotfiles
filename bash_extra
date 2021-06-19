@@ -72,3 +72,4 @@ fi
 if [[ -f ~/.conda_init ]]; then
     source ~/.conda_init
 fi
+conda deactivate
