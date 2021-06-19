@@ -1,8 +1,9 @@
 # vim: set ft=sh:
 
 /usr/local/lib
-/opt/homebrew/lib
+/opt/homebrew/opt/*/*/lib
 /opt/homebrew/opt/*/lib
+/opt/homebrew/lib
 #/opt/homebrew/opt/llvm/lib
 #/opt/homebrew/opt/sqlite/lib
 #/opt/homebrew/opt/curl/lib
