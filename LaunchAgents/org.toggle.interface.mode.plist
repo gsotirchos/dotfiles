@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>org.toggle.interface.mode</string>
+  <string>org.toggle.dark.mode</string>
   <key>ProgramArguments</key>
   <array>
     <string>sh</string>
     <string>-c</string>
-    <string>python3 ~/.dotfiles/etc/toggle_interface_mode.py</string>
+    <string>python3 ~/.dotfiles/etc/toggle_dark_mode.py</string>
   </array>
   <key>RunAtLoad</key>
   <true/>
