@@ -81,7 +81,7 @@ set_prompt() {
 
     # set the prompt
     if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
-        echo " ${conda_env}${IBlack}\h::\w${ColorOff}"
+        echo " ${conda_env}${IBlack}\h::\W${ColorOff}"
     else
         echo " ${conda_env}${IBlack}\W${ColorOff}"
     fi
