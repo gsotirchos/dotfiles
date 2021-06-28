@@ -1,3 +1,6 @@
+" disable ctrl-z
+nnoremap <c-z> <nop>
+
 " change leader
 let mapleader =  ";"
 
