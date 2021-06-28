@@ -22,7 +22,7 @@ trash() {
 
 # function to empty trash
 empty_trash() {
-    read -p "Empty trash? [y/N] " -r
+    read -p "Are you sure you want to permamently erase the items in the trash? [y/N] " -r
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         for file in "${TRASH}"/*; do
             if [[ -e "${file}" ]]; then
@@ -50,3 +50,8 @@ alias vimrc="vim ~/.vim/vimrc"
 alias py="python3"
 alias pip-upgrade='conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
 alias drl="conda activate drl"
+
+if [[ -d "/Applications/Guild Wars 2.app" ]]; then
+    alias guildwars2='/Applications/Guild\ Wars\ 2.app/Contents/MacOS/playonmac'
+fi
+
