@@ -5,26 +5,26 @@ from datetime import datetime
 
 
 SET_INTERFACE_OSASCRIPT = """
-tell application "System Events"
-    tell appearance preferences
-        set dark mode to {mode}
+    tell application "System Events"
+        tell appearance preferences
+            set dark mode to {mode}
+        end tell
     end tell
-end tell
-"""
+    """
 
 SET_TERMINAL_OSASCRIPT = """
-tell application "Terminal"
-    set default settings to settings set "{theme}"
-end tell
+    tell application "Terminal"
+        set default settings to settings set "{theme}"
+    end tell
 
-tell application "Terminal"
-    set current settings of tabs of windows to settings set "{theme}"
-end tell
-"""
+    tell application "Terminal"
+        set current settings of tabs of windows to settings set "{theme}"
+    end tell
+    """
 
 CHECK_TERMINAL_OSASCRIPT = """
-if application "Terminal" is running then return true
-"""
+    if application "Terminal" is running then return true
+    """
 
 TERMINAL_THEMES = {
     "Light": "Yorha",
@@ -43,8 +43,8 @@ OFF_TIME = datetime.strptime(
     "07:30",
     TIME_FORMAT)
 
+""" return 'true' if terminal is currently running """
 def terminal_is_running() -> bool:
-    """ return 'true' if terminal is currently running """
     result = subprocess.run(
         ['osascript', '-e', CHECK_TERMINAL_OSASCRIPT],
         text = True,
@@ -54,8 +54,8 @@ def terminal_is_running() -> bool:
     else:
         return False
 
+""" return the current interface mode """
 def current_interface_mode() -> str:
-    """ return the current interface mode """
     result = subprocess.run(
         ["defaults", "read", "-g", "AppleInterfaceStyle"],
         text=True,
@@ -66,8 +66,8 @@ def current_interface_mode() -> str:
     else:
         return "Light"
 
+""" return the current Terminal mode """
 def current_terminal_mode() -> str:
-    """ return the current Terminal mode """
     result = subprocess.run(
         ["defaults", "read", "com.Apple.Terminal",
             "Default Window Settings"],
@@ -79,6 +79,7 @@ def current_terminal_mode() -> str:
     else:
         return "Light"
 
+""" return the desired mode """
 def desired_mode() -> str:
     """ get current time """
     time_query = subprocess.run(
@@ -99,8 +100,8 @@ def desired_mode() -> str:
     else:
        return "Light"
 
+""" enable/disable dark mode interface """
 def set_interface_style():
-    """ enable/disable dark mode interface """
     the_desired_mode = desired_mode()
     if current_interface_mode() is not desired_mode:
         script = SET_INTERFACE_OSASCRIPT.format(
@@ -112,8 +113,8 @@ def set_interface_style():
             capture_output=True)
         assert result.returncode == 0, result
 
+""" enable/disable dark mode Terminal """
 def set_terminal_style():
-    """ enable/disable dark mode Terminal """
     if not terminal_is_running():
         return
 
