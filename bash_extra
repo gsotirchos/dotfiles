@@ -64,8 +64,9 @@ if [[ -f ~/.bash_aliases ]]; then
 fi
 
 # ros environment
-if [[ -f /opt/ros/noetic/setup.bash ]]; then
-    source /opt/ros/noetic/setup.bash
+ROS_DISTRO="galactic"
+if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
+   source /opt/ros/"${ROS_DISTRO}"/setup.bash
 fi
 
 # conda initialization
