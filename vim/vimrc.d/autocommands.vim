@@ -12,9 +12,12 @@ augroup vimrc
     " clear existing definitions in this group
     autocmd!
 
-    " enable sign column (when appropriate)
-    autocmd BufWinEnter,BufRead,BufWrite *
+    " enable sign column (when appropriate) and set textwidth
+    autocmd BufWinEnter,BufRead,BufWrite,VimResized *
     \   call SetSignColumn(@%, &modifiable)
+    \|  let b:numberwidth = &number * (1 + float2nr(ceil(log10(line("$") + 1))))
+    \|  let &colorcolumn = 80 - b:gutterwidth - b:numberwidth
+    \|  let &textwidth = &colorcolumn - 1
 
     " autosave named files
     autocmd CursorHold ?* nested if empty(&buftype) | update | endif
@@ -22,10 +25,10 @@ augroup vimrc
     " convert always to utf-8
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
 
-    " spell check text files
-    autocmd FileType tex,latex,text,markdown
-    \   set formatoptions=tawcroql
-    \|  set spell spelllang=en_us,el,cjk
+    " settings for latex, markdown files
+    autocmd FileType tex,latex,markdown
+    \   set spell spelllang=en_us,el,cjk
+    \|  set formatoptions=tawcroql
 
     " don't spell check help files
     autocmd FileType help set nospell
@@ -66,6 +69,6 @@ augroup vimrc
     autocmd QuitPre * if empty(&buftype) | lclose | endif
 
     " remember state
-    au BufWinLeave,BufWrite * silent! mkview
-    au BufWinEnter,BufRead * silent! loadview
+    "au BufWinLeave,BufWrite * silent! mkview
+    "au BufWinEnter,BufRead * silent! loadview
 augroup END

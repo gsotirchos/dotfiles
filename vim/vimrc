@@ -94,7 +94,6 @@ set formatoptions=ro  " no automatic line breaking
 set breakindent  " wrap preserving indentation
 let &breakindentopt = "shift:" . &ts  " deeper wrapping indent
 set display+=lastline  " show last wrapped line in window
-let colorcolumn = 81  " color column on 81st character
 set shell=$SHELL\ -l  " login shell for 'term'
 set shellcmdflag=-l\ -c  " login shell for '!'
 
