@@ -15,10 +15,10 @@ if ! command -v realpath &> /dev/null; then
 fi
 
 # dotfiles path
-DOTFILES=$(\
-    builtin cd "$(\
-        dirname "$(realpath ${BASH_SOURCE[0]})"\
-    )" > /dev/null && pwd)
+DOTFILES="$(builtin cd \
+        "$(dirname \
+            "$(realpath "${BASH_SOURCE[0]}")")" \
+    > /dev/null && pwd)"
 
 # prepare folders
 mkdir -vp ~/.vim/undo
