@@ -151,5 +151,5 @@ exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   
 exe "hi! link PmenuSbar Pmenu"
 exe "hi! link ModeMsg OtherType"
 exe "hi! link Conceal LineNr"
-exe "hi! link SpecialKey SpecialComment"
+exe "hi! link SpecialKey LineNr"
 exe "hi! link NonText LineNr"
