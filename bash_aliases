@@ -51,7 +51,10 @@ alias py="python3"
 alias pip-upgrade='conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
 alias drl="conda activate drl"
 
-if [[ -d "/Applications/Guild Wars 2.app" ]]; then
-    alias guildwars2='/Applications/Guild\ Wars\ 2.app/Contents/MacOS/playonmac'
+if [[ -d "${HOME}/Applications/PlayOnMac/Guild Wars 2.app" ]]; then
+    alias guildwars2="${HOME}/Applications/PlayOnMac/Guild\ Wars\ 2.app/Contents/MacOS/playonmac"
 fi
 
+if [[ -d "/Applications/PlayOnMac.app" ]]; then
+    alias playonmac='/Applications/PlayOnMac.app/Contents/MacOS/playonmac'
+fi
