@@ -64,7 +64,8 @@ if [[ -f ~/.bash_aliases ]]; then
 fi
 
 # ros environment
-ROS_DISTRO="galactic"
+#ROS_DISTRO="galactic"
+ROS_DISTRO="noetic"
 if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
    source /opt/ros/"${ROS_DISTRO}"/setup.bash
 fi
