@@ -92,7 +92,7 @@ set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr  " wrap lines by word
 set formatoptions=ro  " no automatic line breaking
 set breakindent  " wrap preserving indentation
-let &breakindentopt = "shift:" . &ts  " deeper wrapping indent
+let &breakindentopt = "shift:" . (&ts-1)  " deeper wrapping indent
 set display+=lastline  " show last wrapped line in window
 set shell=$SHELL\ -l  " login shell for 'term'
 set shellcmdflag=-l\ -c  " login shell for '!'
