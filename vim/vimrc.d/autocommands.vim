@@ -13,11 +13,13 @@ augroup vimrc
     autocmd!
 
     " enable sign column (when appropriate) and set textwidth
+    " also set wrapping indent
     autocmd BufWinEnter,BufRead,BufWrite,VimResized *
     \   call SetSignColumn(@%, &modifiable)
     \|  let b:numberwidth = &number * (1 + float2nr(ceil(log10(line("$") + 1))))
     \|  let &colorcolumn = 80 + 1 - b:gutterwidth - b:numberwidth
     \|  let &textwidth = &colorcolumn - 2
+    \|  let &breakindentopt = "shift:" . (&ts-1)
 
     " autosave named files
     autocmd CursorHold ?* nested if empty(&buftype) | update | endif
@@ -56,9 +58,10 @@ augroup vimrc
     \|  set concealcursor=inc
     \|  set conceallevel=1
 
-    " use xml syntax for some extensions
+    " treat some extensions as xml
     autocmd BufWinEnter,BufRead,BufWrite
-    \   *.sdf,*.world,*.model,*.config,*.launch,*.plist set ft=xml
+    \   *.sdf,*.world,*.model,*.config,*.launch,*.plist
+    \   set ft=xml
 
     " cmake custom autocompletion
     autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt,*.cmake
