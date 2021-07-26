@@ -12,13 +12,11 @@ augroup vimrc
     " clear existing definitions in this group
     autocmd!
 
-    " enable sign column (when appropriate) and set textwidth
-    " also set wrapping indent
+    " enable sign column (when appropriate), set textwidth, set wrapping indent
     autocmd BufWinEnter,BufRead,BufWrite,VimResized *
     \   call SetSignColumn(@%, &modifiable)
     \|  let b:numberwidth = &number * (1 + float2nr(ceil(log10(line("$") + 1))))
-    \|  let &colorcolumn = 80 + 1 - b:gutterwidth - b:numberwidth
-    \|  let &textwidth = &colorcolumn - 2
+    \|  let &textwidth = 79 - b:gutterwidth - b:numberwidth
     \|  let &breakindentopt = "shift:" . (&ts-1)
 
     " autosave named files
@@ -31,6 +29,7 @@ augroup vimrc
     autocmd FileType tex,latex,markdown
     \   set spell spelllang=en_us,el,cjk
     \|  set formatoptions=tawcroql
+    \|  set colorcolumn=+2
 
     " don't spell check help files
     autocmd FileType help set nospell
@@ -58,7 +57,7 @@ augroup vimrc
     \|  set concealcursor=inc
     \|  set conceallevel=1
 
-    " treat some extensions as xml
+    " treat certain extensions as xml
     autocmd BufWinEnter,BufRead,BufWrite
     \   *.sdf,*.world,*.model,*.config,*.launch,*.plist
     \   set ft=xml
