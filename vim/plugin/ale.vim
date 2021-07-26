@@ -5,8 +5,8 @@ let g:ale_sign_column_always = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '!'
 let g:ale_linters = {
-\   'cpp': ['ccls'],
-\   'python': ['pyls']}
+\   'cpp': ['ccls', 'roslint_cpplint'],
+\   'python': ['pyls', 'roslint_pep8']}
 let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = 400
