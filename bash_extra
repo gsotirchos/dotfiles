@@ -4,6 +4,16 @@
 
 # vim: set ft=sh:
 
+# determine OS
+case "$(uname -s)" in
+    Linux*)
+        os="linux"
+        ;;
+    Darwin*)
+        os="macos"
+        ;;
+esac
+
 # don't put duplicate lines or lines starting with space in the history.
 HISTCONTROL=ignoreboth
 
@@ -30,7 +40,7 @@ else
 fi
 
 # enable display on ssh connections
-if [[ "$(uname -s)" == "Linux" ]] \
+if [[ "${os}" == "linux" ]] \
     && [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
     export DISPLAY=:0
 fi
@@ -44,7 +54,7 @@ export npower_pi="root@192.168.1.20"
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US.UTF-8"
 
-# use homebrew bash
+# use new bash
 export SHELL="$(which bash)"
 
 # use clang and Ninja with CMake
@@ -63,15 +73,35 @@ if [[ -f ~/.bash_aliases ]]; then
     source ~/.bash_aliases
 fi
 
-# ros environment
-#ROS_DISTRO="galactic"
-ROS_DISTRO="noetic"
-if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
-   source /opt/ros/"${ROS_DISTRO}"/setup.bash
-fi
-
 # conda initialization
 if [[ -f ~/.conda_init ]]; then
     source ~/.conda_init
+    conda deactivate
 fi
-conda deactivate
+
+MACOS_PREFIX=""
+if [[ "${os}" == "linux" ]]; then
+    # ROS distro
+    #export ROS_DISTRO="galactic"
+    export ROS_DISTRO="noetic"
+
+    # macos dotfiles prefix
+    if [[ -d ~/.macos-dotfiles ]]; then
+        MACOS_PREFIX="macos-"
+    fi
+fi
+
+# source ROS environment
+if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
+    source /opt/ros/"${ROS_DISTRO}"/setup.bash
+fi
+
+# append extra paths from files
+if [[ -d ~/.dotfiles/extra_paths ]]; then
+    source ~/."${MACOS_PREFIX}"dotfiles/etc/append_paths.sh ~/.dotfiles/extra_paths
+fi
+
+# auto-completion
+if [[ -d ~/.dotfiles/completion_dirs ]]; then
+    source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
+fi
