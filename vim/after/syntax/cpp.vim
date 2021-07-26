@@ -29,7 +29,7 @@ syntax keyword Statement nullopt
 hi! link myMark           SpecialComment
 hi! link myMemberOperator MembOperator
 hi! link cCustomScope     MembOperator
-hi! link cCustomDot       MembOperator
+hi! link cCustomDot       Normal
 hi! link cCustomPtr       MembOperator
 hi! link cFormat          Special
 hi! link cOperator        Statement
