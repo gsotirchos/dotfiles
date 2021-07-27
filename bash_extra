@@ -62,11 +62,6 @@ export CC="$(which clang)"
 export CXX="${CC}++"
 export CMAKE_GENERATOR="Ninja"
 
-# custom prompt
-if [[ -f ~/.bash_prompt ]]; then
-    source ~/.bash_prompt
-fi
-
 # aliases
 export TRASH="${HOME}/.Trash"
 if [[ -f ~/.bash_aliases ]]; then
@@ -105,3 +100,9 @@ fi
 if [[ -d ~/.dotfiles/completion_dirs ]]; then
     source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
 fi
+
+# custom prompt
+if [[ -f ~/.bash_prompt ]]; then
+    source ~/.bash_prompt
+fi
+
