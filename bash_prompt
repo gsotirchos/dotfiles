@@ -79,11 +79,21 @@ set_prompt() {
         conda_env="[${IBlue}${CONDA_DEFAULT_ENV}${ColorOff}] "
     fi
 
+    # check if current dir belongs to overlayed ROS package
+    if [[ -n "${ROS_DISTRO}" ]]; then
+        for package_path in $(rospack list | awk '{print $2}'); do
+            if [[ "${PWD}" == "${package_path}"* ]]; then
+                ros_package="${ColorOff}+"
+                break
+            fi
+        done
+    fi
+
     # set the prompt
     if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
-        echo " ${conda_env}${IBlack}\h::\W${ColorOff}"
+        echo " ${conda_env}${IBlack}\h::\W${ColorOff}${ros_package}"
     else
-        echo " ${conda_env}${IBlack}\W${ColorOff}"
+        echo " ${conda_env}${IBlack}\W${ColorOff}${ros_package}"
     fi
 }
 
