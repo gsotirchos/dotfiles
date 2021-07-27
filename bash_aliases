@@ -3,7 +3,7 @@
 # rm wrapper to move file(s) to trash folder
 trash() {
     flags=""
-    for arg in "$@"; do
+    for arg in $@; do
         if [[ ${arg} == -* ]]; then
             flags="${flags} ${arg}"
             continue
@@ -33,7 +33,7 @@ empty_trash() {
 }
 
 # aliases
-alias rm=trash  # trash file instead of deleting
+alias rm=trash  # trash files instead of deleting
 alias mv="mv -iv"  # confirmatory, verbose move
 alias cp="cp -iv"  # confirmatory, verbose copy
 alias ln="ln -iv"  # confirmatory, verbose symlink creaton
