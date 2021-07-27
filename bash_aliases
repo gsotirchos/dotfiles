@@ -26,8 +26,7 @@ empty_trash() {
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         for file in "${TRASH}"/{..?,.[!.],}*; do
             if ([[ -e "${file}" ]] || [[ -L "${file}" ]]); then
-                env rm -rf "${file}" && \
-                    echo "Deleted: ${file}"
+                env rm -rfv "${file}"
             fi
         done
     fi
