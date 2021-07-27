@@ -106,7 +106,7 @@ exe "hi! link Typedef Type"
 exe "hi! Special        cterm=NONE      ctermfg=2    ctermbg=NONE gui=NONE      guifg=".color_2"  guibg=".color_bg
 exe "hi! link SpecialChar Special"
 exe "hi! link Tag Special"
-exe "hi! Delimiter      cterm=bold      ctermfg=13   ctermbg=NONE gui=NONE      guifg=".color_13" guibg=".color_bg
+exe "hi! Delimiter      cterm=NONE      ctermfg=13   ctermbg=NONE gui=NONE      guifg=".color_13" guibg=".color_bg
 exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      guifg=".color_15" guibg=".color_bg
 
 " my custom groups
