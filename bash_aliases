@@ -12,7 +12,7 @@ trash() {
         # move file to trash folder, or delete /tmp/* files
         if [[ ${arg} == "/tmp/"* ]]; then
             #echo "unlink ${arg}"
-            env rm -rfv "${arg%/}"
+            env rm -rf "${arg%/}"
         else
             #echo "mv -v ${flags} ${arg} ${TRASH}"
             env mv ${flags} -v --backup=numbered "${arg%/}" "${TRASH}"
