@@ -24,10 +24,10 @@ trash() {
 empty_trash() {
     read -p "Are you sure you want to permamently erase the items in the trash? [y/N] " -r
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
-        for file in "${TRASH}"/*; do
-            if [[ -e "${file}" ]]; then
+        for file in "${TRASH}"/{..?,.[!.],}*; do
+            if ([[ -e "${file}" ]] || [[ -L "${file}" ]]); then
                 env rm -rf "${file}" && \
-                echo "Deleted: ${file}"
+                    echo "Deleted: ${file}"
             fi
         done
     fi
@@ -41,7 +41,7 @@ alias ln="ln -iv"  # confirmatory, verbose symlink creaton
 alias ls="ls --color"  # colors in ls
 alias grep="grep --color"
 alias tree="tree -lNFC -L 2 \
-    --dirsfirst --filelimit 15 \
+    --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"  # cleaner tree
 alias sftp="with-readline sftp"
 alias dunnet="clear && emacs -batch -l dunnet"
