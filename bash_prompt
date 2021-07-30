@@ -83,7 +83,7 @@ set_prompt() {
     if [[ -n "${ROS_DISTRO}" ]]; then
         for package_path in $(rospack list | awk '{print $2}'); do
             if [[ "${PWD}" == "${package_path}"* ]]; then
-                ros_package="${ColorOff}+"
+                ros_package="${Green}✔︎${ColorOff}"
                 break
             fi
         done
