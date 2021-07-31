@@ -62,6 +62,11 @@ augroup vimrc
     \   *.sdf,*.world,*.model,*.config,*.launch,*.plist
     \   set ft=xml
 
+    " treat certain ros configuration files config
+    autocmd BufWinEnter,BufRead,BufWrite
+    \   *.msg,*.srv,*.action
+    \   set ft=config
+
     " cmake custom autocompletion
     autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt,*.cmake
     \   set complete=.,k
