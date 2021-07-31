@@ -11,10 +11,10 @@ trash() {
 
         # move file to trash folder, or delete /tmp/* files
         if [[ ${arg} == "/tmp/"* ]]; then
-            #echo "unlink ${arg}"
-            env rm -rf "${arg%/}"
+            #echo "rm -r ${arg}"
+            env rm -r "${arg%/}"
         else
-            #echo "mv -v ${flags} ${arg} ${TRASH}"
+            #echo "mv ${flags} -v --backup=numbered ${arg%/} ${TRASH}"
             env mv ${flags} -v --backup=numbered "${arg%/}" "${TRASH}"
         fi
     done
@@ -26,7 +26,8 @@ empty_trash() {
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         for file in "${TRASH}"/{..?,.[!.],}*; do
             if ([[ -e "${file}" ]] || [[ -L "${file}" ]]); then
-                env rm -rfv "${file}"
+                env rm -r "${file}" && \
+                    echo "deleted '${file}'"
             fi
         done
     fi
