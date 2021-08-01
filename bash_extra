@@ -86,19 +86,14 @@ if [[ "${os}" == "linux" ]]; then
     fi
 fi
 
-# source ROS environment
-if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
-    source /opt/ros/"${ROS_DISTRO}"/setup.bash
-fi
-
 # append extra paths from files
 if [[ -d ~/.dotfiles/extra_paths ]]; then
     source ~/."${MACOS_PREFIX}"dotfiles/etc/append_paths.sh ~/.dotfiles/extra_paths
 fi
 
-# auto-completion
-if [[ -d ~/.dotfiles/completion_dirs ]]; then
-    source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
+# source ROS environment
+if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
+    source /opt/ros/"${ROS_DISTRO}"/setup.bash
 fi
 
 # custom prompt
@@ -106,3 +101,10 @@ if [[ -f ~/.bash_prompt ]]; then
     source ~/.bash_prompt
 fi
 
+# auto-completion
+if [[ -d ~/.dotfiles/completion_dirs ]]; then
+    source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
+fi
+
+# improve cd completion
+complete -f -o nospace cd
