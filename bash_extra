@@ -106,5 +106,6 @@ if [[ -d ~/.dotfiles/completion_dirs ]]; then
     source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
 fi
 
-# improve cd completion
-complete -f -o nospace cd
+# other shell options
+complete -f -o nospace cd  # improve cd completion
+shopt -s direxpand  # expand variables in path completion
