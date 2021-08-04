@@ -66,6 +66,12 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite
     \   *.msg,*.srv,*.action
     \   set ft=conf
+    autocmd BufWinEnter,BufRead,BufWrite
+    \   *.vcg
+    \   set ft=dosini
+    autocmd BufWinEnter,BufRead,BufWrite
+    \   *.rviz
+    \   set ft=yaml
 
     " cmake custom autocompletion
     autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt,*.cmake
