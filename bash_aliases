@@ -39,7 +39,7 @@ alias mv="mv -iv"  # confirmatory, verbose move
 alias cp="cp -iv"  # confirmatory, verbose copy
 alias ln="ln -iv"  # confirmatory, verbose symlink creaton
 alias ls="ls --color"  # colors in ls
-alias grep="grep --color"
+alias grep="grep --color -E"  # use colors & enable extended regexp
 alias tree="tree -lNFC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"  # cleaner tree
