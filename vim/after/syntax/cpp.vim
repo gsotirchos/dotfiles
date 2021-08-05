@@ -1,3 +1,5 @@
+set syntax=cpp.doxygen
+
 let g:cpp_class_scope_highlight = 1  " for '::'
 let g:cpp_member_variable_highlight = 1  " for '->' and '.'
 let g:cpp_class_decl_highlight = 1
@@ -42,3 +44,11 @@ hi! link cCustomFunc      Function
 hi! link cCustomClass     Function
 hi! link cCustomClassName Identifier
 hi! link cppNamespace     Identifier
+
+hi! link doxygenStartL               Comment
+hi! link doxygenSpecial              Comment
+hi! link doxygenParamName            SpecialComment
+hi! link doxygenSpecialMultilineDesc Normal
+hi! link doxygenBriefWord            doxygenSpecial
+hi! link doxygenParam                doxygenSpecial
+hi! link doxygenBriefLine            doxygenSpecialMultilineDesc
