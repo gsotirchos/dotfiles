@@ -8,5 +8,5 @@ let g:NERDRemoveExtraSpaces = 1  " always remove extra spaces
 let g:NERDTrimTrailingWhitespace  = 1
 
 let g:NERDCustomDelimiters = {
-\   "python": {'left': '#'}
+\   'python': {'left': '#'}
 \}
