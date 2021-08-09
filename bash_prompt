@@ -76,7 +76,7 @@ set_prompt() {
 
     # get active conda environment
     if [[ -n ${CONDA_DEFAULT_ENV} ]]; then
-        conda_env="[${IBlue}${CONDA_DEFAULT_ENV}${ColorOff}] "
+        conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${ColorOff}) "
     fi
 
     # check if current dir belongs to overlayed ROS package
