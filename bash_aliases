@@ -26,7 +26,7 @@ empty_trash() {
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         for file in "${TRASH}"/{..?,.[!.],}*; do
             if ([[ -e "${file}" ]] || [[ -L "${file}" ]]); then
-                env rm -r "${file}" && \
+                env rm -rf "${file}" && \
                     echo "deleted '${file}'"
             fi
         done
@@ -38,7 +38,7 @@ alias rm=trash  # trash files instead of deleting
 alias mv="mv -iv"  # confirmatory, verbose move
 alias cp="cp -iv"  # confirmatory, verbose copy
 alias ln="ln -iv"  # confirmatory, verbose symlink creaton
-alias ls="ls --color"  # colors in ls
+alias ls="ls -h --color=always"  # human-readable, colored ls
 alias grep="grep --color -E"  # use colors & enable extended regexp
 alias tree="tree -lNFC -L 2 \
     --dirsfirst \
