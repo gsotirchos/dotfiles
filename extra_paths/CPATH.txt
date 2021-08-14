@@ -1,4 +1,4 @@
-# vim: set ft=sh:
+# vim: set ft=bash:
 
 /usr/local/include
 /opt/homebrew/opt/*/*/include
