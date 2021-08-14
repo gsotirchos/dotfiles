@@ -4,6 +4,3 @@
 /opt/homebrew/opt/*/*/include
 /opt/homebrew/opt/*/include
 /opt/homebrew/include
-#/opt/homebrew/opt/llvm/include
-#/opt/homebrew/opt/sqlite/include
-#/opt/homebrew/opt/curl/include

@@ -9,7 +9,3 @@ ${HOME}/.cabal/bin
 /opt/homebrew/opt/*/*/*bin
 /opt/homebrew/opt/*/*bin
 /opt/homebrew/bin
-#/opt/homebrew/opt/coreutils/libexec/gnubin
-#/opt/homebrew/opt/llvm/bin
-#/opt/homebrew/opt/sqlite/bin
-#/opt/homebrew/opt/curl/bin
