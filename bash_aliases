@@ -50,6 +50,7 @@ alias vimrc="vim ~/.vim/vimrc"
 alias py="python3"
 alias pip-upgrade='conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
 alias drl="conda activate drl"
+alias wssetup="cd ~/Coding/ROS/learning_catkin_ws/ && . devel/setup.bash"
 
 if [[ -d "${HOME}/Applications/PlayOnMac/Guild Wars 2.app" ]]; then
     alias guildwars2="${HOME}/Applications/PlayOnMac/Guild\ Wars\ 2.app/Contents/MacOS/playonmac"
