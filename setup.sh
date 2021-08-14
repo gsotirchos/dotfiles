@@ -47,5 +47,5 @@ fi
 # setup julia
 if command -v "julia" &> /dev/null; then
     echo -e "${BR_TEXT}\n- Setting up Julia${DEF_TEXT}"
-    "${DOTFILES}"/julia/setup-julia.sh
+    source "${DOTFILES}"/julia/setup-julia.sh
 fi
