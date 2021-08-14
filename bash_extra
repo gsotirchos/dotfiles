@@ -2,7 +2,7 @@
 # ~/.bash_extra
 #
 
-# vim: set ft=sh:
+# vim: set ft=bash:
 
 # determine OS
 case "$(uname -s)" in

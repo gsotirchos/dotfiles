@@ -1,4 +1,4 @@
-# vim: set ft=sh:
+# vim: set ft=bash:
 
 # rm wrapper to move file(s) to trash folder
 trash() {

@@ -2,7 +2,7 @@
 # ~/.bash_profile
 #
 
-# vim: set ft=sh:
+# vim: set ft=bash:
 
 # if not running interactively, don't do anything
 case $- in
