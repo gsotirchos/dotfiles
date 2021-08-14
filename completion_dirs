@@ -1,2 +1,2 @@
-${HOMEBREW_PREFIX}/share/bash-completion/completions/
-${HOMEBREW_PREFIX}/etc/bash_completion.d/
+${HOMEBREW_PREFIX}/share/bash-completion/completions
+${HOMEBREW_PREFIX}/etc/bash_completion.d
