@@ -1,2 +1,3 @@
-${HOMEBREW_PREFIX}/share/bash-completion/completions
+# vim: set ft=bash:
+
 ${HOMEBREW_PREFIX}/etc/bash_completion.d
