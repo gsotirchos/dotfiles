@@ -8,8 +8,9 @@ append_paths() {
     shift
 
     # gather in reverse order the rest of the arguments-paths that exist
-    for extra_path in "$@"; do
+    for extra_path in $@; do
         if [[ -d "${extra_path}" ]]; then
+            #echo "extra path: ${extra_path}"
             current_paths="${extra_path}:${current_paths//$extra_path:}"
         fi
     done
@@ -23,7 +24,7 @@ main() {
     extra_paths_dir="$(realpath $1)"
 
     for extra_paths_file in "${extra_paths_dir}"/*; do
-        echo ${extra_paths_file}
+        #echo "modifying: ${extra_paths_file}"
         global_var_name="$(basename "${extra_paths_file%.*}")"
 
         append_paths "${global_var_name}" "$(envsubst < "${extra_paths_file}")"
