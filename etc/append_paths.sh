@@ -11,7 +11,8 @@ append_paths() {
     for extra_path in $@; do
         if [[ -d "${extra_path}" ]]; then
             #echo "extra path: ${extra_path}"
-            current_paths="${extra_path}:${current_paths//$extra_path:}"
+            current_paths="${extra_path}:${current_paths}"
+            current_paths="${current_paths//:$extra_path}"
         fi
     done
 
