@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# vim: set ft=bash:
-
 # determine OS
 if [[ "$(uname -s)" == *"Linux"* ]]; then
     f_perm="775"
