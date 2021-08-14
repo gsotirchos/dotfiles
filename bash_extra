@@ -106,7 +106,7 @@ if [[ -f ~/.bash_prompt ]]; then
 fi
 
 # auto-completion
-if [[ -d ~/.dotfiles/completion_dirs ]]; then
+if [[ -f ~/.dotfiles/completion_dirs ]]; then
     source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
 fi
 
