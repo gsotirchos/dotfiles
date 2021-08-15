@@ -26,7 +26,7 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
 
     " settings for latex, markdown files
-    autocmd FileType tex,latex,markdown
+    autocmd FileType tex,latex
     \   set spell spelllang=en_us,el,cjk
     \|  set formatoptions=tawcroql
     \|  set colorcolumn=+2
