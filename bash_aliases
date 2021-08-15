@@ -48,7 +48,7 @@ alias dunnet="clear && emacs -batch -l dunnet"
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
 alias vimrc="vim ~/.vim/vimrc"
 alias py="python3"
-alias pip-upgrade='conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
+alias pip-upgrade='python -m pip install --upgrade pip && conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
 alias drl="conda activate drl"
 alias wssetup="cd ~/Public/Coding/ROS/learning_catkin_ws/ && . devel/setup.bash"
 
