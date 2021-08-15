@@ -8,6 +8,11 @@
 case "$(uname -s)" in
     Linux*)
         os="linux"
+        if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
+            wsl=true
+        else
+            wsl=false
+        fi
         ;;
     Darwin*)
         os="macos"
@@ -30,6 +35,15 @@ export PROMPT_COMMAND="history -a; "
 # notify terminal of current working directory
 export PROMPT_COMMAND+='echo -ne "\033]0;$(dirs +0)\007"; '
 
+# local ip shortcuts
+export imac="192.168.1.2"
+export macbookair="192.168.1.1"
+export npower_pi="root@192.168.1.20"
+
+# set the locale to English
+export LC_ALL="en_US.UTF-8"
+export LANG="en_US.UTF-8"
+
 # check if this is a ssh session
 if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
     SESSION_TYPE="remote_ssh"
@@ -40,19 +54,16 @@ else
 fi
 
 # enable display on ssh connections
-if [[ "${os}" == "linux" ]] \
-    && [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
-    export DISPLAY=:0
+if [[ "${os}" == "linux" ]]; then
+    if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
+        export DISPLAY=:0
+    fi
+
+    if [[ ${wsl} ]]; then
+        export DISPLAY="${imac}:0.0"
+        #export LIBGL_ALWAYS_INDIRECT=0
+    fi
 fi
-
-# local ip shortcuts
-export imac="192.168.1.2"
-export macbookair="192.168.1.1"
-export npower_pi="root@192.168.1.20"
-
-# set the locale to English
-export LC_ALL="en_US.UTF-8"
-export LANG="en_US.UTF-8"
 
 # use new bash
 export SHELL="$(which bash)"
