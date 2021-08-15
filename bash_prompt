@@ -35,7 +35,7 @@ set_prompt() {
     UWhite='\[\e[4;37m\]'
 
     # High Intensity foreground
-    IBlack='\[\[\e[0;90m\]'
+    IBlack='\[\e[0;90m\]'
     IRed='\[\e[0;91m\]'
     IGreen='\[\e[0;92m\]'
     IYellow='\[\e[0;93m\]'
