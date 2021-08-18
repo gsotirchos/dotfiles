@@ -4,6 +4,7 @@ hi! link xmlTag             MembOperator
 hi! link xmlNamespace       Function
 hi! link xmlTagName         Statement
 hi! link xmlAttrib          Function
-hi! link xmlAttribPunct     Normal
 hi! link xmlTag             Normal
-hi! link xmlProcessingDelim Normal
+hi! link xmlAttribPunct     xmlTag
+hi! link xmlProcessingDelim xmlTag
+hi! link xmlDocTypeDecl     xmlTag
