@@ -34,6 +34,7 @@ source "${DOTFILES}/etc/ln_dotfiles.sh" "${DOTFILES}" "${HOME}/."  # ~/.*
 ln -sfv "${DOTFILES}/vim/"* ~/.vim  # ~/.vim/*
 
 # setup launch daemons and launch agents
+echo -e "${BR_TEXT}\n- Setting up LaunchDaemons and LaunchAgents${DEF_TEXT}"
 source "${DOTFILES}/etc/setup_launch_daemons.sh" "${DOTFILES}/LaunchDaemons"
 source "${DOTFILES}/etc/setup_launch_agents.sh" "${DOTFILES}/LaunchAgents"
 
