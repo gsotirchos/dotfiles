@@ -59,7 +59,7 @@ if [[ "${os}" == "linux" ]]; then
         export DISPLAY=:0
     fi
 
-    if [[ ${wsl} ]]; then
+    if [[ ${wsl} = true ]]; then
         export DISPLAY="${imac}:0.0"
         #export LIBGL_ALWAYS_INDIRECT=0
     fi
