@@ -54,7 +54,7 @@ augroup vimrc
     \       $HOME . "/.vim/tags/"
     \           . substitute(expand('%:p'), "/", "_", "g")
     \           . ".ctags"
-    \|  set concealcursor=inc
+    \|  set concealcursor=nc
     \|  set conceallevel=1
 
     " treat certain extensions as xml
