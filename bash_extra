@@ -111,6 +111,10 @@ if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
     source /opt/ros/"${ROS_DISTRO}"/setup.bash
 fi
 
+if [[ -f ~/Public/ROS/Udacity/catkin_ws/devel/setup.bash ]]; then
+    source ~/Public/ROS/Udacity/catkin_ws/devel/setup.bash
+fi
+
 # custom prompt
 if [[ -f ~/.bash_prompt ]]; then
     source ~/.bash_prompt
