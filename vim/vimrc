@@ -90,7 +90,7 @@ set backspace=2  " allow backspace in insert mode
 set scrolloff=3  " scroll 3 lines before the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr  " wrap lines by word
-set formatoptions=ro  " no automatic line breaking
+set formatoptions=  " no automatic line breaking
 set breakindent  " wrap preserving indentation
 set display+=lastline  " show last wrapped line in window
 set shell=$SHELL\ -l  " login shell for 'term'

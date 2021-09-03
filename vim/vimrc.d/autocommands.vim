@@ -28,7 +28,7 @@ augroup vimrc
     " settings for latex, markdown files
     autocmd FileType tex,latex
     \   set spell spelllang=en_us,el,cjk
-    \|  set formatoptions=tawcroql
+    \|  set formatoptions=tawcql
     \|  set colorcolumn=+2
 
     " don't spell check help files
