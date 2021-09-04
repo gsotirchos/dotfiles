@@ -59,7 +59,7 @@ augroup vimrc
 
     " treat certain extensions as xml
     autocmd BufWinEnter,BufRead,BufWrite
-    \   *.sdf,*.world,*.model,*.config,*.launch,*.plist
+    \   *.sdf,*.world,*.model,*.xacro*.config,*.launch,*.plist
     \   set ft=xml
 
     " treat certain ros configuration files as conf files
