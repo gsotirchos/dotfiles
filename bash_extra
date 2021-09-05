@@ -73,16 +73,6 @@ export CC="$(which clang)"
 export CXX="${CC}++"
 export CMAKE_GENERATOR="Ninja"
 
-# aliases
-if [[ "${os}" == "linux" ]]; then
-    export TRASH="${HOME}/.local/share/Trash/files"
-elif [[ "${os}" == "macos" ]]; then
-    export TRASH="${HOME}/.Trash"
-fi
-if [[ -f ~/.bash_aliases ]]; then
-    source ~/.bash_aliases
-fi
-
 # conda initialization
 if [[ -f ~/.conda_init ]]; then
     source ~/.conda_init
@@ -112,8 +102,19 @@ if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
 fi
 
 # source catkin workspace
-if [[ -f ~/Public/ROS/catkin_ws/devel/setup.bash ]]; then
+catkin_ws="$(find ~ -maxdepth 3 -name "catkin_ws" | head -1)"
+if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
     source ~/Public/ROS/catkin_ws/devel/setup.bash
+fi
+
+# aliases
+if [[ "${os}" == "linux" ]]; then
+    export TRASH="${HOME}/.local/share/Trash/files"
+elif [[ "${os}" == "macos" ]]; then
+    export TRASH="${HOME}/.Trash"
+fi
+if [[ -f ~/.bash_aliases ]]; then
+    source ~/.bash_aliases
 fi
 
 # custom prompt
