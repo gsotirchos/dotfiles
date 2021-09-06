@@ -63,6 +63,9 @@ if [[ "${os}" == "linux" ]]; then
         export DISPLAY="${imac}:0.0"
         #export LIBGL_ALWAYS_INDIRECT=0
     fi
+
+    # enable local connections
+    xhost +local: > /dev/null
 fi
 
 # use new bash
