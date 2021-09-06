@@ -44,12 +44,15 @@ alias tree="tree -lNFC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"  # cleaner tree
 alias sftp="$(which with-readline 2> /dev/null) sftp"
-alias dunnet="clear && emacs -batch -l dunnet"
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
 alias vimrc="vim ~/.vim/vimrc"
+alias dunnet="clear && emacs -batch -l dunnet"
+
 alias py="python3"
 alias pip-upgrade='python -m pip install --upgrade pip && conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
 alias drl="conda activate drl"
+alias kinetic-container="docker start ros-kinetic > /dev/null && docker exec -it ros-kinetic bash"
+
 if [[ -n "${catkin_ws}" ]]; then
     alias cdws="cd ${catkin_ws}"
 fi
