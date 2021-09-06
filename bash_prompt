@@ -80,7 +80,7 @@ set_prompt() {
     fi
 
     # check if current dir belongs to overlayed ROS package
-    if [[ -n "${ROS_DISTRO}" ]]; then
+    if [[ -n "${ROS_DISTRO}" ]] && [[ -n "$(which rospack)" ]]; then
         for package_path in $(rospack list | awk '{print $2}'); do
             if [[ "${PWD}" == "${package_path}"* ]]; then
                 ros_package="${Green}✔︎${ColorOff}"
