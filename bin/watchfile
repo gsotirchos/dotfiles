@@ -12,52 +12,58 @@ USAGE="Usage:
 FILE_PATH="$(realpath $1)"
 COMMAND="$2"
 
-# function to compile project and execute the binary
-function build_and_execute() {
+# function to execute command
+function execute_cmd() {
     # kill internal processes on exit
-    trap 'jobs -p | xargs kill' EXIT
+    trap 'jobs -p | xargs kill &> /dev/null' EXIT INT
 
-    # attempt to build project
-    clear # clear screen
+    # execute the command
+    #clear
+    echo -e "--------- Executing ---------\n"
+    eval "${COMMAND}"
 
-    # execute the built binary
-    echo -e       "--------- Executing ---------\n"
-    eval ${COMMAND} &&
-        echo -e "\n-----------------------------\n" &&
+    if [[ $? == 0 ]]; then
+        echo -e "\n-----------------------------\n"
         echo "Watching \"${FILE_PATH}\"..."
+    fi
 }
 
-function watch_file() {
+function main() {
+    local exec_pid
+    local watch_pid
+    local changed=false
+    local t=3
+    local l=0.1
+
     # exit script on ctrl-c
     trap 'echo ": Interrupted" && exit 1' INT
 
-    # build and execute the file once first
-    build_and_execute &
-        task_pid=$!
+    # execute command once first
+    execute_cmd &
+        exec_pid=$!
 
-    # watch file for changes, terminate and rebuild
+    # watch file for changes, terminate and re-execute
     while true; do
-        # wait for changes...
-        [[ -n "$(fswatch ${FILE_PATH} -1)" ]] &&
-            echo "Re-executing..."
-        kill ${task_pid} &> /dev/null
-        wait ${task_pid} &> /dev/null
+        # wait for further changes...
+        changed="$(fswatch "${FILE_PATH}" --event "Updated" -1 --latency ${l})"
+        echo "File changed"
 
-        # wait $delay seconds for subsequent events to finish
-        delay=0.4
-        files_changed=true
-        while [[ ${files_changed} = true ]]; do
-            if [[ -n "$(timeout ${delay} fswatch ${FILE_PATH} -1 -l 0.1)" ]]; then
-                files_changed=true
-            else
-                files_changed=false
-            fi
+        # kill previous execution
+        kill ${exec_pid} &> /dev/null
+        wait ${exec_pid} &> /dev/null
+
+        # keep watching for ${timeout} seconds for further changes
+        while [[ -n ${changed} ]]; do
+            echo "Waiting for further changes..."
+            changed="$( \
+                timeout --foreground ${t} \
+                fswatch "${FILE_PATH}" --event "Updated" -1 --latency ${l})"
         done
 
-        # build and execute the file
-        build_and_execute &
-            task_pid=$!
+        # execute command
+        execute_cmd &
+            exec_pid=$!
     done
 }
 
-watch_file
+main
