@@ -32,7 +32,7 @@ function main() {
     local exec_pid
     local watch_pid
     local changed=false
-    local t=3
+    local t=0.4
     local l=0.1
 
     # exit script on ctrl-c
