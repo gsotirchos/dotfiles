@@ -12,6 +12,11 @@ USAGE="Usage:
 FILE_PATH="$(realpath $1)"
 COMMAND="$2"
 
+# function to print timestamp
+timestamp() {
+    echo "[$(date "+%T")]"
+}
+
 # function to execute command
 function execute_cmd() {
     # kill internal processes on exit
@@ -19,12 +24,12 @@ function execute_cmd() {
 
     # execute the command
     #clear
-    echo -e "--------- Executing ---------\n"
+    echo -e "---------- $(timestamp) Executing ----------\n"
     eval "${COMMAND}"
 
     if [[ $? == 0 ]]; then
-        echo -e "\n-----------------------------\n"
-        echo "Watching \"${FILE_PATH}\"..."
+        echo -e "\n------------------------------------------\n"
+        echo "$(timestamp) Watching \"${FILE_PATH}\"..."
     fi
 }
 
@@ -36,7 +41,7 @@ function main() {
     local l=0.1
 
     # exit script on ctrl-c
-    trap 'echo ": Interrupted" && exit 1' INT
+    trap 'echo ": $(timestamp) Interrupted" && exit 1' INT
 
     # execute command once first
     execute_cmd &
@@ -46,7 +51,7 @@ function main() {
     while true; do
         # wait for further changes...
         changed="$(fswatch "${FILE_PATH}" --event "Updated" -1 --latency ${l})"
-        echo "File changed"
+        echo "$(timestamp) File changed"
 
         # kill previous execution
         kill ${exec_pid} &> /dev/null
@@ -54,7 +59,7 @@ function main() {
 
         # keep watching for ${timeout} seconds for further changes
         while [[ -n ${changed} ]]; do
-            echo "Waiting for further changes..."
+            echo "$(timestamp) Waiting for further changes..."
             changed="$( \
                 timeout --foreground ${t} \
                 fswatch "${FILE_PATH}" --event "Updated" -1 --latency ${l})"
