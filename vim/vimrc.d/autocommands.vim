@@ -25,12 +25,6 @@ augroup vimrc
     " convert always to utf-8
     autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
 
-    " settings for latex, markdown files
-    autocmd FileType tex,latex
-    \   set spell spelllang=en_us,el,cjk
-    \|  set formatoptions=tawcql
-    \|  set colorcolumn=+2
-
     " don't spell check help files
     autocmd FileType help set nospell
 
