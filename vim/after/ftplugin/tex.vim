@@ -1,3 +1,3 @@
-set spell spelllang=en_us,el,cjk
+source ${HOME}/.vim/after/ftplugin/markdown.vim
 set formatoptions=tawcql
 set colorcolumn=+2

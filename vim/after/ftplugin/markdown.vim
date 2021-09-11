@@ -1,1 +1,2 @@
-source ${HOME}/.vim/after/ftplugin/tex.vim
+set spell spelllang=en_us,el,cjk
+set formatoptions=
