@@ -1,6 +1,6 @@
 # vim: set ft=bash:
 
 /usr/local/lib
-/opt/homebrew/opt/*/*/lib
-/opt/homebrew/opt/*/lib
-/opt/homebrew/lib
+${HOMEBREW_PREFIX}/opt/*/*/lib
+${HOMEBREW_PREFIX}/opt/*/lib
+${HOMEBREW_PREFIX}/opt/homebrew/lib
