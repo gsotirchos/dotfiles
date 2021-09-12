@@ -11,8 +11,10 @@ fi
 
 ssh_perm="700"
 
+# TODO: only modify read & write permissions, and not execution
+
 echo "Fixing owner"
-sudo chown -R "${USER}:${USER}" "${HOME}"
+sudo chown -hR "${USER}:${id --group --name ${USER}}" "${HOME}"
 echo "Fixing directory permissions"
 find "${HOME}" -type d -print0 | xargs -0 chmod -R "${d_perm}"
 echo "Fixing file permissions"
