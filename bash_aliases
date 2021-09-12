@@ -36,7 +36,7 @@ empty_trash() {
 # aliases
 alias rm=trash  # trash files instead of deleting
 alias mv="mv -iv"  # confirmatory, verbose move
-alias cp="cp -iv"  # confirmatory, verbose copy
+alias cp="cp -ivr"  # confirmatory, verbose, recursive copy
 alias ln="ln -iv"  # confirmatory, verbose symlink creaton
 alias ls="ls -h --color=always"  # human-readable, colored ls
 alias grep="grep --color -E"  # use colors & enable extended regexp
