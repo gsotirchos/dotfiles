@@ -32,9 +32,6 @@ HISTFILESIZE=2000
 # instantly append to history every command
 export PROMPT_COMMAND="history -a; "
 
-# notify terminal of current working directory
-export PROMPT_COMMAND+='echo -ne "\033]0;$(dirs +0)\007"; '
-
 # local ip shortcuts
 export imac="192.168.1.2"
 export macbookair="192.168.1.1"
@@ -51,6 +48,13 @@ else
     case $(ps -o comm= -p $PPID) in
         sshd|*/sshd) SESSION_TYPE="remote_ssh";;
     esac
+fi
+
+# notify terminal of current working directory
+if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
+    export PROMPT_COMMAND+='echo -ne "\033]0;${HOSTNAME%.*}::$(dirs +0)\007"; '
+else
+    export PROMPT_COMMAND+='echo -ne "\033]0;$(dirs +0)\007"; '
 fi
 
 # enable display on ssh connections
