@@ -1,4 +1,4 @@
-syn match MembOperator "\." containedIn=yamlFlowMappingKey,yamlPlainScalar
+syn match MembOperator "\." containedIn=yamlFlowMappingKey
 
 hi! link yamlBool Statement
 hi! link yamlKeyValueDelimiter Normal
