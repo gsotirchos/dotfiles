@@ -1,5 +1,6 @@
 syn clear bashSpecialVariables
 
+hi! link shDerefSimple Function
 hi! link shQuote       shDoubleQuote
 hi! link shTestPattern Normal
 hi! link shTestOpr     Normal
