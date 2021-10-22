@@ -33,7 +33,7 @@ augroup vimrc
 
     " enable syntax, load default syntax, and show guides for non-text files
     let textFiletypes =
-    \   ['xml', 'yaml', 'markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
+    \   ['markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
     autocmd BufWinEnter,BufRead * nested
     \   if !exists("g:syntax_on")
     \|      syntax on
@@ -81,6 +81,6 @@ augroup vimrc
     autocmd QuitPre * if empty(&buftype) | lclose | endif
 
     " remember state
-    "au BufWinLeave,BufWrite * silent! mkview
-    "au BufWinEnter,BufRead * silent! loadview
+    au BufWinLeave,BufWrite * silent! mkview
+    au BufWinEnter,BufRead * silent! loadview
 augroup END
