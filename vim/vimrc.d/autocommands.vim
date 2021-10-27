@@ -81,6 +81,6 @@ augroup vimrc
     autocmd QuitPre * if empty(&buftype) | lclose | endif
 
     " remember state
-    au BufWinLeave,BufWrite * silent! mkview
-    au BufWinEnter,BufRead * silent! loadview
+    "au BufWinLeave,BufWrite * silent! mkview
+    "au BufWinEnter,BufRead * silent! loadview
 augroup END
