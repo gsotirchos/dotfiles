@@ -61,7 +61,7 @@ set noshowcmd  " hide typed command
 let &fillchars = 'vert:│,diff:-,eob: '
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
-let &listchars = 'tab:╶─⇥,trail:·,conceal:*'
+let &listchars = 'tab:╶─⇥,trail:·,conceal:*,extends:…,precedes:…'
 function! MyFoldText()  " custom fold text
     let line = getline(v:foldstart)
     let sub = substitute(line, '\S\+.*', '...', 'g')
