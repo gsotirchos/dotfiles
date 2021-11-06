@@ -109,9 +109,9 @@ if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
 fi
 
 # source catkin workspace
-catkin_ws="$(find ~ -maxdepth 3 -name "catkin_ws" | head -1)"
+catkin_ws="$(find ~/Public -maxdepth 3 -name "catkin_ws" | head -1)"
 if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
-    source ~/Public/ROS/catkin_ws/devel/setup.bash
+    source "${catkin_ws}"/devel/setup.bash
 fi
 
 # aliases
