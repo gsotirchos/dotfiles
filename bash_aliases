@@ -55,7 +55,7 @@ alias kinetic-container="docker start ros-kinetic > /dev/null && docker exec -it
 alias ccatkin_make="catkin_make --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
 
 if [[ -n "${catkin_ws}" ]]; then
-    alias cdws="cd ${catkin_ws}"
+    alias cdws="cd ${catkin_ws} && . devel/setup.bash"
 fi
 if [[ -d "${HOME}/Applications/PlayOnMac/Guild Wars 2.app" ]]; then
     alias guildwars2="${HOME}/Applications/PlayOnMac/Guild\ Wars\ 2.app/Contents/MacOS/playonmac"
