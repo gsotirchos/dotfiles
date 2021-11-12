@@ -68,8 +68,8 @@ if [[ "${os}" == "linux" ]]; then
         #export LIBGL_ALWAYS_INDIRECT=0
     fi
 
-    # enable local connections
-    xhost +local: > /dev/null
+    # enable local connections (for docker containers)
+    xhost +local: 2> /dev/null
 fi
 
 # use new bash
@@ -109,7 +109,7 @@ if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
 fi
 
 # source catkin workspace
-catkin_ws="$(find ~/Public -maxdepth 3 -name "catkin_ws" | head -1)"
+catkin_ws="$(find ~/Public -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
 if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
     source "${catkin_ws}"/devel/setup.bash
 fi
