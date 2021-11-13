@@ -19,7 +19,7 @@ files=("report"
 files_expanded=$(IFS=,; echo "${files[*]}")
 
 # my tex template files repo url
-templates_url="https://raw.githubusercontent.com/7555G/Windows-scripts/master/templates"
+templates_url="https://raw.githubusercontent.com/gsotirchos/Windows-scripts/master/templates"
 
 # make project folder
 if [[ -n ${1// } ]]; then
