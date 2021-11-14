@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090,SC2155
 
-# vim: set ft=sh:
+#
+# ~/.bash_aliases
+#
 
 # rm wrapper to move file(s) to trash folder
 trash() {

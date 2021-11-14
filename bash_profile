@@ -1,8 +1,9 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1090,SC2155
+
 #
 # ~/.bash_profile
 #
-
-# vim: set ft=sh:
 
 # if not running interactively, don't do anything
 case $- in

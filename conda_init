@@ -1,4 +1,8 @@
-# vim: set ft=sh:
+#!/usr/bin/env bash
+
+#
+# ~/.conda_init
+#
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
