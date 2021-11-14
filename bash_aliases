@@ -1,4 +1,6 @@
-# vim: set ft=bash:
+#!/usr/bin/env bash
+
+# vim: set ft=sh:
 
 # rm wrapper to move file(s) to trash folder
 trash() {
@@ -15,7 +17,7 @@ trash() {
             env rm -r "${arg%/}"
         else
             #echo "mv ${flags} -v --backup=numbered ${arg%/} ${TRASH}"
-            env mv ${flags} -v --backup=numbered "${arg%/}" "${TRASH}"
+            env mv "${flags}" -v --backup=numbered "${arg%/}" "${TRASH}"
         fi
     done
 }
@@ -25,7 +27,7 @@ empty_trash() {
     read -p "Are you sure you want to permamently erase the items in the trash? [y/N] " -r
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         for file in "${TRASH}"/{..?,.[!.],}*; do
-            if ([[ -e "${file}" ]] || [[ -L "${file}" ]]); then
+            if [[ -e "${file}" ]] || [[ -L "${file}" ]]; then
                 env rm -rf "${file}" && \
                     echo "deleted '${file}'"
             fi
@@ -43,7 +45,7 @@ alias grep="grep --color -E"  # use colors & enable extended regexp
 alias tree="tree -lNFC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"  # cleaner tree
-alias sftp="$(which with-readline 2> /dev/null) sftp"
+alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
 alias vimrc="vim ~/.vim/vimrc"
 alias dunnet="clear && emacs -batch -l dunnet"
@@ -55,10 +57,10 @@ alias kinetic-container="docker start ros-kinetic > /dev/null && docker exec -it
 alias ccatkin_make="catkin_make --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
 
 if [[ -n "${catkin_ws}" ]]; then
-    alias cdws="cd ${catkin_ws} && . devel/setup.bash"
+    alias cdws='cd ${catkin_ws} && . devel/setup.bash'
 fi
 if [[ -d "${HOME}/Applications/PlayOnMac/Guild Wars 2.app" ]]; then
-    alias guildwars2="${HOME}/Applications/PlayOnMac/Guild\ Wars\ 2.app/Contents/MacOS/playonmac"
+    alias guildwars2='${HOME}/Applications/PlayOnMac/Guild\ Wars\ 2.app/Contents/MacOS/playonmac'
 fi
 if [[ -d "/Applications/PlayOnMac.app" ]]; then
     alias playonmac='/Applications/PlayOnMac.app/Contents/MacOS/playonmac'

@@ -1,5 +1,3 @@
-# vim: set ft=bash:
-
 ${HOME}/.bin
 ${HOME}/.dotfiles/bin
 ${HOME}/.macos-dotfiles/bin

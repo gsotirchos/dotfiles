@@ -5,7 +5,7 @@
 #
 # Simple script to convert whitespace separated text to latex table cells.
 
-USAGE="Usage:\n `basename $0` [-hl] source_file"
+USAGE="Usage:\n $(basename "$0") [-hl] source_file"
 
 hline=0
 
@@ -18,12 +18,14 @@ while getopts hl OPTION; do
         l)
             hline=1
             ;;
+        *)
+        echo -e "$USAGE" && exit 1
     esac
 done
 shift "$((OPTIND-1))"
 
 # read input file
-if [ $# -ge 1 -a -f "$1" ]; then
+if [ $# -ge 1 ] && [ -f "$1" ]; then
     input="$1"
 else
     echo -e "$USAGE" && exit 1
@@ -38,7 +40,7 @@ fi
 # append \\ at end of each line
 
 output=$( \
-    cat $input \
+    cat "${input}" \
     | sed 's/'$'\t/\ /g' \
     | sed 's/\  */ /g' \
     | sed 's/\ /'$'\t\&\t/g' \

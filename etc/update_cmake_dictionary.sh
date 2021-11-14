@@ -62,7 +62,7 @@ function echo_keywords() {
                 get_keywords "${help_option%-list}" "${entry}"
             done
         else
-            for entry in $(cmake ${help_option}); do
+            for entry in $(cmake "${help_option}"); do
                 # return the rest of the help lists' entries
                 echo "${entry}"
             done
@@ -87,14 +87,12 @@ function main() {
         echo "${keyword}" >> "${OUTPUT_FILE}"
     done
 
-    sorted="$(sort ${OUTPUT_FILE})"
+    sorted="$(sort "${OUTPUT_FILE}")"
     echo "${sorted}" > "${OUTPUT_FILE}"
 }
 
-main
-
 # show exit status
-if [ $? -eq 0 ]; then
+if main; then
   echo "CMake keyword list written in ${OUTPUT_FILE}"
 else
   echo "Error: failed to write to ${OUTPUT_FILE}"
