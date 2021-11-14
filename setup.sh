@@ -15,7 +15,8 @@ if ! command -v realpath &> /dev/null; then
 fi
 
 # dotfiles path
-DOTFILES="$(builtin cd \
+DOTFILES="$( \
+    builtin cd \
         "$(dirname \
             "$(realpath "${BASH_SOURCE[0]}")")" \
     > /dev/null && pwd)"
