@@ -67,10 +67,10 @@ augroup vimrc
     \   *.rviz
     \   set ft=yaml
 
-    " treat .sh files as .bash
-    autocmd BufWinEnter,BufRead,BufWrite
-    \   *.sh
-    \   set ft=bash
+    "" treat .sh files as .bash
+    "autocmd BufWinEnter,BufRead,BufWrite
+    "\   *.sh
+    "\   set ft=bash
 
     " cmake custom autocompletion
     autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt,*.cmake
