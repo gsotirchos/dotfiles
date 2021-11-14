@@ -5,8 +5,6 @@
 # ~/.bash_extra
 #
 
-# vim: set ft=sh:
-
 # determine OS
 case "$(uname -s)" in
     Linux*)

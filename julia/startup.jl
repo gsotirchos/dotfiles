@@ -1,3 +1,5 @@
+#!/usr/bin/env julia
+
 #
 # ~/.julia/config/starup.jl
 #
