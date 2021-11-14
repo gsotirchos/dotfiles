@@ -72,7 +72,7 @@ if [[ "${os}" == "linux" ]]; then
     fi
 
     # enable local connections (for docker containers)
-    xhost +local: 2> /dev/null
+    xhost +local: &> /dev/null
 fi
 
 # use new bash
