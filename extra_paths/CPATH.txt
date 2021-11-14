@@ -1,5 +1,3 @@
-# vim: set ft=bash:
-
 /usr/local/include
 ${HOMEBREW_PREFIX}/opt/*/*/include
 ${HOMEBREW_PREFIX}/opt/*/include

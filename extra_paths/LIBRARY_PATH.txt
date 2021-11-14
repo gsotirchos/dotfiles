@@ -1,5 +1,3 @@
-# vim: set ft=bash:
-
 /usr/local/lib
 ${HOMEBREW_PREFIX}/opt/*/*/lib
 ${HOMEBREW_PREFIX}/opt/*/lib

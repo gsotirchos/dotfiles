@@ -5,16 +5,16 @@
 #
 
 # Usage
-USAGE="usage: `basename $0` [project directory location]"
+USAGE="usage: $(basename "$0") [project directory location]"
 [[ -z "$1" ]]      && echo -e "${USAGE}" && exit 1
 [[ -n "$2" ]]      && echo -e "${USAGE}" && exit 1
 [[ "$1" == "-h" ]] && echo -e "${USAGE}" && exit 0
 
 # store project name
-PROJECT=$(grealpath $1)
-PROJECT_NAME=$(basename ${PROJECT})
+PROJECT=$(grealpath "$1")
+PROJECT_NAME=$(basename "${PROJECT}")
 
-cd "${PROJECT}"
+cd "${PROJECT}" || exit
 
 # function to compile project and execute the binary
 function build_and_execute() {
@@ -38,9 +38,9 @@ export -f build_and_execute
 
 function watch_file () {
     # watch file for changes and forcefully build on detect
-    fswatch "${PROJECT}/Sources" | while read > /dev/null; do
-        kill ${task_pid} &> /dev/null
-        wait ${task_pid} &> /dev/null
+    fswatch "${PROJECT}/Sources" | while read -r > /dev/null; do
+        kill "${task_pid}" &> /dev/null
+        wait "${task_pid}" &> /dev/null
         echo "Rebuilding..."
 
         # wait for file writes to finish

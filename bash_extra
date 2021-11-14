@@ -1,8 +1,11 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1090,SC2155
+
 #
 # ~/.bash_extra
 #
 
-# vim: set ft=bash:
+# vim: set ft=sh:
 
 # determine OS
 case "$(uname -s)" in

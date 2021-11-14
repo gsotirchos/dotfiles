@@ -7,6 +7,6 @@ DIR=$(\
 
 mkdir -p ~/.julia/config
 
-ln -sfv ${DIR}/*.jl ~/.julia/config
+ln -sfv "${DIR}"/*.jl ~/.julia/config
 
 julia --startup-file=no ~/.julia/config/install_base_packages.jl
