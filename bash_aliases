@@ -8,7 +8,7 @@
 # rm wrapper to move file(s) to trash folder
 trash() {
     flags=""
-    for arg in "$@"; do
+    for arg in $@; do
         if [[ ${arg} == -* ]]; then
             flags="${flags} ${arg}"
             continue
@@ -16,11 +16,11 @@ trash() {
 
         # move file to trash folder, or delete /tmp/* files
         if [[ ${arg} == "/tmp/"* ]]; then
-            #echo "rm -r ${arg}"
+            #echo "rm -r ${arg%/}"
             env rm -r "${arg%/}"
         else
             #echo "mv ${flags} -v --backup=numbered ${arg%/} ${TRASH}"
-            env mv "${flags}" -v --backup=numbered "${arg%/}" "${TRASH}"
+            env mv ${flags} -v --backup=numbered "${arg%/}" "${TRASH}"
         fi
     done
 }
