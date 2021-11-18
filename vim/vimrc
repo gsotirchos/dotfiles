@@ -14,21 +14,21 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
-Plugin 'tpope/vim-rsi'
-Plugin 'scrooloose/nerdcommenter'
 Plugin 'dense-analysis/ale'
-Plugin 'skywind3000/vim-auto-popmenu'
-Plugin 'octol/vim-cpp-enhanced-highlight'
-Plugin 'vim-python/python-syntax'
-Plugin 'neovimhaskell/haskell-vim'
-Plugin 'keith/swift.vim'
 Plugin 'JuliaEditorSupport/julia-vim'
+Plugin 'keith/swift.vim'
 Plugin 'lervag/vimtex'
-Plugin 'PProvost/vim-ps1'
-Plugin 'yuezk/vim-js'
+Plugin 'neovimhaskell/haskell-vim'
+Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'peterhoeg/vim-qml'
-Plugin 'xolox/vim-misc'
-Plugin 'xolox/vim-easytags'
+Plugin 'PProvost/vim-ps1'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'skywind3000/vim-auto-popmenu'
+Plugin 'tpope/vim-rsi'
+Plugin 'vim-python/python-syntax'
+"Plugin 'xolox/vim-misc'
+"Plugin 'xolox/vim-easytags'
+Plugin 'yuezk/vim-js'
 
 "" plugins end here
 call vundle#end()  " required
