@@ -42,12 +42,9 @@ augroup vimrc
     \|  if index(textFiletypes, &filetype) < 0
     \|      source $HOME/.vim/after/syntax/default.vim
     \|      source $HOME/.vim/after/syntax/indent_guides.vim
-    \|      let g:easytags_auto_update = 1
+    \|      let b:easytags_auto_update = 1
+    \|      let b:easytags_auto_highlight = 1
     \|  endif
-    \|  let b:easytags_file =
-    \       $HOME . "/.vim/tags/"
-    \           . substitute(expand('%:p'), "/", "_", "g")
-    \           . ".ctags"
     \|  set concealcursor=nc
     \|  set conceallevel=1
 
