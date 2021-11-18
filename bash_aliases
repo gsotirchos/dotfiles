@@ -8,7 +8,7 @@
 # rm wrapper to move file(s) to trash folder
 trash() {
     flags=""
-    for arg in $@; do
+    for arg in "$@"; do
         if [[ ${arg} == -* ]]; then
             flags="${flags} ${arg}"
             continue
