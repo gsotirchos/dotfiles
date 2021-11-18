@@ -54,9 +54,9 @@ alias vimrc="vim ~/.vim/vimrc"
 alias dunnet="clear && emacs -batch -l dunnet"
 
 alias py="python3"
-alias pip-upgrade='python -m pip install --upgrade pip && conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
+alias pip_upgrade='python -m pip install --upgrade pip && conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
 alias drl="conda activate drl"
-alias kinetic-container="docker start ros-kinetic > /dev/null && docker exec -it ros-kinetic bash"
+alias kinetic_container="docker start ros-kinetic > /dev/null && docker exec -it ros-kinetic bash"
 alias ccatkin_make="catkin_make --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
 
 if [[ -n "${catkin_ws}" ]]; then
