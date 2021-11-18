@@ -11,6 +11,9 @@ hi! link vimMapModKey PreProc
 hi! link vimFunction  Function
 hi! link vimUserFunc  Function
 hi! link vimContinue  Comment
+hi! link vimGroupName vimVar
+hi! link vimGroup     Function
+hi! link vimHiGroup   vimGroup
 
 " ALE
 hi! link ALEErrorLine   Normal
