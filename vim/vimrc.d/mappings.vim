@@ -64,21 +64,33 @@ else
 endif
 "inoremap <D-v> <Space><ESC>"+gPi<Delete>
 "inoremap <D-v> <C-r>+
-"nnoremap <D-v>  "+p
-"vnoremap <D-v>  "+p
+"nnoremap <D-v> "+p
+"vnoremap <D-v> "+p
 "cnoremap <D-v> <C-r>+
-"vnoremap <D-c>  "+y
-"nnoremap <D-c>  :echo "ok"
+"vnoremap <D-c> "+y
+"nnoremap <D-c> :echo "ok"
 
-" show loclist
-function! LocListToggle()
+" toggle LocList
+function! ToggleLocList()
     if get(getloclist(0, {'winid':0}), 'winid', 0)
         lclose
     else
         lopen
     endif
 endfunction
-nnoremap <silent> <leader>l :call LocListToggle()<CR>
+nnoremap <silent> <leader>l :call ToggleLocList()<CR>
+
+" toggle Preview
+function! TogglePreview()
+    for nr in range(1, winnr('$'))
+        if getwinvar(nr, "&previewwindow") == 1
+            pclose
+            return
+        endif
+    endfor
+    :ALEDetail
+endfunction
+nnoremap <silent> <leader>p :call TogglePreview()<CR>
 
 " ignorecase when searching by using '\c'
 noremap <silent> / :echo '/'<CR>/\c
