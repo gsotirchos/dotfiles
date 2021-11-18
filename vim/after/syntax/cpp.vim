@@ -1,32 +1,22 @@
-set syntax=cpp.doxygen
+" highlight 'nullptr' and 'nullopt' as types
+syntax keyword Statement nullptr
+syntax keyword Statement nullopt
 
-let g:cpp_class_scope_highlight = 1  " for '::'
-let g:cpp_member_variable_highlight = 1  " for '->' and '.'
-let g:cpp_class_decl_highlight = 1
-let g:cpp_posix_standard = 1
-"let g:cpp_experimental_simple_template_highlight = 1
-"let g:cpp_experimental_template_highlight = 1
-let g:cpp_concepts_highlight = 1
-"let g:cpp_no_function_highlight = 1
-"let c_no_curly_error=1
-
-"syntax region myNormal keepend extend
-"\   start="("hs=e+1
-"\   end=")"he=s-1
-"\   contains=TOP,.*Func.*,.*Class.*,.*STL.*
-syntax match cppNamespace
-\   "\(^\(.*;\+\)*[ \n]*\(namespace\|enum\|struct\)[ \n]\+\)\@<=\h\w*"
+" highlight %...Tag()% in comments
 syntax region myMark
 \   start="\(\".*\)\@<!\(%.*Tag(\)\@<="
 \   end="\()%\)\@="
 \   containedin=.*Comment.* contained oneline
+
+" darker semicolons
 syntax match myMemberOperator ";"
 if hlexists("cAnsiFunction")
     syntax clear cAnsiFunction
 endif
 
-syntax keyword Statement nullptr
-syntax keyword Statement nullopt
+" highlight 'namespace', 'enum', and 'struct'
+syntax match cppNamespace
+\   "\(^\(.*;\+\)*[ \n]*\(namespace\|enum\|struct\)[ \n]\+\)\@<=\h\w*"
 
 hi! link myMark           SpecialComment
 hi! link myMemberOperator MembOperator
@@ -45,6 +35,8 @@ hi! link cCustomClass     Function
 hi! link cCustomClassName Identifier
 hi! link cppNamespace     Identifier
 
+" Doxygen
+set syntax=cpp.doxygen
 hi! link doxygenComment              Comment
 hi! link doxygenStart                doxygenComment
 hi! link doxygenSkipComment          doxygenComment
@@ -69,3 +61,10 @@ hi! link doxygenSmallSpecial         doxygenSpecial
 hi! link doxygenBriefWord            doxygenSpecial
 hi! link doxygenParam                doxygenSpecial
 hi! link doxygenSpecialBoldWord      doxygenSpecial
+
+" vim-easytags
+hi! link cTypeTag Error
+hi! link cEnumTag Error
+hi! link cPreProcTag Error
+hi! link cFunctionTag Error
+hi! link cMemberTag Error
