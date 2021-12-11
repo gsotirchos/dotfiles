@@ -113,7 +113,7 @@ exe "hi! MembOperator   cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      
 exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=".color_12" guibg=".color_bg
 exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      guifg=".color_15" guibg=".color_bg
 
-# errors and warnings
+" errors and warnings
 exe "hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=8    gui=bold      guifg=".color_11" guibg=".color_8
 exe "hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE gui=bold      guifg=".color_1"  guibg=".color_bg
 exe "hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE gui=NONE      guifg=".color_1"  guibg=".color_bg
@@ -127,7 +127,7 @@ exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline 
 exe "hi! Ignore         cterm=NONE      ctermfg=5    ctermbg=NONE gui=NONE      guifg=".color_5"  guibg=".color_bg
 exe "hi! Directory      cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
 
-# visual elements
+" visual elements
 exe "hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link IncSearch Search"
 exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   guifg=".color_fg" guibg=".color_bg
@@ -144,7 +144,7 @@ exe "hi! link StatusLineTerm StatusLine"
 exe "hi! link StatusLineTermNC StatusLineNC"
 exe "hi! link FoldColumn EndOfBuffer"
 
-# menus and messages
+" menus and messages
 exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
 exe "hi! link MoreMsg ModeMsg"

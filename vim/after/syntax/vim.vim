@@ -1,5 +1,6 @@
 hi! clear CursorLine
 hi! clear CursorColumn
+hi! link vim9Comment  Normal
 hi! link vimParenSep  Normal
 hi! link vimBracket   Normal
 hi! link vimMapMod    Normal
