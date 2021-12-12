@@ -6,10 +6,13 @@ set_prompt() {
     Reset='\[\e[0m\]'
 
     # Bold
-    Bold='\[\e[1m\]'
+    Bold='\[\e[0;1m\]'
 
     # Underline
-    Underline='\[\e[4m\]'
+    Underline='\[\e[0;4m\]'
+
+    # Bold underline
+    BoldUnderline='\[\e[0;1;4m\]'
 
     # Regular foreground
     Black='\[\e[30m\]'
