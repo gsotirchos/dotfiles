@@ -6,20 +6,20 @@ set_prompt() {
     Reset='\[\e[0m\]'
 
     # Bold
-    Bold='\[\e[1;30m\]'
+    Bold='\[\e[1m\]'
 
     # Underline
-    Underline='\[\e[4;30m\]'
+    Underline='\[\e[4m\]'
 
     # Regular foreground
-    Black='\[\e[0;30m\]'
-    Red='\[\e[0;31m\]'
-    Green='\[\e[0;32m\]'
-    Yellow='\[\e[0;33m\]'
-    Blue='\[\e[0;34m\]'
-    Purple='\[\e[0;35m\]'
-    Cyan='\[\e[0;36m\]'
-    White='\[\e[0;37m\]'
+    Black='\[\e[30m\]'
+    Red='\[\e[31m\]'
+    Green='\[\e[32m\]'
+    Yellow='\[\e[33m\]'
+    Blue='\[\e[34m\]'
+    Purple='\[\e[35m\]'
+    Cyan='\[\e[36m\]'
+    White='\[\e[37m\]'
 
     # High Intensity foreground
     IBlack='\[\e[90m\]'
