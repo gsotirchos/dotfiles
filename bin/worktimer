@@ -1,0 +1,353 @@
+#!/usr/bin/env python3
+
+import threading
+import time
+import os
+import sys
+import tty
+import termios
+import argparse
+import re
+from enum import Enum
+from math import ceil, floor
+
+
+class Timer():
+    """ Timer class to operate the stopwatches """
+    def __init__(self, args, interval=0.25):
+        self._keep_running = threading.Event()
+        self._keep_running.set()
+        self._interval = interval
+        self._work_time = args.work_time
+        self._break_time = args.break_time
+        self._ratio = args.ratio
+        self._file = os.path.realpath(os.path.expanduser(args.file))
+        self._paused = args.pause
+        self._mode = TimerMode.WORK
+        self._stopwatch = StopWatch()
+
+        # check if the specified file is appropriate
+        if self._file is not None:
+            self._check_file()
+
+        # create and start the view updater thread
+        self._print()
+        self._view_updater = threading.Thread(target=self._view_update)
+        self._view_updater.start()
+
+        # start the input monitor
+        self._input_monitor()
+
+        # wait for the view updater hread
+        self._view_updater.join()
+
+        # write data to file before exiting
+        self._update()
+
+    def _input_monitor(self):
+        """ Handle keyboard input """
+        # retrieve the current settings of the input stream (stdin)
+        filedescriptors = termios.tcgetattr(sys.stdin)
+
+        # set input stream to 'raw mode' (stop buffering, don't wait for \n)
+        tty.setcbreak(sys.stdin)
+
+        while self._keep_running.isSet():
+            try:
+                # read and retrieve a single character from input stream
+                key = sys.stdin.read(1)[0]
+                if key == "w" and self._mode is not TimerMode.WORK:
+                    self._set_to_work()
+                elif key == "b" and self._mode is not TimerMode.BREAK:
+                    self._set_to_break()
+                elif key == " ":
+                    self._toggle_pause()
+                elif key == "":
+                    self._toggle_pause()
+            except KeyboardInterrupt:
+                # signal program termination
+                self._keep_running.clear()
+
+        # revert the input stream (stdin) to 'cooked mode'
+        # after all queued output has been written
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, filedescriptors)
+
+    def _view_update(self):
+        """ Print the timers at regular interfals """
+        while self._keep_running.isSet():
+            if not self._paused:
+                self._print()
+            time.sleep(self._interval)
+
+    def _print(self):
+        """ Print times """
+        work_time, break_time = self._get_times()
+
+        # prepare printed text
+        if self._mode == TimerMode.WORK:
+            work_title = TextStyle.bold_title("Work")
+            break_title = TextStyle.title("Break")
+        elif self._mode == TimerMode.BREAK:
+            work_title = TextStyle.title("Work")
+            break_title = TextStyle.bold_title("Break")
+
+        if self._paused is True:
+            # if paused then darken both timers
+            work_time = TextStyle.dark(sec_to_str(work_time))
+            break_time = TextStyle.dark(signed_sec_to_str(break_time))
+        else:
+            # work_time is normal colored
+            work_time = sec_to_str(work_time)
+
+            # break_time can be red(>0), green(<0), or normal(=0)
+            if ceil(break_time) < 0:
+                break_time = TextStyle.red(signed_sec_to_str(break_time))
+            elif floor(break_time) >= 1:
+                break_time = TextStyle.green(signed_sec_to_str(break_time))
+            else:
+                break_time = TextStyle.normal(signed_sec_to_str(break_time))
+
+        print("\033c\n   " + work_title + "       " + break_title)
+        print(" " + work_time + "   " + break_time + "\n")
+
+    def _check_file(self):
+        """ Check if file exists/can be created/can be read & written """
+        if os.path.exists(self._file):
+            if os.path.isfile(self._file):
+                if not os.access(self._file, os.R_OK):
+                    # TODO: file exists but not readable
+                    raise FileExistsError(
+                        "The specified file exists and is not readable. ("
+                        + self._file + ")")
+
+                if not os.access(self._file, os.W_OK):
+                    # TODO: file exists but not writeable
+                    raise FileExistsError(
+                        "The specified file exists and is not writeable. ("
+                        + self._file + ")")
+
+                if not self._load_data():
+                    # TODO: file exists and is rw but not right contents
+                    raise FileExistsError(
+                        "The specified file exists and its contents are not properly formatted. ("
+                        + self._file + ")")
+            else:
+                # TODO: file exists but not a file
+                raise FileExistsError(
+                    "The specified path is not a file. ("
+                    + self._file + ")")
+        else:
+            if not os.access(os.path.dirname(self._file), os.W_OK):
+                # TODO: file doesn't exist and can't be created
+                raise FileNotFoundError(
+                    "The specified file doesn't exist and can not be created. ("
+                    + self._file + ")")
+
+    def _load_data(self):
+        """ Check whether an existing file's contents are properly formated """
+        with open(self._file, "r") as rfh:
+            # read up to 3 lines
+            lines = []
+            while len(lines) < 3:
+                if (line := rfh.readline().rstrip()) != "":
+                    lines.append(line)
+                else:
+                    break
+
+        if len(lines) == 1 or len(lines) == 3:
+            # wrong line count
+            return False
+
+        if len(lines) == 2:
+            # attempt to load data
+            try:
+                work_time = str_to_sec(lines[0])
+                break_time = signed_str_to_sec(lines[1])
+
+                if self._work_time == self._break_time == 0:
+                    self._work_time, self._break_time = work_time, break_time
+            except TypeError:
+                # correct line count but wrong contents
+                return False
+
+        # a successful load or an empty file, either is fine
+        return True
+
+    def _update(self):
+        """ Update internal values and write to file """
+        if not self._paused:
+            self._work_time, self._break_time = self._get_times()
+
+            if self._file is not None:
+                with open(self._file, "w") as wfh:
+                    wfh.write(sec_to_str(self._work_time).strip() + "\n"
+                              + signed_sec_to_str(self._break_time).strip())
+
+        self._stopwatch.reset()
+
+    def _get_times(self):
+        """ Calculate current time values """
+        time_elapsed = self._stopwatch.time_elapsed()
+        work_time = self._work_time
+        break_time = self._break_time
+
+        if self._mode == TimerMode.WORK:
+            work_time += floor(time_elapsed)
+            break_time += floor(time_elapsed / self._ratio)
+        elif self._mode == TimerMode.BREAK:
+            break_time -= floor(time_elapsed)
+
+        return work_time, break_time
+
+    def _toggle_pause(self):
+        self._update()
+        self._paused = not self._paused
+        self._print()
+
+    def _set_to_work(self):
+        self._update()
+        self._mode = TimerMode.WORK
+        self._print()
+
+    def _set_to_break(self):
+        self._update()
+        self._mode = TimerMode.BREAK
+        self._print()
+
+
+class StopWatch():
+    """ Simple stopwatch class """
+    def __init__(self):
+        """ Initialize a new 'stopwatch' and start timing """
+        self.reset()
+
+    def reset(self):
+        """ Reset the stopwatch """
+        self._start_time = time.time()
+
+    def time_elapsed(self):
+        """ Return the number of seconds elapsed """
+        return time.time() - self._start_time
+
+
+class TimerMode(Enum):
+    """ Enumerator for timer modes """
+    WORK = 0
+    BREAK = 1
+
+
+class TextStyle:
+    """ Class for formatting printed text """
+    def title(string):
+        return "\033[0;4m" + string[0] + "\033[0m" + string[1:]
+
+    def bold_title(string):
+        return "\033[0;1;4m" + string[0] + "\033[0;1m" + string[1:] + "\033[0m"
+
+    def red(string):
+        return "\033[31m" + string + "\033[0m"
+
+    def green(string):
+        return "\033[32m" + string + "\033[0m"
+
+    def dark(string):
+        return "\033[90m" + string + "\033[0m"
+
+    def normal(string):
+        return "\033[0m" + string
+
+
+def signed_str_to_sec(time_str):
+    """ Convert a signed time string to seconds"""
+    sign, time_str = get_sign(time_str)
+    return int(sign + str(str_to_sec(time_str)))
+
+
+def signed_sec_to_str(time_sec):
+    """ Convert signed seconds to a time string """
+    sign, time_str = get_sign(str(time_sec))
+    return sign + sec_to_str(float(time_str))
+
+
+def str_to_sec(time_str):
+    """ Convert a time string to seconds"""
+    if not re.match("[0-9][0-9]:[0-5][0-9]:[0-5][0-9]", time_str):
+        """ Check the time string's format """
+        raise TypeError()
+
+    h, m, s = time_str.split(':')
+    return int(h) * 3600 + int(m) * 60 + int(s)
+
+
+def sec_to_str(time_sec):
+    """ Convert seconds to a time string """
+    return time.strftime("%H:%M:%S", time.gmtime(time_sec))
+
+
+def get_sign(string):
+    """ Separate sign from string number """
+    sign = " "
+    if string[0] == "-":
+        string = string[1:]
+        sign = "-"
+    elif string[0] == "+":
+        string = string[1:]
+
+    return sign, string
+
+
+if __name__ == "__main__":
+    """ ArgumentParser object """
+    parser = argparse.ArgumentParser(
+        description="""
+        Utility to keep track of work and break time.
+        Switch between modes with the 'W' and 'B' keys,
+        and pause with the 'Spacebar' key.
+        The progress can be saved and loaded from a
+        specified file.
+        In that case, if both timers are zero (default value)
+        they will be loaded from the file.""",
+        allow_abbrev=False)
+
+    """ Arg: start paused """
+    parser.add_argument(
+        "-p", "--pause",
+        action="store_true",
+        help="start paused (default: off)")
+
+    """ Arg: work/break ratio """
+    parser.add_argument(
+        "-r", "--ratio",
+        type=float,
+        default=5.0,
+        help="work/break time ratio (default: 5.0)")
+
+    """ Arg: initial work time """
+    parser.add_argument(
+        "-w", "--work_time",
+        type=str_to_sec,
+        default="00:00:00",
+        metavar="HH:MM:SS",
+        help="initial work time value (default: \"00:00:00\")")
+
+    """ Arg: initial break time """
+    parser.add_argument(
+        "-b", "--break_time",
+        type=signed_str_to_sec,
+        default="00:00:00",
+        metavar="[-]HH:MM:SS",
+        help="initial break time value (default: \"00:00:00\")")
+
+    """ Arg: data file """
+    parser.add_argument(
+        "-f", "--file",
+        type=str,
+        const="~/.worktimer",
+        nargs="?",
+        help="file to save/load progress (default: ~/.worktimer)")
+
+    # parse arguments
+    args = parser.parse_args()
+
+    # create the object to start the timer
+    workBreakTimer = Timer(args, 0.25)
