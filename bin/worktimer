@@ -27,30 +27,28 @@ class Timer():
         self._work_time = args.work_time
         self._break_time = args.break_time
         self._ratio = args.ratio
-        self._file = \
-            None if args.file is None \
-            else os.path.realpath(os.path.expanduser(args.file))
+        self._file = args.file
         self._paused = args.pause
         self._mode = TimerMode.WORK
         self._ring_bell = False
         self._stopwatch = StopWatch()
 
-        # check if the specified file is appropriate
+        # read data from file if possible
         if self._file is not None:
-            self._check_file()
+            self._load_data()
 
         # create and start the view updater thread
-        self._view_updater = threading.Thread(target=self._view_update)
-        self._view_updater.start()
+        self._update_viewr = threading.Thread(target=self._update_view)
+        self._update_viewr.start()
 
         # start the input monitor
         self._input_monitor()
 
         # wait for the view updater hread
-        self._view_updater.join()
+        self._update_viewr.join()
 
         # write data to file before exiting
-        self._update()
+        self._update_values()
 
     def _input_monitor(self):
         """ Handle keyboard input """
@@ -80,9 +78,9 @@ class Timer():
         # after all queued output has been written
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, filedescriptors)
 
-    def _view_update(self):
+    def _update_view(self):
         """ Print the timers at regular interfals """
-        self._update()
+        self._update_values()
         self._print()
         while self._keep_running.isSet():
             if not self._paused:
@@ -124,36 +122,6 @@ class Timer():
         print("\033c\n   " + work_title + "       " + break_title)
         print(" " + work_time + "   " + break_time + "\n")
 
-    def _check_file(self):
-        """ Check if file exists/can be created/can be read & written """
-        if os.path.exists(self._file):
-            if os.path.isfile(self._file):
-                if not os.access(self._file, os.R_OK):
-                    raise FileExistsError(
-                        "The specified file exists and is not readable. ("
-                        + self._file + ")")
-
-                if not os.access(self._file, os.W_OK):
-                    raise FileExistsError(
-                        "The specified file exists and is not writeable. ("
-                        + self._file + ")")
-
-                if not self._load_data():
-                    raise FileExistsError(
-                        "The specified file exists "
-                        + "and its contents are not properly formatted. ("
-                        + self._file + ")")
-            else:
-                raise FileExistsError(
-                    "The specified path is not a file. ("
-                    + self._file + ")")
-        else:
-            if not os.access(os.path.dirname(self._file), os.W_OK):
-                raise FileNotFoundError(
-                    "The specified file doesn't exist "
-                    + "and can not be created. ("
-                    + self._file + ")")
-
     def _load_data(self):
         """ Check whether an existing file's contents are properly formated """
         with open(self._file, "r") as rfh:
@@ -167,14 +135,15 @@ class Timer():
 
         if len(lines) != 0 and len(lines) != 3:
             # wrong line count
-            return False
-
-        if len(lines) == 3:
+            raise FileContentsError(
+                "The specified file '" + self._file
+                + "' has wrong line count (not 3).")
+        elif len(lines) == 3:
             # attempt to load data
             try:
                 work_time = str_to_sec(lines[0])
                 break_time = signed_str_to_sec(lines[1])
-                ratio = float(lines[2])
+                ratio = str_to_nonnegative_float(lines[2])
 
                 print(sys.argv)
                 if "-w" not in sys.argv and "--work" not in sys.argv:
@@ -185,18 +154,22 @@ class Timer():
 
                 if "-r" not in sys.argv and "--ratio" not in sys.argv:
                     self._ratio = ratio
-            except ValueError:
+            except argparse.ArgumentTypeError as e:
                 # correct line count but wrong contents
-                return False
+                raise FileContentsError(
+                    "The specified file '" + self._file
+                    + "' is not properly formatted: " + str(e))
 
         # a successful load or an empty file, either is fine
-        return True
+        return
 
-    def _update(self):
+    def _update_values(self):
         """ Update internal values and write to file """
         if not self._paused:
+            # calculate times
             self._work_time, self._break_time = self._get_times()
 
+            # write data to file
             if self._file is not None:
                 with open(self._file, "w") as wfh:
                     wfh.write(
@@ -204,12 +177,13 @@ class Timer():
                         + signed_sec_to_str(self._break_time).lstrip() + "\n"
                         + str(self._ratio))
 
-        # reset the bell and the stopwatch
+        # reset the bell
         if self._break_time >= 1:
             self._ring_bell = True
         else:
             self._ring_bell = False
 
+        # reset the stopwatch
         self._stopwatch.reset()
 
     def _get_times(self):
@@ -220,24 +194,25 @@ class Timer():
 
         if self._mode is TimerMode.WORK:
             work_time += floor(time_elapsed)
-            break_time += floor(time_elapsed / self._ratio)
+            break_time += \
+                floor(time_elapsed / self._ratio if self._ratio else 0)
         elif self._mode is TimerMode.BREAK:
             break_time -= floor(time_elapsed)
 
         return work_time, break_time
 
     def _toggle_pause(self):
-        self._update()
+        self._update_values()
         self._paused = not self._paused
         self._print()
 
     def _set_to_work(self):
-        self._update()
+        self._update_values()
         self._mode = TimerMode.WORK
         self._print()
 
     def _set_to_break(self):
-        self._update()
+        self._update_values()
         self._mode = TimerMode.BREAK
         self._print()
 
@@ -284,23 +259,29 @@ class TextStyle:
         return "\033[0m" + string
 
 
+class FileContentsError(Exception):
+    """ A custom error for when failing to load data from file """
+    pass
+
+
 def signed_str_to_sec(time_str):
-    """ Convert a signed time string to seconds"""
-    sign, time_str = get_sign(time_str)
+    """ Convert a signed time string to seconds """
+    sign, time_str = get_str_sign(time_str)
     return int(sign + str(str_to_sec(time_str)))
 
 
 def signed_sec_to_str(time_sec):
     """ Convert signed seconds to a time string """
-    sign, time_str = get_sign(str(time_sec))
+    sign, time_str = get_str_sign(str(time_sec))
     return sign + sec_to_str(float(time_str))
 
 
 def str_to_sec(time_str):
-    """ Convert a time string to seconds"""
+    """ Convert a time string to seconds """
     if not re.match("[0-9][0-9]:[0-5][0-9]:[0-5][0-9]", time_str):
         """ Check the time string's format """
-        raise ValueError()
+        raise argparse.ArgumentTypeError(
+            "input '" + time_str + "' is not formatted as 'hh:mm:ss' time.")
 
     h, m, s = time_str.split(':')
     return int(h) * 3600 + int(m) * 60 + int(s)
@@ -311,7 +292,7 @@ def sec_to_str(time_sec):
     return time.strftime("%H:%M:%S", time.gmtime(time_sec))
 
 
-def get_sign(string):
+def get_str_sign(string):
     """ Separate sign from string number """
     sign = " "
     if string[0] == "-":
@@ -323,17 +304,79 @@ def get_sign(string):
     return sign, string
 
 
+def str_to_nonnegative_float(string):
+    """ Check if a string is a nonnegative float """
+    if float(string) < 0:
+        raise argparse.ArgumentTypeError(
+            "input '" + string + "' is not a nonnegative float.")
+
+    return float(string)
+
+
+def check_file(file):
+    """ Check if a file exists/can be created/can be read & written """
+    file = os.path.realpath(os.path.expanduser(file))
+    if os.path.exists(file):
+        if os.path.isfile(file):
+            if not os.access(file, os.R_OK):
+                raise argparse.ArgumentTypeError(
+                    "The specified file '" + file + "' exists "
+                    + "and is not readable.")
+
+            if not os.access(file, os.W_OK):
+                raise argparse.ArgumentTypeError(
+                    "The specified file '" + file + "' exists "
+                    + "and is not writeable.")
+        else:
+            raise argparse.ArgumentTypeError(
+                "The specified path '" + file + "' is not a file.")
+    else:
+        if not os.access(os.path.dirname(file), os.W_OK):
+            raise argparse.ArgumentTypeError(
+                "The specified file '" + file + "' doesn't exist "
+                + "and can not be created.")
+
+    return file
+
+
 if __name__ == "__main__":
     """ ArgumentParser object """
     parser = argparse.ArgumentParser(
         description="""
-        Utility to keep track of work and break time.
+        A utility to keep track of work and break time.
         Switch between modes with the 'W' and 'B' keys,
         and pause with the 'Spacebar' key.
         The progress can be saved and loaded from a
         specified file.
-        Argument specified values override those in the file.""",
+        Argument specified values override those from file.""",
         allow_abbrev=False)
+
+    """ Arg: initial work time """
+    parser.add_argument(
+        "-w", "--work_time",
+        type=str_to_sec,
+        default="00:00:00",
+        metavar="hh:mm:ss",
+        help="set the initial work time value (default: "
+             + default_work_time + ")")
+
+    """ Arg: initial break time """
+    parser.add_argument(
+        "-b", "--break_time",
+        type=signed_str_to_sec,
+        default="00:00:00",
+        metavar="[-]hh:mm:ss",
+        help="set the initial break time value (default: "
+             + default_break_time + ")")
+
+    """ Arg: work/break ratio """
+    parser.add_argument(
+        "-r", "--ratio",
+        type=str_to_nonnegative_float,
+        default=5.0,
+        help="set the work/break time ratio as a nonnegative float, "
+             + "if 0 then the break time won't increase while working "
+             + "(default: " + str(default_ratio) + ")")
 
     """ Arg: start paused """
     parser.add_argument(
@@ -341,36 +384,14 @@ if __name__ == "__main__":
         action="store_true",
         help="start paused (default: off)")
 
-    """ Arg: work/break ratio """
-    parser.add_argument(
-        "-r", "--ratio",
-        type=float,
-        default=5.0,
-        help="work/break time ratio (default: " + str(default_ratio) + ")")
-
-    """ Arg: initial work time """
-    parser.add_argument(
-        "-w", "--work_time",
-        type=str_to_sec,
-        default="00:00:00",
-        metavar="HH:MM:SS",
-        help="initial work time value (default: " + default_work_time + ")")
-
-    """ Arg: initial break time """
-    parser.add_argument(
-        "-b", "--break_time",
-        type=signed_str_to_sec,
-        default="00:00:00",
-        metavar="[-]HH:MM:SS",
-        help="initial break time value (default: " + default_break_time + ")")
-
     """ Arg: data file """
     parser.add_argument(
         "-f", "--file",
-        type=str,
+        type=check_file,
         const="~/.worktimer",
         nargs="?",
-        help="file to save/load progress (default: " + default_file + ")")
+        help="specify a file to save/load progress (default: "
+             + default_file + ")")
 
     # parse arguments
     args = parser.parse_args()
