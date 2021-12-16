@@ -124,14 +124,18 @@ class Timer():
 
     def _load_data(self):
         """ Check whether an existing file's contents are properly formated """
-        with open(self._file, "r") as rfh:
-            # read up to 4 lines
-            lines = []
-            while len(lines) < 4:
-                if (line := rfh.readline().rstrip()) != "":
-                    lines.append(line)
-                else:
-                    break
+        try:
+            with open(self._file, "r") as rfh:
+                # read up to 4 lines
+                lines = []
+                while len(lines) < 4:
+                    if (line := rfh.readline().rstrip()) != "":
+                        lines.append(line)
+                    else:
+                        break
+        except FileNotFoundError:
+            # file not yet created, this is OK
+            return
 
         if len(lines) != 0 and len(lines) != 3:
             # wrong line count
