@@ -282,7 +282,7 @@ def signed_sec_to_str(time_sec):
 
 def str_to_sec(time_str):
     """ Convert a time string to seconds """
-    if not re.match("[0-9][0-9]:[0-5][0-9]:[0-5][0-9]", time_str):
+    if not re.match("^[0-9][0-9]:[0-5][0-9]:[0-5][0-9]$", time_str):
         """ Check the time string's format """
         raise argparse.ArgumentTypeError(
             "input '" + time_str + "' is not formatted as 'hh:mm:ss' time.")
