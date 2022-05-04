@@ -6,7 +6,7 @@
 # second argument: the list of strings-paths to append
 append_paths() {
     local global_var_name="$1"
-    local current_paths="${!global_var_name}"
+    local current_paths="${!global_var_name}:"
     shift
     local extra_paths=($(eval echo \"$@\"))
 
@@ -14,8 +14,8 @@ append_paths() {
     for extra_path in "${extra_paths[@]}"; do
         if [[ -d "${extra_path}" ]]; then
             #echo "${extra_path}"
-            current_paths="${current_paths}:${extra_path}"
             current_paths="${current_paths//$extra_path:}"
+            current_paths="${extra_path}:${current_paths}"
         fi
     done
 
