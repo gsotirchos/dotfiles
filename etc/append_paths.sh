@@ -8,13 +8,14 @@ append_paths() {
     local global_var_name="$1"
     local current_paths="${!global_var_name}"
     shift
+    local extra_paths=($(eval echo \"$@\"))
 
     # group, in reverse order, the rest of the arguments-paths that exist
-    for extra_path in $@; do
-        if [[ -d ${extra_path} ]]; then
+    for extra_path in "${extra_paths[@]}"; do
+        if [[ -d "${extra_path}" ]]; then
             #echo "${extra_path}"
-            current_paths="${extra_path}:${current_paths}"
-            current_paths="${current_paths//:$extra_path}"
+            current_paths="${current_paths}:${extra_path}"
+            current_paths="${current_paths//$extra_path:}"
         fi
     done
 
@@ -22,7 +23,7 @@ append_paths() {
     export "${global_var_name}=${current_paths%:}"
 }
 
-# the main function to call the append_paths() function for every file in the given directory
+# the main function to call the append_paths() function for every file in the specified directory
 # input argument: the directory containing text files,
 # each files' contents are appended to the environment variable with the name of the file
 main() {
