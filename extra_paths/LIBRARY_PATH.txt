@@ -1,4 +1,4 @@
 /usr/local/lib
-:{HOMEBREW_PREFIX}/opt/*/*/lib
-${HOMEBREW_PREFIX}/opt/*/lib
 ${HOMEBREW_PREFIX}/lib
+${HOMEBREW_PREFIX}/opt/*/lib
+${HOMEBREW_PREFIX}/opt/*/*/lib
