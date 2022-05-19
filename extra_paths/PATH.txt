@@ -1,5 +1,5 @@
 $(xcrun --show-sdk-path)/usr/bin
-{HOMEBREW_PREFIX}/opt/*/*/*bin
+${HOMEBREW_PREFIX}/opt/*/*/*bin
 ${HOMEBREW_PREFIX}/opt/*/*bin
 ${HOMEBREW_PREFIX}/bin
 ${HOME}/.cabal/bin
