@@ -26,8 +26,8 @@ Plugin 'scrooloose/nerdcommenter'
 Plugin 'skywind3000/vim-auto-popmenu'
 Plugin 'tpope/vim-rsi'
 Plugin 'vim-python/python-syntax'
-"Plugin 'xolox/vim-misc'
-"Plugin 'xolox/vim-easytags'
+Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-easytags'
 Plugin 'yuezk/vim-js'
 
 "" plugins end here
@@ -109,7 +109,7 @@ set hlsearch  " highlight search matches
 
 " autocompletion
 set completeopt=menuone,noinsert,preview  " select 1st item without inserting
-set complete-=u,t  " disable completion based on tags and unloaded buffers
+set complete=t,.,i  " scan tags, curr. buffer, incl. files
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
 let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup
