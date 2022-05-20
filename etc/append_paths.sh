@@ -6,7 +6,9 @@
 # second argument: the list of strings-paths to append
 append_paths() {
     local global_var_name="$1"
-    local current_paths="${!global_var_name}:"
+    local current_paths=":${!global_var_name}:"
+    local appended_paths=":"
+    local merged_paths=""
     shift
     local extra_paths=($(eval echo \"$@\"))
 
@@ -14,13 +16,17 @@ append_paths() {
     for extra_path in "${extra_paths[@]}"; do
         if [[ -d "${extra_path}" ]]; then
             #echo "${extra_path}"
-            current_paths="${current_paths//$extra_path:}"
-            current_paths="${extra_path}:${current_paths}"
+            current_paths="${current_paths//:$extra_path:/:}"
+            appended_paths="${appended_paths//:$extra_path:/:}"
+            appended_paths="${appended_paths}${extra_path}:"
         fi
     done
 
-    # append the paths to the environment variable
-    export "${global_var_name}=${current_paths%:}"
+    # clean-up and merge the paths to the environment variable
+    appended_paths="${appended_paths%:}"
+    current_paths="${current_paths#:}"
+    merged_paths="${appended_paths#:}:${current_paths%:}"
+    export "${global_var_name}=${merged_paths%:}"
 }
 
 # the main function to call the append_paths() function for every file in the specified directory

@@ -1,5 +1,5 @@
-/usr/local/lib
-$(xcrun --show-sdk-path)/usr/lib
-${HOMEBREW_PREFIX}/lib
-${HOMEBREW_PREFIX}/opt/*/lib
 ${HOMEBREW_PREFIX}/opt/*/*/lib
+${HOMEBREW_PREFIX}/opt/*/lib
+${HOMEBREW_PREFIX}/lib
+$(xcrun --show-sdk-path)/usr/lib
+/usr/local/lib
