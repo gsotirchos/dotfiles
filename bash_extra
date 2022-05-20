@@ -73,14 +73,6 @@ if [[ "${os}" == "linux" ]]; then
     xhost +local: &> /dev/null
 fi
 
-# use new bash
-export SHELL="$(which bash)"
-
-# use clang and Ninja with CMake
-export CC="$(which clang)"
-export CXX="${CC}++"
-export CMAKE_GENERATOR="Ninja"
-
 # conda initialization
 if [[ -f ~/.conda_init ]]; then
     source ~/.conda_init
@@ -124,6 +116,14 @@ fi
 if [[ -f ~/.bash_aliases ]]; then
     source ~/.bash_aliases
 fi
+
+# use new bash
+export SHELL="$(which bash)"
+
+# use clang and Ninja with CMake
+export CC="$(which clang)"
+export CXX="${CC}++"
+export CMAKE_GENERATOR="Ninja"
 
 # custom prompt
 if [[ -f ~/.bash_prompt ]]; then
