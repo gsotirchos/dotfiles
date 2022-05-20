@@ -17,3 +17,6 @@ hi! link pythonClass       Identifier
 hi! link pythonDecorator   Identifier
 hi! link pythonBuiltinObj  Function
 hi! link pythonBuiltinType OtherType
+
+" vim-easytags
+hi! link pythonClassTag    pythonClass
