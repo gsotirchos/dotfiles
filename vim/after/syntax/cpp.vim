@@ -9,31 +9,38 @@ syntax region myMark
 \   containedin=.*Comment.* contained oneline
 
 " darker semicolons
-syntax match myMemberOperator ";"
+syntax match myMembOperator ";"
 if hlexists("cAnsiFunction")
     syntax clear cAnsiFunction
 endif
 
 " highlight 'namespace', 'enum', and 'struct'
 syntax match cppNamespace
-\   "\(^\(.*;\+\)*[ \n]*\(namespace\|enum\|struct\)[ \n]\+\)\@<=\h\w*"
+\   "\(^\(.*;\+\)*[ \n]*\(\(using \)\=namespace\|enum\|struct\|class\)[ \n]\+\)\@<=\h\w*"
 
 hi! link myMark           SpecialComment
-hi! link myMemberOperator MembOperator
-hi! link cCustomScope     MembOperator
-hi! link cCustomDot       MembOperator
-hi! link cCustomPtr       MembOperator
+hi! link myMembOperator   MembOperator
+hi! link cCustomScope     myMembOperator
+hi! link cCustomDot       myMembOperator
+hi! link cCustomPtr       myMembOperator
 hi! link cFormat          Special
 hi! link cOperator        Statement
-hi! link cppOperator      Statement
-hi! link cppSTLfunction   Function
-hi! link cppSTLconstant   Function
-hi! link cppSTLnamespace  Function
-hi! link cppSTLexception  Function
+hi! link cppOperator      cOpertor
 hi! link cCustomFunc      Function
+hi! link cppSTLfunction   cCustomFunc
+hi! link cppSTLconstant   cCustomFunc
+hi! link cppSTLnamespace  cCustomFunc
+hi! link cppSTLexception  cCustomFunc
 hi! link cCustomClass     Function
 hi! link cCustomClassName Identifier
-hi! link cppNamespace     Identifier
+hi! link cppNamespace     cCustomClassName
+
+" vim-easytags
+hi! link cTypeTag     cCustomClassName
+hi! link cEnumTag     cCustomClass
+hi! link cPreProcTag  Error
+hi! link cFunctionTag cCustomFunc
+hi! link cMemberTag   cCustomClass
 
 " Doxygen
 set syntax=cpp.doxygen
@@ -62,9 +69,3 @@ hi! link doxygenBriefWord            doxygenSpecial
 hi! link doxygenParam                doxygenSpecial
 hi! link doxygenSpecialBoldWord      doxygenSpecial
 
-" vim-easytags
-hi! link cTypeTag Error
-hi! link cEnumTag Error
-hi! link cPreProcTag Error
-hi! link cFunctionTag Error
-hi! link cMemberTag Error
