@@ -28,7 +28,7 @@ CHECK_TERMINAL_OSASCRIPT = """
 
 TERMINAL_THEMES = {
     "Light": "Yorha",
-    "Dark": "Dracula"}
+    "Dark": "Xcode"}
 
 IS_DARK_MODE = {
     "Dark": "true",
