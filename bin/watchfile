@@ -2,19 +2,19 @@
 
 # usage
 USAGE="Usage:
-    `basename $0` [file] [command as string]"
+    $(basename "$0") [file] [command as string]"
 [[ -z "$2" ]]      && echo -e "${USAGE}" && exit 1
 [[ -n "$3" ]]      && echo -e "${USAGE}" && exit 1
 [[ "$1" == "-h" ]] && echo -e "${USAGE}" && exit 0
 [[ "$2" == "-h" ]] && echo -e "${USAGE}" && exit 0
 
 # store file info
-FILE_PATH="$(realpath $1)"
+FILE_PATH="$(realpath "$1")"
 COMMAND="$2"
 
 # function to print timestamp
 timestamp() {
-    echo "[$(date "+%T")]"
+    echo "[$(date "+%T.%3N")]"
 }
 
 # function to execute command
@@ -24,18 +24,17 @@ function execute_cmd() {
 
     # execute the command
     #clear
-    echo -e "---------- $(timestamp) Executing ----------\n"
-    eval "${COMMAND}"
-
-    if [[ $? == 0 ]]; then
-        echo -e "\n--------------- $(timestamp) ---------------\n"
-        echo "$(timestamp) Watching \"${FILE_PATH}\"..."
+    echo -e       "---------- $(timestamp) Executing ----------\n"
+    if eval "${COMMAND}"; then
+        echo -e "\n---------- $(timestamp) Finished -----------"
+    else
+        echo -e "\n---------- $(timestamp) Failed -------------"
     fi
+    echo -e "$(timestamp) Watching \"${FILE_PATH}\"..."
 }
 
 function main() {
     local exec_pid
-    local watch_pid
     local changed=false
     local t=0.4
     local l=0.1
@@ -49,11 +48,11 @@ function main() {
 
     # watch file for changes, terminate and re-execute
     while true; do
-        # wait for further changes...
-        changed="$(fswatch "${FILE_PATH}" --event "Updated" -1 --latency ${l})"
+        # watch for changes...
+        changed="$(fswatch "${FILE_PATH}" -1 --latency ${l})"
         echo "$(timestamp) File changed"
 
-        # kill previous execution
+        # kill current execution
         kill ${exec_pid} &> /dev/null
         wait ${exec_pid} &> /dev/null
 
