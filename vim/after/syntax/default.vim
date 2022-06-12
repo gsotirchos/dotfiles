@@ -1,6 +1,6 @@
 "" dark parentheses and member operators
-"syntax match myMemberOperator "\( \)\@<!\.\( \)\@!"
-"syntax match myMemberOperator "[(){}\[\],;]"
+"syntax match myMembOperator "\( \)\@<!\.\( \)\@!"
+"syntax match myMembOperator "[(){}\[\],;]"
 
 "syntax enable
 
@@ -11,7 +11,7 @@ syntax match myUrl "http.:\/\/\S*" containedin=.*Comment.* contained
 "syntax match myOperator "[<>]*[-=]\+[<>]*" contains=TOP
 "syntax match myOperator "\s[<>]\+\s" containedin=NONE
 
-"hi! link myMemberOperator MembOperator
+"hi! link myMembOperator MembOperator
 "hi! link myOperator Operator
 hi! link myMark SpecialComment
 hi! link myUrl underlined

@@ -1,6 +1,6 @@
-syntax match myMemberOperator ";"
+syntax match myMembOperator ";"
 
-hi! link myMemberOperator MembOperator
-hi! link rustType         OtherType
-hi! link rustSigil        Operator
-hi! link rustModPathSep   MembOperator
+hi! link myMembOperator MembOperator
+hi! link rustType       OtherType
+hi! link rustSigil      Operator
+hi! link rustModPathSep MembOperator
