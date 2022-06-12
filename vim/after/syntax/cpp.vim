@@ -20,9 +20,9 @@ syntax match cppNamespace
 
 hi! link myMark           SpecialComment
 hi! link myMembOperator   MembOperator
-hi! link cCustomScope     myMembOperator
-hi! link cCustomDot       myMembOperator
-hi! link cCustomPtr       myMembOperator
+hi! link cCustomScope     Normal
+hi! link cCustomDot       cCustomScope
+hi! link cCustomPtr       cCustomScope
 hi! link cFormat          Special
 hi! link cOperator        Statement
 hi! link cppOperator      cOpertor
