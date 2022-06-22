@@ -10,6 +10,9 @@ let g:ale_sign_warning = '┃'
 let g:ale_linters = {
 \   'cpp': ['ccls', 'clangtidy'],
 \   'python': ['pylsp', 'flake8']}
+let g:ale_fixers = {
+\   'cpp': ['clang-format']}
+let g:ale_fix_on_save = 1
 let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = &updatetime

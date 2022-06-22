@@ -92,7 +92,10 @@ function! TogglePreview()
 endfunction
 nnoremap <silent> <leader>p :call TogglePreview()<CR>
 
-" ignorecase when searching by using '\c'
+" apply fixers
+nnoremap <silent> <leader>f :ALEFix<CR>
+
+" case-insensitive searching using '\c'
 noremap <silent> / :echo '/'<CR>/\c
 noremap <silent> ? :echo '?'<CR>?\c
 
