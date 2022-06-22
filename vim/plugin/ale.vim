@@ -11,7 +11,7 @@ let g:ale_linters = {
 \   'cpp': ['ccls', 'clangtidy'],
 \   'python': ['pylsp', 'flake8']}
 let g:ale_fixers = {
-\   'cpp': ['clang-format']}
+\   'cpp': [{-> execute("undojoin", "silent!") + 0}, 'clang-format']}
 let g:ale_fix_on_save = 1
 let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
