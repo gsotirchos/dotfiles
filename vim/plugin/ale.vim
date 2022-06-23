@@ -17,7 +17,4 @@ let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = &updatetime
 let g:ale_cpp_ccls_init_options = {
-\   'cache': {
-\       'directory': '/tmp/ccls/cache'
-\   }
-\}
+\   'cache': {'directory': '/tmp/ccls/cache'}}
