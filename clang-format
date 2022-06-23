@@ -15,11 +15,11 @@ AllowAllArgumentsOnNextLine: true
 AllowAllConstructorInitializersOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortEnumsOnASingleLine: false
-AllowShortBlocksOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortLambdasOnASingleLine: All
-AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
@@ -27,12 +27,12 @@ AlwaysBreakBeforeMultilineStrings: true
 AlwaysBreakTemplateDeclarations: Yes
 AttributeMacros:
   - __capability
-BinPackArguments: true
-BinPackParameters: true
+BinPackArguments: false
+BinPackParameters: false
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterCaseLabel:  false
-  AfterClass:      true
+  AfterClass:      false
   AfterControlStatement: Never
   AfterEnum:       false
   AfterFunction:   false
@@ -45,7 +45,7 @@ BraceWrapping:
   BeforeElse:      false
   BeforeLambdaBody: false
   BeforeWhile:     false
-  IndentBraces:    true
+  IndentBraces:    false
   SplitEmptyFunction: false
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
@@ -54,15 +54,15 @@ BreakBeforeConceptDeclarations: true
 BreakBeforeInheritanceComma: false
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: false
-BreakConstructorInitializers: AfterColon
-BreakInheritanceList: AfterColon
+BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
 BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: false
-ColumnLimit:     0
+ColumnLimit:     100
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
-ConstructorInitializerIndentWidth: 4
+ConstructorInitializerIndentWidth: 2
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DeriveLineEnding: true
@@ -117,6 +117,7 @@ ObjCBlockIndentWidth: 4
 ObjCBreakBeforeNestedBlockParam: true
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
+PackConstructorInitializers: NextLine
 PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 300
