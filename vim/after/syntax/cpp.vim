@@ -20,27 +20,27 @@ syntax match cppNamespace
 
 hi! link myMark           SpecialComment
 hi! link myMembOperator   MembOperator
+hi! link cFormat          Special
+hi! link cOperator        Statement
+hi! link cCustomClassName Identifier
+hi! link cCustomClass     Function
+hi! link cCustomFunc      Function
 hi! link cCustomScope     Normal
 hi! link cCustomDot       cCustomScope
 hi! link cCustomPtr       cCustomScope
-hi! link cFormat          Special
-hi! link cOperator        Statement
 hi! link cppOperator      cOpertor
-hi! link cCustomFunc      Function
+hi! link cppNamespace     cCustomClassName
 hi! link cppSTLfunction   cCustomFunc
 hi! link cppSTLconstant   cCustomFunc
-hi! link cppSTLnamespace  cCustomFunc
 hi! link cppSTLexception  cCustomFunc
-hi! link cCustomClass     Function
-hi! link cCustomClassName Identifier
-hi! link cppNamespace     cCustomClassName
+hi! link cppSTLnamespace  cppNamespace
 
 " vim-easytags
+hi! link cPreProcTag  Error
 hi! link cTypeTag     cCustomClassName
 hi! link cEnumTag     cCustomClass
-hi! link cPreProcTag  Error
-hi! link cFunctionTag cCustomFunc
 hi! link cMemberTag   cCustomClass
+hi! link cFunctionTag cCustomFunc
 
 " Doxygen
 set syntax=cpp.doxygen
