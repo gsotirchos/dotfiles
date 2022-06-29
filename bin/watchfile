@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# styling
+BR_TEXT='\033[1;97m'
+RED_TEXT='\033[1;31m'
+TEXT='\033[0m'
+
 # usage
 USAGE="Usage:
     $(basename "$0") [file] [command as string]"
@@ -24,13 +29,13 @@ function execute_cmd() {
 
     # execute the command
     #clear
-    echo -e       "---------- $(timestamp) Executing ----------\n"
+    echo -e       "${BR_TEXT}---------- $(timestamp) Executing ----------${TEXT}\n"
     if eval "${COMMAND}"; then
-        echo -e "\n---------- $(timestamp) Finished -----------"
+        echo -e "\n${BR_TEXT}---------- $(timestamp) Finished -----------${TEXT}"
     else
-        echo -e "\n---------- $(timestamp) Failed -------------"
+        echo -e "\n${BR_TEXT}---------- $(timestamp) Failed -------------${TEXT}"
     fi
-    echo -e "$(timestamp) Watching \"${FILE_PATH}\"..."
+    echo -e "${BR_TEXT}$(timestamp) Watching \"${FILE_PATH}\"...${TEXT}"
 }
 
 function main() {
@@ -40,7 +45,7 @@ function main() {
     local l=0.1
 
     # exit script on ctrl-c
-    trap 'echo ": $(timestamp) Interrupted" && exit 1' INT
+    trap 'echo -e "${BR_TEXT}$(timestamp) Interrupted${TEXT}" && exit 1' INT
 
     # execute command once first
     execute_cmd &
