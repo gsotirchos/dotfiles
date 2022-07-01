@@ -70,11 +70,11 @@ exe "hi! Comment        cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      
 
 " constants
 exe "hi! Constant       cterm=NONE      ctermfg=9    ctermbg=NONE gui=NONE      guifg=".color_9"  guibg=".color_bg
-exe "hi! link String Constant"
 exe "hi! Character      cterm=NONE      ctermfg=11   ctermbg=NONE gui=NONE      guifg=".color_11" guibg=".color_bg
-exe "hi! link Number Character"
+exe "hi! link String  Constant"
+exe "hi! link Number  Character"
+exe "hi! link Float   Number"
 exe "hi! link Boolean Statement"
-exe "hi! link Float Number"
 
 " variable names
 exe "hi! Function       cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=".color_6"  guibg=".color_bg
@@ -83,30 +83,30 @@ exe "hi! Identifier     cterm=NONE      ctermfg=14   ctermbg=NONE gui=NONE      
 " statements
 exe "hi! Statement      cterm=bold      ctermfg=5    ctermbg=NONE gui=bold      guifg=".color_5"  guibg=".color_bg
 exe "hi! link Conditional Statement"
-exe "hi! link Repeat Statement"
-exe "hi! link Label Statement"
-exe "hi! link Operator Normal"
-exe "hi! link Keyword Statement"
-exe "hi! link Exception Statement"
+exe "hi! link Repeat      Statement"
+exe "hi! link Label       Statement"
+exe "hi! link Keyword     Statement"
+exe "hi! link Exception   Statement"
+exe "hi! link Operator    Normal"
 
 " generic Preprocessor
 exe "hi! PreProc        cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
-exe "hi! link Include PreProc"
-exe "hi! link Define PreProc"
-exe "hi! link Macro PreProc"
+exe "hi! link Include   PreProc"
+exe "hi! link Define    PreProc"
+exe "hi! link Macro     PreProc"
 exe "hi! link PreCondit PreProc"
 
 " types
 exe "hi! link Type Statement"
 exe "hi! link StorageClass Type"
-exe "hi! link Structure Type"
-exe "hi! link Typedef Type"
+exe "hi! link Structure    Type"
+exe "hi! link Typedef      Type"
 
 " special symbols
-exe "hi! link Special Character"
-exe "hi! link SpecialChar Character"
 exe "hi! Delimiter      cterm=NONE      ctermfg=2    ctermbg=NONE gui=NONE      guifg=".color_2"  guibg=".color_bg
-exe "hi! link Tag Delimiter"
+exe "hi! link Tag         Delimiter"
+exe "hi! link Special     Character"
+exe "hi! link SpecialChar Character"
 
 " my custom groups
 exe "hi! MembOperator   cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=".color_8"  guibg=".color_bg
@@ -121,15 +121,13 @@ exe "hi! Todo           cterm=bold      ctermfg=3    ctermbg=NONE gui=bold      
 exe "hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE gui=underline guifg=".color_1"  guibg=".color_bg
 exe "hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE gui=underline guifg=".color_3"  guibg=".color_bg
+exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_12" guibg=".color_bg
+exe "hi! Directory      cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
 exe "hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link SpellRare SpellLocal"
-exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_12" guibg=".color_bg
-exe "hi! Ignore         cterm=NONE      ctermfg=5    ctermbg=NONE gui=NONE      guifg=".color_5"  guibg=".color_bg
-exe "hi! Directory      cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
 
 " visual elements
 exe "hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
-exe "hi! link IncSearch Search"
 exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   guifg=".color_fg" guibg=".color_bg
 exe "hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
 exe "hi! LineNr         cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
@@ -138,21 +136,23 @@ exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      
 exe "hi! StatusLine     cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=".color_7"  guibg=".color_8
 exe "hi! StatusLineNC   cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
 exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
-exe "hi! link Folded Comment"
-exe "hi! link VertSplit Comment"
-exe "hi! link StatusLineTerm StatusLine"
+exe "hi! link IncSearch        Search"
+exe "hi! link Folded           Comment"
+exe "hi! link VertSplit        Comment"
+exe "hi! link StatusLineTerm   StatusLine"
 exe "hi! link StatusLineTermNC StatusLineNC"
-exe "hi! link FoldColumn EndOfBuffer"
+exe "hi! link FoldColumn       EndOfBuffer"
 
 " menus and messages
 exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=".color_0"  guibg=".color_3
-exe "hi! link MoreMsg ModeMsg"
 exe "hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
 exe "hi! PmenuSel       cterm=NONE      ctermfg=7    ctermbg=4    gui=NONE      guifg=".color_7"  guibg=".color_4
 exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=".color_15" guibg=".color_bg
-exe "hi! link PmenuSbar Pmenu"
-exe "hi! link ModeMsg OtherType"
-exe "hi! link Conceal LineNr"
+exe "hi! link PmenuSbar  Pmenu"
+exe "hi! link ModeMsg    OtherType"
+exe "hi! link MoreMsg    ModeMsg"
+exe "hi! link Conceal    LineNr"
+exe "hi! link Ignore     LineNr"
 exe "hi! link SpecialKey LineNr"
-exe "hi! link NonText LineNr"
+exe "hi! link NonText    LineNr"
