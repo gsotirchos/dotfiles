@@ -97,10 +97,11 @@ exe "hi! link Macro     PreProc"
 exe "hi! link PreCondit PreProc"
 
 " types
-exe "hi! link Type Statement"
-exe "hi! link StorageClass Type"
+exe "hi! Type           cterm=bold      ctermfg=13   ctermbg=NONE gui=bold      guifg=".color_13" guibg=".color_bg
+"exe "hi! link Type Statement"
 exe "hi! link Structure    Type"
-exe "hi! link Typedef      Type"
+exe "hi! link StorageClass Statement"
+exe "hi! link Typedef      Statement"
 
 " special symbols
 exe "hi! Delimiter      cterm=NONE      ctermfg=2    ctermbg=NONE gui=NONE      guifg=".color_2"  guibg=".color_bg
@@ -121,7 +122,7 @@ exe "hi! Todo           cterm=bold      ctermfg=3    ctermbg=NONE gui=bold      
 exe "hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE gui=underline guifg=".color_1"  guibg=".color_bg
 exe "hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE gui=underline guifg=".color_3"  guibg=".color_bg
-exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_12" guibg=".color_bg
+exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=".color_4"  guibg=".color_bg
 exe "hi! Directory      cterm=NONE      ctermfg=10   ctermbg=NONE gui=NONE      guifg=".color_10" guibg=".color_bg
 exe "hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link SpellRare SpellLocal"
