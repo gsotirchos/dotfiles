@@ -2,22 +2,39 @@
 
 # styling
 BR_TEXT='\033[1;97m'
-RED_TEXT='\033[1;31m'
 TEXT='\033[0m'
 
 # usage
-USAGE="Usage:
-    $(basename "$0") [file] [command as string]"
-[[ -z "$2" ]]      && echo -e "${USAGE}" && exit 1
-[[ -n "$3" ]]      && echo -e "${USAGE}" && exit 1
-[[ "$1" == "-h" ]] && echo -e "${USAGE}" && exit 0
-[[ "$2" == "-h" ]] && echo -e "${USAGE}" && exit 0
+USAGE="Usage:\n    $(basename "$0") [-c] FILE COMMAND"
 
-# store file info
-FILE_PATH="$(realpath "$1")"
-COMMAND="$2"
+# parse arguments
+has_clear="false"
+args=()
 
-# function to print timestamp
+for arg in "$@"; do
+    case "${arg}" in
+      "-h")
+        echo -e "${USAGE}"
+        exit 0
+        ;;
+      "-c")
+        has_clear="true"
+        shift 1
+        ;;
+      *)
+        args+=("${arg}")
+    esac
+done
+
+if [[ "${#args[@]}" -ne 2 ]]; then
+    echo -e "${USAGE}"
+    exit 1
+fi
+
+FILE_PATH="$(realpath "${args[0]}")"
+COMMAND="${args[1]}"
+
+# function that prints timestamp
 timestamp() {
     echo "[$(date "+%T.%3N")]"
 }
@@ -28,13 +45,18 @@ function execute_cmd() {
     trap 'jobs -p | xargs kill &> /dev/null' EXIT INT
 
     # execute the command
-    #clear
-    echo -e       "${BR_TEXT}========== $(timestamp) Executing ==========${TEXT}\n"
+    if [[ "${has_clear}" == "true" ]]; then
+        clear
+    fi
+
+    echo -e "${BR_TEXT}========== $(timestamp) Executing ==========${TEXT}\n"
+
     if eval "${COMMAND}"; then
         echo -e "\n${BR_TEXT}========== $(timestamp) Finished ===========${TEXT}"
     else
         echo -e "\n${BR_TEXT}========== $(timestamp) Failed =============${TEXT}"
     fi
+
     echo -e "${BR_TEXT}$(timestamp) Watching \"${FILE_PATH}\"...${TEXT}"
 }
 
