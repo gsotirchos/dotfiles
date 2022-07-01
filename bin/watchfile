@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # usage
-USAGE="Usage:\n    $(basename "$0") [-c] FILE user_command"
+USAGE="Usage:\n    $(basename "$0") [-c] FILE COMMAND"
 
 # parse arguments
 args=()
