@@ -29,11 +29,11 @@ function execute_cmd() {
 
     # execute the command
     #clear
-    echo -e       "${BR_TEXT}---------- $(timestamp) Executing ----------${TEXT}\n"
+    echo -e       "${BR_TEXT}========== $(timestamp) Executing ==========${TEXT}\n"
     if eval "${COMMAND}"; then
-        echo -e "\n${BR_TEXT}---------- $(timestamp) Finished -----------${TEXT}"
+        echo -e "\n${BR_TEXT}========== $(timestamp) Finished ===========${TEXT}"
     else
-        echo -e "\n${BR_TEXT}---------- $(timestamp) Failed -------------${TEXT}"
+        echo -e "\n${BR_TEXT}========== $(timestamp) Failed =============${TEXT}"
     fi
     echo -e "${BR_TEXT}$(timestamp) Watching \"${FILE_PATH}\"...${TEXT}"
 }
