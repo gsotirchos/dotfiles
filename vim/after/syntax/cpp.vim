@@ -21,19 +21,27 @@ syntax match cppNamespace
 hi! link myMark           SpecialComment
 hi! link myMembOperator   MembOperator
 hi! link cFormat          Special
+hi! link cType            Type
+hi! link cTypedef         Typedef
 hi! link cOperator        Statement
+hi! link cStructure       Statement
 hi! link cCustomClassName Identifier
 hi! link cCustomClass     Function
+hi! link cCustomClassKey  Statement
 hi! link cCustomFunc      Function
 hi! link cCustomScope     Normal
 hi! link cCustomDot       cCustomScope
 hi! link cCustomPtr       cCustomScope
+hi! link cppSTLtype       cType
+hi! link cppSTLiterator   cType
 hi! link cppOperator      cOpertor
+hi! link cppStructure     cStructure
 hi! link cppNamespace     cCustomClassName
 hi! link cppSTLfunction   cCustomFunc
 hi! link cppSTLconstant   cCustomFunc
 hi! link cppSTLexception  cCustomFunc
 hi! link cppSTLnamespace  cppNamespace
+hi! link cppModifier      cppStatement
 
 " vim-easytags
 hi! link cPreProcTag  Error
