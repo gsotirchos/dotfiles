@@ -1,23 +1,17 @@
 #!/usr/bin/env bash
 
-# styling
-BR_TEXT='\033[1;97m'
-TEXT='\033[0m'
-
 # usage
-USAGE="Usage:\n    $(basename "$0") [-c] FILE COMMAND"
+USAGE="Usage:\n    $(basename "$0") [-c] FILE user_command"
 
 # parse arguments
-has_clear="false"
 args=()
-
 for arg in "$@"; do
     case "${arg}" in
-      "-h")
+      "-h"|"--help")
         echo -e "${USAGE}"
         exit 0
         ;;
-      "-c")
+      "-c"|"--clear")
         has_clear="true"
         shift 1
         ;;
@@ -31,12 +25,22 @@ if [[ "${#args[@]}" -ne 2 ]]; then
     exit 1
 fi
 
-FILE_PATH="$(realpath "${args[0]}")"
-COMMAND="${args[1]}"
+watched_file="$(realpath "${args[0]}")"
+user_command="${args[1]}"
 
-# function that prints timestamp
-timestamp() {
-    echo "[$(date "+%T.%3N")]"
+# functions to print timestamped formatted message
+message () {
+    echo -e "[$(date "+%T.%3N")] $*"
+}
+
+message_bold() {
+    # styling
+    BW_TEXT='\033[1;97m'
+    TEXT='\033[0m'
+
+    echo -en "${BW_TEXT}"
+    message "$*"
+    echo -en "${TEXT}"
 }
 
 # function to execute command
@@ -49,15 +53,15 @@ function execute_cmd() {
         clear
     fi
 
-    echo -e "${BR_TEXT}========== $(timestamp) Executing ==========${TEXT}\n"
+    message_bold "Executing ===================="
 
-    if eval "${COMMAND}"; then
-        echo -e "\n${BR_TEXT}========== $(timestamp) Finished ===========${TEXT}"
+    if eval "${user_command}"; then
+        message_bold "Finished ====================="
     else
-        echo -e "\n${BR_TEXT}========== $(timestamp) Failed =============${TEXT}"
+        message_bold "Failed ======================="
     fi
 
-    echo -e "${BR_TEXT}$(timestamp) Watching \"${FILE_PATH}\"...${TEXT}"
+    message "Watching ${watched_file}..."
 }
 
 function main() {
@@ -67,17 +71,16 @@ function main() {
     local l=0.1
 
     # exit script on ctrl-c
-    trap 'echo -e "${BR_TEXT}$(timestamp) Interrupted${TEXT}" && exit 1' INT
+    trap 'echo & message "Interrupted" && exit 1' INT
 
     # execute command once first
-    execute_cmd &
-        exec_pid=$!
+    execute_cmd & exec_pid=$!
 
     # watch file for changes, terminate and re-execute
     while true; do
         # watch for changes...
-        changed="$(fswatch "${FILE_PATH}" -1 --latency ${l})"
-        echo "$(timestamp) File changed"
+        changed="$(fswatch "${watched_file}" -1 --latency ${l})"
+        message "File changed"
 
         # kill current execution
         kill ${exec_pid} &> /dev/null
@@ -85,15 +88,14 @@ function main() {
 
         # keep watching for ${timeout} seconds for further changes
         while [[ -n ${changed} ]]; do
-            echo "$(timestamp) Waiting for further changes..."
+            message "Waiting for further changes..."
             changed="$( \
                 timeout --foreground ${t} \
-                fswatch "${FILE_PATH}" --event "Updated" -1 --latency ${l})"
+                fswatch "${watched_file}" --event "Updated" -1 --latency ${l})"
         done
 
         # execute command
-        execute_cmd &
-            exec_pid=$!
+        execute_cmd & exec_pid=$!
     done
 }
 
