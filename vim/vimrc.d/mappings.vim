@@ -73,9 +73,12 @@ endif
 " toggle LocList
 function! ToggleLocList()
     if get(getloclist(0, {'winid':0}), 'winid', 0)
+        exec "set laststatus=" . g:laststatus
         lclose
     else
         exec "lopen " . winheight(0) / 3
+        let g:laststatus = &laststatus
+        set laststatus=0
     endif
 endfunction
 nnoremap <silent> <leader>l :call ToggleLocList()<CR>
