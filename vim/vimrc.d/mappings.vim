@@ -75,7 +75,7 @@ function! ToggleLocList()
     if get(getloclist(0, {'winid':0}), 'winid', 0)
         lclose
     else
-        lopen
+        exec "lopen " . winheight(0) / 3
     endif
 endfunction
 nnoremap <silent> <leader>l :call ToggleLocList()<CR>
