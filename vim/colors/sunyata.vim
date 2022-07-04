@@ -99,7 +99,7 @@ exe "hi! link PreCondit PreProc"
 " types
 exe "hi! Type           cterm=bold      ctermfg=13   ctermbg=NONE gui=bold      guifg=".color_13" guibg=".color_bg
 "exe "hi! link Type Statement"
-exe "hi! link Structure    Type"
+exe "hi! link Structure    Statement"
 exe "hi! link StorageClass Statement"
 exe "hi! link Typedef      Statement"
 

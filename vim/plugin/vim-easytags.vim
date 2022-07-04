@@ -9,12 +9,12 @@ let g:easytags_include_members = 1
 let g:easytags_resolve_links = 1
 let g:easytags_cmd = 'ctags'
 let g:easytags_opts = [
-\   "--excmd=combine",
-\   "--fields=+l",
+\   "--excmd=mix",
+\   "--fields=+nZs",
 \   "--kinds-Python=+l",
-\   "--kinds-C=+lpxN",
-\   "--kinds-C++=+lpxN",
-\   "--extras=+q"
+\   "--kinds-C=+lpxAN-f",
+\   "--kinds-C++=+lpxAN-f",
+\   "--extras=+qr"
 \]
 let g:easytags_file = "~/.vim/tags"
 let b:easytags_file =

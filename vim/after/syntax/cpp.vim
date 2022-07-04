@@ -1,54 +1,34 @@
-" highlight 'nullptr' and 'nullopt' as types
-syntax keyword Statement nullptr
-syntax keyword Statement nullopt
-
-" highlight %...Tag()% in comments
-syntax region myMark
-\   start="\(\".*\)\@<!\(%.*Tag(\)\@<="
-\   end="\()%\)\@="
+" highlight %Tag(...)% in comments
+syntax region myTagMark
+\   start="\(\".*\)\@<!\(% *Tag *(\)\@<="
+\   end="\() *%\)\@="
 \   containedin=.*Comment.* contained oneline
 
 " darker semicolons
-syntax match myMembOperator ";"
-if hlexists("cAnsiFunction")
-    syntax clear cAnsiFunction
-endif
+syntax match cTerminator ";"
 
-" highlight 'namespace', 'enum', and 'struct'
+" highlight 'namespace', 'enum', and 'struct' names
 syntax match cppNamespace
 \   "\(^\(.*;\+\)*[ \n]*\(\(using \)\=namespace\|enum\|struct\|class\)[ \n]\+\)\@<=\h\w*"
 
-hi! link myMark           SpecialComment
-hi! link myMembOperator   MembOperator
-hi! link cFormat          Special
-hi! link cType            Type
+hi! link myTagMark        SpecialComment
+hi! link cTerminator      MembOperator
 hi! link cTypedef         Typedef
 hi! link cOperator        Statement
-hi! link cStructure       Statement
-hi! link cCustomClassName Identifier
-hi! link cCustomClass     Function
-hi! link cCustomClassKey  Statement
-hi! link cCustomFunc      Function
-hi! link cCustomScope     Normal
-hi! link cCustomDot       cCustomScope
-hi! link cCustomPtr       cCustomScope
-hi! link cppSTLtype       cType
-hi! link cppSTLiterator   cType
-hi! link cppOperator      cOpertor
-hi! link cppStructure     cStructure
-hi! link cppNamespace     cCustomClassName
-hi! link cppSTLfunction   cCustomFunc
-hi! link cppSTLconstant   cCustomFunc
-hi! link cppSTLexception  cCustomFunc
+hi! link cMember          Function
+hi! link cEnum            cMember
+hi! link cppNamespace     Identifier
+hi! link cppSTLvariable   cMember
+hi! link cppOperator      cOperator
 hi! link cppSTLnamespace  cppNamespace
-hi! link cppModifier      cppStatement
+hi! link cppSTLconstant   cppStatement
 
 " vim-easytags
 hi! link cPreProcTag  Error
-hi! link cTypeTag     cCustomClassName
-hi! link cEnumTag     cCustomClass
-hi! link cMemberTag   cCustomClass
-hi! link cFunctionTag cCustomFunc
+"hi! link cTypeTag     cType
+"hi! link cFunctionTag cFunction
+hi! link cMemberTag   cMember
+hi! link cEnumTag     cMemberTag
 
 " Doxygen
 set syntax=cpp.doxygen

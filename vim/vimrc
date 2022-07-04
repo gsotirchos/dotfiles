@@ -15,20 +15,20 @@ Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
 Plugin 'dense-analysis/ale'
-Plugin 'JuliaEditorSupport/julia-vim'
-Plugin 'keith/swift.vim'
-Plugin 'lervag/vimtex'
-Plugin 'neovimhaskell/haskell-vim'
-Plugin 'octol/vim-cpp-enhanced-highlight'
-Plugin 'peterhoeg/vim-qml'
-Plugin 'PProvost/vim-ps1'
+Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-easytags'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'skywind3000/vim-auto-popmenu'
 Plugin 'tpope/vim-rsi'
+Plugin 'bfrg/vim-cpp-modern'
 Plugin 'vim-python/python-syntax'
-Plugin 'xolox/vim-misc'
-Plugin 'xolox/vim-easytags'
-Plugin 'yuezk/vim-js'
+"Plugin 'lervag/vimtex'
+"Plugin 'JuliaEditorSupport/julia-vim'
+"Plugin 'keith/swift.vim'
+"Plugin 'neovimhaskell/haskell-vim'
+"Plugin 'peterhoeg/vim-qml'
+"Plugin 'PProvost/vim-ps1'
+"Plugin 'yuezk/vim-js'
 
 "" plugins end here
 call vundle#end()  " required
@@ -72,7 +72,8 @@ function! Pad(s,amt)  " add right padding to string
     return a:s . repeat(' ',a:amt - len(a:s))
 endfunction
 set laststatus=2  " always show statusline
-let &statusline = ' %(%w%y %)%<%F%-5(%m%)%a%= L: %l/%L  C: %c/%{Pad(strwidth(getline(".")), 3)} '
+let my_statusline = ' %(%w%y %)%<%F%-5(%m%)%a%= L: %l/%L  C: %c/%{Pad(strwidth(getline(".")), 3)} '
+let &statusline = my_statusline
 
 " behaviour
 set regexpengine=1  " use old regex engine
