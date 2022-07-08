@@ -1,3 +1,4 @@
+let g:easytags_suppress_ctags_warning = 1
 let g:easytags_auto_update = 0  " overriden per buffer by filetype-specific autocommand
 let g:easytags_auto_highlight = 0  " overriden per buffer by filetype-specific autocommand
 let g:easytags_async = 1
@@ -10,10 +11,10 @@ let g:easytags_resolve_links = 1
 let g:easytags_cmd = 'ctags'
 let g:easytags_opts = [
 \   "--excmd=mix",
-\   "--fields=+nZs",
+\   "--fields=+lnZs",
 \   "--kinds-Python=+l",
-\   "--kinds-C=+lpxAN-f",
-\   "--kinds-C++=+lpxAN-f",
+\   "--kinds-C=+lpxAN",
+\   "--kinds-C++=+lpxAN",
 \   "--extras=+qr"
 \]
 let g:easytags_file = "~/.vim/tags"

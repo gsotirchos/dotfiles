@@ -78,7 +78,9 @@ function! ToggleLocList()
     else
         exec "lopen " . winheight(0) / 3
         let g:laststatus = &laststatus
-        set laststatus=0
+        if len(getbufinfo({'bufloaded':1})) == 2
+            set laststatus=0
+        endif
     endif
 endfunction
 nnoremap <silent> <leader>l :call ToggleLocList()<CR>
@@ -106,4 +108,3 @@ noremap <silent> ? :echo '?'<CR>?\c
 nnoremap o o<Esc>
 nnoremap O O<Esc>
 nnoremap <silent> <leader>d :ALEGoToDefinition \| new<CR>
-
