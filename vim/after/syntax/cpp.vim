@@ -8,24 +8,26 @@ syntax region myTagMark
 syntax match cTerminator ";"
 
 " highlight 'namespace', 'enum', and 'struct' names
-syntax match cppNamespace
-\   "\(^\(.*;\+\)*[ \n]*\(\(using \)\=namespace\|enum\|struct\|class\)[ \n]\+\)\@<=\h\w*"
+syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(using \)\=namespace[ \n]\+\)\@<=\h\w*"
 
-hi! link myTagMark        SpecialComment
-hi! link cTerminator      MembOperator
-hi! link cTypedef         Typedef
-hi! link cOperator        Statement
-hi! link cMember          Function
-hi! link cEnum            cMember
-hi! link cppNamespace     Identifier
-hi! link cppSTLvariable   cMember
-hi! link cppOperator      cOperator
-hi! link cppSTLnamespace  cppNamespace
-hi! link cppSTLconstant   cppStatement
+hi! link myTagMark       SpecialComment
+"hi! link myScopeOperator Normal
+hi! link cTerminator     MembOperator
+hi! link cTypedef        Typedef
+hi! link cOperator       Statement
+hi! link cMember         Function
+hi! link cEnum           cMember
+hi! link cppNamespace    Identifier
+hi! link cppOperator     cOperator
+hi! link cppSTLvariable  cMember
+hi! link cppSTLnamespace cppNamespace
+hi! link cppSTLconstant  cppStatement
+hi! link cppSTLiterator  cppSTLvariable
+hi! link cppSTLexception cppSTLvariable
 
 " vim-easytags
 hi! link cPreProcTag  Error
-"hi! link cTypeTag     cType
+hi! link cTypeTag     cppNamespace
 "hi! link cFunctionTag cFunction
 hi! link cMemberTag   cMember
 hi! link cEnumTag     cMemberTag
@@ -57,3 +59,6 @@ hi! link doxygenBriefWord            doxygenSpecial
 hi! link doxygenParam                doxygenSpecial
 hi! link doxygenSpecialBoldWord      doxygenSpecial
 
+augroup cpp_syntax
+    autocmd BufWinEnter *.cpp syntax match myScopeOperator "::" containedin=.*FunctionTag.* contained
+augroup END

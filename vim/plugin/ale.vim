@@ -14,12 +14,15 @@ let g:ale_linters = {
 \   'cpp': ['ccls', 'clang', 'clangtidy', 'cppcheck'],
 \   'python': ['pylsp', 'flake8']}
 let g:ale_fixers = {
-\   'cpp': [{-> execute("undojoin", "silent!") + 0}, 'clang-format']}
+\   'cpp': [{-> execute("undojoin", "silent!") + 0}, 'clang-format'],
+\   'python': [{-> execute("undojoin", "silent!") + 0}, 'isort', 'autopep8'],
+\   '*': [{-> execute("undojoin", "silent!") + 0}, 'remove_trailing_lines', 'trim_whitespace']}
 
 let g:ale_cpp_ccls_init_options = {'cache': {'directory': '/tmp/ccls/cache'}}
 let g:ale_cpp_clang_executable = 'clang++'
 let g:ale_cpp_clang_options = '-Wall -Wextra'
-let g:ale_cpp_clangtidy_checks = ['*','-llvmlibc-restrict-system-libc-headers']
+let g:ale_cpp_clangtidy_checks = [
+\   '*',
+\   '-llvmlibc-*',
+\   '-fuchsia-*']
 let g:ale_cpp_cppcheck_options = '--enable=all'
-
-"let g:ale_python_pylsp_executable = 'pyls'
