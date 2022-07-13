@@ -58,13 +58,13 @@ set numberwidth=1  " smallest width at start
 set wrap  " wrap long lines
 set showmatch  " show matching parentheses
 set noshowcmd  " hide typed command
-let &fillchars = 'vert:│,diff:-,eob: '
+let &fillchars = 'vert:│,diff:-,eob: ,fold: '
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
-let &listchars = 'tab:──→,trail:·,conceal:*,extends:…,precedes:…'
+let &listchars = 'tab:|->,trail:·,conceal:*,extends:…,precedes:…,nbsp:_'
 function! MyFoldText()  " custom fold text
     let line = getline(v:foldstart)
-    let sub = substitute(line, '\S\+.*', '...', 'g')
+    let sub = substitute(line, '\(\S.\{,35}\S\).*', '\1... (' .. (v:foldend - v:foldstart + 1) .. ' lines)', 'g')
     return sub
 endfunction
 set foldtext=MyFoldText()
