@@ -53,12 +53,12 @@ function execute_cmd() {
         clear
     fi
 
-    message_bold "Executing ===================="
+    message_bold "Executing ==========================="
 
     if eval "${user_command}"; then
-        message_bold "Finished ====================="
+        message_bold "Finished ============================"
     else
-        message_bold "Failed ======================="
+        message_bold "Failed =============================="
     fi
 
     message "Watching ${watched_file}..."
@@ -80,7 +80,7 @@ function main() {
     while true; do
         # watch for changes...
         changed="$(fswatch "${watched_file}" -1 --latency ${l})"
-        message "File changed"
+        message "File changed (aborting execution)"
 
         # kill current execution
         kill ${exec_pid} &> /dev/null

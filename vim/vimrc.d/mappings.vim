@@ -8,22 +8,22 @@ let mapleader =  ";"
 "inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 "inoremap <expr> <C-p> pumvisible() ? "\<Up>" : ""
 "inoremap <expr> <C-n> pumvisible() ? "\<Down>" : ""
-inoremap <expr> <buffer> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
-inoremap <expr> <buffer> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
+inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
+inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
 
 " wrapped lines movement mappings
-noremap  <buffer> <silent> <Up>    gk
-noremap  <buffer> <silent> <Down>  gj
-noremap  <buffer> <silent> k       gk
-noremap  <buffer> <silent> j       gj
-noremap  <buffer> <silent> <Home>  g<home>
-inoremap <buffer> <silent> <Home>  <C-o>g<home>
-noremap  <buffer> <silent> <End>   g<End>
-inoremap <buffer> <silent> <End>   <C-o>g<End>
-noremap  <buffer> <silent> 0       g0
-noremap  <buffer> <silent> ^       g^
-noremap  <buffer> <silent> $       g$
-noremap  <buffer> <silent> <Space> za
+noremap  <silent> <Up>    gk
+noremap  <silent> <Down>  gj
+noremap  <silent> k       gk
+noremap  <silent> j       gj
+noremap  <silent> <Home>  g<home>
+inoremap <silent> <Home>  <C-o>g<home>
+noremap  <silent> <End>   g<End>
+inoremap <silent> <End>   <C-o>g<End>
+noremap  <silent> 0       g0
+noremap  <silent> ^       g^
+noremap  <silent> $       g$
+noremap  <silent> <Space> za
 
 " execute last command with C-@
 noremap  <silent> <C-@> :@:<CR>
