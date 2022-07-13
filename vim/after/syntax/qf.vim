@@ -1,4 +1,4 @@
-syntax match qfWarning "\(|.*\d\s\)\@<=warning" containedin=qfLineNr contained
+syntax match qfWarning "\(|.*\d\s\)\@<=warning\(|\)\@=" containedin=qfLineNr contained
 
 exe "hi! link qfSeparator Normal"
 exe "hi! link qfLineNr    SpecialComment"

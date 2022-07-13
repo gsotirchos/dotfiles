@@ -19,10 +19,11 @@ let g:ale_fixers = {
 \   '*': [{-> execute("undojoin", "silent!") + 0}, 'remove_trailing_lines', 'trim_whitespace']}
 
 let g:ale_cpp_ccls_init_options = {'cache': {'directory': '/tmp/ccls/cache'}}
-let g:ale_cpp_clang_executable = 'clang++'
-let g:ale_cpp_clang_options = '-Wall -Wextra'
+let g:ale_cpp_cc_executable = $CXX
+let g:ale_cpp_cc_options = '-std=' . $CXX_STD . ' -Wall -Wextra'
 let g:ale_cpp_clangtidy_checks = [
 \   '*',
 \   '-llvmlibc-*',
 \   '-fuchsia-*']
+let g:ale_cpp_clangtidy_options = '-std=' . $CXX_STD
 let g:ale_cpp_cppcheck_options = '--enable=all'

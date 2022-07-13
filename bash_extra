@@ -123,6 +123,7 @@ export SHELL="$(which bash)"
 # use clang and Ninja with CMake
 export CC="$(which clang)"
 export CXX="${CC}++"
+export CXX_STD="c++17"
 export CMAKE_GENERATOR="Ninja"
 
 # custom prompt
