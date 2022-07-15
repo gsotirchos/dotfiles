@@ -3,7 +3,6 @@
 import subprocess
 from datetime import datetime
 
-
 SET_INTERFACE_OSASCRIPT = """
     tell application "System Events"
         tell appearance preferences
@@ -37,24 +36,26 @@ IS_DARK_MODE = {
 TIME_FORMAT = "%H:%M"
 
 ON_TIME = datetime.strptime(
-    "20:00",
+    "20:45",
     TIME_FORMAT)
 OFF_TIME = datetime.strptime(
     "07:30",
     TIME_FORMAT)
 
-""" return 'true' if terminal is currently running """
+
+# return 'true' if terminal is currently running
 def terminal_is_running() -> bool:
     result = subprocess.run(
         ['osascript', '-e', CHECK_TERMINAL_OSASCRIPT],
-        text = True,
-        capture_output = True)
+        text=True,
+        capture_output=True)
     if result.returncode == 0 and result.stdout.strip() == "true":
         return True
     else:
         return False
 
-""" return the current interface mode """
+
+# return the current interface mode
 def current_interface_mode() -> str:
     result = subprocess.run(
         ["defaults", "read", "-g", "AppleInterfaceStyle"],
@@ -66,7 +67,8 @@ def current_interface_mode() -> str:
     else:
         return "Light"
 
-""" return the current Terminal mode """
+
+# return the current Terminal mode
 def current_terminal_mode() -> str:
     result = subprocess.run(
         ["defaults", "read", "com.Apple.Terminal",
@@ -79,13 +81,14 @@ def current_terminal_mode() -> str:
     else:
         return "Light"
 
-""" return the desired mode """
+
+# return the desired mode
 def desired_mode() -> str:
     """ get current time """
     time_query = subprocess.run(
         ["date", "+%H:%M"],
-        text = True,
-        capture_output = True)
+        text=True,
+        capture_output=True)
 
     if time_query.returncode != 0:
         raise OSError('Could not get time.')
@@ -96,11 +99,12 @@ def desired_mode() -> str:
 
     """ return desired mode """
     if time < OFF_TIME or time > ON_TIME:
-       return "Dark"
+        return "Dark"
     else:
-       return "Light"
+        return "Light"
 
-""" enable/disable dark mode interface """
+
+# enable/disable dark mode interface
 def set_interface_style():
     the_desired_mode = desired_mode()
     if current_interface_mode() is not desired_mode:
@@ -113,7 +117,8 @@ def set_interface_style():
             capture_output=True)
         assert result.returncode == 0, result
 
-""" enable/disable dark mode Terminal """
+
+# enable/disable dark mode Terminal
 def set_terminal_style():
     if not terminal_is_running():
         return
@@ -137,5 +142,5 @@ def set_terminal_style():
 
 
 if __name__ == "__main__":
-    #set_interface_style()
+    # set_interface_style()
     set_terminal_style()
