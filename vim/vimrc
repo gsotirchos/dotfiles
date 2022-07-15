@@ -20,8 +20,9 @@ Plugin 'xolox/vim-easytags'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'skywind3000/vim-auto-popmenu'
 Plugin 'tpope/vim-rsi'
-Plugin 'bfrg/vim-cpp-modern'
-Plugin 'vim-python/python-syntax'
+Plugin 'sheerun/vim-polyglot'
+"Plugin 'bfrg/vim-cpp-modern'
+"Plugin 'vim-python/python-syntax'
 "Plugin 'lervag/vimtex'
 "Plugin 'JuliaEditorSupport/julia-vim'
 "Plugin 'keith/swift.vim'
@@ -63,9 +64,9 @@ set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
 let &listchars = 'tab:|->,trail:·,conceal:*,extends:…,precedes:…,nbsp:_'
 function! MyFoldText()  " custom fold text
-    let line = getline(v:foldstart)
-    let sub = substitute(line, '\(\S.\{,35}\S\).*', '\1... (' .. (v:foldend - v:foldstart + 1) .. ' lines)', 'g')
-    return sub
+    let sub1 = substitute(getline(v:foldstart), '\(^\s*\S.\{,80}\S\)\%(\s.\{-}\)\=$', '\1', 'g')
+    let sub2 = substitute(getline(v:foldend), '^\%(.\{-}\s\)\=\(\S.\{,25}\)$', '\1', 'g')
+    return (sub1 . ' ... ' . sub2 .'  (' . (v:foldend - v:foldstart + 1) . ' lines)')
 endfunction
 set foldtext=MyFoldText()
 function! Pad(s,amt)  " add right padding to string

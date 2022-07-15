@@ -7,13 +7,14 @@ syntax region pythonLongComment
 
 syntax match myOperator "[-+=?!$%^&*\\|~/:<>]" containedIn=pythonOperator
 
-hi! link myOperator        pythonOperator
+hi! link myOperator        Normal
 hi! link pythonLongComment String
 "hi! link pythonDot         MembOperator
+hi! link pythonOperator    Statement
 hi! link pythonImport      Statement
 hi! link pythonNone        Function
 hi! link pythonClass       Identifier
-hi! link pythonDecorator   Identifier
+hi! link pythonDecorator   pythonDottedName
 hi! link pythonBuiltinObj  Function
 hi! link pythonBuiltinType OtherType
 

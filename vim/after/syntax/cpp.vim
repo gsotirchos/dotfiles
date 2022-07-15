@@ -10,6 +10,8 @@ syntax match cTerminator ";"
 " highlight 'namespace', 'enum', and 'struct' names
 syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(using \)\=namespace[ \n]\+\)\@<=\h\w*"
 
+hi! link cCustom Function
+
 hi! link myTagMark       SpecialComment
 "hi! link myScopeOperator Normal
 hi! link cTerminator     MembOperator
