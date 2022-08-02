@@ -89,7 +89,8 @@ set ts=4   " ├ 4 spaces per Tab, fold every 2
 set sts=4  " ┘
 set nojoinspaces  " don't insert 2 spaces after '.', '?' or '!'
 set backspace=2  " allow backspace in insert mode
-set scrolloff=3  " scroll 3 lines before the last
+set scrolloff=3  " lines to scoll before the reaching last
+set sidescrolloff=5  " columnts to sroll before reaching the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr  " wrap lines by word
 set formatoptions=  " no automatic line breaking

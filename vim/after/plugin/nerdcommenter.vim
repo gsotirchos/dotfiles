@@ -1,4 +1,5 @@
 " nerdcommenter
+let g:NERDUsePlaceHolders = 0  " don't use placeholders for nested comments
 let g:NERDDefaultAlign = 'left'  " flush left comment delimiters
 let g:NERDCommentEmptyLines = 1  " comment empty lines too
 let g:NERDAltDelims_swift = 1  " use // instead of /* */ in swift

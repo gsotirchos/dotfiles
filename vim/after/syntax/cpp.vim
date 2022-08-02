@@ -19,11 +19,12 @@ hi! link cTypedef        Typedef
 hi! link cOperator       Statement
 hi! link cMember         Function
 hi! link cEnum           cMember
+hi! link cppAttribute    Comment
 hi! link cppNamespace    Identifier
 hi! link cppOperator     cOperator
 hi! link cppSTLvariable  cMember
 hi! link cppSTLnamespace cppNamespace
-hi! link cppSTLconstant  cppStatement
+hi! link cppSTLconstant  cppSTLvariable
 hi! link cppSTLiterator  cppSTLvariable
 hi! link cppSTLexception cppSTLvariable
 
@@ -63,4 +64,5 @@ hi! link doxygenSpecialBoldWord      doxygenSpecial
 
 augroup cpp_syntax
     autocmd BufWinEnter *.cpp syntax match myScopeOperator "::" containedin=.*FunctionTag.* contained
+    autocmd BufWinEnter *.cpp syntax keyword cppSTLconstant nullptr
 augroup END

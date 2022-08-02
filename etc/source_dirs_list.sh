@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC2155
+# shellcheck disable=SC1090,SC2068
 
-# the main function to source a list of files from file contents
-# input argument: the location of the file containing the locations of the sourced files
-main () {
+# the main function sources a list of files from file contents
+# input argument: the file containing the locations of the files to be sourced
+main() {
     local dirs_list
     readarray -t dirs_list < <(envsubst < "$1")
 
@@ -18,3 +18,4 @@ main () {
 }
 
 main "$@"
+unset main

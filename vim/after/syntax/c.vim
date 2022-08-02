@@ -1,5 +1,5 @@
 set cindent
-set foldmethod=syntax
+"set foldmethod=syntax
 
 if &ft != "cpp"
     set ft=cpp

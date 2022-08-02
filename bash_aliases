@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC2155
 
 #
 # ~/.bash_aliases
 #
 
+if [[ "${os}" == "linux" ]]; then
+    export TRASH="${HOME}/.local/share/Trash/files"
+elif [[ "${os}" == "macos" ]]; then
+    export TRASH="${HOME}/.Trash"
+fi
+
 # rm wrapper to move file(s) to trash folder
 trash() {
-    flags=""
+    local flags=""
     for arg in "$@"; do
         if [[ ${arg} == -* ]]; then
             flags="${flags} ${arg}"
@@ -31,35 +36,36 @@ empty_trash() {
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         for file in "${TRASH}"/{..?,.[!.],}*; do
             if [[ -e "${file}" ]] || [[ -L "${file}" ]]; then
-                env rm -rf "${file}" && \
-                    echo "deleted '${file}'"
+                env rm -rf "${file}" \
+                    && echo "deleted '${file}'"
             fi
         done
     fi
 }
 
 # aliases
-alias rm=trash  # trash files instead of deleting
-alias mv="mv -iv"  # confirmatory, verbose move
-alias cp="cp -ivr"  # confirmatory, verbose, recursive copy
-alias ln="ln -iv"  # confirmatory, verbose symlink creaton
-alias ls="ls -h --color=always"  # human-readable, colored ls
-alias ll="ls -l"  # list ls := ll
-alias grep="grep --color -E"  # use colors & enable extended regexp
+alias rm=trash                  # trash files instead of deleting
+alias mv="mv -iv"               # confirmatory, verbose move
+alias cp="cp -ivr"              # confirmatory, verbose, recursive copy
+alias ln="ln -iv"               # confirmatory, verbose symlink creaton
+alias ls="ls -h --color=always" # human-readable, colored ls
+alias ll="ls -l"                # list ls := ll
+alias grep="grep --color -E"    # use colors & enable extended regexp
 alias tree="tree -lNFC -L 2 \
     --dirsfirst \
-    -I '.DS_Store|.localized|._*' --matchdirs"  # cleaner tree
+    -I '.DS_Store|.localized|._*' --matchdirs" # cleaner tree
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
 alias vimrc="vim ~/.vim/vimrc"
 alias dunnet="clear && emacs -batch -l dunnet"
 
+alias python="python3"
 alias py="python3"
+alias pip="pip3"
 alias pip_upgrade='python -m pip install --upgrade pip && conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
 alias drl="conda activate drl"
 alias kinetic_container="docker start ros-kinetic > /dev/null && docker exec -it ros-kinetic bash"
 alias ccatkin_make="catkin_make --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
-
 if [[ -n "${catkin_ws}" ]]; then
     alias cdws='cd ${catkin_ws} && . devel/setup.bash'
 fi

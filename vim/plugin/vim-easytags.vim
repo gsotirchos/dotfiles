@@ -20,7 +20,7 @@ let g:easytags_opts = [
 let g:easytags_file = "~/.vim/tags"
 let b:easytags_file =
 \   $HOME . "/.vim/tags/"
-\       . substitute(expand('%:p'), "/", "_", "g")
+\       . substitute(expand('%:p'), "/", "%", "g")
 \       . ".ctags"
 let &tags = b:easytags_file
 let g:easytags_dynamic_files = 1

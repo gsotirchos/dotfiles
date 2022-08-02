@@ -104,6 +104,8 @@ nnoremap <silent> <leader>f :ALEFix<CR>
 noremap <silent> / :echo '/'<CR>/\c
 noremap <silent> ? :echo '?'<CR>?\c
 
+nnoremap <leader>b :buffers<CR>:buffer<SPACE>
+
 " other mappings
 nnoremap o o<Esc>
 nnoremap O O<Esc>

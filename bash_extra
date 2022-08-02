@@ -1,141 +1,145 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC2155
 
 #
 # ~/.bash_extra
 #
 
-# determine OS
-case "$(uname -s)" in
-    Linux*)
-        os="linux"
-        if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
-            wsl=true
-        else
-            wsl=false
-        fi
-        ;;
-    Darwin*)
-        os="macos"
-        ;;
-esac
-
-# don't put duplicate lines or lines starting with space in the history.
-HISTCONTROL=ignoreboth
-
-# append to the history file, don't overwrite it
-shopt -s histappend
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
-
-# instantly append to history every command
-export PROMPT_COMMAND="history -a; "
-
-# local ip shortcuts
-export imac="iMac.local"
-export macbookair="MacBookAir.local"
-export npower_pi="root@192.168.1.20"
-
-# set the locale to English
-export LC_ALL="en_US.UTF-8"
-export LANG="en_US.UTF-8"
-
-# check if this is a ssh session
-if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
-    SESSION_TYPE="remote_ssh"
-else
-    case $(ps -o comm= -p $PPID) in
-        sshd|*/sshd) SESSION_TYPE="remote_ssh";;
+main() {
+    # determine OS
+    local os wsl
+    case "$(uname -s)" in
+        Linux*)
+            os="linux"
+            if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
+                wsl=true
+            else
+                wsl=false
+            fi
+            ;;
+        Darwin*)
+            os="macos"
+            ;;
     esac
-fi
 
-# notify terminal of current working directory
-if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
-    export PROMPT_COMMAND+='echo -ne "\033]0;${HOSTNAME%.*}::$(dirs +0)\007"; '
-else
-    export PROMPT_COMMAND+='echo -ne "\033]0;$(dirs +0)\007"; '
-fi
-
-# enable display on ssh connections
-if [[ "${os}" == "linux" ]]; then
-    if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
-        export DISPLAY=:0
+    # set macos-dotfiles prefix
+    if [[ "${os}" == "linux" ]]; then
+        if [[ -d ~/.macos-dotfiles ]]; then
+            export MACOS_PREFIX="macos-"
+        else
+            export MACOS_PREFIX=""
+        fi
     fi
 
-    if [[ ${wsl} = true ]]; then
-        export DISPLAY="${imac}:0.0"
-        #export LIBGL_ALWAYS_INDIRECT=0
+    # append extra paths from files to $PATH, $CPATH, $LIBRARY_PATH, etc.
+    if [[ -d ~/.dotfiles/extra_paths ]]; then
+        source ~/."${MACOS_PREFIX}"dotfiles/etc/append_paths.sh ~/.dotfiles/extra_paths
     fi
 
-    # enable local connections (for docker containers)
-    xhost +local: &> /dev/null
-fi
+    # set the locale to English
+    export LC_ALL="en_US.UTF-8"
+    export LANG="en_US.UTF-8"
 
-# conda initialization
-if [[ -f ~/.conda_init ]]; then
-    source ~/.conda_init
-    conda deactivate
-fi
+    # use new bash
+    export SHELL="$(which bash)"
 
-MACOS_PREFIX=""
-if [[ "${os}" == "linux" ]]; then
+    # use Clang and Ninja with CMake
+    export CC="$(which clang)"
+    export CXX="${CC}++"
+    export CXX_STD="c++17"
+    export CMAKE_GENERATOR="Ninja"
+
+    # append to the history file, don't overwrite it
+    shopt -s histappend
+
+    # don't put duplicate lines or lines starting with space in the history.
+    export HISTCONTROL=ignoreboth
+
+    # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+    export HISTSIZE=1000
+    export HISTFILESIZE=2000
+
+    # instantly append to history every command
+    export PROMPT_COMMAND="history -a; "
+
+    # other shell options
+    complete -f -o nospace cd # improve cd completion
+    shopt -s direxpand        # expand variables in path completion
+
+    # local ip shortcuts
+    export imac="iMac.local"
+    export macbookair="MacBookAir.local"
+    export npower_pi="root@192.168.1.20"
+
+    # check if this is a ssh session
+    local session_type
+    if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
+        session_type="remote_ssh"
+    else
+        case $(ps -o comm= -p "${PPID}") in
+            sshd | */sshd) session_type="remote_ssh" ;;
+        esac
+    fi
+
+    # notify terminal of current working directory
+    if [[ "${session_type}" == "remote_ssh" ]]; then
+        export PROMPT_COMMAND+='echo -ne "\033]0;${HOSTNAME%.*}::$(dirs +0)\007"; '
+    else
+        export PROMPT_COMMAND+='echo -ne "\033]0;$(dirs +0)\007"; '
+    fi
+
+    # enable display on ssh connections
+    if [[ "${os}" == "linux" ]]; then
+        if [[ "${session_type}" == "remote_ssh" ]]; then
+            export DISPLAY=:0
+        fi
+
+        if [[ ${wsl} = true ]]; then
+            export DISPLAY="${imac}:0.0"
+            #export LIBGL_ALWAYS_INDIRECT=0
+        fi
+
+        # enable local connections (for docker containers)
+        xhost +local: &> /dev/null
+    fi
+
+    # Conda initialization
+    if [[ -f ~/.conda_init ]]; then
+        source ~/.conda_init
+        conda deactivate
+    fi
+
     # ROS distro
-    #export ROS_DISTRO="galactic"
-    export ROS_DISTRO="noetic"
-
-    # macos dotfiles prefix
-    if [[ -d ~/.macos-dotfiles ]]; then
-        MACOS_PREFIX="macos-"
+    if [[ "${os}" == "linux" ]]; then
+        #export ROS_DISTRO="galactic"
+        export ROS_DISTRO="noetic"
     fi
-fi
 
-# append extra paths from files
-if [[ -d ~/.dotfiles/extra_paths ]]; then
-    source ~/."${MACOS_PREFIX}"dotfiles/etc/append_paths.sh ~/.dotfiles/extra_paths
-fi
+    # source ROS environment
+    if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
+        source /opt/ros/"${ROS_DISTRO}"/setup.bash
+    fi
 
-# source ROS environment
-if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
-    source /opt/ros/"${ROS_DISTRO}"/setup.bash
-fi
+    # source Catkin workspace
+    catkin_ws="$(find ~/Public -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
+    if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
+        source "${catkin_ws}"/devel/setup.bash
+    fi
 
-# source catkin workspace
-catkin_ws="$(find ~/Public -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
-if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
-    source "${catkin_ws}"/devel/setup.bash
-fi
+    # aliases
+    if [[ -f ~/.bash_aliases ]]; then
+        source ~/.bash_aliases
+    fi
 
-# aliases
-if [[ "${os}" == "linux" ]]; then
-    export TRASH="${HOME}/.local/share/Trash/files"
-elif [[ "${os}" == "macos" ]]; then
-    export TRASH="${HOME}/.Trash"
-fi
-if [[ -f ~/.bash_aliases ]]; then
-    source ~/.bash_aliases
-fi
+    # custom prompt
+    if [[ -f ~/.bash_prompt ]]; then
+        source ~/.bash_prompt
+    fi
 
-# use new bash
-export SHELL="$(which bash)"
+    # auto-completion
+    if [[ -f ~/.dotfiles/completion_dirs ]]; then
+        source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
+    fi
+}
 
-# use clang and Ninja with CMake
-export CC="$(which clang)"
-export CXX="${CC}++"
-export CXX_STD="c++17"
-export CMAKE_GENERATOR="Ninja"
-
-# custom prompt
-if [[ -f ~/.bash_prompt ]]; then
-    source ~/.bash_prompt
-fi
-
-# auto-completion
-if [[ -f ~/.dotfiles/completion_dirs ]]; then
-    source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
-fi
-
-# other shell options
-complete -f -o nospace cd  # improve cd completion
-shopt -s direxpand  # expand variables in path completion
+main "$@"
+unset main
