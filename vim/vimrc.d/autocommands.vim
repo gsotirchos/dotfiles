@@ -61,7 +61,7 @@ augroup vimrc
     \   *.vcg
     \   set ft=dosini
     autocmd BufWinEnter,BufRead,BufWrite
-    \   *.rviz
+    \   *.yml,*.rviz
     \   set ft=yaml
 
     "" treat .sh files as .bash

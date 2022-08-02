@@ -1,23 +1,29 @@
 #!/usr/bin/env bash
 
-# determine OS
-if [[ "$(uname -s)" == *"Linux"* ]]; then
-    f_perm="775"
-    d_perm="664"
-else
-    f_perm="755"
-    d_perm="644"
-fi
+main() {
+    local f_perm d_perm ssh_perm
+    # determine OS
+    if [[ "$(uname -s)" == *"Linux"* ]]; then
+        f_perm="775"
+        d_perm="664"
+    else
+        f_perm="755"
+        d_perm="644"
+    fi
 
-ssh_perm="700"
+    ssh_perm="700"
 
-# TODO: only modify read & write permissions, and not execution
+    # TODO: only modify read & write permissions, and not execution
 
-echo "Fixing owner"
-sudo chown -hR "${USER}:${id --group --name ${USER}}" "${HOME}"
-echo "Fixing directory permissions"
-find "${HOME}" -type d -print0 | xargs -0 chmod -R "${d_perm}"
-echo "Fixing file permissions"
-find "${HOME}" -type f -print0 | xargs -0 chmod "${f_perm}"
-echo "Fixing ~/.ssh permissions"
-chmod -R "${ssh_perm}" "${HOME}/.ssh"
+    echo "Fixing owner"
+    sudo chown -hR "${USER}:${id--group --name ${USER}}" "${HOME}"
+    echo "Fixing directory permissions"
+    find "${HOME}" -type d -print0 | xargs -0 chmod -R "${d_perm}"
+    echo "Fixing file permissions"
+    find "${HOME}" -type f -print0 | xargs -0 chmod "${f_perm}"
+    echo "Fixing ~/.ssh permissions"
+    chmod -R "${ssh_perm}" "${HOME}/.ssh"
+}
+
+main "$@"
+unset main

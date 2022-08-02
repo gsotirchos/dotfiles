@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1090,SC2155
+# shellcheck source-path=.dotfiles
 
 #
 # ${DOTFILES}/setup.sh
@@ -16,10 +17,11 @@ if ! command -v realpath &> /dev/null; then
 fi
 
 # dotfiles path
-DOTFILES="$( \
-    builtin cd "$( \
+DOTFILES="$(
+    builtin cd "$(
         dirname "$(realpath "${BASH_SOURCE[0]}")"
-    )" > /dev/null && pwd)"
+    )" > /dev/null && pwd
+)"
 
 # prepare folders
 mkdir -vp ~/.vim/undo
@@ -31,13 +33,13 @@ touch ~/.hushlogin
 
 # make soft symlinks
 echo -e "${BR_TEXT}- Symlinking dotfiles (${DOTFILES})${TEXT}"
-source "${DOTFILES}/etc/ln_dotfiles.sh" "${DOTFILES}" "${HOME}/."  # ~/.*
-ln -sfv "${DOTFILES}/vim/"* ~/.vim  # ~/.vim/
+source "${DOTFILES}/etc/ln_dotfiles.sh" "${DOTFILES}" "${HOME}/." # ~/.*
+ln -sfv "${DOTFILES}/vim/"* ~/.vim                                # ~/.vim/
 
 # setup launch daemons and launch agents
 echo -e "${BR_TEXT}\n- Setting up LaunchDaemons and LaunchAgents${TEXT}"
-source "${DOTFILES}/etc/setup_launch_daemons.sh" "${DOTFILES}/LaunchDaemons"  # /Library/LaunchDaemons/
-source "${DOTFILES}/etc/setup_launch_agents.sh" "${DOTFILES}/LaunchAgents"  # ~/.Library/LaunchAgents/
+source "${DOTFILES}/etc/setup_launch_daemons.sh" "${DOTFILES}/LaunchDaemons" # /Library/LaunchDaemons/
+source "${DOTFILES}/etc/setup_launch_agents.sh" "${DOTFILES}/LaunchAgents"   # ~/.Library/LaunchAgents/
 
 # setup vundle
 if [[ ! -d ~/.vim/bundle/Vundle.vim ]]; then

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC2155
 
 #
 # ~/.bash_profile
@@ -7,8 +6,8 @@
 
 # if not running interactively, don't do anything
 case $- in
-    *i*)
-        ;;
+    *i*) ;;
+
     *)
         return
         ;;

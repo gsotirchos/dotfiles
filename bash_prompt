@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC2155,SC2034
+# shellcheck disable=SC2034
 
 set_prompt() {
     # Reset
@@ -56,7 +56,7 @@ set_prompt() {
 
     # get active conda environment
     if [[ -n ${CONDA_DEFAULT_ENV} ]]; then
-        conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${Reset}) "
+        local conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${Reset}) "
     fi
 
     # check if current dir belongs to overlayed ROS package

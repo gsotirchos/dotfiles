@@ -7,16 +7,17 @@ USAGE="Usage:\n    $(basename "$0") [-c] FILE COMMAND"
 args=()
 for arg in "$@"; do
     case "${arg}" in
-      "-h"|"--help")
-        echo -e "${USAGE}"
-        exit 0
-        ;;
-      "-c"|"--clear")
-        has_clear="true"
-        shift 1
-        ;;
-      *)
-        args+=("${arg}")
+        "-h" | "--help")
+            echo -e "${USAGE}"
+            exit 0
+            ;;
+        "-c" | "--clear")
+            has_clear="true"
+            shift 1
+            ;;
+        *)
+            args+=("${arg}")
+            ;;
     esac
 done
 
@@ -29,7 +30,7 @@ watched_file="$(realpath "${args[0]}")"
 user_command="${args[1]}"
 
 # functions to print timestamped formatted message
-message () {
+message() {
     echo -e "[$(date "+%T.%3N")] $*"
 }
 
@@ -74,29 +75,33 @@ function main() {
     trap 'echo & message "Interrupted" && exit 1' INT
 
     # execute command once first
-    execute_cmd & exec_pid=$!
+    execute_cmd &
+    exec_pid=$!
 
     # watch file for changes, terminate and re-execute
     while true; do
         # watch for changes...
-        changed="$(fswatch "${watched_file}" -1 --latency ${l})"
+        changed="$(fswatch "${watched_file}" -1 --latency "${l}")"
         message "File changed (aborting execution)"
 
         # kill current execution
-        kill ${exec_pid} &> /dev/null
-        wait ${exec_pid} &> /dev/null
+        kill "${exec_pid}" &> /dev/null
+        wait "${exec_pid}" &> /dev/null
 
         # keep watching for ${timeout} seconds for further changes
         while [[ -n ${changed} ]]; do
             message "Waiting for further changes..."
-            changed="$( \
-                timeout --foreground ${t} \
-                fswatch "${watched_file}" --event "Updated" -1 --latency ${l})"
+            changed="$(
+                timeout --foreground "${t}" \
+                    fswatch "${watched_file}" --event "Updated" -1 --latency "${l}"
+            )"
         done
 
         # execute command
-        execute_cmd & exec_pid=$!
+        execute_cmd &
+        exec_pid=$!
     done
 }
 
 main
+unset main

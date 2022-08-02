@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC2155
+# shellcheck disable=SC1090,SC2068
 
 # function to append paths to an environment variable
 # fist argument: the name of an environment variable
@@ -47,3 +47,4 @@ main() {
 }
 
 main "$@"
+unset main

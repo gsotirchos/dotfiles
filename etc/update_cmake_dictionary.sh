@@ -1,99 +1,104 @@
 #!/usr/bin/env bash
 
-# output file
-if [[ -z "$1" ]]; then
-    OUTPUT_FILE="$(pwd)/cmake.txt"
-else
-    OUTPUT_FILE="$1"
-fi
+main() {
+    # output file
+    if [[ -z "$1" ]]; then
+        local OUTPUT_FILE="$(pwd)/cmake.txt"
+    else
+        local OUTPUT_FILE="$1"
+    fi
 
-# prepare output file
-rm "${OUTPUT_FILE}" &> /dev/null
-touch "${OUTPUT_FILE}"
+    # prepare output file
+    rm "${OUTPUT_FILE}" &> /dev/null
+    touch "${OUTPUT_FILE}"
 
-# function to get some entry's keywords
-function get_keywords() {
-    echo "$1" "$2"
+    # function to get some entry's keywords
+    get_keywords() {
+        echo "$1" "$2"
 
-    # get command names
-    command_names="$(
         # get command names
-        cmake "$1" "$2" |
-            sed -n -r "s/^ *([A-Za-z_][A-Za-z_-]+)\(.*$/\1/p"
-    )"
+        local command_names="$(
+            # get command names
+            cmake "$1" "$2" \
+                | sed -n -r "s/^ *([A-Za-z_][A-Za-z_-]+)\(.*$/\1/p"
+        )"
 
-    # get command keywords
-    keywords="$(
-        cmake "$1" "$2" |
-            awk "/[A-Za-z_-]+\(/,/.*\)/" |
-            sed -r "s/[[({<|]/\n/g" |
-            sed -n -r 's/^ *([A-Z_][A-Z0-9_-]+)[^A-Z].*$/\1/p'
-    )"
+        # get command keywords
+        local keywords="$(
+            cmake "$1" "$2" \
+                | awk "/[A-Za-z_-]+\(/,/.*\)/" \
+                | sed -r "s/[[({<|]/\n/g" \
+                | sed -n -r 's/^ *([A-Z_][A-Z0-9_-]+)[^A-Z].*$/\1/p'
+        )"
 
-    # return if the format is correct
-    if [[ "${command_names}" == [A-Z_-]* ]]; then
-        echo "${command_names}"
-    fi
-
-    if [[ "${keywords}" == [A-Z_-]* ]]; then
-        echo "${keywords}"
-    fi
-}
-
-# function to echo every keyword from cmake help lists
-function echo_keywords() {
-    local IFS=$'\n'
-
-    # iterate over every help list
-    help_options="$(cmake --help | grep -- --help.*list | xargs -L1 echo)"
-    for help_option in ${help_options}; do
-        help_option="${help_option% \[<f>\]*}"
-
-        if [[ "${help_option}" == *"manual"* ||
-            "${help_option}" == *"policy"* ]]; then
-            # ignore manual, and policy help lists
-            continue
-        elif [[ "${help_option}" == *"command"* ||
-            "${help_option}" == *"module"* ]]; then
-            # for commands and modules lists:
-            for entry in $(cmake "${help_option}"); do
-                # return the entry keywords
-                echo "${help_option%-list}" "${entry}"
-                get_keywords "${help_option%-list}" "${entry}"
-            done
-        else
-            for entry in $(cmake "${help_option}"); do
-                # return the rest of the help lists' entries
-                echo "${entry}"
-            done
+        # return if the format is correct
+        if [[ "${command_names}" == [A-Z_-]* ]]; then
+            echo "${command_names}"
         fi
-    done
 
-    # additional, manual keywords
-    echo "TRUE"
+        if [[ "${keywords}" == [A-Z_-]* ]]; then
+            echo "${keywords}"
+        fi
+    }
+
+    # function to echo every keyword from cmake help lists
+    echo_keywords() {
+        local IFS=$'\n'
+
+        # iterate over every help list
+        local help_options="$(cmake --help | grep -- --help.*list | xargs -L1 echo)"
+        for help_option in ${help_options}; do
+            help_option="${help_option% \[<f>\]*}"
+
+            if [[ "${help_option}" == *"manual"* ||
+                "${help_option}" == *"policy"* ]]; then
+                # ignore manual, and policy help lists
+                continue
+            elif [[ "${help_option}" == *"command"* ||
+                "${help_option}" == *"module"* ]]; then
+                # for commands and modules lists:
+                for entry in $(cmake "${help_option}"); do
+                    # return the entry keywords
+                    echo "${help_option%-list}" "${entry}"
+                    get_keywords "${help_option%-list}" "${entry}"
+                done
+            else
+                for entry in $(cmake "${help_option}"); do
+                    # return the rest of the help lists' entries
+                    echo "${entry}"
+                done
+            fi
+        done
+
+        # additional, manual keywords
+        echo "TRUE"
+    }
+
+    main() {
+        # declare a set to store keywords
+        declare -A keywords_set
+
+        # store the discovered keywords in the set
+        for keyword in $(echo_keywords); do
+            local keywords_set["${keyword}"]=1
+        done
+
+        # write the set to output file
+        for keyword in "${!keywords_set[@]}"; do
+            echo "${keyword}" >> "${OUTPUT_FILE}"
+        done
+
+        sorted="$(sort "${OUTPUT_FILE}")"
+        echo "${sorted}" > "${OUTPUT_FILE}"
+    }
+
+    # show exit status
+    if main; then
+        echo "CMake keyword list written in ${OUTPUT_FILE}"
+    else
+        echo "Error: failed to write to ${OUTPUT_FILE}"
+    fi
 }
 
-function main() {
-    # declare a set to store keywords
-    declare -A keywords_set
-
-    # store the discovered keywords in the set
-    for keyword in $(echo_keywords); do
-        keywords_set["${keyword}"]=1
-    done
-
-    # write the set to output file
-    for keyword in "${!keywords_set[@]}"; do
-        echo "${keyword}" >> "${OUTPUT_FILE}"
-    done
-
-    sorted="$(sort "${OUTPUT_FILE}")"
-    echo "${sorted}" > "${OUTPUT_FILE}"
-}
-
-# show exit status
-if main; then
-  echo "CMake keyword list written in ${OUTPUT_FILE}"
-else
-  echo "Error: failed to write to ${OUTPUT_FILE}"
-fi
+main "$@"
+unset main
