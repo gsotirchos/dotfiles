@@ -61,6 +61,9 @@ main() {
     # instantly append to history every command
     export PROMPT_COMMAND="history -a; "
 
+    # ignore certain filenames when auto-completing
+    export FIGNORE=".DS_Store:"
+
     # other shell options
     complete -f -o nospace cd # improve cd completion
     shopt -s direxpand        # expand variables in path completion

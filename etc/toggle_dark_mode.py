@@ -36,10 +36,10 @@ IS_DARK_MODE = {
 TIME_FORMAT = "%H:%M"
 
 ON_TIME = datetime.strptime(
-    "20:45",
+    "21:00",
     TIME_FORMAT)
 OFF_TIME = datetime.strptime(
-    "07:30",
+    "06:30",
     TIME_FORMAT)
 
 
