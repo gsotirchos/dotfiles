@@ -51,7 +51,8 @@ alias ln="ln -iv"               # confirmatory, verbose symlink creaton
 alias ls="ls -h --color=always" # human-readable, colored ls
 alias ll="ls -l"                # list ls := ll
 alias grep="grep --color -E"    # use colors & enable extended regexp
-alias tree="tree -lNFC -L 2 \
+alias tree="\
+    tree -lNFC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs" # cleaner tree
 alias sftp='$(which with-readline 2> /dev/null) sftp'
@@ -62,9 +63,11 @@ alias dunnet="clear && emacs -batch -l dunnet"
 alias python="python3"
 alias py="python3"
 alias pip="pip3"
-alias pip_upgrade='python -m pip install --upgrade pip && conda upgrade --all && conda list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
-alias drl="conda activate drl"
-alias kinetic_container="docker start ros-kinetic > /dev/null && docker exec -it ros-kinetic bash"
+alias pip_upgrade='\
+    python -m pip install --upgrade pip \
+    && mamba update --all \
+    && mamba list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
+alias mlr="conda activate mlr"
 alias ccatkin_make="catkin_make --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
 if [[ -n "${catkin_ws}" ]]; then
     alias cdws='cd ${catkin_ws} && . devel/setup.bash'
