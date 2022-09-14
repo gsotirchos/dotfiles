@@ -64,8 +64,11 @@ alias python="python3"
 alias py="python3"
 alias pip="pip3"
 alias pip_upgrade='\
-    python -m pip install --upgrade pip \
-    && mamba update --all \
+    pip list --outdated --format=freeze \
+    | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install --upgrade'
+alias env_update='\
+    pip_upgrade; \
+    mamba update --all \
     && mamba list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
 alias mlr="conda activate mlr"
 alias ccatkin_make="catkin_make --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
