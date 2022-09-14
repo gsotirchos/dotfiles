@@ -1,5 +1,5 @@
 channels:
-  - defaults
   - conda-forge
+  - defaults
 channel_priority: flexible
 auto_activate_base: false
