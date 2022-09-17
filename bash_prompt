@@ -2,59 +2,61 @@
 # shellcheck disable=SC2034
 
 set_prompt() {
+    local session_type="$1"
+
     # Reset
-    Reset='\[\e[0m\]'
+    local Reset='\[\e[0m\]'
 
     # Bold
-    Bold='\[\e[0;1m\]'
+    local Bold='\[\e[0;1m\]'
 
     # Underline
-    Underline='\[\e[0;4m\]'
+    local Underline='\[\e[0;4m\]'
 
     # Bold underline
-    BoldUnderline='\[\e[0;1;4m\]'
+    local BoldUnderline='\[\e[0;1;4m\]'
 
     # Regular foreground
-    Black='\[\e[30m\]'
-    Red='\[\e[31m\]'
-    Green='\[\e[32m\]'
-    Yellow='\[\e[33m\]'
-    Blue='\[\e[34m\]'
-    Purple='\[\e[35m\]'
-    Cyan='\[\e[36m\]'
-    White='\[\e[37m\]'
+    local Black='\[\e[30m\]'
+    local Red='\[\e[31m\]'
+    local Green='\[\e[32m\]'
+    local Yellow='\[\e[33m\]'
+    local Blue='\[\e[34m\]'
+    local Purple='\[\e[35m\]'
+    local Cyan='\[\e[36m\]'
+    local White='\[\e[37m\]'
 
     # High Intensity foreground
-    IBlack='\[\e[90m\]'
-    IRed='\[\e[91m\]'
-    IGreen='\[\e[92m\]'
-    IYellow='\[\e[93m\]'
-    IBlue='\[\e[94m\]'
-    IPurple='\[\e[95m\]'
-    ICyan='\[\e[96m\]'
-    IWhite='\[\e[97m\]'
+    local IBlack='\[\e[90m\]'
+    local IRed='\[\e[91m\]'
+    local IGreen='\[\e[92m\]'
+    local IYellow='\[\e[93m\]'
+    local IBlue='\[\e[94m\]'
+    local IPurple='\[\e[95m\]'
+    local ICyan='\[\e[96m\]'
+    local IWhite='\[\e[97m\]'
 
     # Regular background
-    OnBlack='\[\e[40m\]'
-    OnRed='\[\e[41m\]'
-    OnGreen='\[\e[42m\]'
-    OnYellow='\[\e[43m\]'
-    OnBlue='\[\e[44m\]'
-    OnPurple='\[\e[45m\]'
-    OnCyan='\[\e[46m\]'
-    OnWhite='\[\e[47m\]'
+    local OnBlack='\[\e[40m\]'
+    local OnRed='\[\e[41m\]'
+    local OnGreen='\[\e[42m\]'
+    local OnYellow='\[\e[43m\]'
+    local OnBlue='\[\e[44m\]'
+    local OnPurple='\[\e[45m\]'
+    local OnCyan='\[\e[46m\]'
+    local OnWhite='\[\e[47m\]'
 
     # High Intensity background
-    OnIBlack='\[\e[100m\]'
-    OnIRed='\[\e[101m\]'
-    OnIGreen='\[\e[102m\]'
-    OnIYellow='\[\e[103m\]'
-    OnIBlue='\[\e[104m\]'
-    OnIPurple='\[\e[105m\]'
-    OnICyan='\[\e[106m\]'
-    OnIWhite='\[\e[107m\]'
+    local OnIBlack='\[\e[100m\]'
+    local OnIRed='\[\e[101m\]'
+    local OnIGreen='\[\e[102m\]'
+    local OnIYellow='\[\e[103m\]'
+    local OnIBlue='\[\e[104m\]'
+    local OnIPurple='\[\e[105m\]'
+    local OnICyan='\[\e[106m\]'
+    local OnIWhite='\[\e[107m\]'
 
-    # get active conda environment
+    # check if a conda environment is active
     if [[ -n ${CONDA_DEFAULT_ENV} ]]; then
         local conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${Reset}) "
     fi
@@ -69,15 +71,25 @@ set_prompt() {
         done
     fi
 
-    # set the prompt
-    if [[ "${SESSION_TYPE}" == "remote_ssh" ]]; then
-        echo " ${conda_env}${IBlack}\h::\W${Reset}${ros_package}"
+    # check this is an SSH session
+    if [[ "${session_type}" == "remote_ssh" ]]; then
+        local the_prompt="${IBlack}\h::\W${Reset}"
     else
-        echo " ${conda_env}${IBlack}\W${Reset}${ros_package}"
+        local the_prompt="${IBlack}\W${Reset}"
     fi
+
+    # return the prompt string
+    echo " ${conda_env}${the_prompt}${ros_package}"
 }
 
-# git prompt command
+# notify the terminal
+if [[ "${session_type}" == "remote_ssh" ]]; then
+    export PROMPT_COMMAND+='echo -ne "\033]0;${HOSTNAME%.*}::$(dirs +0)\007"; '
+else
+    export PROMPT_COMMAND+='echo -ne "\033]0;$(dirs +0)\007"; '
+fi
+
+# make git prompt command available
 if [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh" ]]; then
     source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh"
 fi
@@ -90,5 +102,5 @@ export GIT_PS1_DESCRIBE_STYLE="contains"
 export GIT_PS1_SHOWUNTRACKEDFILES=true
 export GIT_PS1_SHOWUPSTREAM="auto"
 
-#export PS1="$(set_prompt)"
-export PROMPT_COMMAND+='__git_ps1 "$(set_prompt)" " "; '
+#export PS1="$(set_prompt "${session_type}")"  # is set by __git_ps1
+export PROMPT_COMMAND+='__git_ps1 "$(set_prompt "'"${session_type}"'")" " "; '
