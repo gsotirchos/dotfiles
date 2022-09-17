@@ -58,7 +58,7 @@ class Timer():
         # set input stream to 'raw mode' (stop buffering, don't wait for \n)
         tty.setcbreak(sys.stdin)
 
-        while self._keep_running.isSet():
+        while self._keep_running.is_set():
             try:
                 # read and retrieve a single character from input stream
                 key = sys.stdin.read(1)[0]
@@ -82,7 +82,7 @@ class Timer():
         """ Print the timers at regular interfals """
         self._update_values()
         self._print()
-        while self._keep_running.isSet():
+        while self._keep_running.is_set():
             if not self._paused:
                 self._print()
             time.sleep(self._interval)
@@ -111,7 +111,7 @@ class Timer():
             if ceil(break_time) < 0:
                 break_time = TextStyle.red(signed_sec_to_str(break_time))
             elif floor(break_time) >= 1:
-                break_time = TextStyle.green(signed_sec_to_str(break_time))
+                break_time = TextStyle.normal(signed_sec_to_str(break_time))
             else:
                 break_time = TextStyle.normal(signed_sec_to_str(break_time))
                 if self._ring_bell:
