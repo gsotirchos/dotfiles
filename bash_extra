@@ -90,13 +90,6 @@ main() {
         esac
     fi
 
-    # notify terminal of current working directory
-    if [[ "${session_type}" == "remote_ssh" ]]; then
-        export PROMPT_COMMAND+='echo -ne "\033]0;${HOSTNAME%.*}::$(dirs +0)\007"; '
-    else
-        export PROMPT_COMMAND+='echo -ne "\033]0;$(dirs +0)\007"; '
-    fi
-
     # enable display on ssh connections
     if [[ "${os}" == "linux" ]]; then
         if [[ "${session_type}" == "remote_ssh" ]]; then
