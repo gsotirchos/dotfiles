@@ -138,7 +138,7 @@ exe "hi! StatusLine     cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      
 exe "hi! StatusLineNC   cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
 exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=".color_3"  guibg=".color_bg
 exe "hi! link IncSearch        Search"
-exe "hi! link Folded           Normal"
+exe "hi! link Folded           CursorLineNr"
 exe "hi! link VertSplit        Comment"
 exe "hi! link StatusLineTerm   StatusLine"
 exe "hi! link StatusLineTermNC StatusLineNC"
