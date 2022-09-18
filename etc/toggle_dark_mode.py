@@ -8,8 +8,7 @@ SET_INTERFACE_OSASCRIPT = """
         tell appearance preferences
             set dark mode to {mode}
         end tell
-    end tell
-    """
+    end tell"""
 
 SET_TERMINAL_OSASCRIPT = """
     tell application "Terminal"
@@ -18,12 +17,10 @@ SET_TERMINAL_OSASCRIPT = """
 
     tell application "Terminal"
         set current settings of tabs of windows to settings set "{theme}"
-    end tell
-    """
+    end tell"""
 
 CHECK_TERMINAL_OSASCRIPT = """
-    if application "Terminal" is running then return true
-    """
+    if application "Terminal" is running then return true"""
 
 TERMINAL_THEMES = {
     "Light": "Yorha",
