@@ -33,8 +33,8 @@ touch ~/.hushlogin
 
 # make soft symlinks
 echo -e "${BR_TEXT}- Symlinking dotfiles (${DOTFILES})${TEXT}"
-source "${DOTFILES}/etc/ln_dotfiles.sh" "${DOTFILES}" "${HOME}/." # ~/.*
-ln -sfv "${DOTFILES}/vim/"* ~/.vim                                # ~/.vim/
+source "${DOTFILES}/etc/symlink_dotfiles.sh" "${DOTFILES}" "${HOME}/." # ~/.*
+ln -sfv "${DOTFILES}/vim/"* ~/.vim                                     # ~/.vim/
 
 # setup launch daemons and launch agents
 echo -e "${BR_TEXT}\n- Setting up LaunchDaemons and LaunchAgents${TEXT}"
