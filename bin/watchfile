@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+TIMEOUT=0.4
+LATENCY=0.1
+
 # usage
 USAGE="Usage:\n    $(basename "$0") [-c] FILE COMMAND"
 
@@ -27,7 +30,7 @@ if [[ "${#args[@]}" -ne 2 ]]; then
 fi
 
 watched_file="$(realpath "${args[0]}")"
-user_command="${args[1]}"
+user_command="$(envsubst <<< "${args[1]}")"
 
 # functions to print timestamped formatted message
 message() {
@@ -36,16 +39,21 @@ message() {
 
 message_bold() {
     # styling
-    BW_TEXT='\033[1;97m'
-    TEXT='\033[0m'
+    local BIWHITE_TEXT='\033[1;97m'
+    local RESET='\033[0m'
 
-    echo -en "${BW_TEXT}"
+    echo -en "${BIWHITE_TEXT}"
     message "$*"
-    echo -en "${TEXT}"
+    echo -en "${RESET}"
 }
 
 # function to execute command
-function execute_cmd() {
+execute_cmd() {
+    local RED_TEXT='\033[31m'
+    local GREEN_TEXT='\033[32m'
+    local BLUE_TEXT='\033[34m'
+    local RESET='\033[0m'
+
     # kill internal processes on exit
     trap 'jobs -p | xargs kill &> /dev/null' EXIT INT
 
@@ -57,22 +65,58 @@ function execute_cmd() {
     message_bold "Executing ==========================="
 
     if eval "${user_command}"; then
-        message_bold "Finished ============================"
+        message_bold "${GREEN_TEXT}Finished ============================${RESET}"
     else
-        message_bold "Failed =============================="
+        message_bold "${RED_TEXT}Failed ==============================${RESET}"
     fi
 
-    message "Watching ${watched_file}..."
+    message "Watching ${BLUE_TEXT}${watched_file}${RESET}..."
 }
 
-function main() {
+# function to kill a process and wait for it
+kill_and_wait() {
+    local exec_pid="$1"
+    kill "${exec_pid}" &> /dev/null
+    wait "${exec_pid}" &> /dev/null
+}
+
+# function to check if a file's checksum changed after an event
+wait_for_changes() {
+    local watched_file="$1"
+    local timeout="$2"
+
+    local old_checksum="$(sha1sum "${watched_file}")"
+    local new_checksum="${old_checksum}"
+    local args=(
+        "${watched_file}" "--recursive" "--follow-links" "--one-event" "--latency" "${LATENCY}"
+    )
+
+    # as long as the checksum remains the same...
+    while [[ "${new_checksum}" == "${old_checksum}" ]]; do
+        # if a timeout is specified...
+        if [[ -n "${timeout}" ]]; then
+            # and no file event is detected...
+            if [[ -z "$(timeout --foreground "${timeout}" fswatch "${args[@]}")" ]]; then
+                # exit with failure
+                return 1
+            else
+                # get the new checksum
+                new_checksum="$(sha1sum "${watched_file}")"
+            fi
+        else
+            # wait for an event and then get the checksum
+            new_checksum="$(sha1sum "$(fswatch "${args[@]}")")"
+        fi
+    done
+
+    return 0
+}
+
+main() {
     local exec_pid
-    local changed=false
-    local t=0.4
-    local l=0.1
 
     # exit script on ctrl-c
-    trap 'echo & message "Interrupted" && exit 1' INT
+    trap 'echo & message "Terminated" && kill "${exec_pid}" &> /dev/null & exit 1' INT
 
     # execute command once first
     execute_cmd &
@@ -80,21 +124,16 @@ function main() {
 
     # watch file for changes, terminate and re-execute
     while true; do
-        # watch for changes...
-        changed="$(fswatch "${watched_file}" -1 --latency "${l}")"
-        message "File changed (aborting execution)"
+        # wait for changes...
+        wait_for_changes "${watched_file}"
+        message "File changed (aborting any execution)"
 
-        # kill current execution
-        kill "${exec_pid}" &> /dev/null
-        wait "${exec_pid}" &> /dev/null
+        # interrupt current execution
+        kill_and_wait "${exec_pid}"
 
         # keep watching for ${timeout} seconds for further changes
-        while [[ -n ${changed} ]]; do
+        while wait_for_changes "${watched_file}" "${TIMEOUT}"; do
             message "Waiting for further changes..."
-            changed="$(
-                timeout --foreground "${t}" \
-                    fswatch "${watched_file}" --event "Updated" -1 --latency "${l}"
-            )"
         done
 
         # execute command
