@@ -13,10 +13,8 @@ case $- in
         ;;
 esac
 
-# homebrew path
-if [[ -z "${HOMEBREW_PREFIX}" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # source bash extra
 if [[ -f ~/.bash_extra ]]; then
