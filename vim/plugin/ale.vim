@@ -41,5 +41,22 @@ let g:ale_cpp_clangtidy_checks = [
 \   '-fuchsia-*']
 let g:ale_cpp_clangtidy_options = '-std=' . $CXX_STD
 let g:ale_cpp_cppcheck_options = '--enable=all'
+
+let g:ale_python_pyls_config = {
+\   'pyls': {
+\     'plugins': {
+\       'pycodestyle': {
+\         'enabled': v:false,
+\       },
+\       'pyflakes': {
+\         'enabled': v:false,
+\       },
+\       'pydocstyle': {
+\         'enabled': v:false,
+\       },
+\     },
+\   },
+\}
+
 let g:ale_sh_shellcheck_options = '--shell=bash'
 let g:ale_sh_shfmt_options = '-i 4 -ci -bn -sr'
