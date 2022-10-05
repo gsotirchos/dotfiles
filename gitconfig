@@ -1,8 +1,10 @@
 [credential]
 	helper = store
 [user]
+	;name = gsotirchos
+	;email = gsotirch@gmail.com
 	name = gsotirchos
-	email = gsotirch@gmail.com
+	email = gsotirchos@student.tudelft.nl
 [status]
 	submodulesummary = 1
 [push]

@@ -57,7 +57,7 @@ execute_cmd() {
     # kill internal processes on exit
     trap 'jobs -p | xargs kill &> /dev/null' EXIT INT
 
-    # execute the command
+    # clear display
     if [[ "${has_clear}" == "true" ]]; then
         clear
     fi

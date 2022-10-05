@@ -23,7 +23,7 @@ CHECK_TERMINAL_OSASCRIPT = """
     if application "Terminal" is running then return true"""
 
 TERMINAL_THEMES = {
-    "Light": "Yorha",
+    "Light": "Shoji",
     "Dark": "Xcode"}
 
 IS_DARK_MODE = {
