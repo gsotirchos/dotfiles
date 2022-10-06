@@ -1,3 +1,4 @@
+# vim: set ft=yaml:
 _help_parse: Options affecting listfile parsing
 parse:
   _help_additional_commands:
@@ -27,10 +28,10 @@ format:
   disable: false
   _help_line_width:
   - How wide to allow formatted cmake files
-  line_width: 120
+  line_width: 80
   _help_tab_size:
   - How many spaces to tab for indent
-  tab_size: 2
+  tab_size: 4
   _help_use_tabchars:
   - If true, lines are indented using tab characters (utf-8
   - 0x09) instead of <tab_size> space characters (utf-8 0x20).
@@ -50,7 +51,7 @@ format:
   _help_max_subgroups_hwrap:
   - If an argument group contains more than this many sub-groups
   - (parg or kwarg groups) then force it to a vertical layout.
-  max_subgroups_hwrap: 1
+  max_subgroups_hwrap: 2
   _help_max_pargs_hwrap:
   - If a positional argument group contains more than this many
   - arguments, then force it to a vertical layout.
@@ -82,16 +83,16 @@ format:
   - If the statement spelling length (including space and
   - parenthesis) is smaller than this amount, then force reject
   - nested layouts.
-  min_prefix_chars: 0
+  min_prefix_chars: 4
   _help_max_prefix_chars:
   - If the statement spelling length (including space and
   - parenthesis) is larger than the tab width by more than this
   - amount, then force reject un-nested layouts.
-  max_prefix_chars: 0
+  max_prefix_chars: 80
   _help_max_lines_hwrap:
   - If a candidate layout is wrapped horizontally but it exceeds
   - this many lines, then reject the layout.
-  max_lines_hwrap: 2
+  max_lines_hwrap: 0
   _help_line_ending:
   - What style line endings to use in the output.
   line_ending: unix
