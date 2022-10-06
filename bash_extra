@@ -52,9 +52,9 @@ main() {
     # set cmake makefile generator, compiler, and standard
     export CC="$(which gcc-12)"
     #export CC="$(which clang)"
-    export CXX="${CC}++"
+    export CXX="$(which g++-12)"
+    #export CXX="${CC}"
     export CXX_STD="c++17"
-    export CMAKE_GENERATOR="Make"
     #export CMAKE_GENERATOR="Ninja"
 
     # append to the history file, don't overwrite it
