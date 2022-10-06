@@ -76,6 +76,7 @@ let my_statusline = ' %(%w%y %)%<%F%-5(%m%)%a%= L: %l/%L  C: %c/%{Pad(strwidth(g
 let &statusline = my_statusline
 
 " behaviour
+set timeoutlen=1500  " set leader timeout to 1.5s
 set regexpengine=1  " use old regex engine
 set mouse=a  " enable mouse
 set splitbelow  " open new horizontal windows at bottom
