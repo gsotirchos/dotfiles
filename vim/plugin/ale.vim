@@ -17,6 +17,9 @@ let g:ale_fixers = {
 \   'sh': [
 \       {-> execute("undojoin", "silent!") + 0},
 \       'shfmt'],
+\   'cmake': [
+\       {-> execute("undojoin", "silent!") + 0},
+\       'cmakeformat'],
 \   'cpp': [
 \       {-> execute("undojoin", "silent!") + 0},
 \       'clang-format'],
@@ -24,10 +27,6 @@ let g:ale_fixers = {
 \       {-> execute("undojoin", "silent!") + 0},
 \       'isort',
 \       'autopep8'],
-"\   '*': [
-"\       {-> execute("undojoin", "silent!") + 0},
-"\       'remove_trailing_lines',
-"\       'trim_whitespace'],
 \}
 
 let g:ale_cpp_ccls_init_options = {'cache': {'directory': '/tmp/ccls/cache'}}
