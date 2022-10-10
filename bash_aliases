@@ -63,14 +63,21 @@ alias dunnet="clear && emacs -batch -l dunnet"
 alias python="python3"
 alias py="python3"
 alias pip="pip3"
-alias pip_upgrade='\
-    pip list --outdated --format=freeze \
-    | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install --upgrade'
+alias pip_upgrade="\
+    pip list --outdated --format=freeze | grep -v '^-e' | cut -d = -f 1 \
+    | xargs -n1 --no-run-if-empty pip3 install --upgrade \
+    && pip cache purge"
 alias env_update='\
-    pip_upgrade; \
-    mamba update --all \
-    && mamba list | grep "pypi" | cut -d " " -f 1 | xargs pip install --upgrade'
+    conda update --all \
+    && conda clean --all -y; \
+    conda list | grep "pypi" | cut -d " " -f 1 \
+    | xargs --no-run-if-empty pip install --upgrade \
+    && pip cache purge'
 alias mlr="conda activate mlr"
+alias mlr_update='\
+    conda env update -n mlr \
+    --file ~/Desktop/RO47002\ MLR/environment.yml --prune \
+    && conda clean --all -y'
 alias ccatkin_make="catkin_make --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
 if [[ -n "${catkin_ws}" ]]; then
     alias cdws='cd ${catkin_ws} && . devel/setup.bash'
