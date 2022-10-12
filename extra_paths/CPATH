@@ -1,0 +1,8 @@
+# vim: set ft=bash:
+${HOMEBREW_PREFIX}/include
+#${HOMEBREW_PREFIX}/opt/*/include
+#${HOMEBREW_PREFIX}/opt/*/*/include
+#${HOMEBREW_PREFIX}/lib/python3.*/site-packages/*/core/include/
+#${HOMEBREW_CELLAR}/python@3.*/*/Frameworks/Python.framework/Headers
+$(xcrun --show-sdk-path)/usr/include
+/usr/local/include
