@@ -23,7 +23,7 @@ augroup vimrc
     autocmd CursorHold ?* nested if empty(&buftype) | update | endif
 
     " convert always to utf-8
-    autocmd BufWinEnter,BufRead,BufWrite ?* silent! set fileencoding=utf-8
+    autocmd BufWinEnter,BufRead,BufWritePost ?* silent! set fileencoding=utf-8
 
     " don't spell check help files
     autocmd FileType help set nospell
@@ -49,28 +49,34 @@ augroup vimrc
     \|  set conceallevel=1
 
     " treat certain extensions as xml
-    autocmd BufWinEnter,BufRead,BufWrite
+    autocmd BufWinEnter,BufRead,BufWritePost
     \   *.sdf,*.world,*.model,*.xacro*.config,*.launch,*.plist
     \   set ft=xml
 
     " treat certain ros configuration files as conf files
-    autocmd BufWinEnter,BufRead,BufWrite
+    autocmd BufWinEnter,BufRead,BufWritePost
     \   *.msg,*.srv,*.action
     \   set ft=conf
-    autocmd BufWinEnter,BufRead,BufWrite
+    autocmd BufWinEnter,BufRead,BufWritePost
     \   *.vcg
     \   set ft=dosini
-    autocmd BufWinEnter,BufRead,BufWrite
+    autocmd BufWinEnter,BufRead,BufWritePost
     \   *.yml,*.rviz
     \   set ft=yaml
 
     "" treat .sh files as .bash
-    "autocmd BufWinEnter,BufRead,BufWrite
+    "autocmd BufWinEnter,BufRead,BufWritePost
     "\   *.sh
     "\   set ft=bash
 
+    " treat .m files as matlab
+    autocmd BufWinEnter,BufRead,BufWritePost
+    \   *.m
+    \   set ft=matlab
+
     " cmake custom autocompletion
-    autocmd BufWinEnter,BufRead,BufWrite CMakeLists.txt,*.cmake
+    autocmd BufWinEnter,BufRead,BufWritePost
+    \   CMakeLists.txt,*.cmake
     \   set complete=.,k
     \|  set dictionary=$HOME/.vim/words/cmake.txt
 
