@@ -67,21 +67,31 @@ alias pip_upgrade="\
     pip list --outdated --format=freeze | grep -v '^-e' | cut -d = -f 1 \
     | xargs -n1 --no-run-if-empty pip3 install --upgrade \
     && pip cache purge"
-alias env_update='\
-    conda update --all \
-    && conda clean --all -y; \
-    conda list | grep "pypi" | cut -d " " -f 1 \
+
+if command -v "mamba" &> /dev/null; then
+    conda_mamba="mamba"
+else
+    conda_mamba="conda"
+fi
+
+alias env_update="\
+    ${conda_mamba} update --all \
+    && ${conda_mamba} clean --all -y; \
+    ${conda_mamba} list | grep 'pypi' | cut -d ' ' -f 1 \
     | xargs --no-run-if-empty pip install --upgrade \
-    && pip cache purge'
-alias mlr="conda activate mlr"
-alias mlr_update='\
-    conda env update -n mlr \
-    --file ~/Desktop/RO47002\ MLR/environment.yml --prune \
-    && conda clean --all -y'
+    && pip cache purge"
+alias env_dump="${conda_mamba} env export | grep -v '^prefix: ' >"
+alias mlr="${conda_mamba} activate mlr"
+alias mlr_update="\
+    ${conda_mamba} env update -n mlr \
+    --file '${HOME}/Desktop/RO47002 MLR/environment.yml' --prune \
+    && conda clean --all -y"
+
 alias ccatkin_make="catkin_make --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
 if [[ -n "${catkin_ws}" ]]; then
     alias cdws='cd ${catkin_ws} && . devel/setup.bash'
 fi
+
 if [[ -d "${HOME}/Applications/PlayOnMac/Guild Wars 2.app" ]]; then
     alias guildwars2='${HOME}/Applications/PlayOnMac/Guild\ Wars\ 2.app/Contents/MacOS/playonmac'
 fi
