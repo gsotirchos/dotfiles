@@ -114,13 +114,9 @@ main() {
     fi
 
     # ROS
-    if command -v "catkin_make" &> /dev/null; then
-        export ROS_DISTRO="$(rosversion -d)"
-
-        # source ROS environment
-        if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
-            source /opt/ros/"${ROS_DISTRO}"/setup.bash
-        fi
+    if [[ -f /opt/ros/noetic/setup.bash ]]; then
+        # source system's ROS environment
+        source /opt/ros/noetic/setup.bash
 
         # source user's Catkin workspace's enfironment
         catkin_ws="$(find ~ -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
