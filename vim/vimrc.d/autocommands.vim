@@ -45,7 +45,7 @@ augroup vimrc
     \|      let b:easytags_auto_update = 1
     \|      let b:easytags_auto_highlight = 1
     \|  endif
-    \|  set concealcursor=nc
+    \|  set concealcursor=c
     \|  set conceallevel=1
 
     " treat certain extensions as xml
