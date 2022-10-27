@@ -105,27 +105,28 @@ main() {
         xhost +local: &> /dev/null
     fi
 
-    # Conda initialization
-    if [[ -f ~/.conda_init ]]; then
-        source ~/.conda_init
+    # Conda
+    if command -v "conda" &> /dev/null; then
+        if [[ -f ~/.conda_init ]]; then
+            source ~/.conda_init
+        fi
         conda deactivate
     fi
 
-    # ROS distro
-    if [[ "${os}" == "linux" ]]; then
-        #export ROS_DISTRO="galactic"
-        export ROS_DISTRO="noetic"
-    fi
+    # ROS
+    if command -v "catkin_make" &> /dev/null; then
+        export ROS_DISTRO="$(rosversion -d)"
 
-    # source ROS environment
-    if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
-        source /opt/ros/"${ROS_DISTRO}"/setup.bash
-    fi
+        # source ROS environment
+        if [[ -f /opt/ros/"${ROS_DISTRO}"/setup.bash ]]; then
+            source /opt/ros/"${ROS_DISTRO}"/setup.bash
+        fi
 
-    # source Catkin workspace
-    catkin_ws="$(find ~/Public -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
-    if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
-        source "${catkin_ws}"/devel/setup.bash
+        # source user's Catkin workspace's enfironment
+        catkin_ws="$(find ~ -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
+        if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
+            source "${catkin_ws}"/devel/setup.bash
+        fi
     fi
 
     # aliases
