@@ -22,17 +22,15 @@ main() {
     esac
 
     # set macos-dotfiles prefix
-    if [[ "${os}" == "linux" ]]; then
-        if [[ -d ~/.macos-dotfiles ]]; then
-            export MACOS_PREFIX="macos-"
-        else
-            export MACOS_PREFIX=""
-        fi
+    if [[ -d ~/.macos-dotfiles ]]; then
+        local macos_dotfiles="${HOME}/.macos-dotfiles"
+    else
+        local macos_dotfiles="${HOME}/.dotfiles"
     fi
 
     # append extra paths from files to $PATH, $CPATH, $LIBRARY_PATH, etc.
     if [[ -d ~/.dotfiles/extra_paths ]]; then
-        source ~/."${MACOS_PREFIX}"dotfiles/etc/append_paths.sh ~/.dotfiles/extra_paths
+        source "${macos_dotfiles}"/etc/append_paths.sh ~/.dotfiles/extra_paths
     fi
 
     # prepare dynamic libraries path
@@ -80,6 +78,7 @@ main() {
     # local ip shortcuts
     export imac="iMac.local"
     export macbookair="MacBookAir.local"
+    export ubuntu_vm="ubuntu-vm.local"
 
     # check if this is a ssh session
     local session_type
