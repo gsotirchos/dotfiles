@@ -80,7 +80,6 @@ main() {
     # local ip shortcuts
     export imac="iMac.local"
     export macbookair="MacBookAir.local"
-    export npower_pi="root@192.168.1.20"
 
     # check if this is a ssh session
     local session_type
