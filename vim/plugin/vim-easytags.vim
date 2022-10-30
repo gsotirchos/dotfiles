@@ -1,4 +1,4 @@
-let g:easytags_suppress_ctags_warning = 1
+"let g:easytags_suppress_ctags_warning = 1
 let g:easytags_auto_update = 0  " overriden per buffer by filetype-specific autocommand
 let g:easytags_auto_highlight = 0  " overriden per buffer by filetype-specific autocommand
 let g:easytags_async = 1

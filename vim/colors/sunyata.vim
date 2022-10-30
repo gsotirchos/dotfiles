@@ -133,7 +133,7 @@ exe "hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE gui=NONE      
 exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   guifg=".color_fg" guibg=".color_bg
 exe "hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=".color_fg" guibg=".color_bg
 exe "hi! LineNr         cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
-exe "hi! CursorLineNr   cterm=bold      ctermfg=8    ctermbg=NONE gui=bold      guifg=".color_8"  guibg=".color_bg
+exe "hi! CursorLineNr   cterm=bold      ctermfg=0    ctermbg=NONE gui=bold      guifg=".color_0"  guibg=".color_bg
 exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=".color_0"  guibg=".color_bg
 exe "hi! StatusLine     cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=".color_7"  guibg=".color_8
 exe "hi! StatusLineNC   cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=".color_fg" guibg=".color_0
