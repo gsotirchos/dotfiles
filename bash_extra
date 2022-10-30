@@ -106,11 +106,8 @@ main() {
     fi
 
     # Conda
-    if command -v "conda" &> /dev/null; then
-        if [[ -f ~/.conda_init ]]; then
-            source ~/.conda_init
-        fi
-        conda deactivate
+    if [[ -f ~/.conda_init ]]; then
+        source ~/.conda_init
     fi
 
     # ROS
