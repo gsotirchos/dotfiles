@@ -63,7 +63,10 @@ set_prompt() {
     if [[ -n "${CONDA_DEFAULT_ENV}" ]]; then
         # get conda nest level
         local conda_lvl="$(format_nest_level "${CONDA_SHLVL}") "
-        local conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${Reset})${conda_lvl}"
+        if [[ -n "${CONDA_STACKED_2}" ]]; then
+            local is_stacked="${IBlue}"
+        fi
+        local conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${Reset})${is_stacked}${conda_lvl}${Reset}"
     fi
 
     # check if current dir belongs to overlayed ROS package
@@ -98,7 +101,7 @@ format_nest_level() {
             echo "❭❭"
             ;;
         *)
-            echo "$1❭"
+            echo "$(($1 - 1))❭"
             ;;
     esac
 }
