@@ -1,5 +1,7 @@
+# vim: set ft=yaml:
 channels:
   - conda-forge
   - defaults
 channel_priority: flexible
 auto_activate_base: false
+auto_stack: 1
