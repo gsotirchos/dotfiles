@@ -4,4 +4,4 @@ channels:
   - defaults
 channel_priority: flexible
 auto_activate_base: false
-auto_stack: 1
+auto_stack: true
