@@ -12,7 +12,7 @@ main() {
     TEXT='\033[0m'
 
     # check for `realpath` command
-    if ! command -v realpath &> /dev/null; then
+    if ! command -v "realpath" &> /dev/null; then
         echo -e "${BR_TEXT}Error: \`realpath\` command could not be found. Aborted${TEXT}"
         exit
     fi
