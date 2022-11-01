@@ -6,18 +6,17 @@
 
 main() {
     # determine OS
-    local os wsl
     case "$(uname -s)" in
         Linux*)
-            os="linux"
+            local os="linux"
             if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
-                wsl=true
+                local wsl=true
             else
-                wsl=false
+                local wsl=false
             fi
             ;;
         Darwin*)
-            os="macos"
+            local os="macos"
             ;;
     esac
 
@@ -81,12 +80,11 @@ main() {
     export ubuntu_vm="ubuntu-vm.local"
 
     # check if this is a ssh session
-    local session_type
     if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
-        session_type="remote_ssh"
+        local session_type="remote_ssh"
     else
         case $(ps -o comm= -p "${PPID}") in
-            sshd | */sshd) session_type="remote_ssh" ;;
+            sshd | */sshd) local session_type="remote_ssh" ;;
         esac
     fi
 
