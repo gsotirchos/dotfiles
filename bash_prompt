@@ -56,16 +56,21 @@ set_prompt() {
     local OnICyan='\[\e[106m\]'
     local OnIWhite='\[\e[107m\]'
 
-    # check if a conda environment is active
-    if [[ -n ${CONDA_DEFAULT_ENV} ]]; then
-        local conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${Reset}) "
+    # get shell nest level
+    local shell_lvl="$(format_nest_level "${SHLVL}") "
+
+    # get conda level and environment
+    if [[ -n "${CONDA_DEFAULT_ENV}" ]]; then
+        # get conda nest level
+        local conda_lvl="$(format_nest_level "${CONDA_SHLVL}") "
+        local conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${Reset})${conda_lvl}"
     fi
 
     # check if current dir belongs to overlayed ROS package
-    if [[ -n "${ROS_DISTRO}" ]] && [[ -n "$(which rospack)" ]]; then
+    if [[ -n "${ROS_DISTRO}" ]] && command -v "rospack" &> /dev/null; then
         for package_path in $(rospack list | awk '{print $2}'); do
             if [[ "${PWD}" == "${package_path}"* ]]; then
-                local ros_package="${Green}✔︎${Reset}"
+                local ros_pkg="${Green}✔︎${Reset}"
                 break
             fi
         done
@@ -73,13 +78,29 @@ set_prompt() {
 
     # check this is an SSH session
     if [[ "${session_type}" == "remote_ssh" ]]; then
-        local the_prompt="${IBlack}\h::\W${Reset}"
+        local work_dir="${IBlack}\h::\W${Reset}"
     else
-        local the_prompt="${IBlack}\W${Reset}"
+        local work_dir="${IBlack}\W${Reset}"
     fi
 
     # return the prompt string
-    echo " ${conda_env}${the_prompt}${ros_package}"
+    echo "${shell_lvl}${conda_env}${work_dir}${ros_pkg}"
+}
+
+format_nest_level() {
+    # check shell nest level
+    case "$1" in
+        0 | 1) ;;
+        2)
+            echo "❭"
+            ;;
+        3)
+            echo "❭❭"
+            ;;
+        *)
+            echo "$1❭"
+            ;;
+    esac
 }
 
 # notify the terminal
@@ -102,5 +123,6 @@ export GIT_PS1_DESCRIBE_STYLE="contains"
 export GIT_PS1_SHOWUNTRACKEDFILES=true
 export GIT_PS1_SHOWUPSTREAM="auto"
 
-#export PS1="$(set_prompt "${session_type}")"  # is set by __git_ps1
+export -f set_prompt __git_ps1
 export PROMPT_COMMAND+='__git_ps1 "$(set_prompt "'"${session_type}"'")" " "; '
+#export PS1="$(set_prompt "${session_type}")"  # is set by __git_ps1
