@@ -4,22 +4,29 @@
 # ~/.conda_init
 #
 
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/george/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
+case "$(uname -s)" in
+    Linux*)
+        __conda_path="${HOME}/miniconda"
+        ;;
+    Darwin*)
+        __conda_path="${HOMEBREW_PREFIX}/Caskroom/miniforge/base"
+        ;;
+esac
+
+if __conda_setup="$("${__conda_path}/bin/conda" "shell.bash" "hook" 2> /dev/null)"; then
+    eval "${__conda_setup}"
 else
-    if [ -f "/Users/george/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/george/anaconda3/etc/profile.d/conda.sh"
+    if [ -f "${__conda_path}/etc/profile.d/conda.sh" ]; then
+        source "${__conda_path}/etc/profile.d/conda.sh"
     else
-        export PATH="/Users/george/anaconda3/bin:$PATH"
+        export PATH="${__conda_path}/bin:$PATH"
     fi
 fi
 unset __conda_setup
 
-if [ -f "/Users/george/anaconda3/etc/profile.d/mamba.sh" ]; then
-    . "/Users/george/anaconda3/etc/profile.d/mamba.sh"
+if [ -f "${__conda_path}/etc/profile.d/mamba.sh" ]; then
+    source "${__conda_path}/etc/profile.d/mamba.sh"
 fi
-# <<< conda initialize <<<
+unset __conda_path
 
 export MAMBA_NO_BANNER=1
