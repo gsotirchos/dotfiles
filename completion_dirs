@@ -1,1 +1,1 @@
-${HOMEBREW_PREFIX}/etc/bash_completion.d
+${HOMEBREW_PREFIX}/etc/profile.d/
