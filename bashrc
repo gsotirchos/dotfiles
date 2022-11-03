@@ -20,16 +20,23 @@ main() {
             ;;
     esac
 
-    # set macos-dotfiles prefix
+    # set dotfiles path
+    local dotfiles="$(
+        builtin cd "$(
+            dirname "$(realpath "${BASH_SOURCE[0]}")"
+        )" > /dev/null && pwd
+    )"
+
+    # set macos-dotfiles path
     if [[ -d ~/.macos-dotfiles ]]; then
         local macos_dotfiles="${HOME}/.macos-dotfiles"
     else
-        local macos_dotfiles="${HOME}/.dotfiles"
+        local macos_dotfiles="${dotfiles}"
     fi
 
     # append extra paths from files to $PATH, $CPATH, $LIBRARY_PATH, etc.
-    if [[ -d ~/.dotfiles/extra_paths ]]; then
-        source "${macos_dotfiles}"/etc/append_paths.sh ~/.dotfiles/extra_paths
+    if [[ -d "${dotfiles}"/extra_paths ]]; then
+        source "${macos_dotfiles}"/etc/append_to_paths.sh "${dotfiles}"/extra_paths
     fi
 
     # prepare dynamic libraries path
@@ -104,8 +111,8 @@ main() {
     fi
 
     # Conda
-    if [[ -f ~/.conda_init ]]; then
-        source ~/.conda_init
+    if [[ -f ~/.conda/conda_init ]]; then
+        source ~/.conda/conda_init
     fi
 
     # ROS
@@ -114,7 +121,7 @@ main() {
         source /opt/ros/noetic/setup.bash
 
         # source user's Catkin workspace's enfironment
-        catkin_ws="$(find ~ -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
+        local catkin_ws="$(find ~ -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
         if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
             source "${catkin_ws}"/devel/setup.bash
         fi
@@ -131,8 +138,8 @@ main() {
     fi
 
     # auto-completion
-    if [[ -f ~/.dotfiles/completion_dirs ]]; then
-        source ~/.dotfiles/etc/source_dirs_list.sh ~/.dotfiles/completion_dirs
+    if [[ -f "${dotfiles}"/completion_dirs ]]; then
+        source "${macos_dotfiles}"/etc/source_dirs_list.sh "${dotfiles}"/completion_dirs
     fi
 }
 

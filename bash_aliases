@@ -52,7 +52,7 @@ alias ls="ls -h --color=always" # human-readable, colored
 alias ll="ls -l"                # list ls := ll
 alias grep="grep --color -E"    # colored, enable extended regexp
 alias tree="\
-    tree -lNFC -L 2 \
+    tree -lNC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs" # cleaner tree
 alias sftp='$(which with-readline 2> /dev/null) sftp'

@@ -6,9 +6,9 @@
   <string>org.toggle.dark.mode</string>
   <key>ProgramArguments</key>
   <array>
-    <string>sh</string>
+    <string>bash</string>
     <string>-c</string>
-    <string>python3 ~/.dotfiles/etc/toggle_dark_mode.py</string>
+    <string>~/.dotfiles/etc/toggle_dark_mode</string>
   </array>
   <key>RunAtLoad</key>
   <true/>
