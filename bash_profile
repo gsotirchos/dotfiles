@@ -17,7 +17,7 @@ esac
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # dark theme toggle (run in background)
-(python ~/.dotfiles/etc/toggle_dark_mode.py &) &> /dev/null
+(~/.dotfiles/etc/toggle_dark_mode &) &> /dev/null
 
 # source bashrc
 if [[ -f ~/.bashrc ]]; then
