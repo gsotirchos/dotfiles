@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# ~/.bash_extra
+# ~/.bashrc
 #
 
 main() {
@@ -27,11 +27,14 @@ main() {
         )" > /dev/null && pwd
     )"
 
+    local macos_dotfiles="${HOME}"/.macos-dotfiles
+
     # set macos-dotfiles path
-    if [[ -d ~/.macos-dotfiles ]]; then
-        local macos_dotfiles="${HOME}/.macos-dotfiles"
-    else
+    if [[ "${dotfiles}" == "${HOME}/.dotfiles" ]]; then
         local macos_dotfiles="${dotfiles}"
+    else
+        dotfiles="${HOME}/.dotfiles"
+        local macos_dotfiles="${HOME}/.macos-dotfiles"
     fi
 
     # append extra paths from files to $PATH, $CPATH, $LIBRARY_PATH, etc.
