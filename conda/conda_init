@@ -18,7 +18,7 @@ if __conda_setup="$("${__conda_path}/bin/conda" "shell.bash" "hook" 2> /dev/null
 else
     if [ -f "${__conda_path}/etc/profile.d/conda.sh" ]; then
         source "${__conda_path}/etc/profile.d/conda.sh"
-    else
+    elif [[ -d "${__conda_path}/bin" ]]; then
         export PATH="${__conda_path}/bin:$PATH"
     fi
 fi
