@@ -64,10 +64,10 @@ alias dunnet="clear && emacs -batch -l dunnet"
 if command -v "python" &> /dev/null; then
     alias python="python3"
     alias py="python3"
-    alias pip_upgrade="\
-        pip list --outdated --format=freeze | grep -v '^-e' | cut -d = -f 1 \
-        | xargs -n1 --no-run-if-empty pip3 install --upgrade \
-        && pip cache purge"
+    #alias pip_upgrade="\
+    #    pip list --outdated --format=freeze | grep -v '^-e' | cut -d = -f 1 \
+    #    | xargs -n1 --no-run-if-empty pip3 install --upgrade \
+    #    && pip cache purge"
 fi
 
 # Conda
@@ -78,17 +78,17 @@ if command -v "conda" &> /dev/null; then
         conda_mamba="conda"
     fi
     alias env_update="\
-    ${conda_mamba} update --all \
-    && ${conda_mamba} clean --all -y; \
-    ${conda_mamba} list | grep 'pypi' | cut -d ' ' -f 1 \
-    | xargs --no-run-if-empty pip install --upgrade \
-    && pip cache purge"
+        ${conda_mamba} update --all \
+        && ${conda_mamba} clean --all -y; \
+        ${conda_mamba} list | grep 'pypi' | cut -d ' ' -f 1 \
+        | xargs --no-run-if-empty pip install --upgrade \
+        && pip cache purge"
     alias env_dump="${conda_mamba} env export | grep -v '^prefix: ' >"
     alias ml="${conda_mamba} activate machine-learning"
     alias mlr_update="\
-    ${conda_mamba} env update -n mlr \
-    --file '${HOME}/Desktop/RO47002 MLR/environment.yml' --prune \
-    && conda clean --all -y"
+        ${conda_mamba} env update -n mlr \
+        --file '${HOME}/Desktop/RO47002 MLR/environment.yml' --prune \
+        && conda clean --all -y"
     unset conda_mamba
 fi
 
