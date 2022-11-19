@@ -10,21 +10,26 @@ let g:ale_completion_delay = &updatetime
 
 let g:ale_linters = {
 \   'cpp': ['ccls', 'clang', 'clangtidy', 'cppcheck'],
-\   'python': ['pylsp', 'flake8']}
+\   'python': ['pylsp', 'flake8'],
+\   'tex': ['texlab', 'chktex', 'lacheck', 'proselint', 'write-good'],
+\}
 let g:ale_fixers = {
 \   'sh': [
-\       {-> execute("undojoin", "silent!") + 0},
+\       {-> execute('undojoin', 'silent!') + 0},
 \       'shfmt'],
 \   'cmake': [
-\       {-> execute("undojoin", "silent!") + 0},
+\       {-> execute('undojoin', 'silent!') + 0},
 \       'cmakeformat'],
 \   'cpp': [
-\       {-> execute("undojoin", "silent!") + 0},
+\       {-> execute('undojoin', 'silent!') + 0},
 \       'clang-format'],
 \   'python': [
-\       {-> execute("undojoin", "silent!") + 0},
+\       {-> execute('undojoin', 'silent!') + 0},
 \       'isort',
 \       'autopep8'],
+\   'tex': [
+\       {-> execute('undojoin', 'silent!') + 0},
+\       'latexindent'],
 \}
 
 " Shell
