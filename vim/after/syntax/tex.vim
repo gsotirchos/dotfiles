@@ -1,6 +1,7 @@
 hi! clear texItalStyle
 hi! clear texBoldStyle
 
+hi! link texPartArgTitle normal
 hi! link texInputFile    PreProc
 hi! link texBeginEnd     texStatement
 hi! link texBeginEndName Identifier

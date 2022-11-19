@@ -65,22 +65,36 @@ endif
 "vnoremap <D-v> "+p
 "cnoremap <D-v> <C-r>+
 "vnoremap <D-c> "+y
-"nnoremap <D-c> :echo "ok"
 
 " toggle LocList
 function! ToggleLocList()
-    if get(getloclist(0, {'winid':0}), 'winid', 0)
-        exec "set laststatus=" . g:laststatus
+    if get(getloclist(0, {'winid': 0}), 'winid', 0)
+        "exec "set laststatus=" . g:laststatus
         lclose
     else
         exec "lopen " . winheight(0) / 3
-        let g:laststatus = &laststatus
-        if len(getbufinfo({'bufloaded':1})) == 2
-            set laststatus=0
-        endif
+        "let g:laststatus = &laststatus
+        "if len(getbufinfo({'bufloaded': 1})) == 2
+        "    set laststatus=0
+        "endif
     endif
 endfunction
 nnoremap <silent> <leader>l :call ToggleLocList()<CR>
+
+" toggle QuickFix
+function! ToggleQuickFix()
+    if get(getqflist({'winid': 0}), 'winid', 0)
+        "exec "set laststatus=" . g:laststatus
+        cclose
+    else
+        exec "copen " . winheight(0) / 3
+        "let g:laststatus = &laststatus
+        "if len(getbufinfo({'bufloaded': 1})) == 2
+        "    set laststatus=0
+        "endif
+    endif
+endfunction
+nnoremap <silent> <leader>q :call ToggleQuickFix()<CR>
 
 " toggle Preview
 function! TogglePreview()
