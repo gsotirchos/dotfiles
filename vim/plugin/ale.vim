@@ -66,5 +66,8 @@ let g:ale_python_pyls_config = {
 \   },
 \}
 
+" Tex
+let g:ale_tex_latexindent_options = '-m -rv'
+
 " etc.
 "let g:ale_matlab_mlint_executable = trim(system('which /Applications/MATLAB*.app/bin/maci64/mlint'))
