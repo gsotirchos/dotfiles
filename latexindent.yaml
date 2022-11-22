@@ -93,13 +93,13 @@ logFilePreferences:
     endLogFileWith: '--------------'
     showGitHubInfoFooter: 1
     Dumper:
-      Terse: 1
-      Indent: 1
-      Useqq: 1
-      Deparse: 1
-      Quotekeys: 0
-      Sortkeys: 1
-      Pair: " => "
+        Terse: 1
+        Indent: 1
+        Useqq: 1
+        Deparse: 1
+        Quotekeys: 0
+        Sortkeys: 1
+        Pair: " => "
 
 #  verbatim environments specified
 #  in this field will not be changed at all!
@@ -118,7 +118,6 @@ verbatimCommands:
 #  or anything else that you detail in the following
 noIndentBlock:
     noindent: 1
-    cmhtest: 1
 
 # \begin{document} and \end{document} are treated differently
 # by latexindent within filecontents environments
@@ -153,74 +152,74 @@ removeTrailingWhitespace:
 
 # name of code blocks that should have their body aligned at ampersand delimiters
 lookForAlignDelims:
-   tabular:
-      delims: 1
-      alignDoubleBackSlash: 1
-      spacesBeforeDoubleBackSlash: 1
-      multiColumnGrouping: 0
-      alignRowsWithoutMaxDelims: 1
-      spacesBeforeAmpersand: 1
-      spacesAfterAmpersand: 1
-      justification: left
-      alignFinalDoubleBackSlash: 0
-      dontMeasure: 0
-      delimiterRegEx: '(?<!\\)(&)'
-      delimiterJustification: left
-      lookForChildCodeBlocks: 1
-   tabularx:
-      delims: 1
-   longtable: 1
-   tabu: 1
-   array: 1
-   matrix: 1
-   listabla: 1
-   # amsmath
-   align: 1
-   align*: 1
-   alignat: 1
-   alignat*: 1
-   aligned: 1
-   bmatrix: 1
-   Bmatrix: 1
-   cases: 1
-   flalign: 1
-   flalign*: 1
-   pmatrix: 1
-   vmatrix: 1
-   Vmatrix: 1
-   # mathtools
-   cases*: 1
-   dcases: 1
-   dcases*: 1
-   rcases: 1
-   rcases*: 1
-   drcases: 1
-   drcases*: 1
-   # nicematrix
-   NiceTabular: 1
-   NiceMatrix: 1
-   pNiceMatrix: 1
-   bNiceMatrix: 1
-   BNiceMatrix: 1
-   vNiceMatrix: 1
-   VNiceMatrix: 1
-   NiceArray: 1
-   pNiceArrayC: 1
-   bNiceArrayC: 1
-   BNiceArrayC: 1
-   vNiceArrayC: 1
-   VNiceArrayC: 1
-   NiceArrayCwithDelims: 1
-   pNiceArrayRC: 1
-   bNiceArrayRC: 1
-   BNiceArrayRC: 1
-   vNiceArrayRC: 1
-   VNiceArrayRC: 1
-   NiceArrayRCwithDelims: 1
-   # tabularray
-   tblr: 1
-   longtblr: 1
-   talltblr: 1
+    tabular:
+        delims: 1
+        alignDoubleBackSlash: 1
+        spacesBeforeDoubleBackSlash: 1
+        multiColumnGrouping: 0
+        alignRowsWithoutMaxDelims: 1
+        spacesBeforeAmpersand: 1
+        spacesAfterAmpersand: 1
+        justification: left
+        alignFinalDoubleBackSlash: 0
+        dontMeasure: 0
+        delimiterRegEx: '(?<!\\)(&)'
+        delimiterJustification: left
+        lookForChildCodeBlocks: 1
+    tabularx:
+        delims: 1
+    longtable: 1
+    tabu: 1
+    array: 1
+    matrix: 1
+    listabla: 1
+    # amsmath
+    align: 1
+    align*: 1
+    alignat: 1
+    alignat*: 1
+    aligned: 1
+    bmatrix: 1
+    Bmatrix: 1
+    cases: 1
+    flalign: 1
+    flalign*: 1
+    pmatrix: 1
+    vmatrix: 1
+    Vmatrix: 1
+    # mathtools
+    cases*: 1
+    dcases: 1
+    dcases*: 1
+    rcases: 1
+    rcases*: 1
+    drcases: 1
+    drcases*: 1
+    # nicematrix
+    NiceTabular: 1
+    NiceMatrix: 1
+    pNiceMatrix: 1
+    bNiceMatrix: 1
+    BNiceMatrix: 1
+    vNiceMatrix: 1
+    VNiceMatrix: 1
+    NiceArray: 1
+    pNiceArrayC: 1
+    bNiceArrayC: 1
+    BNiceArrayC: 1
+    vNiceArrayC: 1
+    VNiceArrayC: 1
+    NiceArrayCwithDelims: 1
+    pNiceArrayRC: 1
+    bNiceArrayRC: 1
+    BNiceArrayRC: 1
+    vNiceArrayRC: 1
+    VNiceArrayRC: 1
+    NiceArrayRCwithDelims: 1
+    # tabularray
+    tblr: 1
+    longtblr: 1
+    talltblr: 1
 
 # if you want the script to look for \item commands
 # and format it, as follows (for example),
@@ -275,29 +274,29 @@ specialBeginEnd:
 # or add your own title command
 indentAfterHeadings:
     part:
-       indentAfterThisHeading: 0
-       level: 1
+        indentAfterThisHeading: 0
+        level: 1
     chapter:
-       indentAfterThisHeading: 0
-       level: 2
+        indentAfterThisHeading: 0
+        level: 2
     section:
-       indentAfterThisHeading: 0
-       level: 3
+        indentAfterThisHeading: 0
+        level: 3
     subsection:
-       indentAfterThisHeading: 0
-       level: 4
+        indentAfterThisHeading: 0
+        level: 4
     subsection*:
-       indentAfterThisHeading: 0
-       level: 4
+        indentAfterThisHeading: 0
+        level: 4
     subsubsection:
-       indentAfterThisHeading: 0
-       level: 5
+        indentAfterThisHeading: 0
+        level: 5
     paragraph:
-       indentAfterThisHeading: 0
-       level: 6
+        indentAfterThisHeading: 0
+        level: 6
     subparagraph:
-       indentAfterThisHeading: 0
-       level: 7
+        indentAfterThisHeading: 0
+        level: 7
 
 # maximum indentation, off by default
 maximumIndentation: -1
@@ -308,27 +307,25 @@ maximumIndentation: -1
 # the *current* level of indentation they just won't
 # get any *additional* indentation
 noAdditionalIndent:
-    myexample: 1
-    mydefinition: 1
-    problem: 1
-    exercises: 1
-    mysolution: 1
-    foreach: 0
-    widepage: 1
-    comment: 1
+    #myexample: 1
+    #mydefinition: 1
+    #problem: 1
+    #exercises: 1
+    #mysolution: 1
+    #foreach: 0
+    #widepage: 1
+    #comment: 1
     document: 1
-    frame: 0
+    #frame: 0
 
 # if you have indent rules for particular code blocks
 # then you can populate them in indentRules; for example, you might just want
 # to use a space " " or maybe a double tab "\t\t"
 indentRules:
-   myenvironment: "\t\t"
-   anotherenvironment: "\t\t\t\t"
-   chapter: " "
-   section: " "
-   item: "      "
-   myitem: "        "
+    chapter: " "
+    section: " "
+    item: "      "
+    myitem: "        "
 
 # set noAdditionalIndent globally for codeblocks
 noAdditionalIndentGlobal:
@@ -494,7 +491,7 @@ dos2unixlinebreaks: 0
 # you can specify settings on a per-name basis
 modifyLineBreaks:
     preserveBlankLines: 1
-    condenseMultipleBlankLinesInto: 1
+    condenseMultipleBlankLinesInto: 2
     oneSentencePerLine:
         manipulateSentences: 0
         removeSentenceLineBreaks: 1
@@ -521,40 +518,42 @@ modifyLineBreaks:
             questionMark: 1
             other: 0
     textWrapOptions:
-        columns: 0
-        multipleSpacesToSingle: 1            
+        columns: 70
+        multipleSpacesToSingle: 1
         removeBlockLineBreaks: 1
         blocksFollow:
-           headings: 1
-           commentOnPreviousLine: 1
-           par: 1
-           blankLine: 1
-           verbatim: 1
-           filecontents: 1
-           other: '\\\]|\\item(?:\h|\[)'      # regex
+            headings: 1
+            commentOnPreviousLine: 1
+            align: 0
+            align*: 0
+            par: 1
+            blankLine: 1
+            verbatim: 1
+            filecontents: 1
+            other: '\\\]|\\item(?:\h|\[)'      # regex
         blocksBeginWith:
-           A-Z: 1
-           a-z: 1
-           0-9: 0
-           other: 0                           # regex
+            A-Z: 1
+            a-z: 1
+            0-9: 0
+            other: 0                           # regex
         blocksEndBefore:
-           commentOnOwnLine: 1
-           verbatim: 1
-           filecontents: 1
-           other: '\\begin\{|\\\[|\\end\{'    # regex
+            commentOnOwnLine: 1
+            verbatim: 1
+            filecontents: 1
+            other: '\\begin\{|\\\[|\\end\{'    # regex
         huge: overflow                        # forbid mid-word line breaks
         separator: ""
     # poly-switches below here
     environments:
-        BeginStartsOnOwnLine: 0
-        BodyStartsOnOwnLine: 0
-        EndStartsOnOwnLine: 0
-        EndFinishesWithLineBreak: 0
+        BeginStartsOnOwnLine: 1
+        BodyStartsOnOwnLine: 1
+        EndStartsOnOwnLine: 1
+        EndFinishesWithLineBreak: 1
         equation*:
-            BeginStartsOnOwnLine: 0
-            BodyStartsOnOwnLine: 0
-            EndStartsOnOwnLine: 0
-            EndFinishesWithLineBreak: 0
+            BeginStartsOnOwnLine: 1
+            BodyStartsOnOwnLine: 1
+            EndStartsOnOwnLine: 1
+            EndFinishesWithLineBreak: 1
     ifElseFi:
         IfStartsOnOwnLine: 0
         BodyStartsOnOwnLine: 0
@@ -619,54 +618,54 @@ replacements:
 # is central to latexindent.pl
 fineTuning:
     environments:
-      name: '[a-zA-Z@\*0-9_\\]+'
+        name: '[a-zA-Z@\*0-9_\\]+'
     ifElseFi:
-      name: '(?!@?if[a-zA-Z@]*?\{)@?if[a-zA-Z@]*?'
+        name: '(?!@?if[a-zA-Z@]*?\{)@?if[a-zA-Z@]*?'
     commands:
-      name: '[+a-zA-Z@\*0-9_\:]+?'
+        name: '[+a-zA-Z@\*0-9_\:]+?'
     items:
-      canBeFollowedBy: '(?:\[[^]]*?\])|(?:<[^>]*?>)'
+        canBeFollowedBy: '(?:\[[^]]*?\])|(?:<[^>]*?>)'
     keyEqualsValuesBracesBrackets:
-      name: '[a-zA-Z@\*0-9_\/.:\#-]+[a-zA-Z@\*0-9_\/.\h\{\}:\#-]*?'
-      follow: '(?:(?<!\\)\{)|,|(?:(?<!\\)\[)'
+        name: '[a-zA-Z@\*0-9_\/.:\#-]+[a-zA-Z@\*0-9_\/.\h\{\}:\#-]*?'
+        follow: '(?:(?<!\\)\{)|,|(?:(?<!\\)\[)'
     namedGroupingBracesBrackets:
-      name: '[0-9\.a-zA-Z@\*><]+?'
-      follow: '\h|\R|\{|\[|\$|\)|\('
+        name: '[0-9\.a-zA-Z@\*><]+?'
+        follow: '\h|\R|\{|\[|\$|\)|\('
     UnNamedGroupingBracesBrackets:
-      follow: '\{|\[|,|&|\)|\(|\$'
+        follow: '\{|\[|,|&|\)|\(|\$'
     arguments:
-      before: '(?:#\d\h*;?,?\/?)+|\<.*?\>'
-      between: '_|\^|\*'
+        before: '(?:#\d\h*;?,?\/?)+|\<.*?\>'
+        between: '_|\^|\*'
     trailingComments:
-      notPreceededBy: '(?<!\\)'
+        notPreceededBy: '(?<!\\)'
     modifyLineBreaks:
-      doubleBackSlash: '\\\\(?:\h*\[\h*\d+\h*[a-zA-Z]+\h*\])?'
-      comma: ','
-      betterFullStop: |-
-        (?x)                                # ignore spaces in the below
-        (?:                                 #
-          \.\)                              # .) 
-          (?!\h*[a-z])                      # not *followed by* a-z
-        )                                   #
-        |                                   # OR
-        (?:                                 #
-          (?<!                              # not *preceeded by*
-            (?:                             #
-              (?:[eE]\.[gG])                # e.g OR E.g OR e.G OR E.G
-              |                             #
-              (?:[iI]\.[eE])                # i.e OR I.e OR i.E OR I.E
-              |                             #
-              (?:etc)                       # etc
-            )                               #
-          )                                 #
-        )                                   # 
-        \.                                  # .
-        (?!                                 # not *followed by*
-          (?:                               #
-            [a-zA-Z0-9-~,]                  #
-            |                               #
-            \),                             # ),
-            |                               #
-            \)\.                            # ).
-          )                                 #
-        )                                   #
+        doubleBackSlash: '\\\\(?:\h*\[\h*\d+\h*[a-zA-Z]+\h*\])?'
+        comma: ','
+        betterFullStop: |-
+            (?x)                  # ignore spaces in the below
+            (?:                   #
+              \.\)                # .) 
+              (?!\h*[a-z])        # not *followed by* a-z
+            )                     #
+            |                     # OR
+            (?:                   #
+              (?<!                # not *preceeded by*
+                (?:               #
+                  (?:[eE]\.[gG])  # e.g OR E.g OR e.G OR E.G
+                  |               #
+                  (?:[iI]\.[eE])  # i.e OR I.e OR i.E OR I.E
+                  |               #
+                  (?:etc)         # etc
+                )                 #
+              )                   #
+            )                     # 
+            \.                    # .
+            (?!                   # not *followed by*
+              (?:                 #
+                [a-zA-Z0-9-~,]    #
+                |                 #
+                \),               # ),
+                |                 #
+                \)\.              # ).
+              )                   #
+            )                     #

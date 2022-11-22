@@ -16,7 +16,7 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite,VimResized *
     \   call SetSignColumn(@%, &modifiable)
     \|  let b:numberwidth = &number * (1 + float2nr(ceil(log10(line("$") + 1))))
-    \|  let &textwidth = 79 - b:gutterwidth - b:numberwidth
+    \|  let &textwidth = max([79, winwidth(0)]) - b:gutterwidth - b:numberwidth
     \|  let &breakindentopt = "shift:" . (&ts-1)
 
     " autosave named files

@@ -111,10 +111,15 @@ nnoremap <silent> <leader>p :call TogglePreview()<CR>
 " apply fixers
 nnoremap <silent> <leader>f :ALEFix<CR>
 
+" find-replace
+nnoremap <leader>r :%s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
+vnoremap <leader>r :s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
+
 " case-insensitive searching using '\c'
 noremap <silent> / :echo '/'<CR>/\c
 noremap <silent> ? :echo '?'<CR>?\c
 
+" show buffers list
 nnoremap <leader>b :buffers<CR>:buffer<SPACE>
 
 " other mappings
