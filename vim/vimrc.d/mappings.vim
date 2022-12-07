@@ -9,13 +9,15 @@ let mapleader =  ";"
 "inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
 
 " wrapped lines movement mappings
-noremap  <silent> <Up>    gk
-noremap  <silent> <Down>  gj
 noremap  <silent> k       gk
 noremap  <silent> j       gj
-noremap  <silent> <Home>  g<home>
-inoremap <silent> <Home>  <C-o>g<home>
+noremap  <silent> <Up>    gk
+noremap  <silent> <Down>  gj
+inoremap <silent> <Up>    <C-o>gk
+inoremap <silent> <Down>  <C-o>gj
+noremap  <silent> <Home>  g<Home>
 noremap  <silent> <End>   g<End>
+inoremap <silent> <Home>  <C-o>g<Home>
 inoremap <silent> <End>   <C-o>g<End>
 noremap  <silent> 0       g0
 noremap  <silent> ^       g^
@@ -65,6 +67,10 @@ endif
 "vnoremap <D-v> "+p
 "cnoremap <D-v> <C-r>+
 "vnoremap <D-c> "+y
+
+" swap p and P in visual mode
+vnoremap p P
+vnoremap P p
 
 " toggle LocList
 function! ToggleLocList()
