@@ -25,13 +25,17 @@ augroup vimrc
     " convert always to utf-8
     autocmd BufWinEnter,BufRead,BufWritePost ?* silent! set fileencoding=utf-8
 
-    " don't spell check help files
-    autocmd FileType help set nospell
+    " don't spell check help or QuickFix/LocList buffers
+    autocmd FileType help,qf set nospell
+
+    " remap <Return> so that it won't switch buffers in QuickFix/LocList buffers
+    autocmd FileType qf nnoremap <buffer> <Return> <Return><C-W><C-W>
+
 
     " syntax highlight a minimum of 2000 lines (faster scrolling)
     autocmd Syntax * syn sync minlines=2000 maxlines=2000
 
-    " enable syntax, load default syntax, and show guides for non-text files
+    " enable syntax; for non-text files: load default syntax and show guides for non-text files
     let textFiletypes =
     \   ['markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
     autocmd BufWinEnter,BufRead * nested
@@ -47,6 +51,7 @@ augroup vimrc
     \|  endif
     \|  set concealcursor=cn
     \|  set conceallevel=1
+    \|  let &statusline = my_statusline
 
     " treat certain extensions as xml
     autocmd BufWinEnter,BufRead,BufWritePost
