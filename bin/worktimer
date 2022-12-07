@@ -119,7 +119,8 @@ class Timer():
                     sys.stdout.flush()
                     self._ring_bell = False
 
-        print("\033c\n   " + work_title + "       " + break_title)
+        os.system('clear')
+        print("\n   " + work_title + "       " + break_title)
         print(" " + work_time + "   " + break_time + "\n")
 
     def _load_data(self):
