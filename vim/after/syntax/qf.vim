@@ -3,7 +3,7 @@ syntax match qfInfo "\(|.*\s\=\)\@<=info\(\s\=.*|\)\@=" containedin=ALL containe
 
 exe "hi! link qfSeparator Normal"
 exe "hi! link qfLineNr    SpecialComment"
-exe "hi! link qfFileName  Function"
+exe "hi! link qfFileName  Directory"
 exe "hi! link qfError     Error"
 exe "hi! link qfWarning   Todo"
 exe "hi! link qfInfo      CursorLineNr"
