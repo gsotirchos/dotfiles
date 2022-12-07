@@ -11,7 +11,7 @@ let g:ale_completion_delay = &updatetime
 let g:ale_linters = {
 \   'cpp': ['ccls', 'clang', 'clangtidy', 'cppcheck'],
 \   'python': ['pylsp', 'flake8'],
-\   'tex': ['texlab', 'chktex', 'lacheck', 'proselint', 'write-good'],
+\   'tex': ['texlab', 'chktex', 'lacheck', 'proselint'],
 \}
 let g:ale_fixers = {
 \   'sh': [
