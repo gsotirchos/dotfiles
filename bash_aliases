@@ -58,7 +58,7 @@ alias tree="\
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
 alias vimrc="vim ~/.vim/vimrc"
-alias dunnet="clear && emacs -batch -l dunnet"
+alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
 
 # Python
 if command -v "python" &> /dev/null; then
