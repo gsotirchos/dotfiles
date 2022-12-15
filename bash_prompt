@@ -57,7 +57,9 @@ set_prompt() {
     local OnIWhite='\[\e[107m\]'
 
     # get shell nest level
-    local shell_lvl="$(format_nest_level "${SHLVL}") "
+    if [[ "${SHLVL}" != 1 ]]; then
+        local shell_lvl="$(format_nest_level "${SHLVL}") "
+    fi
 
     # get conda level and environment
     if [[ -n "${CONDA_DEFAULT_ENV}" ]]; then
@@ -67,6 +69,11 @@ set_prompt() {
             local is_stacked="${IBlue}"
         fi
         local conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${Reset})${is_stacked}${conda_lvl}${Reset}"
+    fi
+
+    # get virtualenv level and environment
+    if [[ -n "${VIRTUAL_ENV}" ]]; then
+        local virtualenv_env="(${IGreen}$(basename "${VIRTUAL_ENV}")${Reset}) "
     fi
 
     # check if current dir belongs to overlayed ROS package
@@ -87,7 +94,7 @@ set_prompt() {
     fi
 
     # return the prompt string
-    echo "${shell_lvl}${conda_env}${work_dir}${ros_pkg}"
+    echo "${shell_lvl}${conda_env}${virtualenv_env}${work_dir}${ros_pkg}"
 }
 
 format_nest_level() {
