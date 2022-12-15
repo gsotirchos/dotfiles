@@ -121,7 +121,7 @@ class Timer():
 
         os.system('clear')
         print("\n   " + work_title + "       " + break_title)
-        print(" " + work_time + "   " + break_time + "\n")
+        print(" " + work_time + "   " + break_time)
 
     def _load_data(self):
         """ Check whether an existing file's contents are properly formated """
