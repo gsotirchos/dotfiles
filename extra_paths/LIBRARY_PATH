@@ -1,5 +1,6 @@
 # vim: set ft=bash:
 ${HOMEBREW_PREFIX}/lib
+${HOMEBREW_PREFIX}/opt/curl/lib
 ${HOMEBREW_PREFIX}/opt/llvm/lib
 $(xcrun --show-sdk-path)/usr/lib
 /usr/local/lib

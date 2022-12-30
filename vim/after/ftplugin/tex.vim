@@ -8,7 +8,6 @@ let g:tex_TreatMacViewerAsUNIX = 1
 let g:tex_ExecuteUNIXViewerInForeground = 1
 let g:tex_comment_nospell = 1
 
-" testing
 let g:tex_indent_items=0
 let g:tex_indent_and=0
 let g:tex_indent_brace=0
