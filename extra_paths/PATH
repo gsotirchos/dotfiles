@@ -8,5 +8,6 @@ ${HOME}/.cabal/bin
 ${HOMEBREW_PREFIX}/bin
 ${HOMEBREW_PREFIX}/opt/*/libexec/gnubin
 ${HOMEBREW_PREFIX}/opt/openjdk*/bin
+${HOMEBREW_PREFIX}/opt/curl/bin
 ${HOMEBREW_PREFIX}/opt/llvm/bin
 $(xcrun --show-sdk-path)/usr/bin

@@ -1,6 +1,7 @@
 # vim: set ft=bash:
 ${HOMEBREW_PREFIX}/include
 ${HOMEBREW_PREFIX}/opt/openjdk*/include
+${HOMEBREW_PREFIX}/opt/curl/include
 ${HOMEBREW_PREFIX}/opt/llvm/include
 #${HOMEBREW_PREFIX}/lib/python3.*/site-packages/*/core/include/
 #${HOMEBREW_CELLAR}/python@3.*/*/Frameworks/Python.framework/Headers

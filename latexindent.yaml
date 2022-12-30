@@ -154,7 +154,7 @@ removeTrailingWhitespace:
 lookForAlignDelims:
     tabular:
         delims: 1
-        alignDoubleBackSlash: 1
+        alignDoubleBackSlash: 0
         spacesBeforeDoubleBackSlash: 1
         multiColumnGrouping: 0
         alignRowsWithoutMaxDelims: 1
@@ -175,7 +175,8 @@ lookForAlignDelims:
     listabla: 1
     # amsmath
     align: 1
-    align*: 1
+    align*:
+        alignDoubleBackSlash: 0
     alignat: 1
     alignat*: 1
     aligned: 1
