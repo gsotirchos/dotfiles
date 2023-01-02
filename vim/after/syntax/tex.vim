@@ -24,12 +24,9 @@ hi! link texRefZone          Type
 hi! link texMathMatcher      Normal
 hi! link texMathZoneX        texDocZone
 hi! link texMathZoneX        texDocZone
-hi! link texMathZoneEnv      Clear
-hi! link texMathOper         texMathZoneEnv
+hi! link texMathZone         Normal
 hi! link texMathDelim        texMathZoneEnv
-hi! link texMathGroup        texMathZoneEnv
 hi! link texEnvArgName       Identifier
 hi! link texMathEnvArgName   texEnvArgName
 hi! link texDelim            MembOperator
 hi! link texMathSuperSub     texDelim
-hi! link texMathDelimZoneTI  Delimiter
