@@ -58,7 +58,7 @@ set numberwidth=1  " smallest width at start
 set wrap  " wrap long lines
 set showmatch  " show matching parentheses
 set noshowcmd  " hide typed command
-let &fillchars = 'vert:│,diff:-,eob: ,lastline:…,fold: '
+let &fillchars = 'vert:│,diff:-,eob: ,lastline:.,fold: '
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
 let &listchars = 'tab:|->,trail:·,conceal:*,extends:…,precedes:…,nbsp:_'

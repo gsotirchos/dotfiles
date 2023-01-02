@@ -1,2 +1,2 @@
 set nonumber
-set nowrap
+set wrap
