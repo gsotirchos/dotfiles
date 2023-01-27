@@ -5,16 +5,16 @@ nnoremap <c-z> <nop>
 let mapleader =  ";"
 
 " autocompletion mappings
-"inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
-"inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
+inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
+inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
 
 " wrapped lines movement mappings
 noremap  <silent> k       gk
 noremap  <silent> j       gj
 noremap  <silent> <Up>    gk
 noremap  <silent> <Down>  gj
-inoremap <silent> <Up>    <C-o>gk
-inoremap <silent> <Down>  <C-o>gj
+"inoremap <silent> <Up>    <C-o>gk
+"inoremap <silent> <Down>  <C-o>gj
 noremap  <silent> <Home>  g<Home>
 noremap  <silent> <End>   g<End>
 inoremap <silent> <Home>  <C-o>g<Home>
