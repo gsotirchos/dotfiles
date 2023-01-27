@@ -116,6 +116,11 @@ main() {
     # Conda
     if [[ -f ~/.conda/conda_init ]]; then
         source ~/.conda/conda_init
+
+        if [[ -n "${CONDA_PREFIX}" ]]; then
+            conda deactivate
+            conda activate "$(basename "${CONDA_PREFIX}")"
+        fi
     fi
 
     # ROS
