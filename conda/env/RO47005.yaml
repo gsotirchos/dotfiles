@@ -1,4 +1,4 @@
-name: gym_env
+name: pdm
 channels:
   - conda-forge
   - defaults

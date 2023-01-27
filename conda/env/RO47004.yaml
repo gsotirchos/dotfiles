@@ -1,0 +1,39 @@
+name: mp-iv
+channels:
+  - apple
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8  # Python! Not using latest version as some libs lack support
+  - ipython  # a powerful Python shell
+  - jupyter  # to edit and run Jupyter notebooks
+  - matplotlib  # beautiful plots. See tutorial tools_matplotlib.ipynb
+  - numpy  # Powerful n-dimensional arrays and numerical computing tools
+  - scikit-learn  # machine learning library
+  - scikit-image  # machine learning library
+  - scipy  # scientific/technical computing library
+  - shapely
+  - ffmpeg
+  - k3d  # Visualization library
+  - opencv  # computer vision library
+  - ipympl
+  - jupyter_client
+  - nest-asyncio
+  - tqdm  # progress bars
+  - transforms3d
+  - funcy  # for timing
+  - tensorflow-deps  # dependencies of pip tensorflow below
+  - nbqa  # code quality (jupyter notebooks)
+  - pylint  # code quality
+  - mypy  # code quality
+  - pyupgrade  # code quality
+  - flake8  # code quality
+  - isort  # code quality
+  - pip
+  - pip:
+    - open3d  # 3D point cloud algorithms
+    - ipynb  # import symbols from other notebooks
+    - tensorflow-macos
+    - tensorflow-metal
+    - vulture
+
