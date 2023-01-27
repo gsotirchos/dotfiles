@@ -70,6 +70,11 @@ if command -v "python" &> /dev/null; then
     #    && pip cache purge"
 fi
 
+# iPython
+if command -v "ipython" &> /dev/null; then
+    alias ipy="ipython"
+fi
+
 # Conda
 if command -v "conda" &> /dev/null; then
     if command -v "mamba" &> /dev/null; then
