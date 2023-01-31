@@ -11,7 +11,8 @@ hi! link texPartConcArgTitle SpecialComment
 hi! link texInputFile        PreProc
 hi! link texBeginEnd         texStatement
 hi! link texBeginEndName     Identifier
-hi! link TexSpecialChar      Special
+hi! link texSpecialChar      Special
+hi! link texOptEqual         Normal
 
 hi! link texCmdStyle         Type
 hi! link texCmdStyleBold     texCmdStyle
