@@ -1,5 +1,5 @@
 source ${HOME}/.vim/after/ftplugin/markdown.vim
-set formatoptions=atwcqlp2
+set formatoptions=awtcrqlp2
 set colorcolumn=+2
 
 let g:tex_flavor = 'latex'
