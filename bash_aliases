@@ -43,6 +43,11 @@ empty_trash() {
     fi
 }
 
+# function to make a .url file with given link
+make_url() {
+    echo -e "[InternetShortcut]\nURL=$2" > "$1"
+}
+
 # System
 alias rm=trash                  # trash files instead of deleting
 alias mv="mv -iv"               # confirmatory, verbose move
