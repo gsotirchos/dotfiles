@@ -123,6 +123,8 @@ fi
 # make git prompt command available
 if [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh" ]]; then
     source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh"
+elif [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt" ]]; then
+    source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt"
 fi
 
 # git prompt options
