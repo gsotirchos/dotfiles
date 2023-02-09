@@ -149,6 +149,16 @@ main() {
     if [[ -f "${dotfiles}"/completion_dirs ]]; then
         source "${macos_dotfiles}"/etc/source_dirs_list.sh "${dotfiles}"/completion_dirs
     fi
+
+    # iTerm2 shell integration
+    if [[ "${os}" == "macos" ]]; then
+        if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
+            curl -L https://iterm2.com/shell_integration/bash \
+                -o ~/.iterm2_shell_integration.bash
+        fi
+
+        source ~/.iterm2_shell_integration.bash
+    fi
 }
 
 main "$@"
