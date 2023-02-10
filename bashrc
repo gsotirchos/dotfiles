@@ -42,12 +42,12 @@ main() {
         source "${macos_dotfiles}"/etc/append_to_paths.sh "${dotfiles}"/extra_paths
     fi
 
-    # prepare dynamic libraries path
-    if [[ "${os}" == "linux" ]]; then
-        export LD_LIBRARY_PATH="${LIBRARY_PATH}"
-    elif [[ "${os}" == "macos" ]]; then
-        export DYLD_LIBRARY_PATH="${LIBRARY_PATH}"
-    fi
+    ## prepare dynamic libraries path
+    #if [[ "${os}" == "linux" ]]; then
+    #    export LD_LIBRARY_PATH="${LIBRARY_PATH}"
+    #elif [[ "${os}" == "macos" ]]; then
+    #    export DYLD_LIBRARY_PATH="${LIBRARY_PATH}"
+    #fi
 
     # set the locale to English
     export LC_ALL="en_US.UTF-8"
