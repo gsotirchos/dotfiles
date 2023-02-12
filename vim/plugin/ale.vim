@@ -23,10 +23,10 @@ let g:ale_fixers = {
 \   'cpp': [
 \       {-> execute('undojoin', 'silent!') + 0},
 \       'clang-format'],
-"\   'python': [
-"\       {-> execute('undojoin', 'silent!') + 0},
-"\       'isort',
-"\       'autopep8'],
+\   'python': [
+\       {-> execute('undojoin', 'silent!') + 0},
+\       'isort',
+\       'autopep8'],
 \   'tex': [
 \       {-> execute('undojoin', 'silent!') + 0},
 \       'latexindent'],
