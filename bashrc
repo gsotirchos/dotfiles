@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090,SC1091
 
 #
 # ~/.bashrc
@@ -30,14 +31,15 @@ main() {
     local macos_dotfiles="${HOME}"/.macos-dotfiles
 
     # set macos-dotfiles path
-    if [[ "${dotfiles}" == "${HOME}/.dotfiles" ]]; then
-        local macos_dotfiles="${dotfiles}"
+    if [[ "${dotfiles}" == "${HOME}"/.dotfiles ]]; then
+        macos_dotfiles="${dotfiles}"
     else
-        dotfiles="${HOME}/.dotfiles"
-        local macos_dotfiles="${HOME}/.macos-dotfiles"
+        dotfiles="${HOME}"/.dotfiles
+        macos_dotfiles="${HOME}"/.macos-dotfiles
     fi
+    echo -e "${dotfiles}\n${macos_dotfiles}"
 
-    # append extra paths from files to $PATH, $CPATH, $LIBRARY_PATH, etc.
+    # append extra paths from files to $PATH, $LIBRARY_PATH, etc.
     if [[ -d "${dotfiles}"/extra_paths ]]; then
         source "${macos_dotfiles}"/etc/append_to_paths.sh "${dotfiles}"/extra_paths
     fi
