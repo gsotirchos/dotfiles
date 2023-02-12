@@ -92,7 +92,7 @@ set scrolloff=3  " lines to scoll before the reaching last
 set sidescrolloff=5  " columnts to sroll before reaching the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set wrap lbr  " wrap lines by word
-set formatoptions=  " no automatic line breaking
+set formatoptions=1jnpr  " no automatic line breaking
 set breakindent  " wrap preserving indentation
 set display+=lastline  " show last wrapped line in window
 set shell=$SHELL\ -l  " login shell for 'term'

@@ -1,2 +1,2 @@
 set spell spelllang=en_us,el,cjk
-set formatoptions=
+set formatoptions+=aclqtw2
