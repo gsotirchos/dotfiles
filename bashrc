@@ -37,7 +37,6 @@ main() {
         dotfiles="${HOME}"/.dotfiles
         macos_dotfiles="${HOME}"/.macos-dotfiles
     fi
-    echo -e "${dotfiles}\n${macos_dotfiles}"
 
     # append extra paths from files to $PATH, $LIBRARY_PATH, etc.
     if [[ -d "${dotfiles}"/extra_paths ]]; then
