@@ -7,6 +7,14 @@ let g:ale_fix_on_save = 1
 let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = &updatetime
+let g:ale_virtualtext_delay = &updatetime
+let g:ale_virtualtext_prefix = '%type%: '
+
+hi! ALEVirtualTextError   cterm=NONE ctermfg=1 ctermbg=0
+hi! ALEVirtualTextWarning cterm=NONE ctermfg=3 ctermbg=0
+hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8 ctermbg=0
+hi! link ALEVirtualTextStyleError ALEVirtualTextInfo
+hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
 
 let g:ale_linters = {
 \   'cpp': ['ccls', 'clang', 'clangtidy', 'cppcheck'],
