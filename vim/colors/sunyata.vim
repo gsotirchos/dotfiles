@@ -98,7 +98,7 @@ exe "hi! link PreCondit PreProc"
 
 " types
 exe "hi! Type           cterm=bold      ctermfg=13   ctermbg=NONE gui=bold      guifg=".color_13" guibg=".color_bg
-"exe "hi! link Type Statement"
+"exe "hi! link Type         Statement"
 exe "hi! link Structure    Statement"
 exe "hi! link StorageClass Statement"
 exe "hi! link Typedef      Statement"
@@ -158,3 +158,10 @@ exe "hi! link Conceal    LineNr"
 exe "hi! link Ignore     Conceal"
 exe "hi! link SpecialKey Conceal"
 exe "hi! link NonText    Conceal"
+
+" ALE
+exe "hi! ALEVirtualTextError   cterm=NONE ctermfg=1  ctermbg=0    gui=NONE      guifg=".color_1"  guibg=".color_0
+exe "hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=0    gui=NONE      guifg=".color_3"  guibg=".color_0
+exe "hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8  ctermbg=0    gui=NONE      guifg=".color_8"  guibg=".color_0
+exe "hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo"
+exe "hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo"
