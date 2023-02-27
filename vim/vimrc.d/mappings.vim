@@ -132,3 +132,4 @@ nnoremap <leader>b :buffers<CR>:buffer<SPACE>
 nnoremap o o<Esc>
 nnoremap O O<Esc>
 nnoremap <silent> <leader>d :ALEGoToDefinition \| new<CR>
+nnoremap <silent> <leader>a <Plug>DashSearch
