@@ -519,7 +519,7 @@ modifyLineBreaks:
             questionMark: 1
             other: 0
     textWrapOptions:
-        columns: 70
+        columns: 100
         multipleSpacesToSingle: 1
         removeBlockLineBreaks: 1
         blocksFollow:

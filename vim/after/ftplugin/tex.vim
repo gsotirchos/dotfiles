@@ -1,5 +1,6 @@
 source ${HOME}/.vim/after/ftplugin/markdown.vim
 set colorcolumn=+2
+set complete-=i  " don't scan included files
 
 let g:tex_flavor = 'latex'
 let g:tex_DefaultTargetFormat = 'pdf'
