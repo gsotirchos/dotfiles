@@ -177,7 +177,8 @@ TabSize = 8
 
 CmdLine
 {
-
+  --nowarn 1   # disable 'Command terminated with space.'
+  --nowarn 37  # disable 'You should avoid spaces after parenthesis.'
 }
 
 #####################################################################

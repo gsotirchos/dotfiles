@@ -26,7 +26,8 @@ hi! link texMathMatcher      Normal
 hi! link texMathZoneX        texDocZone
 hi! link texMathZoneX        texDocZone
 hi! link texMathZone         Normal
-hi! link texMathDelim        texMathZoneEnv
+hi! link texMathDelim        Delimiter
+hi! link texMathDelimMod     texCmdStyle
 hi! link texEnvArgName       Identifier
 hi! link texMathEnvArgName   texEnvArgName
 hi! link texDelim            MembOperator
