@@ -160,8 +160,8 @@ exe "hi! link SpecialKey Conceal"
 exe "hi! link NonText    Conceal"
 
 " ALE
-exe "hi! ALEVirtualTextError   cterm=NONE ctermfg=1  ctermbg=0    gui=NONE      guifg=".color_1"  guibg=".color_0
-exe "hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=0    gui=NONE      guifg=".color_3"  guibg=".color_0
-exe "hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8  ctermbg=0    gui=NONE      guifg=".color_8"  guibg=".color_0
+exe "hi! ALEVirtualTextError   cterm=NONE ctermfg=9  ctermbg=0    gui=NONE      guifg=".color_9"  guibg=".color_0
+exe "hi! ALEVirtualTextWarning cterm=NONE ctermfg=11  ctermbg=0    gui=NONE      guifg=".color_11"  guibg=".color_0
+exe "hi! ALEVirtualTextInfo    cterm=NONE ctermfg=7  ctermbg=0    gui=NONE      guifg=".color_7"  guibg=".color_0
 exe "hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo"
 exe "hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo"
