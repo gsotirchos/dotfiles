@@ -34,6 +34,7 @@ dependencies:
   - cached_property
   - cairo
   - casadi
+  - certifi
   - cffi
   - charset-normalizer
   - cloudpickle
@@ -41,8 +42,6 @@ dependencies:
   - comm
   - contourpy
   - cryptography
-  - cvxpy
-  - cvxpy-base
   - cycler
   - dataclasses
   - debugpy
@@ -56,6 +55,7 @@ dependencies:
   - expat
   - ffmpeg
   - fftw
+  - filelock
   - flake8
   - flit-core
   - font-ttf-dejavu-sans-mono
@@ -70,11 +70,16 @@ dependencies:
   - freetype-py
   - future
   - gettext
+  - glib
+  - glib-tools
   - glpk
   - gmp
   - gmpy2
   - gnutls
   - graphite2
+  - grpc-cpp
+  - gst-plugins-base
+  - gstreamer
   - harfbuzz
   - hdf5
   - hydra-core
@@ -102,6 +107,7 @@ dependencies:
   - jupyter_core
   - jupyter_events
   - jupyter_server
+  - jupyter_server_terminals
   - jupyterlab_pygments
   - jupyterlab_widgets
   - keras
@@ -111,11 +117,14 @@ dependencies:
   - lazy-object-proxy
   - lcms2
   - lerc
+  - libabseil
+  - libaec
   - libblas
   - libbrotlicommon
   - libbrotlidec
   - libbrotlienc
   - libcblas
+  - libclang13
   - libcurl
   - libcxx
   - libdeflate
@@ -125,16 +134,21 @@ dependencies:
   - libgfortran
   - libgfortran5
   - libglib
+  - libgrpc
   - libiconv
   - libidn2
   - libjpeg-turbo
   - liblapack
   - liblapacke
+  - libllvm14
   - libnghttp2
+  - libogg
   - libopenblas
   - libopencv
+  - libopus
   - libosqp
   - libpng
+  - libpq
   - libprotobuf
   - libqdldl
   - libsodium
@@ -143,6 +157,7 @@ dependencies:
   - libtasn1
   - libtiff
   - libunistring
+  - libvorbis
   - libvpx
   - libwebp-base
   - libxcb
@@ -164,6 +179,8 @@ dependencies:
   - mumps-include
   - mumps-seq
   - munkres
+  - mysql-common
+  - mysql-libs
   - nbclassic
   - nbclient
   - nbconvert
@@ -177,6 +194,8 @@ dependencies:
   - ninja
   - notebook
   - notebook-shim
+  - nspr
+  - nss
   - numpy
   - omegaconf
   - openblas
@@ -221,6 +240,8 @@ dependencies:
   - pyopengl
   - pyopenssl
   - pyparsing
+  - pyqt
+  - pyqt5-sip
   - pyrender
   - pyrsistent
   - pysocks
@@ -238,6 +259,11 @@ dependencies:
   - pyyaml
   - pyzmq
   - qdldl-python
+  - qt-main
+  - qtconsole
+  - qtconsole-base
+  - qtpy
+  - re2
   - readline
   - requests
   - rfc3339-validator
@@ -251,6 +277,7 @@ dependencies:
   - seaborn-base
   - send2trash
   - setuptools
+  - sip
   - six
   - sniffio
   - snowballstemmer
@@ -281,6 +308,7 @@ dependencies:
   - ujson
   - unicodedata2
   - unixodbc
+  - urllib3
   - wcwidth
   - webencodings
   - websocket-client
@@ -306,48 +334,47 @@ dependencies:
   - zstandard
   - zstd
   - pip:
-      - absl-py
-      - astunparse
-      - cachetools
-      - certifi
-      - flatbuffers
-      - gast
-      - geomdl
-      - ghalton
-      - google-auth
-      - google-auth-oauthlib
-      - google-pasta
-      - grpcio
-      - gym
-      - gym-notices
-      - h5py
-      - iniconfig
-      - ipynb
-      - keras-preprocessing
-      - libclang
-      - markdown
-      - oauthlib
-      - opt-einsum
-      - pillow
-      - pip-upgrade-outdated
-      - protobuf
-      - py
-      - pyasn1
-      - pyasn1-modules
-      - pyglet
-      - pyobjc-core
-      - pyobjc-framework-applicationservices
-      - pyobjc-framework-cocoa
-      - pyobjc-framework-quartz
-      - pytest
-      - requests-oauthlib
-      - rsa
-      - tensorboard
-      - tensorboard-data-server
-      - tensorboard-plugin-wit
-      - tensorflow-estimator
-      - tensorflow-macos
-      - tensorflow-metal
-      - termcolor
-      - urllib3
-      - werkzeug
+    - absl-py
+    - astunparse
+    - cachetools
+    - exceptiongroup
+    - flatbuffers
+    - gast
+    - geomdl
+    - ghalton
+    - google-auth
+    - google-auth-oauthlib
+    - google-pasta
+    - grpcio
+    - gym
+    - gym-notices
+    - h5py
+    - iniconfig
+    - ipynb
+    - keras-preprocessing
+    - libclang
+    - markdown
+    - oauthlib
+    - opt-einsum
+    - pillow
+    - pip-upgrade-outdated
+    - protobuf
+    - py
+    - pyasn1
+    - pyasn1-modules
+    - pyglet
+    - pyobjc-core
+    - pyobjc-framework-applicationservices
+    - pyobjc-framework-cocoa
+    - pyobjc-framework-quartz
+    - pytest
+    - requests-oauthlib
+    - rsa
+    - tensorboard
+    - tensorboard-data-server
+    - tensorboard-plugin-wit
+    - tensorflow-estimator
+    - tensorflow-macos
+    - tensorflow-metal
+    - termcolor
+    - werkzeug
