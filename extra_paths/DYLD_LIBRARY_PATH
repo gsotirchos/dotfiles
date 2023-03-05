@@ -1,4 +1,4 @@
-# vim: set ft=bash:
+# vim: set ft=sh:
 #${HOMEBREW_PREFIX}/lib
 #${HOMEBREW_PREFIX}/opt/libomp/lib
 #${HOMEBREW_PREFIX}/opt/curl/lib
