@@ -14,6 +14,7 @@ hi! link pythonOperator    Statement
 hi! link pythonImport      Statement
 hi! link pythonNone        Function
 hi! link pythonClass       Identifier
+hi! link PythonExClass     OtherType
 hi! link pythonDecorator   pythonDottedName
 hi! link pythonBuiltinObj  Function
 hi! link pythonBuiltinType OtherType
