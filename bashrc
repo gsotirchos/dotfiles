@@ -129,11 +129,11 @@ main() {
         # source system's ROS environment
         source /opt/ros/noetic/setup.bash
 
-        # source user's Catkin workspace's enfironment
-        local catkin_ws="$(find ~ -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
-        if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
-            source "${catkin_ws}"/devel/setup.bash
-        fi
+        ## source user's Catkin workspace's enfironment
+        #local catkin_ws="$(find ~ -maxdepth 3 -name "catkin_ws" 2> /dev/null | head -1)"
+        #if [[ -f "${catkin_ws}"/devel/setup.bash ]]; then
+        #    source "${catkin_ws}"/devel/setup.bash
+        #fi
     fi
 
     # aliases
