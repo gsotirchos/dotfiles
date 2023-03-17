@@ -55,7 +55,7 @@ alias cp="cp -ivr"              # confirmatory, verbose, recursive
 alias ln="ln -iv"               # confirmatory, verbose
 alias ls="ls -h --color=always" # human-readable, colored
 alias ll="ls -l"                # list ls := ll
-alias grep="grep --color -E"    # colored, enable extended regexp
+alias grep="grep --color -E -n" # colored, extended regexp, line no.
 alias tree="\
     tree -lNC -L 2 \
     --dirsfirst \
