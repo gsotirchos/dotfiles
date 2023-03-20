@@ -13,6 +13,7 @@ hi! link texBeginEnd         texStatement
 hi! link texBeginEndName     Identifier
 hi! link texSpecialChar      Special
 hi! link texOptEqual         Normal
+hi! link texOpt              Function
 
 hi! link texCmdStyle         Type
 hi! link texCmdStyleBold     texCmdStyle
