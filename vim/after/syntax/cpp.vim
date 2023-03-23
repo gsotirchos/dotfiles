@@ -37,30 +37,32 @@ hi! link cEnumTag     cMemberTag
 
 " Doxygen
 set syntax=cpp.doxygen
-hi! link doxygenComment              Comment
-hi! link doxygenStart                doxygenComment
-hi! link doxygenSkipComment          doxygenComment
-hi! link doxygenContinueComment      doxygenComment
-hi! link doxygenBody                 Normal
-hi! link doxygenSpecialIdent         doxygenBody
-hi! link doxygenSpecialMultilineDesc doxygenBody
-hi! link doxygenBrief                doxygenBody
-hi! link doxygenHtmlVar              doxygenBody
-hi! link doxygenParamDirection       doxygenBody
-hi! link doxygenParamName            SpecialComment
-hi! link doxygenSpecialSectionDesc   doxygenParamName
-hi! link doxygenBriefLine            doxygenParamName
-hi! link doxygenHtmlCh               doxygenParamName
-hi! link doxygenHtmlCmd              doxygenParamName
-hi! link doxygenFormula              doxygenParamName
-hi! link doxygenFormulaSpecial       doxygenFormula
-hi! link doxygenFormulaKeyword       doxygenFormula
-hi! link doxygenSpecial              Comment
-hi! link doxygenStartL               doxygenSpecial
-hi! link doxygenSmallSpecial         doxygenSpecial
-hi! link doxygenBriefWord            doxygenSpecial
-hi! link doxygenParam                doxygenSpecial
-hi! link doxygenSpecialBoldWord      doxygenSpecial
+hi! link doxygenComment                Comment
+hi! link doxygenStart                  doxygenComment
+hi! link doxygenSkipComment            doxygenComment
+hi! link doxygenContinueComment        doxygenComment
+hi! link doxygenBody                   Normal
+hi! link doxygenSpecialIdent           doxygenBody
+hi! link doxygenSpecialMultilineDesc   doxygenBody
+hi! link doxygenSpecialTypeOnelineDesc doxygenBody
+hi! link doxygenBrief                  doxygenBody
+hi! link doxygenHtmlVar                doxygenBody
+hi! link doxygenParamDirection         doxygenBody
+hi! link doxygenParamName              SpecialComment
+hi! link doxygenSpecialSectionDesc     doxygenParamName
+hi! link doxygenBriefLine              doxygenParamName
+hi! link doxygenHtmlCh                 doxygenParamName
+hi! link doxygenHtmlCmd                doxygenParamName
+hi! link doxygenFormula                doxygenParamName
+hi! link doxygenFormulaSpecial         doxygenFormula
+hi! link doxygenFormulaKeyword         doxygenFormula
+hi! link doxygenSpecial                Comment
+hi! link doxygenBOther                 doxygenSpecial
+hi! link doxygenStartL                 doxygenSpecial
+hi! link doxygenSmallSpecial           doxygenSpecial
+hi! link doxygenBriefWord              doxygenSpecial
+hi! link doxygenParam                  doxygenSpecial
+hi! link doxygenSpecialBoldWord        doxygenSpecial
 
 augroup cpp_syntax
     autocmd BufWinEnter *.cpp syntax match myScopeOperator "::" containedin=.*FunctionTag.* contained
