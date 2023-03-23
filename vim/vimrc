@@ -68,7 +68,7 @@ let &listchars = 'tab:|->,trail:·,conceal:*,extends:…,precedes:…,nbsp:_'
 function! MyFoldText()  " custom fold text
     let sub1 = substitute(getline(v:foldstart), '\(^\s*\S.\{,80}\S\)\%(\s.\{-}\)\=$', '\1', 'g')
     let sub2 = substitute(getline(v:foldend), '^\%(.\{-}\s*\)\=\(\S.\{,25}\)$', '\1', 'g')
-    return (sub1 . ' ...' . sub2 .'  (' . (v:foldend - v:foldstart + 1) . ' lines)')
+    return (sub1 . ' ... ' . sub2 .'  (' . (v:foldend - v:foldstart + 1) . ' lines)')
 endfunction
 set foldtext=MyFoldText()
 function! Pad(s,amt)  " add right padding to string
