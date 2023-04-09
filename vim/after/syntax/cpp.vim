@@ -62,6 +62,7 @@ hi! link doxygenStartL                 doxygenSpecial
 hi! link doxygenSmallSpecial           doxygenSpecial
 hi! link doxygenBriefWord              doxygenSpecial
 hi! link doxygenParam                  doxygenSpecial
+hi! link doxygenParamDirection         doxygenSpecial
 hi! link doxygenSpecialBoldWord        doxygenSpecial
 
 augroup cpp_syntax
