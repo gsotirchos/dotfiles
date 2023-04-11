@@ -64,6 +64,7 @@ main() {
     export CXX="$(which clang++)"
     export CXX_STD="c++17"
     export CMAKE_GENERATOR="Ninja"
+    export CMAKE_EXPORT_COMPILE_COMMANDS=1
 
     # append to the history file, don't overwrite it
     shopt -s histappend
