@@ -1,0 +1,1 @@
+Checks: '*,-llvm-*,-llvmlibc-*,-google-*,-fuchsia-*,-modernize-use-trailing-return-type'
