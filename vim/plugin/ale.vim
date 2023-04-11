@@ -48,12 +48,6 @@ let g:ale_sh_shfmt_options = '-i 4 -ci -bn -sr'
 let g:ale_cpp_ccls_init_options = {'cache': {'directory': '/tmp/ccls/cache'}}
 let g:ale_cpp_cc_executable = $CXX
 let g:ale_cpp_cc_options = '-std=' . $CXX_STD . ' -Wall -Wextra'
-let g:ale_cpp_clangtidy_checks = [
-\   '*',
-\   '-llvm-*',
-\   '-llvmlibc-*',
-\   '-google-*',
-\   '-fuchsia-*']
 let g:ale_cpp_clangtidy_options = '-std=' . $CXX_STD
 let g:ale_cpp_cppcheck_options = '--enable=all'
 
