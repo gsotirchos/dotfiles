@@ -1,2 +1,4 @@
 set spell spelllang=en_us,el,cjk
-set formatoptions+=aclqtw2
+set formatoptions+=acltw2
+set formatoptions-=q
+"let g:vim_markdown_auto_insert_bullets = 1
