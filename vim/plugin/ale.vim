@@ -1,21 +1,16 @@
 " ALE
 let g:ale_echo_msg_format = '〈%linter%〉%s %(code)%'
 let g:ale_sign_column_always = 1
-let g:ale_sign_error = '┃'
-let g:ale_sign_warning = '┃'
+let g:ale_sign_error = '▐'
+let g:ale_sign_warning = '▐'
 let g:ale_fix_on_save = 0  " TODO
 let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = &updatetime
 let g:ale_virtualtext_delay = &updatetime
 let g:ale_virtualtext_single = 1
-let g:ale_virtualtext_prefix = '〈%linter%〉%type%: '
-
-hi! ALEVirtualTextError   cterm=NONE ctermfg=1 ctermbg=0
-hi! ALEVirtualTextWarning cterm=NONE ctermfg=3 ctermbg=0
-hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8 ctermbg=0
-hi! link ALEVirtualTextStyleError ALEVirtualTextInfo
-hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
+"let g:ale_virtualtext_prefix = '〈%linter%〉%type%: '
+let g:ale_virtualtext_prefix = ''
 
 let g:ale_linters = {
 \   'cpp': ['ccls', 'clang', 'clangtidy', 'cppcheck'],
