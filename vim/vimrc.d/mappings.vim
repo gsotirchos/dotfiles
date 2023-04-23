@@ -68,6 +68,9 @@ endif
 "cnoremap <D-v> <C-r>+
 "vnoremap <D-c> "+y
 
+" mab Shift+Tab to Ctrl+O in normal mode
+nnoremap <S-Tab> <C-o>
+
 " swap p and P in visual mode
 vnoremap p P
 vnoremap P p
