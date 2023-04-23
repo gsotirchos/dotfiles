@@ -58,12 +58,12 @@ main() {
     export SHELL="$(which bash)"
 
     # set cmake makefile generator, compiler, and standard
-    export CC="$(which gcc-7)"
-    export CXX="$(which g++-7)"
-    #export CC="$(which clang)"
-    #export CXX="$(which clang++)"
+    #export CC="$(which gcc-7)"
+    #export CXX="$(which g++-7)"
+    export CC="$(which clang)"
+    export CXX="$(which clang++)"
     export CXX_STD="c++17"
-    #export CMAKE_GENERATOR="Ninja"
+    export CMAKE_GENERATOR="Ninja"
     export CMAKE_EXPORT_COMPILE_COMMANDS=1
 
     # append to the history file, don't overwrite it
