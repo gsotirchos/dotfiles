@@ -8,6 +8,7 @@ let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = &updatetime
 let g:ale_virtualtext_delay = &updatetime
+let g:ale_virtualtext_single = 1
 let g:ale_virtualtext_prefix = '〈%linter%〉%type%: '
 
 hi! ALEVirtualTextError   cterm=NONE ctermfg=1 ctermbg=0
