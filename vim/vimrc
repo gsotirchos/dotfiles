@@ -75,7 +75,7 @@ function! Pad(s,amt)  " add right padding to string
     return a:s . repeat(' ',a:amt - len(a:s))
 endfunction
 set laststatus=2  " always show statusline
-let my_statusline = ' %{%exists("w:quickfix_title")? "%(%q%) %<" . w:quickfix_title : "%(%w%y%) %<%F"%}%-5(%m%)%a%= L: %l/%L  C: %c/%{Pad(strwidth(getline(".")), 4)}'
+let my_statusline = ' %{%empty(expand("%"))? "%q" : "%w%y %<%-" . (winwidth(0) / 4) . "(" . expand("%:~:h") . "/%)%-" . (winwidth(0) / 6) . "(%)" . expand("%:~:t") . "%m%a"%}%{%"%-" . (winwidth(0)  / 6) . "(%)"%}%= L: %l/%L  C: %c/%{Pad(strwidth(getline(".")), 4)}'
 
 " behaviour
 set timeoutlen=1500  " set leader timeout to 1.5s
