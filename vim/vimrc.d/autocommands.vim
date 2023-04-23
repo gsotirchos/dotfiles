@@ -1,11 +1,11 @@
 function! SetSignColumn(file_name, is_modifiable)
-    if empty(a:file_name) || !a:is_modifiable
+    "if empty(a:file_name) || !a:is_modifiable
         let &signcolumn = 'no'
         let b:gutterwidth = 0
-    elseif (&signcolumn =~ '')
-        let &signcolumn = 'yes'
-        let b:gutterwidth = 2
-    endif
+    "elseif (&signcolumn =~ '')
+    "    let &signcolumn = 'yes'
+    "    let b:gutterwidth = 2
+    "endif
 endfunction
 
 augroup vimrc
