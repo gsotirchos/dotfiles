@@ -131,5 +131,7 @@ nnoremap <leader>b :buffers<CR>:buffer<SPACE>
 " other mappings
 nnoremap o o<Esc>
 nnoremap O O<Esc>
-nnoremap <silent> <leader>d :ALEGoToDefinition \| new<CR>
-nnoremap <silent> <leader>a <Plug>DashSearch
+nnoremap <silent> <leader>d :ALEGoToDefinition<CR>
+nnoremap <silent> <leader>t :ALEGoToTypeDefinition<CR>
+nnoremap <silent> <leader>i :ALEGoToImplementation<CR>
+"nnoremap <silent> <leader>a <Plug>DashSearch
