@@ -147,7 +147,7 @@ exe "hi! link FoldColumn       EndOfBuffer"
 
 " menus and messages
 exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
-exe "hi! ToolbarLine    cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      guifg=" . color_fg "guibg=" .color_8
+exe "hi! ToolbarLine    cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      guifg=" . color_fg "guibg=" . color_8
 exe "hi! ToolbarButton  cterm=bold      ctermfg=0    ctermbg=7    gui=NONE      guifg=" . color_0  "guibg=" . color_7
 exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=" . color_0  "guibg=" . color_3
 exe "hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=" . color_fg "guibg=" . color_0
@@ -165,8 +165,8 @@ exe "hi! link SpecialKey  Conceal"
 exe "hi! link NonText     Conceal"
 
 " ALE
-exe "hi! ALEVirtualTextError   cterm=NONE ctermfg=9  ctermbg=0    gui=NONE      guifg=" . color_9  "guibg=" . color_0
-exe "hi! ALEVirtualTextWarning cterm=NONE ctermfg=11 ctermbg=0    gui=NONE      guifg=" . color_11 "guibg=" . color_0
-exe "hi! ALEVirtualTextInfo    cterm=NONE ctermfg=7  ctermbg=0    gui=NONE      guifg=" . color_7  "guibg=" . color_0
+exe "hi! ALEVirtualTextError   cterm=NONE ctermfg=1  ctermbg=NONE gui=NONE      guifg=" . color_1  "guibg=" . color_bg
+exe "hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
+exe "hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8  ctermbg=NONE gui=NONE      guifg=" . color_8  "guibg=" . color_bg
 exe "hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo"
 exe "hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo"
