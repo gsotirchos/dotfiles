@@ -29,7 +29,7 @@ hi! link cppSTLiterator  cppSTLvariable
 hi! link cppSTLexception cppSTLvariable
 
 " vim-easytags
-hi! link cPreProcTag  Error
+hi! link cPreProcTag  Constant
 hi! link cTypeTag     cppNamespace
 "hi! link cFunctionTag cFunction
 hi! link cMemberTag   cMember

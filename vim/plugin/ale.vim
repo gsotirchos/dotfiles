@@ -10,7 +10,7 @@ let g:ale_completion_delay = &updatetime
 let g:ale_virtualtext_delay = &updatetime
 let g:ale_virtualtext_single = 1
 "let g:ale_virtualtext_prefix = '〈%linter%〉%type%: '
-let g:ale_virtualtext_prefix = ''
+let g:ale_virtualtext_prefix = ' ◀︎ '
 
 let g:ale_linters = {
 \   'cpp': ['ccls', 'clang', 'clangtidy', 'cppcheck'],
