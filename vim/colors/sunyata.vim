@@ -167,6 +167,6 @@ exe "hi! link NonText     Conceal"
 " ALE
 exe "hi! ALEVirtualTextError   cterm=NONE ctermfg=1  ctermbg=NONE gui=NONE      guifg=" . color_1  "guibg=" . color_bg
 exe "hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
-exe "hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8  ctermbg=NONE gui=NONE      guifg=" . color_8  "guibg=" . color_bg
+exe "hi! ALEVirtualTextInfo    cterm=NONE ctermfg=0  ctermbg=NONE gui=NONE      guifg=" . color_0  "guibg=" . color_bg
 exe "hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo"
 exe "hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo"
