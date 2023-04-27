@@ -1,3 +1,13 @@
+function! SetSyntax(num_lines)
+    if a:num_lines >= 500
+        syntax sync minlines=500
+        set redrawtime=5000
+    else
+        syntax sync fromstart
+        set redrawtime=2000
+    endif
+endfunction
+
 function! SetSignColumn(file_name, is_modifiable)
     "if empty(a:file_name) || !a:is_modifiable
         let &signcolumn = 'no'
@@ -14,7 +24,8 @@ augroup vimrc
 
     " enable sign column (when appropriate), set textwidth, set wrapping indent
     autocmd BufWinEnter,BufRead,BufWrite,VimResized *
-    \   call SetSignColumn(@%, &modifiable)
+    \   call SetSyntax(line('$'))
+    \|  call SetSignColumn(@%, &modifiable)
     \|  let b:numberwidth = &number * (1 + float2nr(ceil(log10(line("$") + 1))))
     \|  let &textwidth = min([80, winwidth(0)]) - b:gutterwidth - b:numberwidth - 1
     \|  let &breakindentopt = "shift:" . (&ts-1)
@@ -33,7 +44,6 @@ augroup vimrc
 
 
     " syntax highlight a minimum of 2000 lines (faster scrolling)
-    autocmd Syntax * syn sync minlines=2000 maxlines=2000
 
     " enable syntax; for non-text files: load default syntax and show guides for non-text files
     let textFiletypes =
@@ -47,7 +57,6 @@ augroup vimrc
     \|      source $HOME/.vim/after/syntax/default.vim
     \|      source $HOME/.vim/after/syntax/indent_guides.vim
     \|      let b:easytags_auto_update = 1
-    \|      let b:easytags_auto_highlight = 1
     \|  endif
     \|  set concealcursor=cn
     \|  set conceallevel=1
