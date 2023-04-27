@@ -1,9 +1,9 @@
 function! SetSyntax(num_lines)
-    if a:num_lines >= 500
-        syntax sync minlines=500
-        set redrawtime=5000
+    if a:num_lines >= 200
+        syntax sync minlines=50 maxlines=200 ccomment
+        set redrawtime=10000
     else
-        syntax sync fromstart
+        syntax sync fromstart ccomment
         set redrawtime=2000
     endif
 endfunction
