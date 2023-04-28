@@ -71,11 +71,21 @@ function! MyFoldText()  " custom fold text
     return (sub1 . ' ... ' . sub2 .'  (' . (v:foldend - v:foldstart + 1) . ' lines)')
 endfunction
 set foldtext=MyFoldText()
-function! Pad(s,amt)  " add right padding to string
-    return a:s . repeat(' ',a:amt - len(a:s))
+"function! Pad(s,amt)  " add right padding to string
+"    return a:s . repeat(' ',a:amt - len(a:s))
+"endfunction
+function! WinRatioPadStr(ratio)  " return a window proportional padding string
+    return '(winwidth(0) / ' . a:ratio . ')'
 endfunction
 set laststatus=2  " always show statusline
-let my_statusline = ' %{%empty(expand("%"))? "%q" : "%w%y %<%-" . (winwidth(0) / 4) . "(" . expand("%:~:h") . "/%)%-" . (winwidth(0) / 6) . "(%)" . expand("%:~:t") . "%m%a"%}%{%"%-" . (winwidth(0)  / 6) . "(%)"%}%= L: %l/%L  C: %c/%{Pad(strwidth(getline(".")), 4)}'
+let lines_field = '%{%"%" . (b:numberwidth + 2) . "(L: %l%)"%}/%{%"%-" . (b:numberwidth + 1) . "(%L%)"%}'
+let columns_field = '%6(C: %c%)/%-4(%{strwidth(getline("."))}%)'
+let window_check = 'empty(expand("%"))'
+let parend_dir_field = '"%<%-" . ' . WinRatioPadStr(4) . ' . "(" . expand("%:~:h") . "/%)"'
+let left_name_padding = '"%-" . ' . WinRatioPadStr(5) . ' . "(%)"'
+let right_name_padding = '"%-" . ' . WinRatioPadStr(6) . ' . "(%)"'
+let file_name_field = left_name_padding . ' . expand("%:~:t") . "%m%a" . ' . right_name_padding
+let my_statusline = ' %{%' . window_check . '? "%q" : "%y " . ' . parend_dir_field  . ' . ' . file_name_field . '%}%=' . lines_field . columns_field
 
 " behaviour
 set timeoutlen=1500  " set leader timeout to 1.5s
