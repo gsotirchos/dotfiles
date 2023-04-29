@@ -1,3 +1,12 @@
+" operators, logicals, parentheses and member operators
+syntax match myParens "[(){}\[\]<>,;]" containedin=NONE
+syntax match MembOperator "[,;]" containedin=NONE
+syntax match MembOperator "\( \)\@<!\(\(::\)\|\(->\)\|\(\.\)\)\( \)\@!" containedin=NONE
+syntax match myOperator "->" contains=TOP
+syntax match myOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP
+syntax match myOperator "\( \)\@<=[<>!~:][=]\=\( \)\@="
+syntax match myOperator "\( \)\(\(==\)\|\(->\)\)\( \)\@=""
+
 " highlight %Tag(...)% in comments
 syntax region myTagMark
 \   start="\(\".*\)\@<!\(% *Tag *(\)\@<="
@@ -5,7 +14,7 @@ syntax region myTagMark
 \   containedin=.*Comment.* contained oneline
 
 " darker semicolons
-syntax match cTerminator ";"
+"syntax match cTerminator ";"
 
 " highlight 'namespace', 'enum', and 'struct' names
 syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(using \)\=namespace[ \n]\+\)\@<=\h\w*"
@@ -65,7 +74,7 @@ hi! link doxygenParam                  doxygenSpecial
 hi! link doxygenParamDirection         doxygenSpecial
 hi! link doxygenSpecialBoldWord        doxygenSpecial
 
-augroup cpp_syntax
-    autocmd BufWinEnter *.cpp syntax match myScopeOperator "::" containedin=.*FunctionTag.* contained
-    autocmd BufWinEnter *.cpp syntax keyword cppSTLconstant nullptr
-augroup END
+"augroup cpp_syntax
+"    autocmd BufWinEnter *.cpp syntax match myScopeOperator "::" containedin=.*FunctionTag.* contained
+"    autocmd BufWinEnter *.cpp syntax keyword cppSTLconstant nullptr
+"augroup END

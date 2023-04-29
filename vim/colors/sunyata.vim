@@ -110,7 +110,7 @@ exe "hi! link Special     Character"
 exe "hi! link SpecialChar Character"
 
 " my custom groups
-exe "hi! MembOperator   cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=" . color_8  "guibg=" . color_bg
+exe "hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=NONE gui=bold      guifg=" . color_8  "guibg=" . color_bg
 exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=" . color_12 "guibg=" . color_bg
 exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      guifg=" . color_15 "guibg=" . color_bg
 exe "hi! Done           cterm=bold      ctermfg=2    ctermbg=NONE gui=bold      guifg=" . color_2  "guibg=" . color_bg
