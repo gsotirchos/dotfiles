@@ -1,10 +1,9 @@
-syn match myMembOperator ";"
+syn match MembOperator ";"
 syn match Normal "(\|)"
 syn match sqlStatement "\(\S\)\@<!\(USE\|SHOW\|SET\)"
 syn clear sqlFunction
 syn match sqlFunction "\(\S\)\@<!\.\h\w\+"
 
-hi! link myMembOperator MembOperator
 hi! link sqlOperator    Statement
 hi! link sqlKeyword     Statement
 hi! link sqlQuote       String
