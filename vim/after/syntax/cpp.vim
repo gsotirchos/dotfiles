@@ -1,11 +1,11 @@
 " operators, logicals, parentheses and member operators
 syntax match myParens "[(){}\[\]<>,;]" containedin=NONE
 syntax match MembOperator "[,;]" containedin=NONE
-syntax match MembOperator "\( \)\@<!\(\(::\)\|\(->\)\|\(\.\)\)\( \)\@!" containedin=NONE
+syntax match MembOperator "\(\S\)\@<=\(\(::\)\|\(->\)\|\(\.\)\)\(\S\)\@=" containedin=NONE
 syntax match myOperator "->" contains=TOP
 syntax match myOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP
-syntax match myOperator "\( \)\@<=[<>!~:][=]\=\( \)\@="
-syntax match myOperator "\( \)\(\(==\)\|\(->\)\)\( \)\@="
+syntax match myOperator "\(\S\)\@<![<>!~:]\+[=]\=\(\S\)\@!"
+syntax match myOperator "\(\S\)\@<!\(\(==\)\|\(->\)\)\(\S\)\@!"
 
 " highlight %Tag(...)% in comments
 syntax region myTagMark
@@ -52,16 +52,16 @@ hi! link doxygenComment                Comment
 hi! link doxygenStart                  doxygenComment
 hi! link doxygenSkipComment            doxygenComment
 hi! link doxygenContinueComment        doxygenComment
-hi! link doxygenBody                   Normal
+hi! link doxygenBody                   DocComment
 hi! link doxygenSpecialIdent           doxygenBody
 hi! link doxygenSpecialMultilineDesc   doxygenBody
 hi! link doxygenSpecialTypeOnelineDesc doxygenBody
 hi! link doxygenBrief                  doxygenBody
+hi! link doxygenBriefLine              doxygenBody
 hi! link doxygenHtmlVar                doxygenBody
 hi! link doxygenParamDirection         doxygenBody
 hi! link doxygenParamName              SpecialComment
 hi! link doxygenSpecialSectionDesc     doxygenParamName
-hi! link doxygenBriefLine              doxygenParamName
 hi! link doxygenHtmlCh                 doxygenParamName
 hi! link doxygenHtmlCmd                doxygenParamName
 hi! link doxygenFormula                doxygenParamName
