@@ -6,6 +6,6 @@ syn match Normal "\:" containedIn=qmlBindingProperty
 hi! link qmlDeclaration Statement
 hi! link qmlBindingProperty Identifier
 hi! link qmlBraces Normal
-hi! link qmlObjectLiteralType OtherType
-hi! link qmlType OtherType
+hi! link qmlObjectLiteralType Type
+hi! link qmlType Type
 

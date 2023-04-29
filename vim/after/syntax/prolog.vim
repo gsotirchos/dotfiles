@@ -7,7 +7,7 @@ syntax match prologISOBuiltIn "[!]" containedIn=prologRelations  " '!'
 syntax match prologArithmetic "\([^:?]\)\@<=-" containedIn=prologPredicate  " '-'
 syntax match prologISOBuiltIn "[:?]-"
 
-hi! link prologPredicate Type
+hi! link prologPredicate OtherType
 hi! link prologSWIBuiltIn prologPredicate
 hi! link prologPredicateWithArity prologPredicate
 hi! link prologArity Normal

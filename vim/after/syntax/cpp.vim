@@ -5,7 +5,7 @@ syntax match MembOperator "\( \)\@<!\(\(::\)\|\(->\)\|\(\.\)\)\( \)\@!" containe
 syntax match myOperator "->" contains=TOP
 syntax match myOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP
 syntax match myOperator "\( \)\@<=[<>!~:][=]\=\( \)\@="
-syntax match myOperator "\( \)\(\(==\)\|\(->\)\)\( \)\@=""
+syntax match myOperator "\( \)\(\(==\)\|\(->\)\)\( \)\@="
 
 " highlight %Tag(...)% in comments
 syntax region myTagMark
@@ -21,6 +21,8 @@ syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(using \)\=namespace[ \n]\+\)\@<=
 
 hi! link cCustom Function
 
+hi! link myParens Comment
+hi! link myOperator OtherType
 hi! link myTagMark       SpecialComment
 "hi! link myScopeOperator Normal
 hi! link cTerminator     MembOperator

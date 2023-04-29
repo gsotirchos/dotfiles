@@ -15,14 +15,14 @@ hi! link texSpecialChar      Special
 hi! link texOptEqual         Normal
 hi! link texOpt              Function
 
-hi! link texCmdStyle         Type
+hi! link texCmdStyle         OtherType
 hi! link texCmdStyleBold     texCmdStyle
 hi! link texCmdStyleItal     texCmdStyle
 hi! link texMathCmdStyle     texCmdStyle
 hi! link texMathCmdStyleBold texCmdStyleBold
 hi! link texMathCmdStyleItal texCmdStyleItal
 
-hi! link texRefZone          Type
+hi! link texRefZone          OtherType
 hi! link texMathMatcher      Normal
 hi! link texMathZoneX        texDocZone
 hi! link texMathZoneX        texDocZone

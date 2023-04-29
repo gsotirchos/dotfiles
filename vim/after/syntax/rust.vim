@@ -1,6 +1,7 @@
-syntax match MembOperator ";"
+"syntax match MembOperator ";"
 
-hi! link rustType           OtherType
-hi! link rustSigil          Operator
+hi! link rustType           Type
+hi! link rustSigil          OtherType
+hi! link rustSelf           Identifier
 hi! link rustModPathSep     MembOperator
 hi! link rustCommentLineDoc String
