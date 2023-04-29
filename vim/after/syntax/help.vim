@@ -1,2 +1,2 @@
-hi! link helpExample OtherType
-hi! link helpCommand OtherType
+hi! link helpExample Type
+hi! link helpCommand Type

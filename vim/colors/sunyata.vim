@@ -97,7 +97,7 @@ exe "hi! link Macro     PreProc"
 exe "hi! link PreCondit PreProc"
 
 " types
-exe "hi! Type           cterm=bold      ctermfg=13   ctermbg=NONE gui=bold      guifg=" . color_13 "guibg=" . color_bg
+exe "hi! Type           cterm=bold      ctermfg=13   ctermbg=NONE gui=bold      guifg=" . color_12 "guibg=" . color_bg
 "exe "hi! link Type        Statement"
 exe "hi! link Structure    Statement"
 exe "hi! link StorageClass Statement"
@@ -111,7 +111,7 @@ exe "hi! link SpecialChar Character"
 
 " my custom groups
 exe "hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=NONE gui=bold      guifg=" . color_8  "guibg=" . color_bg
-exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=" . color_12 "guibg=" . color_bg
+exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=" . color_13 "guibg=" . color_bg
 exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      guifg=" . color_15 "guibg=" . color_bg
 exe "hi! Done           cterm=bold      ctermfg=2    ctermbg=NONE gui=bold      guifg=" . color_2  "guibg=" . color_bg
 
@@ -157,7 +157,7 @@ exe "hi! link PmenuSbar   Pmenu"
 exe "hi! link TabLineSel  SpecialComment"
 exe "hi! link TabLine     ToolbarButton"
 exe "hi! link TabLineFill ToolbarButton"
-exe "hi! link ModeMsg     OtherType"
+exe "hi! link ModeMsg     Type"
 exe "hi! link MoreMsg     ModeMsg"
 exe "hi! link Conceal     LineNr"
 exe "hi! link Ignore      Conceal"
