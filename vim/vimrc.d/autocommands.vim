@@ -60,7 +60,6 @@ augroup vimrc
     \|  endif
     \|  set concealcursor=cn
     \|  set conceallevel=1
-    \|  let &statusline = my_statusline
 
     " treat certain extensions as xml
     autocmd BufWinEnter,BufRead,BufWritePost
