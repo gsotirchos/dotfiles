@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
+# shellcheck disable=SC1083
 
 set_prompt() {
     local session_type="$1"
@@ -22,7 +23,7 @@ set_prompt() {
     local Green='\[\e[32m\]'
     local Yellow='\[\e[33m\]'
     local Blue='\[\e[34m\]'
-    local Purple='\[\e[35m\]'
+    local Magenta='\[\e[35m\]'
     local Cyan='\[\e[36m\]'
     local White='\[\e[37m\]'
 
@@ -32,7 +33,7 @@ set_prompt() {
     local IGreen='\[\e[92m\]'
     local IYellow='\[\e[93m\]'
     local IBlue='\[\e[94m\]'
-    local IPurple='\[\e[95m\]'
+    local IMagenta='\[\e[95m\]'
     local ICyan='\[\e[96m\]'
     local IWhite='\[\e[97m\]'
 
@@ -42,7 +43,7 @@ set_prompt() {
     local OnGreen='\[\e[42m\]'
     local OnYellow='\[\e[43m\]'
     local OnBlue='\[\e[44m\]'
-    local OnPurple='\[\e[45m\]'
+    local OnMagenta='\[\e[45m\]'
     local OnCyan='\[\e[46m\]'
     local OnWhite='\[\e[47m\]'
 
@@ -52,29 +53,41 @@ set_prompt() {
     local OnIGreen='\[\e[102m\]'
     local OnIYellow='\[\e[103m\]'
     local OnIBlue='\[\e[104m\]'
-    local OnIPurple='\[\e[105m\]'
+    local OnIMagenta='\[\e[105m\]'
     local OnICyan='\[\e[106m\]'
     local OnIWhite='\[\e[107m\]'
 
-    # get shell nest level
-    if [[ "${SHLVL}" != 1 ]]; then
-        local shell_lvl="$(format_nest_level "${SHLVL}") "
+    # get the prompt user
+    local user="${IBlue}\${USER}${Reset}"
+    if [[ "${session_type}" == "remote_ssh" ]]; then
+        user="${user} ${IBlack}(ssh)${Reset}"
     fi
+
+    # get the hostname
+    local hostname=" at ${Cyan}\${HOSTNAME%.local}${Reset}"
 
     # get conda level and environment
     if [[ -n "${CONDA_DEFAULT_ENV}" ]]; then
         # get conda nest level
-        local conda_lvl="$(format_nest_level "${CONDA_SHLVL}") "
+        # TODO
+        local conda_lvl="$(format_nest_level "${CONDA_SHLVL}")"
         if [[ -n "${CONDA_STACKED_2}" ]]; then
-            local is_stacked="${IBlue}"
+            local is_stacked="${IGreen}"
         fi
-        local conda_env="(${IBlue}${CONDA_DEFAULT_ENV}${Reset})${is_stacked}${conda_lvl}${Reset}"
+        local conda_env=" using ${Green}\${CONDA_DEFAULT_ENV}${Reset}${is_stacked}${conda_lvl}${Reset}"
     fi
 
     # get virtualenv level and environment
     if [[ -n "${VIRTUAL_ENV}" ]]; then
-        local virtualenv_env="(${IGreen}$(basename "${VIRTUAL_ENV}")${Reset}) "
+        local virtualenv_env="(${Green}$(basename "${VIRTUAL_ENV}")${Reset})"
     fi
+
+    # get the working directory
+    local work_dir=" in ${Bold}${Blue}\w${Reset}"
+
+    # get prompt sign and nest level
+    local prompt_sign="${IBlack}"'\n\$'"${Reset}"
+    local shell_lvl="${IBlack}$(format_nest_level "${SHLVL}")${Reset}"
 
     # check if current dir belongs to overlayed ROS package
     if [[ -n "${ROS_DISTRO}" ]] && command -v "rospack" &> /dev/null; then
@@ -86,29 +99,20 @@ set_prompt() {
         done
     fi
 
-    # check this is an SSH session
-    if [[ "${session_type}" == "remote_ssh" ]]; then
-        local work_dir="${IBlack}\h::\W${Reset}"
-    else
-        local work_dir="${IBlack}\W${Reset}"
-    fi
-
     # return the prompt string
-    echo "${shell_lvl}${conda_env}${virtualenv_env}${work_dir}${ros_pkg}"
+    echo "${user}${hostname}${conda_env}${virtualenv_env}${work_dir}${ros_pkg}${prompt_sign}${shell_lvl}"
 }
 
-format_nest_level() {
+format_nest_level() {  # TODO: doesn't work with root
     # check shell nest level
-    case "$1" in
-        0 | 1) ;;
+    case $1 in
+        0* | 1*)
+            ;;
         2)
             echo "❭"
             ;;
-        3)
-            echo "❭❭"
-            ;;
         *)
-            echo "$(($1 - 1))❭"
+            echo "\$(($1 - 1))❭"
             ;;
     esac
 }
@@ -135,6 +139,6 @@ export GIT_PS1_DESCRIBE_STYLE="contains"
 export GIT_PS1_SHOWUNTRACKEDFILES=true
 export GIT_PS1_SHOWUPSTREAM="auto"
 
-export -f set_prompt __git_ps1
+export -f set_prompt
 export PROMPT_COMMAND+='__git_ps1 "$(set_prompt "'"${session_type}"'")" " "; '
 #export PS1="$(set_prompt "${session_type}")"  # is set by __git_ps1
