@@ -72,20 +72,43 @@ function! MyFoldText()  " custom fold text
 endfunction
 set foldtext=MyFoldText()
 set laststatus=2  " always show statusline
-function! MyStatusline()  " return a window proportional padding string
-    let window_check = empty(expand("%"))
-    let filetype_field_length = len(" [" . &ft . "] ")
-    let half_name_length = float2nr(floor(len(expand("%:~:t")) / 2.0))
-    let path_field_length = max([0, min([50,
-    \   winwidth(0) / 2 - filetype_field_length - half_name_length
-    \])])  " there is a 50 char hard limit
-    let parent_dir_field = '%<%-' . path_field_length . '(' . expand("%:~:h") . '/%)'
-    let file_name_field = expand("%:~:t") . '%m%a   '
+function! MyStatusline()
+    if (&ft == 'qf')
+        " LocationList or QuickFix List
+        let left_hand_side = ' %q'
+    elseif (&ft =~# '^.*preview.*$')
+        " Preview window
+        let left_hand_side = ' %y'
+    else
+        " Regular editor
+        let left_hand_side = ' %y'
+
+        if (&ft == '')
+            let parent_dir = getcwd() . '/'
+            let filetype_field_length = 0
+            let half_name_length = 5  " len('[No Name]') / 2
+        else
+            if (&ft == 'help')
+                let parent_dir = ''
+            else
+                let parent_dir = expand("%:~:h") . '/'
+            endif
+
+            let filetype_field_length = len(" [" . &ft . "]")  " <- len(' %y')
+            let half_name_length = max([1, float2nr(floor(len(expand("%:~:t")) / 2.0))])
+        endif
+
+        let path_field_length = max([0, min([50,
+        \   winwidth(0) / 2 - filetype_field_length - half_name_length
+        \])])  " there is a 50 char hard limit
+        let parent_dir_field = '%<%-' . path_field_length . '(' . parent_dir . '%)'
+        let file_name_field = '%t%m%a   '
+        let left_hand_side .= ' ' . parent_dir_field  . file_name_field
+    endif
     let lines_field = '%' . (b:numberwidth + 2) . '(L: %l%)/%-' . (b:numberwidth + 1) . '(%L%)'
     let columns_field = '%6(C: %c%)/%-4(' . len(getline(".")) . '%)'
-    return ' %{%' . window_check . '? "%q" : "%y " . "' . parent_dir_field  . file_name_field . '"%}%=' . lines_field . columns_field
+    return left_hand_side . '%=' . lines_field . columns_field
 endfunction
-set statusline=%!MyStatusline()
 
 " behaviour
 set timeoutlen=1500  " set leader timeout to 1.5s
