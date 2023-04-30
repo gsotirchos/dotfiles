@@ -103,6 +103,7 @@ set_prompt() {
     echo "  ${user}${hostname}${conda_env}${virtualenv_env}${work_dir}${ros_pkg}${prompt_sign}${shell_lvl}"
 }
 
+# construct an indicator based on the nesting level
 format_nest_level() {  # TODO: doesn't work with root
     # check shell nest level
     case $1 in
@@ -117,12 +118,20 @@ format_nest_level() {  # TODO: doesn't work with root
     esac
 }
 
+# callback to print the last command exit status
+print_last_status () {
+    local last_status=$?
+    local IBlack="\033[90m"
+    local Reset="\033[0m"
+    echo -e "${IBlack}Exit ${last_status}${Reset}"
+}
+
 # notify the terminal
-if [[ "${session_type}" == "remote_ssh" ]]; then
-    export PROMPT_COMMAND+='echo -ne "\033]0;${HOSTNAME%.*}::$(dirs +0)\007"; '
-else
-    export PROMPT_COMMAND+='echo -ne "\033]0;$(dirs +0)\007"; '
-fi
+#if [[ "${session_type}" == "remote_ssh" ]]; then
+#    export PROMPT_COMMAND+='echo -ne "\033]0;${HOSTNAME%.*}::$(dirs +0)\007"; '
+#else
+#    export PROMPT_COMMAND+='echo -ne "\033]0;$(dirs +0)\007"; '
+#fi
 
 # make git prompt command available
 if [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh" ]]; then
@@ -140,5 +149,8 @@ export GIT_PS1_SHOWUNTRACKEDFILES=true
 export GIT_PS1_SHOWUPSTREAM="auto"
 
 export -f set_prompt
+
 export PROMPT_COMMAND+='__git_ps1 "$(set_prompt "'"${session_type}"'")" " "; '
-#export PS1="$(set_prompt "${session_type}")"  # is set by __git_ps1
+export PROMPT_COMMAND+="trap print_last_status ERR; "
+export PS1="$(set_prompt "${session_type}")"  # is set by __git_ps1
+export PS2='\[\e[30m\]┃\[\e[0m\] '

@@ -77,7 +77,7 @@ main() {
     export HISTFILESIZE=2000
 
     # instantly append to history every command
-    export PROMPT_COMMAND="history -a; "
+    export PROMPT_COMMAND+="history -a; "
 
     # ignore certain filenames when auto-completing
     export FIGNORE=".DS_Store:"
