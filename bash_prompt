@@ -100,7 +100,7 @@ set_prompt() {
     fi
 
     # return the prompt string
-    echo "${user}${hostname}${conda_env}${virtualenv_env}${work_dir}${ros_pkg}${prompt_sign}${shell_lvl}"
+    echo "  ${user}${hostname}${conda_env}${virtualenv_env}${work_dir}${ros_pkg}${prompt_sign}${shell_lvl}"
 }
 
 format_nest_level() {  # TODO: doesn't work with root
