@@ -26,8 +26,8 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWrite,VimResized *
     \   call SetSyntax(line('$'))
     \|  call SetSignColumn(@%, &modifiable)
-    \|  let b:numberwidth = &number * (1 + float2nr(ceil(log10(line("$") + 1))))
-    \|  let &textwidth = min([80, winwidth(0)]) - b:gutterwidth - b:numberwidth - 1
+    \|  let b:numberwidth = 1 + float2nr(ceil(log10(line("$") + 1)))
+    \|  let &textwidth = min([80, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
     \|  let &breakindentopt = "shift:" . (&ts-1)
 
     " autosave named files
@@ -60,6 +60,9 @@ augroup vimrc
     \|  endif
     \|  set concealcursor=cn
     \|  set conceallevel=1
+
+
+    autocmd BufWinEnter,BufRead,BufWrite * nested set statusline=%{%MyStatusline()%}
 
     " treat certain extensions as xml
     autocmd BufWinEnter,BufRead,BufWritePost
