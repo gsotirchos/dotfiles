@@ -61,7 +61,6 @@ augroup vimrc
     \|  set concealcursor=cn
     \|  set conceallevel=1
 
-
     autocmd BufWinEnter,BufRead,BufWrite * nested set statusline=%{%MyStatusline()%}
 
     " treat certain extensions as xml
