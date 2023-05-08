@@ -86,7 +86,7 @@ set_prompt() {
     local work_dir=" in ${Bold}${Blue}\w${Reset}"
 
     # get prompt sign and nest level
-    local prompt_sign="${IBlack}"'\n\$'"${Reset}"
+    local prompt_sign="${Bold}${IBlack}"'\n\$'"${Reset}"
     local shell_lvl="${IBlack}$(format_nest_level "${SHLVL}")${Reset}"
 
     # check if current dir belongs to overlayed ROS package
