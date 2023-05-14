@@ -111,9 +111,15 @@ main() {
             #export LIBGL_ALWAYS_INDIRECT=0
         fi
 
-        # enable local connections (for docker containers)
-        xhost +local: &> /dev/null
+        xhost + local: &> /dev/null
     fi
+
+    # enable local connections (for docker containers)
+    # TODO: defaults write org.xquartz.X11 enable_iglx -bool true
+    #       defaults write org.xquartz.X11 no_auth -bool true
+    #export IP="$(ipconfig getifaddr en0)"
+    #export DISPLAY="${IP}:0"
+    #xhost + "${IP}" &> /dev/null
 
     # Conda
     if [[ -f ~/.conda/conda_init ]]; then
