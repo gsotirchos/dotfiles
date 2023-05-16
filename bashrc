@@ -78,6 +78,7 @@ main() {
 
     # instantly append to history every command
     export PROMPT_COMMAND="${PROMPT_COMMAND%; }; history -a"
+    export PROMPT_COMMAND="${PROMPT_COMMAND#; }"
 
     # ignore certain filenames when auto-completing
     export FIGNORE=".DS_Store:"
