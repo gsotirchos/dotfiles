@@ -75,13 +75,13 @@ set laststatus=2  " always show statusline
 function! MyStatusline()
     if (&ft == 'qf')
         " LocationList or QuickFix List
-        let left_hand_side = ' %q'
+        let left_hand_side = '%( %q%)'
     elseif (&ft =~# '^.*preview.*$')
         " Preview window
-        let left_hand_side = ' %y'
+        let left_hand_side = '%( %y%)'
     else
         " Regular editor
-        let left_hand_side = ' %y'
+        let left_hand_side = '%( %y%)'
 
         if (&ft == '')
             let parent_dir = getcwd() . '/'
