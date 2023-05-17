@@ -58,7 +58,7 @@ augroup vimrc
     \|      source $HOME/.vim/after/syntax/indent_guides.vim
     \|      let b:easytags_auto_update = 1
     \|  endif
-    \|  set concealcursor=cn
+    \|  set concealcursor=c
     \|  set conceallevel=1
 
     autocmd BufWinEnter,BufRead,BufWrite * nested set statusline=%{%MyStatusline()%}
