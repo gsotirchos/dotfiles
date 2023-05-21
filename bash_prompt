@@ -90,17 +90,23 @@ set_prompt() {
     local shell_lvl="${IBlack}$(format_nest_level "${SHLVL}")${Reset}"
 
     # check if current dir belongs to overlayed ROS package
-    if [[ -n "${ROS_DISTRO}" ]] && command -v "rospack" &> /dev/null; then
-        for package_path in $(rospack list | awk '{print $2}'); do
-            if [[ "${PWD}" == "${package_path}"* ]]; then
-                local ros_pkg="${Green}✔︎${Reset}"
-                break
+    if [[ -n "${ROS_DISTRO}" ]] \
+        && command -v "catkin" &> /dev/null \
+        && command -v "rospack" &> /dev/null; then
+        local current_workspace="$(catkin locate 2> /dev/null)"
+
+        if [[ -n "${current_workspace}" ]]; then
+            local current_package="$(catkin locate --this 2> /dev/null)"
+            local lookup_dir="${current_package:-$current_workspace}"
+
+            if rospack list | grep "${lookup_dir}" &> /dev/null; then
+                local ros_srcd="${Green}✔︎${Reset}"
             fi
-        done
+        fi
     fi
 
     # return the prompt string
-    echo "  ${user}${hostname}${conda_env}${virtualenv_env}${work_dir}${ros_pkg}${prompt_sign}${shell_lvl}"
+    echo "  ${user}${hostname}${conda_env}${virtualenv_env}${work_dir}${ros_srcd}${prompt_sign}${shell_lvl}"
 }
 
 # construct an indicator based on the nesting level
