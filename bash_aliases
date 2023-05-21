@@ -48,6 +48,14 @@ make_url() {
     echo -e "[InternetShortcut]\nURL=$2" > "$1"
 }
 
+# function to merge multiple copmile_commands.json to one
+merge_compile_commands() {
+    if command -v "catkin" &> /dev/null; then
+        local build_dir="$(catkin locate --build)"
+        jq -s 'map(.[])' "${build_dir}"/*/compile_commands.json > "${build_dir}"/compile_commands.json
+    fi
+}
+
 # System
 alias rm=trash                  # trash files instead of deleting
 alias mv="mv -iv"               # confirmatory, verbose move
