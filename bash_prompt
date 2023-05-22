@@ -96,10 +96,7 @@ set_prompt() {
         local current_workspace="$(catkin locate 2> /dev/null)"
 
         if [[ -n "${current_workspace}" ]]; then
-            local current_package="$(catkin locate --this 2> /dev/null)"
-            local lookup_dir="${current_package:-$current_workspace}"
-
-            if rospack list | grep "${lookup_dir}" &> /dev/null; then
+            if rospack list | grep --max-count 1 "${current_workspace}" &> /dev/null; then
                 local ros_srcd="${Green}✔︎${Reset}"
             fi
         fi
