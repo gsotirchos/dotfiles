@@ -36,6 +36,9 @@ let g:ale_fixers = {
 \       'latexindent'],
 \}
 
+" g:ale_cmake
+let g:ale_cmake_cmake_lint_options = '-c ' . $HOME . '/.cmake-format --'
+
 " Shell
 let g:ale_sh_shellcheck_options = '--shell=bash'
 let g:ale_sh_shfmt_options = '-i 4 -ci -bn -sr'
