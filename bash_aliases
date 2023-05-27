@@ -111,13 +111,8 @@ if command -v "conda" &> /dev/null; then
     unset conda_mamba
 fi
 
-# ROS
-if command -v "catkin_make" &> /dev/null; then
-    alias ccatkin_make="catkin_make --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=1"
-    if [[ -n "${catkin_ws}" ]]; then
-        alias cdws='cd ${catkin_ws} && . devel/setup.bash'
-    fi
-fi
+# Google Cloud VM
+alias google_cloud_vm="ssh -i ~/.ssh/id_ed25519 gsotirch@34.69.201.168"
 
 # Misc.
 if [[ "$(uname -a)" == Darwin* ]]; then
