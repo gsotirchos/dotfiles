@@ -80,6 +80,5 @@ hi! link doxygenParam                  doxygenBOther
 hi! link doxygenParamDirection         doxygenParam
 
 "augroup cpp_syntax
-"    autocmd BufWinEnter *.cpp syntax match myScopeOperator "::" containedin=.*FunctionTag.* contained
 "    autocmd BufWinEnter *.cpp syntax keyword cppSTLconstant nullptr
 "augroup END
