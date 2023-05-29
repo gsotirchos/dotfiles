@@ -53,21 +53,18 @@ let g:ale_cpp_clangtidy_options = '-std=' . $CXX_STD
 let g:ale_cpp_cppcheck_options = '--enable=all'
 
 " Python
-let g:ale_python_pyls_config = {
-\   'pyls': {
+" disable flake8 from pylsp (used separately)
+let g:ale_python_pylsp_config = {
+\   'pylsp': {
 \     'plugins': {
 \       'pycodestyle': {
-\         'enabled': v:false,
-\       },
+\         'enabled': v:false},
 \       'pyflakes': {
-\         'enabled': v:false,
-\       },
-\       'pydocstyle': {
-\         'enabled': v:false,
-\       },
-\     },
-\   },
-\}
+\         'enabled': v:false},
+\       'mccabe': {
+\         'enabled': v:false},
+\       'flake8': {
+\         'enabled': v:false}}}}
 
 " Tex
 let g:ale_tex_latexindent_options = '-m -rv'
