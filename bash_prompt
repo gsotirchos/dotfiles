@@ -90,15 +90,15 @@ set_prompt() {
     local shell_lvl="${IBlack}$(format_nest_level "${SHLVL}")${Reset}"
 
     # check if current dir belongs to overlayed ROS package
-    if [[ -n "${ROS_DISTRO}" ]] \
-        && command -v "catkin" &> /dev/null \
+    if command -v "catkin" &> /dev/null \
         && command -v "rospack" &> /dev/null; then
-        local current_workspace="$(catkin locate 2> /dev/null)"
+        local ros_srcd
 
-        if [[ -n "${current_workspace}" ]]; then
-            if rospack list | grep --max-count 1 "${current_workspace}" &> /dev/null; then
-                local ros_srcd="${Green}✔︎${Reset}"
-            fi
+        local current_workspace="$(catkin locate 2> /dev/null)"
+        if [[ -z "${current_workspace}" ]]; then
+            ros_srcd=""
+        elif rospack list | grep --max-count 1 "${current_workspace}" &> /dev/null; then
+            ros_srcd="${Green}✔︎${Reset}"
         fi
     fi
 
