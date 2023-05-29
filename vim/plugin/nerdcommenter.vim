@@ -1,4 +1,5 @@
 " nerdcommenter
+let g:NERDToggleCheckAllLines = 1  " check every selected line
 let g:NERDUsePlaceHolders = 0  " don't use placeholders for nested comments
 let g:NERDDefaultAlign = 'left'  " flush left comment delimiters
 let g:NERDCommentEmptyLines = 1  " comment empty lines too
