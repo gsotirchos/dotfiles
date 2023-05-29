@@ -79,6 +79,8 @@ hi! link doxygenBOther                 doxygenSpecial
 hi! link doxygenParam                  doxygenBOther
 hi! link doxygenParamDirection         doxygenParam
 
-"augroup cpp_syntax
-"    autocmd BufWinEnter *.cpp syntax keyword cppSTLconstant nullptr
-"augroup END
+
+augroup cpp_syntax
+    autocmd!
+    autocmd BufWinEnter *.cpp syntax keyword cppSTLconstant nullptr
+augroup END
