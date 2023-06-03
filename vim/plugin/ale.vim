@@ -14,7 +14,7 @@ let g:ale_virtualtext_prefix = ' ◀︎ '
 
 let g:ale_linters = {
 \   'cpp': ['ccls', 'clang', 'clangtidy', 'cppcheck'],
-\   'python': ['pylsp', 'flake8'],
+\   'python': ['pylsp'],
 \   'tex': ['texlab', 'chktex', 'proselint'],
 \}
 let g:ale_fixers = {
@@ -30,7 +30,7 @@ let g:ale_fixers = {
 \   'python': [
 \       {-> execute('undojoin', 'silent!') + 0},
 \       'isort',
-\       'autopep8'],
+\       'ruff'],
 \   'tex': [
 \       {-> execute('undojoin', 'silent!') + 0},
 \       'latexindent'],
@@ -53,17 +53,24 @@ let g:ale_cpp_clangtidy_options = '-std=' . $CXX_STD
 let g:ale_cpp_cppcheck_options = '--enable=all'
 
 " Python
-" disable flake8 from pylsp (used separately)
+" use ruff and disable everything flake8
 let g:ale_python_pylsp_config = {
 \   'pylsp': {
 \     'plugins': {
+\       'ruff': {
+\         'enabled': v:true,
+\         'severities': {
+\           'F401': 'I'},
+\         'config': '~/.ruff.toml'},
+\       'flake8': {
+\         'enabled': v:false},
 \       'pycodestyle': {
 \         'enabled': v:false},
 \       'pyflakes': {
 \         'enabled': v:false},
 \       'mccabe': {
 \         'enabled': v:false},
-\       'flake8': {
+\       'pyls_isort': {
 \         'enabled': v:false}}}}
 
 " Tex
