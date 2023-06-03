@@ -1,4 +1,4 @@
-syntax match vimComment "\"" containedin=vim.*Comment transparent
+syntax match vimComment "\".*" containedin=vim.*Comment
 
 hi! clear CursorLine
 hi! clear CursorColumn
