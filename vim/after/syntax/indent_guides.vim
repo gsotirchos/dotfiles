@@ -5,4 +5,4 @@ function! IndentGuides()
     execute 'syntax match Conceal "' . pattern . '" conceal cchar=│ containedIn=ALLBUT,.*Comment.* transparent'
 endfunction
 
-call IndentGuides()
+"call IndentGuides()

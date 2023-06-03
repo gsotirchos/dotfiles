@@ -42,9 +42,6 @@ augroup vimrc
     " remap <Return> so that it won't switch buffers in QuickFix/LocList buffers
     autocmd FileType qf nnoremap <buffer> <Return> <Return><C-W><C-W>
 
-
-    " syntax highlight a minimum of 2000 lines (faster scrolling)
-
     " enable syntax; for non-text files: load default syntax and show guides for non-text files
     let textFiletypes =
     \   ['markdown', 'qf', 'help', 'tex', 'latex', 'text', '']

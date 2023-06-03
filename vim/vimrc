@@ -37,6 +37,8 @@ Plugin 'lervag/vimtex'
 call vundle#end()  " required
 """""""""""""""""""""""""""""""""""""""""""
 
+"source $VIMRUNTIME/defaults.vim
+
 filetype plugin indent on
 
 " saving
@@ -110,9 +112,9 @@ function! MyStatusline()
     return left_hand_side . '%=' . lines_field . columns_field
 endfunction
 
-" behaviour
+" behavior
 set timeoutlen=1500  " set leader timeout to 1.5s
-set regexpengine=1  " use old regex engine
+"set regexpengine=1  " use old regex engine (WARNING: it's laggy)
 set mouse=a  " enable mouse
 set splitbelow  " open new horizontal windows at bottom
 set splitright  " open new vertical windows at right
@@ -127,10 +129,10 @@ set backspace=2  " allow backspace in insert mode
 set scrolloff=3  " lines to scoll before the reaching last
 set sidescrolloff=5  " columnts to sroll before reaching the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
-set wrap lbr  " wrap lines by word
+"set wrap lbr  " wrap lines by word
 set formatoptions=1jnpr  " no automatic line breaking
 set breakindent  " wrap preserving indentation
-set display+=lastline  " show last wrapped line in window
+set display=lastline  " show last wrapped line in window
 set shell=$SHELL\ -l  " login shell for 'term'
 set shellcmdflag=-l\ -c  " login shell for '!'
 
@@ -144,17 +146,19 @@ set foldcolumn=0  " hide fold column
 " searching
 set smartcase  " case sensitive only if Uppercase
 set hlsearch  " highlight search matches
+set incsearch  " do incremental search
 
 " autocompletion
 set completeopt=menuone,noinsert,preview  " select 1st item without inserting
 set complete=t,.,i  " scan tags, curr. buffer, incl. files
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
+set wildmenu  " display completion matches in a status line
 let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup
 let g:apc_cr_confirm = 1  " return inserts selected
 
 " mappings
-runtime vimrc.d/mappings.vim
+source vimrc.d/mappings.vim
 
 " autocommands
-runtime vimrc.d/autocommands.vim
+source vimrc.d/autocommands.vim
