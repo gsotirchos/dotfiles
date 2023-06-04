@@ -130,18 +130,19 @@ main() {
             conda deactivate
             conda activate "$(basename "${CONDA_PREFIX}")"
         fi
+    elif [[ -d /opt/mambaforge ]]; then
+        source /opt/mambaforge/etc/profile.d/conda.sh
+        source /opt/mambaforge/etc/profile.d/mamba.sh
+
+        export MAMBA_NO_BANNER=1
+
+        mamba activate editing
     fi
 
     # ROS
     if [[ -f /opt/ros/noetic/setup.bash ]]; then
         # source system's ROS environment
         source /opt/ros/noetic/setup.bash
-
-        ## source a Catkin workspace's environment
-        #local setup_bash="$(find ~/Workspaces -maxdepth 4 -name "setup.bash" -quit 2> /dev/null | head -1)"
-        #if [[ -f "${setup_bash}" ]]; then
-        #    source "${setup_bash}"
-        #fi
     fi
 
     # aliases
@@ -160,14 +161,14 @@ main() {
     fi
 
     # iTerm2 shell integration
-    if [[ "${os}" == "macos" ]]; then
+    #if [[ "${os}" == "macos" ]]; then
         if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
             curl -L https://iterm2.com/shell_integration/bash \
                 -o ~/.iterm2_shell_integration.bash
         fi
 
         source ~/.iterm2_shell_integration.bash
-    fi
+    #fi
 }
 
 main "$@"
