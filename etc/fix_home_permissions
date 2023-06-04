@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# TODO: DON'T RUN; WRONG EXEC PERMISSIONS
+# TODO: DON'T RUN; MESSES UP EXEC PERMISSIONS
 
 # determine OS
 if [[ "$(uname -s)" == *"Linux"* ]]; then
