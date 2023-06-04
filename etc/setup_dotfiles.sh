@@ -2,10 +2,6 @@
 # shellcheck disable=SC1090,SC2155
 # shellcheck source-path=.dotfiles
 
-#
-# ${DOTFILES)}/setup.sh
-#
-
 # styling
 BR_TEXT='\033[1;97m'
 TEXT='\033[0m'
