@@ -34,15 +34,15 @@ touch ~/.hushlogin
 
 # make soft symlinks
 echo -e "${BR_TEXT}- Symlinking dotfiles (${DOTFILES})${TEXT}"
-"${DOTFILES}"/etc/symlink_dotfiles "${DOTFILES}" "${HOME}/." # ~/.dotfiles/* -> ~/.*
-ln -sfv "${DOTFILES}/vim/"* ~/.vim                           # ~/.dotfiles/vim/* -> ~/.vim/*
-ln -sfv "${DOTFILES}/conda/"* ~/.conda                       # ~/.dotfiles/vim/* -> ~/.vim/*
+source "${DOTFILES}"/etc/symlink_dotfiles.sh "${DOTFILES}" "${HOME}/." # ~/.dotfiles/* -> ~/.*
+ln -sfv "${DOTFILES}/vim/"* ~/.vim      # ~/.dotfiles/vim/* -> ~/.vim/*
+ln -sfv "${DOTFILES}/conda/"* ~/.conda  # ~/.dotfiles/vim/* -> ~/.vim/*
 
 # setup launch daemons and launch agents
 if command -v "launchctl" &> /dev/null; then
     echo -e "${BR_TEXT}\n- Setting up LaunchDaemons and LaunchAgents${TEXT}"
-    "${DOTFILES}/etc/setup_launch_daemons_agents" "${DOTFILES}/Library/LaunchDaemons" /Library/LaunchDaemons
-    "${DOTFILES}/etc/setup_launch_daemons_agents" "${DOTFILES}/Library/LaunchAgents" ~/Library/LaunchAgents
+    source "${DOTFILES}/etc/setup_launch_daemons_agents.sh" "${DOTFILES}/Library/LaunchDaemons" /Library/LaunchDaemons
+    source "${DOTFILES}/etc/setup_launch_daemons_agents.sh" "${DOTFILES}/Library/LaunchAgents" ~/Library/LaunchAgents
 fi
 
 # setup vundle
