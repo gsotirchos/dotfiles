@@ -37,7 +37,7 @@ Plugin 'lervag/vimtex'
 call vundle#end()  " required
 """""""""""""""""""""""""""""""""""""""""""
 
-"source $VIMRUNTIME/defaults.vim
+runtime $VIMRUNTIME/defaults.vim
 
 filetype plugin indent on
 
@@ -158,7 +158,7 @@ let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup
 let g:apc_cr_confirm = 1  " return inserts selected
 
 " mappings
-source vimrc.d/mappings.vim
+runtime vimrc.d/mappings.vim
 
 " autocommands
-source vimrc.d/autocommands.vim
+runtime vimrc.d/autocommands.vim
