@@ -3,7 +3,7 @@ let g:ale_echo_msg_format = '〈%linter%〉%s %(code)%'
 let g:ale_sign_column_always = 1
 let g:ale_sign_error = '▐'
 let g:ale_sign_warning = '▐'
-let g:ale_fix_on_save = 0  " TODO
+let g:ale_fix_on_save = 1  " TODO
 let &omnifunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = &updatetime
@@ -29,7 +29,9 @@ let g:ale_fixers = {
 \       'clang-format'],
 \   'python': [
 \       {-> execute('undojoin', 'silent!') + 0},
+\       'trim_whitespace',
 \       'isort',
+\       'autopep8',
 \       'ruff'],
 \   'tex': [
 \       {-> execute('undojoin', 'silent!') + 0},
@@ -62,7 +64,7 @@ let g:ale_python_pylsp_config = {
 \         'enabled': v:true,
 \         'severities': {
 \           'F401': 'I'},
-\         'config': '~/.ruff.toml'},
+\         'config': '~/.pyproject.toml'},
 \       'flake8': {
 \         'enabled': v:false},
 \       'pycodestyle': {
