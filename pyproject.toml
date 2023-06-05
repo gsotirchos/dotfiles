@@ -2,7 +2,7 @@ cache-dir = "~/.cache/ruff"
 
 # Enable flake8-bugbear (`B`) rules.
 select = ["E", "F", "B"]
-ignore = ["B"]
+ignore = []
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = [
