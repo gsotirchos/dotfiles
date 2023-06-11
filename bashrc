@@ -131,10 +131,10 @@ main() {
             conda activate "$(basename "${CONDA_PREFIX}")"
         fi
     elif [[ -d /opt/mambaforge ]]; then
-        source /opt/mambaforge/etc/profile.d/conda.sh
-        source /opt/mambaforge/etc/profile.d/mamba.sh
+        #source /opt/mambaforge/etc/profile.d/conda.sh
+        #source /opt/mambaforge/etc/profile.d/mamba.sh
 
-        export MAMBA_NO_BANNER=1
+        #export MAMBA_NO_BANNER=1
 
         mamba activate editing
     fi
@@ -162,12 +162,12 @@ main() {
 
     # iTerm2 shell integration
     #if [[ "${os}" == "macos" ]]; then
-        if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
-            curl -L https://iterm2.com/shell_integration/bash \
-                -o ~/.iterm2_shell_integration.bash
-        fi
+    if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
+        curl -L https://iterm2.com/shell_integration/bash \
+            -o ~/.iterm2_shell_integration.bash
+    fi
 
-        source ~/.iterm2_shell_integration.bash
+    source ~/.iterm2_shell_integration.bash
     #fi
 }
 
