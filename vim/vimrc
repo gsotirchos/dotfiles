@@ -154,8 +154,8 @@ set complete=t,.,i  " scan tags, curr. buffer, incl. files
 set shortmess+=c  " shut off completion messages
 set belloff+=ctrlg  " silent completion
 set wildmenu  " display completion matches in a status line
-let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup
-let g:apc_cr_confirm = 1  " return inserts selected
+"let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup
+"let g:apc_cr_confirm = 1  " return inserts selected
 
 " mappings
 runtime vimrc.d/mappings.vim
