@@ -130,13 +130,6 @@ main() {
             conda deactivate
             conda activate "$(basename "${CONDA_PREFIX}")"
         fi
-    elif [[ -d /opt/mambaforge ]]; then
-        #source /opt/mambaforge/etc/profile.d/conda.sh
-        #source /opt/mambaforge/etc/profile.d/mamba.sh
-
-        #export MAMBA_NO_BANNER=1
-
-        mamba activate editing
     fi
 
     # ROS
