@@ -1,2 +1,3 @@
-Checks: '*,-llvm-*,-llvmlibc-*,-google-*,-fuchsia-*,-modernize-*,-cppcoreguidelines-*,-hicpp-*,-readability-*'
+#Checks: '*,-llvm-*,-llvmlibc-*,-google-*,-fuchsia-*,-altera-*,-modernize-*,-cppcoreguidelines-*,-hicpp-*,-readability-*'
+Checks: '*,-llvm-*,-llvmlibc-*,-google-*,-fuchsia-*,-altera-*'
 # TODO: remove -modernize-*,-cppcoreguidelines-*,-hicpp-*,-readability-*
