@@ -2,6 +2,10 @@
 # shellcheck disable=SC1090,SC2155
 # shellcheck source-path=.dotfiles
 
+#
+# ${DOTFILES)}/setup.sh
+#
+
 # styling
 BR_TEXT='\033[1;97m'
 TEXT='\033[0m'
@@ -31,8 +35,8 @@ touch ~/.hushlogin
 # make soft symlinks
 echo -e "${BR_TEXT}- Symlinking dotfiles (${DOTFILES})${TEXT}"
 source "${DOTFILES}"/etc/symlink_dotfiles.sh "${DOTFILES}" "${HOME}/." # ~/.dotfiles/* -> ~/.*
-ln -sfv "${DOTFILES}/vim/"* ~/.vim      # ~/.dotfiles/vim/* -> ~/.vim/*
-ln -sfv "${DOTFILES}/conda/"* ~/.conda  # ~/.dotfiles/vim/* -> ~/.vim/*
+ln -sfv "${DOTFILES}/vim/"* ~/.vim                                     # ~/.dotfiles/vim/* -> ~/.vim/*
+ln -sfv "${DOTFILES}/conda/"* ~/.conda                                 # ~/.dotfiles/vim/* -> ~/.vim/*
 
 # setup launch daemons and launch agents
 if command -v "launchctl" &> /dev/null; then
