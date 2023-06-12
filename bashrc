@@ -104,7 +104,11 @@ main() {
     # enable display on ssh connections
     if [[ "${os}" == "linux" ]]; then
         if [[ "${session_type}" == "remote_ssh" ]]; then
-            export DISPLAY=:0
+            if [[ "$(hostname)" == "ubuntu-ros-1" ]]; then
+                export DISPLAY=":20.0"
+            else
+                export DISPLAY=":0"
+            fi
         fi
 
         if [[ ${wsl} = true ]]; then
