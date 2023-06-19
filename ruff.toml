@@ -12,7 +12,7 @@ fixable = [
     "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN",
     "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI",
     "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-unfixable = ["F401", "F841"]
+unfixable = ["F401", "F841", "B007"]
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
