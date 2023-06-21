@@ -10,12 +10,12 @@ elif [[ "${os}" == "macos" ]]; then
     export TRASH="${HOME}/.Trash"
 fi
 
-# rm wrapper to move file(s) to trash folder
+# rm wrapper to move file(s) to trash folder instead of deleting them
 trash() {
-    local flags=""
+    local flags=()
     for arg in "$@"; do
         if [[ ${arg} == -* ]]; then
-            flags="${flags} ${arg}"
+            flags=("${flags[@]}" "${arg}")
             continue
         fi
 
@@ -24,14 +24,27 @@ trash() {
             #echo "rm -r ${arg%/}"
             env rm -r "${arg%/}"
         else
-            #echo "mv ${flags} -v --backup=numbered ${arg%/} ${TRASH}"
-            env mv ${flags} -v --backup=numbered "${arg%/}" "${TRASH}"
+            #echo "mv ${flags[@]} -v --backup=numbered ${arg%/} ${TRASH}"
+            env mv "${flags[@]}" -v --backup=numbered "${arg%/}" "${TRASH}"
         fi
     done
 }
 
-# function to empty trash
+# play the "empty trash" sound on macOS
+if [[ "${os}" == "macos" ]]; then
+    play_trash_sound() {
+        touch "${TRASH}"/.delete_me \
+            && osascript -e 'tell app "Finder" to empty' \;
+    }
+fi
+
+# empty the trash folder
 empty_trash() {
+    if [[ -n "$(find "${TRASH}" -type d -empty)" ]]; then
+        echo "Trash is already empty."
+        return 1
+    fi
+
     read -p "Are you sure you want to permamently erase the items in the trash? [y/N] " -r
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         for file in "${TRASH}"/{..?,.[!.],}*; do
@@ -39,16 +52,16 @@ empty_trash() {
                 env rm -rf "${file}" \
                     && echo "deleted '${file}'"
             fi
-        done
+        done && (play_trash_sound &)
     fi
 }
 
-# function to make a .url file with given link
+# make a .url file with given link
 make_url() {
     echo -e "[InternetShortcut]\nURL=$2" > "$1"
 }
 
-# function to merge multiple copmile_commands.json to one
+# merge all build/*/copmile_commands.json to a single build/copmile_commands.json
 merge_compile_commands() {
     if command -v "catkin" &> /dev/null; then
         local build_dir="$(catkin locate --build)"
@@ -78,10 +91,6 @@ alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
 if command -v "python" &> /dev/null; then
     alias python="python3"
     alias py="python3"
-    #alias pip_upgrade="\
-    #    pip list --outdated --format=freeze | grep -v '^-e' | cut -d = -f 1 \
-    #    | xargs -n1 --no-run-if-empty pip3 install --upgrade \
-    #    && pip cache purge"
 fi
 
 # iPython
@@ -96,23 +105,19 @@ if command -v "conda" &> /dev/null; then
     else
         conda_mamba="conda"
     fi
-    alias env_update="\
-        ${conda_mamba} update --all \
-        && ${conda_mamba} clean --all -y; \
-        ${conda_mamba} list | grep 'pypi' | cut -d ' ' -f 1 \
-        | xargs --no-run-if-empty pip install --upgrade \
-        && pip cache purge"
+    #alias env_update="\
+    #    ${conda_mamba} update --all \
+    #    && ${conda_mamba} clean --all -y; \
+    #    ${conda_mamba} list | grep 'pypi' | cut -d ' ' -f 1 \
+    #    | xargs --no-run-if-empty pip install --upgrade \
+    #    && pip cache purge"
     alias env_dump="${conda_mamba} env export | grep -v '^prefix: ' >"
     alias ml="${conda_mamba} activate machine-learning"
-    alias mlr_update="\
-        ${conda_mamba} env update -n mlr \
-        --file '${HOME}/Desktop/RO47002 MLR/environment.yml' --prune \
-        && conda clean --all -y"
     unset conda_mamba
 fi
 
 # Google Cloud VM
-alias google_cloud_vm="ssh -i ~/.ssh/id_ed25519 gsotirch@34.69.201.168"
+alias google_cloud_vm="ssh -i ~/.ssh/id_ed25519 gsotirch@34.69.201.168" # TODO
 
 # Catkin
 if command -v "catkin" &> /dev/null; then
