@@ -52,7 +52,7 @@ empty_trash() {
                 env rm -rf "${file}" \
                     && echo "deleted '${file}'"
             fi
-        done && (play_trash_sound &)
+        done && (play_trash_sound &) 2> /dev/null
     fi
 }
 
