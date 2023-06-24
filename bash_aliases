@@ -132,8 +132,7 @@ if command -v "catkin" &> /dev/null; then
 fi
 
 # Misc.
-if [[ "$(uname -a)" == Darwin* ]]; then
-    #
+if [[ "${os}" == "macos" ]]; then
     if [[ -d "${HOME}/Applications/PlayOnMac/Guild Wars 2.app" ]]; then
         alias guildwars2='${HOME}/Applications/PlayOnMac/Guild\ Wars\ 2.app/Contents/MacOS/playonmac'
     fi
