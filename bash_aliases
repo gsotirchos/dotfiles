@@ -117,7 +117,7 @@ if command -v "conda" &> /dev/null; then
 fi
 
 # Google Cloud VM
-alias google_cloud_vm="ssh -i ~/.ssh/id_ed25519 gsotirch@34.69.201.168" # TODO
+alias google_cloud_vm="ssh -i ~/.ssh/id_ed25519 gsotirch@35.214.194.184" # TODO
 
 # Catkin
 if command -v "catkin" &> /dev/null; then
