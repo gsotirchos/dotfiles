@@ -40,7 +40,7 @@ fi
 
 # empty the trash folder
 empty_trash() {
-    if [[ -n "$(find "${TRASH}" -maxdepth 1 -type d -empty)" ]]; then
+    if [[ -n "$(find "${TRASH}" -maxdepth 0 -type d -empty)" ]]; then
         echo "Trash is already empty."
         return 1
     fi
