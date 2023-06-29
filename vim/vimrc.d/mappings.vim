@@ -2,7 +2,7 @@
 nnoremap <c-z> <nop>
 
 " change leader
-let mapleader =  ";"
+let mapleader =  ';'
 
 " autocompletion mappings
 inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
@@ -31,9 +31,9 @@ cnoremap <silent> <C-@> <C-e><C-u>@:<CR>
 
 " print highlight group under cursor
 map <F10> :echo
-\   'hi<' . synIDattr(synID(line("."),col("."),1),"name") . '> ' .
-\   'trans<' . synIDattr(synID(line("."),col("."),0),"name") . '> ' .
-\   'lo<' . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . '>'
+\   'hi<' . synIDattr(synID(line('.'),col('.'),1),'name') . '> ' .
+\   'trans<' . synIDattr(synID(line('.'),col('.'),0),'name') . '> ' .
+\   'lo<' . synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name') . '>'
 \   <CR>
 
 " smart indent when entering insert mode with i on empty lines
@@ -78,10 +78,14 @@ vnoremap P p
 " toggle LocList
 function! ToggleLocList()
     if get(getloclist(0, {'winid': 0}), 'winid', 0)
-        "exec "set laststatus=" . g:laststatus
+        "exec 'set laststatus=' . g:laststatus
         lclose
     else
-        exec "lopen " . winheight(0) / 3
+        let l:line_nr = line('.')
+        exec 'lopen ' . winheight(0) / 3
+        exec ':silent! /|' . l:line_nr . ' col'
+        nohlsearch
+        set cursorline
         "let g:laststatus = &laststatus
         "if len(getbufinfo({'bufloaded': 1})) == 2
         "    set laststatus=0
@@ -93,10 +97,10 @@ nnoremap <silent> <leader>l :call ToggleLocList()<CR>
 " toggle QuickFix
 function! ToggleQuickFix()
     if get(getqflist({'winid': 0}), 'winid', 0)
-        "exec "set laststatus=" . g:laststatus
+        "exec 'set laststatus=' . g:laststatus
         cclose
     else
-        exec "copen " . winheight(0) / 3
+        exec 'copen ' . winheight(0) / 3
         "let g:laststatus = &laststatus
         "if len(getbufinfo({'bufloaded': 1})) == 2
         "    set laststatus=0
@@ -108,7 +112,7 @@ nnoremap <silent> <leader>q :call ToggleQuickFix()<CR>
 " toggle Preview
 function! TogglePreview()
     for nr in range(1, winnr('$'))
-        if getwinvar(nr, "&previewwindow") == 1
+        if getwinvar(nr, '&previewwindow') == 1
             pclose
             return
         endif
