@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2139
 
 #
 # ~/.bash_aliases
@@ -105,12 +106,6 @@ if command -v "conda" &> /dev/null; then
     else
         conda_mamba="conda"
     fi
-    #alias env_update="\
-    #    ${conda_mamba} update --all \
-    #    && ${conda_mamba} clean --all -y; \
-    #    ${conda_mamba} list | grep 'pypi' | cut -d ' ' -f 1 \
-    #    | xargs --no-run-if-empty pip install --upgrade \
-    #    && pip cache purge"
     alias env_dump="${conda_mamba} env export | grep -v '^prefix: ' >"
     alias ml="${conda_mamba} activate machine-learning"
     unset conda_mamba
@@ -139,4 +134,18 @@ if [[ "${os}" == "macos" ]]; then
     if [[ -d "/Applications/PlayOnMac.app" ]]; then
         alias playonmac='/Applications/PlayOnMac.app/Contents/MacOS/playonmac'
     fi
+fi
+
+if [[ "$(hostname)" == "ubuntu-vm" ]]; then
+    dav_mount() {
+        local dav_dir="${HOME}/Public/shared"
+
+        if mountpoint "${dav_dir}" &> /dev/null; then
+            echo "Shared directory is already mounted."
+            return 1
+        fi
+
+        mkdir -p ~/Public/shared
+        sudo mount.davfs http://127.0.0.1:9843 ~/Public/shared -o rw,uid="${USER}"
+    }
 fi
