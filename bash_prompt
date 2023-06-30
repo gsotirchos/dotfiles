@@ -86,7 +86,7 @@ set_prompt() {
     local work_dir=" in ${Bold}${Blue}\w${Reset}"
 
     # get prompt sign and nest level
-    local prompt_sign="${Bold}${IBlack}"'\n\$'"${Reset}"
+    local prompt_sign="${Bold}${IBlack}\$${Reset}"
     local shell_lvl="${IBlack}$(format_nest_level "${SHLVL}")${Reset}"
 
     # check if current dir belongs to overlayed ROS package
@@ -103,15 +103,14 @@ set_prompt() {
     fi
 
     # return the prompt string
-    echo "  ${user}${hostname}${conda_env}${virtualenv_env}${work_dir}${ros_srcd}${prompt_sign}${shell_lvl}"
+    echo "  ${user}${hostname}${conda_env}${virtualenv_env}${work_dir}${ros_srcd}\n${prompt_sign}${shell_lvl}"
 }
 
 # construct an indicator based on the nesting level
-format_nest_level() {  # TODO: doesn't work with root
+format_nest_level() { # TODO: doesn't work with root
     # check shell nest level
     case $1 in
-        0* | 1*)
-            ;;
+        0* | 1*) ;;
         2)
             echo "❭"
             ;;
@@ -122,7 +121,7 @@ format_nest_level() {  # TODO: doesn't work with root
 }
 
 # callback to print the last command exit status
-print_last_status () {
+print_last_status() {
     local last_status=$?
     local IBlack="\e[90m"
     local Reset="\e[0m"
@@ -155,5 +154,5 @@ export -f set_prompt
 
 export PROMPT_COMMAND="${PROMPT_COMMAND%; }"'; __git_ps1 "$(set_prompt "'"${session_type}"'")" " "'
 export PROMPT_COMMAND="${PROMPT_COMMAND%; }; trap print_last_status ERR"
-export PS1="$(set_prompt "${session_type}")"  # is set by __git_ps1
+export PS1="$(set_prompt "${session_type}")" # is set by __git_ps1
 export PS2='\[\e[30m\]┃\[\e[0m\] '
