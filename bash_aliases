@@ -146,6 +146,6 @@ if [[ "$(hostname)" == "ubuntu-vm" ]]; then
         fi
 
         mkdir -p ~/Public/shared
-        sudo mount.davfs http://127.0.0.1:9843 ~/Public/shared -o rw,uid="${USER}"
+        sudo mount.davfs http://127.0.0.1:9843 ~/Public/shared -o rw,uid="${USER}",gid="${USER}"
     }
 fi
