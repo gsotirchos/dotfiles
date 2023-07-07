@@ -115,6 +115,7 @@ endfunction
 
 " behavior
 set timeoutlen=1500  " set leader timeout to 1.5s
+set maxmempattern=100000  " set maximum memory for pattern matching to 100Mb
 "set regexpengine=1  " use old regex engine (WARNING: it's laggy)
 set mouse=a  " enable mouse
 set splitbelow  " open new horizontal windows at bottom
