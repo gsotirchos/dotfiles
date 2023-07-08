@@ -2,6 +2,9 @@
 " ~/.vim/vimrc
 "
 
+" settings before loading plugins
+let g:polyglot_disabled = ['autoindent']
+
 """""""""""""""""""""""""""""""""""""""""""
 set nocompatible  " be iMproved, required
 filetype off  " required
@@ -164,3 +167,4 @@ runtime vimrc.d/mappings.vim
 
 " autocommands
 runtime vimrc.d/autocommands.vim
+
