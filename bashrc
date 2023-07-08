@@ -87,11 +87,6 @@ main() {
     complete -f -o nospace cd # improve cd completion
     shopt -s direxpand        # expand variables in path completion
 
-    # local ip shortcuts
-    export imac="iMac.local"
-    export macbookair="MacBookAir.local"
-    export ubuntu_vm="ubuntu-vm.local"
-
     # check if this is a ssh session
     if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
         local session_type="remote_ssh"
