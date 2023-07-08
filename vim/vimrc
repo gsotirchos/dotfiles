@@ -27,7 +27,7 @@ Plugin 'sheerun/vim-polyglot'
 Plugin 'bfrg/vim-cpp-modern'
 Plugin 'vim-python/python-syntax'
 Plugin 'lervag/vimtex'
-Plugin 'vim-scripts/DoxygenToolkit.vim'
+"Plugin 'vim-scripts/DoxygenToolkit.vim'
 "Plugin 'adimit/prolog.vim'
 "Plugin 'PontusPersson/pddl.vim'
 "Plugin 'JuliaEditorSupport/julia-vim'
@@ -154,9 +154,9 @@ set hlsearch  " highlight search matches
 set incsearch  " do incremental search
 
 " autocompletion
-set completeopt=menuone,noinsert,preview  " select 1st item without inserting
+set completeopt=menuone,noinsert,preview,popup  " select 1st item without inserting
 set complete=t,.,i  " scan tags, curr. buffer, incl. files
-set shortmess+=c  " shut off completion messages
+set shortmess=mnrwxcF  " minimal message shortening & shut off completion messages
 set belloff+=ctrlg  " silent completion
 set wildmenu  " display completion matches in a status line
 "let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup

@@ -1,5 +1,5 @@
 " disable ctrl-z
-nnoremap <c-z> <nop>
+nnoremap <C-z> <nop>
 
 " change leader
 let mapleader =  ';'
@@ -7,6 +7,8 @@ let mapleader =  ';'
 " autocompletion mappings
 inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
 inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+inoremap <C-n> <C-x><C-u>
 
 " wrapped lines movement mappings
 noremap  <silent> k       gk

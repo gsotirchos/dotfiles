@@ -5,6 +5,7 @@ let g:ale_sign_error = '▐'
 let g:ale_sign_warning = '▐'
 let g:ale_fix_on_save = 1  " TODO
 let &omnifunc = 'ale#completion#OmniFunc'
+let &completefunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
 let g:ale_completion_delay = &updatetime
 let g:ale_virtualtext_delay = &updatetime
@@ -13,7 +14,7 @@ let g:ale_virtualtext_single = 1
 let g:ale_virtualtext_prefix = ' ◀︎ '
 
 let g:ale_linters = {
-\   'cpp': ['ccls', 'clang', 'clangtidy', 'cppcheck'],
+\   'cpp': ['clangd', 'cc', 'clangtidy', 'cppcheck'],
 \   'python': ['pylsp'],
 \   'tex': ['texlab', 'chktex', 'proselint'],
 \}
@@ -38,6 +39,8 @@ let g:ale_fixers = {
 \       'latexindent'],
 \}
 
+let b:threads = (str2nr(system('nproc')) + 1) / 2
+
 " CMake
 let g:ale_cmake_cmake_lint_options = '-c ' . $HOME . '/.cmake-format --'
 
@@ -47,9 +50,11 @@ let g:ale_sh_shfmt_options = '-i ' . &ts . ' -ci -bn -sr'
 let g:ale_sh_bashate_options = "--ignore E003,E006,E042"
 
 " C++
+let g:ale_cpp_clangd_executable = 'clangd-17'
+let g:ale_cpp_clangd_options = '--background-index --background-index-priority=background --completion-style=detailed --function-arg-placeholders --header-insertion=iwyu --header-insertion-decorators --pch-storage=memory'
 let g:ale_cpp_ccls_init_options = {
 \   'cache': {'directory': $HOME . '/.cache/ccls'},
-\   'index': {'threads' : (str2nr(system('nproc')) + 1) / 2}}
+\   'index': {'threads' : b:threads}}
 let g:ale_cpp_cc_executable = $CXX
 let g:ale_cpp_cc_options = '-std=' . $CXX_STD . ' -Wall -Wextra'
 let g:ale_cpp_clangtidy_options = '-std=' . $CXX_STD
