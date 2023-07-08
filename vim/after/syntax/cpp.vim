@@ -64,6 +64,7 @@ hi! link doxygenBoldWord               MembOperator
 hi! link doxygenArgumentWord           doxygenBoldWord
 hi! link doxygenSpecialOnelineDesc     doxygenBoldWord
 hi! link doxygenSpecialTypeOnelineDesc doxygenBoldWord
+hi! link doxygenHeaderLine             SpecialComment
 hi! link doxygenValue                  MembOperator
 hi! link doxygenParamName              doxygenBoldWord
 "hi! link doxygenSpecialSectionDesc     doxygenParamName
