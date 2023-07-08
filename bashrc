@@ -58,10 +58,10 @@ main() {
     export SHELL="$(which bash)"
 
     # set cmake makefile generator, compiler, and standard
-    export CC="$(which gcc-7 2> /dev/null)"
-    export CXX="$(which g++-7 2> /dev/null)"
-    #export CC="$(which clang 2> /dev/null)"
-    #export CXX="$(which clang++ 2> /dev/null)"
+    #export CC="$(which gcc-7 2> /dev/null)"
+    #export CXX="$(which g++-7 2> /dev/null)"
+    export CC="$(which clang 2> /dev/null)"
+    export CXX="$(which clang++ 2> /dev/null)"
     export CXX_STD="c++17"
     #export CMAKE_GENERATOR="Ninja"
     export CMAKE_EXPORT_COMPILE_COMMANDS=1
