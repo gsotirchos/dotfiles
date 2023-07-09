@@ -7,7 +7,7 @@ let mapleader =  ';'
 " autocompletion mappings
 inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
 inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+inoremap <expr> <Return> pumvisible() ? "\<C-y>" : "\<C-g>u\<Return>"
 inoremap <C-n> <C-x><C-u>
 
 " wrapped lines movement mappings
@@ -27,16 +27,16 @@ noremap  <silent> $       g$
 noremap  <silent> <Space> za
 
 " execute last command with C-@
-noremap  <silent> <C-@> :@:<CR>
-inoremap <silent> <C-@> <Esc>:@:<CR>
-cnoremap <silent> <C-@> <C-e><C-u>@:<CR>
+noremap  <silent> <C-@> :@:<Return>
+inoremap <silent> <C-@> <Esc>:@:<Return>
+cnoremap <silent> <C-@> <C-e><C-u>@:<Return>
 
 " print highlight group under cursor
 map <F10> :echo
 \   'hi<' . synIDattr(synID(line('.'),col('.'),1),'name') . '> ' .
 \   'trans<' . synIDattr(synID(line('.'),col('.'),0),'name') . '> ' .
 \   'lo<' . synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name') . '>'
-\   <CR>
+\   <Return>
 
 " smart indent when entering insert mode with i on empty lines
 function! IndentWithI()
@@ -94,7 +94,7 @@ function! ToggleLocList()
         "endif
     endif
 endfunction
-nnoremap <silent> <leader>l :call ToggleLocList()<CR>
+nnoremap <silent> <leader>l :call ToggleLocList()<Return>
 
 " toggle QuickFix
 function! ToggleQuickFix()
@@ -109,7 +109,7 @@ function! ToggleQuickFix()
         "endif
     endif
 endfunction
-nnoremap <silent> <leader>q :call ToggleQuickFix()<CR>
+nnoremap <silent> <leader>q :call ToggleQuickFix()<Return>
 
 " toggle Preview
 function! TogglePreview()
@@ -121,26 +121,26 @@ function! TogglePreview()
     endfor
     :ALEDetail
 endfunction
-nnoremap <silent> <leader>p :call TogglePreview()<CR>
+nnoremap <silent> <leader>p :call TogglePreview()<Return>
 
 " find references
-nnoremap <silent> <leader>f :ALEFindReferences<CR>
+nnoremap <silent> <leader>f :ALEFindReferences -relative<Return>
 
 " find-replace
 nnoremap <leader>r :%s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
 vnoremap <leader>r :s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
 
 " case-insensitive searching using '\c'
-noremap <silent> / :echo '/'<CR>/\c
-noremap <silent> ? :echo '?'<CR>?\c
+noremap <silent> / :echo '/'<Return>/\c
+noremap <silent> ? :echo '?'<Return>?\c
 
 " show buffers list
-nnoremap <leader>b :buffers<CR>:buffer<SPACE>
+nnoremap <leader>b :buffers<Return>:buffer<SPACE>
 
 " other mappings
 nnoremap o o<Esc>
 nnoremap O O<Esc>
-nnoremap <silent> <leader>d :ALEGoToDefinition<CR>
-nnoremap <silent> <leader>t :ALEGoToTypeDefinition<CR>
-nnoremap <silent> <leader>i :ALEGoToImplementation<CR>
+nnoremap <silent> <leader>d :ALEGoToDefinition<Return>
+nnoremap <silent> <leader>t :ALEGoToTypeDefinition<Return>
+nnoremap <silent> <leader>i :ALEGoToImplementation<Return>
 "nnoremap <silent> <leader>a <Plug>DashSearch
