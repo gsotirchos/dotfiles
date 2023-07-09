@@ -96,13 +96,13 @@ IncludeCategories:
     CaseSensitive: false
 IncludeIsMainRegex: '(Test)?$'
 IncludeIsMainSourceRegex: ''
-IndentAccessModifiers: false
+IndentAccessModifiers: true
 IndentCaseLabels: true
 IndentCaseBlocks: false
 IndentGotoLabels: true
 IndentPPDirectives: None
 IndentExternBlock: Indent
-IndentRequires: false
+IndentRequiresClause: false
 IndentWidth: 4
 IndentWrappedFunctionNames: false
 InsertTrailingCommas: None
@@ -136,6 +136,8 @@ QualifierAlignment: Custom
 QualifierOrder: ['constexpr', 'inline', 'static', 'friend', 'type', 'const', 'volatile', 'restrict']
 ReferenceAlignment: Pointer
 ReflowComments: true
+RequiresClausePosition: WithPreceding
+RequiresExpressionIndentation: OuterScope
 ShortNamespaceLines: 1
 SortIncludes: CaseInsensitive
 SortJavaStaticImport: Before
