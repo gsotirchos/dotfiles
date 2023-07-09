@@ -53,6 +53,7 @@ let g:ale_sh_bashate_options = "--ignore E003,E006,E042"
 let g:ale_cpp_clangd_options = '
 \   --background-index
 \   --background-index-priority=background
+\   --clang-tidy=false
 \   --completion-style=detailed
 \   --function-arg-placeholders
 \   --header-insertion=iwyu
@@ -62,7 +63,7 @@ let g:ale_cpp_ccls_init_options = {
 \   'cache': {'directory': $HOME . '/.cache/ccls'},
 \   'index': {'threads' : b:threads}}
 let g:ale_cpp_cc_executable = $CXX
-let g:ale_cpp_cc_options = '-std=' . $CXX_STD . ' -Wall -Wextra'
+let g:ale_cpp_cc_options = '-std=' . $CXX_STD . ' -Wall -Wextra -Wpedantic'
 let g:ale_cpp_clangtidy_options = '-std=' . $CXX_STD
 let g:ale_cpp_cppcheck_options = '--enable=all'
 
