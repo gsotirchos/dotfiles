@@ -50,8 +50,14 @@ let g:ale_sh_shfmt_options = '-i ' . &ts . ' -ci -bn -sr'
 let g:ale_sh_bashate_options = "--ignore E003,E006,E042"
 
 " C++
-let g:ale_cpp_clangd_executable = 'clangd-17'
-let g:ale_cpp_clangd_options = '--background-index --background-index-priority=background --completion-style=detailed --function-arg-placeholders --header-insertion=iwyu --header-insertion-decorators --pch-storage=memory'
+let g:ale_cpp_clangd_options = '
+\   --background-index
+\   --background-index-priority=background
+\   --completion-style=detailed
+\   --function-arg-placeholders
+\   --header-insertion=iwyu
+\   --header-insertion-decorators
+\   --pch-storage=memory'
 let g:ale_cpp_ccls_init_options = {
 \   'cache': {'directory': $HOME . '/.cache/ccls'},
 \   'index': {'threads' : b:threads}}
