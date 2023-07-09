@@ -156,7 +156,7 @@ set incsearch  " do incremental search
 " autocompletion
 set completeopt=menuone,noinsert,preview,popup  " select 1st item without inserting
 set complete=t,.,i  " scan tags, curr. buffer, incl. files
-set shortmess=mnrwxcF  " minimal message shortening & shut off completion messages
+set shortmess=mnrxcF  " minimal message shortening & shut off completion messages
 set belloff+=ctrlg  " silent completion
 set wildmenu  " display completion matches in a status line
 "let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup

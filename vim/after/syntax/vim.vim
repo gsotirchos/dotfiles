@@ -8,7 +8,6 @@ hi! link vimBracket      Normal
 hi! link vimMapMod       Normal
 hi! link vimSetSep       Normal
 hi! link vimSep          Normal
-hi! link vimContinue     Normal
 hi! link vimMapModKey    PreProc
 hi! link vimFunction     Function
 hi! link vimUserFunc     vimFunction
