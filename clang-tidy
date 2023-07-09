@@ -1,22 +1,48 @@
 ---
-#Checks: '*,
-#         -llvm-*,
-#         -llvmlibc-*,
-#         -google-*,
-#         -fuchsia-*,
-#         -altera-*,
-#         -misc-include-cleaner,
-#         -modernize-*,
-#         -cppcoreguidelines-*,
-#         -hicpp-*,
-#         -readability-*'  # TODO: remove -modernize-*,-cppcoreguidelines-*,-hicpp-*,-readability-*
 Checks: '*,
-         -llvm-*,
-         -llvmlibc-*,
-         -google-*,
+         -clang-analyzer-*,
+         clang-analyzer-cplusplus.InnerPointer,
+         -objc-*,
+         -google-objc*,
          -fuchsia-*,
+         -darwin-*,
+         -android-*,
+         -mpi-*,
+         -openmp-*,
+         -zircon-*
+         -llvm-*,
+         llvm-include-order,
+         llvm-namespace-comment,
+         -llvmlibc-*,
          -altera-*,
-         -misc-include-cleaner'
+         -abseil-*,
+         -misc-include-cleaner,
+         -modernize-*,
+         -cppcoreguidelines-*,
+         -hicpp-*,
+         -readability-*'
+         # TODO: remove -modernize-*,
+         #              -cppcoreguidelines-*,
+         #              -hicpp-*,
+         #              -readability-*
+#Checks: '*,
+#         -clang-analyzer-*,
+#         clang-analyzer-cplusplus.InnerPointer,
+#         -objc-*,
+#         -google-objc*,
+#         -fuchsia-*,
+#         -darwin-*,
+#         -android-*,
+#         -mpi-*,
+#         -openmp-*,
+#         -zircon-*
+#         -llvm-*,
+#         llvm-include-order,
+#         llvm-namespace-comment,
+#         -llvmlibc-*,
+#         -altera-*,
+#         -abseil-*,
+#         -misc-include-cleaner'
 WarningsAsErrors: ''
 HeaderFileExtensions:
   - ''
