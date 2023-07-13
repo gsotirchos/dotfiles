@@ -87,6 +87,8 @@ main() {
     complete -f -o nospace cd # improve cd completion
     shopt -s direxpand        # expand variables in path completion
 
+    export TUD_PC="145.94.60.174"
+
     # check if this is a ssh session
     if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
         local session_type="remote_ssh"
@@ -106,10 +108,10 @@ main() {
             fi
         fi
 
-        if [[ ${wsl} = true ]]; then
-            export DISPLAY="${imac}:0.0"
-            #export LIBGL_ALWAYS_INDIRECT=0
-        fi
+        #if [[ ${wsl} = true ]]; then
+        #    export DISPLAY="${imac}:0.0"
+        #    #export LIBGL_ALWAYS_INDIRECT=0
+        #fi
 
         xhost + local: &> /dev/null
     fi
