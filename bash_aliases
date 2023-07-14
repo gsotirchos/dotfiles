@@ -98,7 +98,7 @@ alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
 alias htop="sudo htop"
 alias vimrc="vim ~/.vim/vimrc"
 alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
-if command -v "open" &> /dev/null; then
+if ! command -v "open" &> /dev/null; then
     alias open=xdg-open
 fi
 
