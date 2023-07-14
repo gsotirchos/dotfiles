@@ -70,6 +70,17 @@ merge_compile_commands() {
     fi
 }
 
+# run barrier client daemon with specified server IP
+barrier_client() {
+    /usr/bin/barrierc \
+        -1 \
+        --debug INFO \
+        --name TUD1001405 \
+        --enable-crypto \
+        --log /var/log/barrier.log \
+        $1:24800
+}
+
 # System
 alias rm=trash                  # trash files instead of deleting
 alias mv="mv -iv"               # confirmatory, verbose move
