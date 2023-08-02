@@ -131,8 +131,9 @@ alias google_cloud_vm="ssh -i ~/.ssh/id_ed25519 gsotirch@35.214.194.184" # TODO
 # Catkin
 if command -v "catkin" &> /dev/null; then
     cdws() {
-        if catkin profile --workspace "$1" &> /dev/null; then
-            cd "$1" && source "$(catkin locate --devel)"/setup.bash
+        if catkin locate --workspace "$(realpath "$1")" &> /dev/null; then
+            cd "$1" \
+                && source "$(catkin locate --devel)"/setup.bash
         else
             echo "Not a Catkin workspace: $(realpath --quiet "$1")"
             return 1
