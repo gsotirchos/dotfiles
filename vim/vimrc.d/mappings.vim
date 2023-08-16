@@ -123,8 +123,11 @@ function! TogglePreview()
 endfunction
 nnoremap <silent> <leader>p :call TogglePreview()<Return>
 
-" find references
+" find ALE references
 nnoremap <silent> <leader>f :ALEFindReferences -relative<Return>
+
+" fix with ALE fixers
+nnoremap <silent> <leader>F :ALEFix<Return>
 
 " find-replace
 nnoremap <leader>r :%s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
