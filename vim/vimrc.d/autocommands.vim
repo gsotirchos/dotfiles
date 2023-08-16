@@ -27,8 +27,9 @@ augroup vimrc
     \   call SetSyntax(line('$'))
     \|  call SetSignColumn(@%, &modifiable)
     \|  let b:numberwidth = 1 + float2nr(ceil(log10(line("$") + 1)))
-    \|  let &textwidth = min([80, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
+    \|  let &textwidth = min([maxwinwidth, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
     \|  let &breakindentopt = "shift:" . (&ts-1)
+    \|  let &sidescrolloff = winwidth('%') / 2
 
     " autosave named files
     autocmd CursorHold ?* nested if empty(&buftype) | update | endif
