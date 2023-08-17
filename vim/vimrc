@@ -68,7 +68,7 @@ set numberwidth=1  " smallest width at start
 set sidescroll=1  " enable sidescrolling
 set showmatch  " show matching parentheses
 set noshowcmd  " hide typed command
-let &fillchars = 'vert:│,diff:-,eob: ,lastline:.,fold: '
+let &fillchars = 'vert:│,diff:-,eob: ,lastline:.,fold: ,foldopen:▾,foldsep:│,foldclose:▸'
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
 let &listchars = 'tab:|->,trail:·,conceal:◌,extends:…,precedes:…,nbsp:_'
@@ -128,9 +128,9 @@ set splitright  " open new vertical windows at right
 set previewheight=3  " set preview window height to 3
 set autoindent  " autointent
 set expandtab  " replace tabs with spaces
-set sw=2   " ┐
-set ts=4   " ├ 4 spaces per Tab, fold every 2
-set sts=4  " ┘
+set tabstop=4      " ┐
+set softtabstop=4  " ├ 4 spaces per Tab, fold every 4
+set shiftwidth=4   " ┘
 set nojoinspaces  " don't insert 2 spaces after '.', '?' or '!'
 set backspace=2  " allow backspace in insert mode
 set scrolloff=3  " lines to scoll before the reaching last
