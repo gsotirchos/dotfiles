@@ -1,7 +1,7 @@
 " operators, logicals, parentheses and member operators
 syntax match myParens "[(){}\[\]<>,;]" containedin=NONE
 syntax match MembOperator "[,;]" containedin=NONE
-syntax match MembOperator "\(\S\)\@<=\(\(::\)\|\(->\)\|\(\.\)\)\(\S\)\@=" containedin=NONE
+syntax match MembOperator "\(\w\|[\])][ \n]*\)\@<=\(\(::\)\|\(->\)\|\(\.\)\)\([ \n]*\h\)\@=" containedin=NONE
 syntax match myOperator "->" contains=TOP
 syntax match myOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP
 syntax match myOperator "\(\S\)\@<![<>!~:]\+[=]\=\(\S\)\@!"
