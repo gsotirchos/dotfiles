@@ -121,7 +121,7 @@ ObjCSpaceBeforeProtocolList: true
 PackConstructorInitializers: CurrentLine
 PenaltyBreakAssignment: 1000
 PenaltyBreakBeforeFirstCallParameter: 0
-PenaltyBreakComment: 10000
+PenaltyBreakComment: 1000000
 PenaltyBreakFirstLessLess: 0
 PenaltyBreakOpenParenthesis: 0
 PenaltyBreakString: 0
