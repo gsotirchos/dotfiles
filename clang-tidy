@@ -22,10 +22,10 @@ Checks: '*,
          -cppcoreguidelines-*,
          -hicpp-*,
          -readability-*'
-         # TODO: remove -modernize-*,
-         #              -cppcoreguidelines-*,
-         #              -hicpp-*,
-         #              -readability-*
+         # TODO: enable modernize-*,
+         #              cppcoreguidelines-*,
+         #              hicpp-*,
+         #              readability-*
 #Checks: '*,
 #         -clang-analyzer-*,
 #         clang-analyzer-cplusplus.InnerPointer,
