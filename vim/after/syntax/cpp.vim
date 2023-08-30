@@ -29,6 +29,7 @@ hi! link cTerminator     MembOperator
 hi! link cTypedef        Typedef
 hi! link cOperator       Statement
 hi! link cMember         Function
+"hi! link cppCast         Function
 hi! link cEnum           cMember
 hi! link cppAttribute    Comment
 hi! link cppNamespace    Identifier
