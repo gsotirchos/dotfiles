@@ -71,7 +71,7 @@ augroup vimrc
     \   *.msg,*.srv,*.action
     \   set ft=conf
     autocmd BufWinEnter,BufRead,BufWritePost
-    \   *.vcg
+    \   *.vcg,*.dconf
     \   set ft=dosini
     autocmd BufWinEnter,BufRead,BufWritePost
     \   *.yml,*.rviz,*.env
