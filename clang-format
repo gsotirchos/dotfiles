@@ -126,7 +126,7 @@ PenaltyBreakFirstLessLess: 0
 PenaltyBreakOpenParenthesis: 0
 PenaltyBreakString: 0
 PenaltyBreakTemplateDeclaration: 10
-PenaltyExcessCharacter: 10000
+PenaltyExcessCharacter: 10
 PenaltyReturnTypeOnItsOwnLine: 60
 PenaltyIndentedWhitespace: 0
 PointerAlignment: Middle
@@ -135,7 +135,7 @@ QualifierAlignment: Custom
 # linkage (constexpr, inline), storage-type (static, thread_local), member-type (friend, virtual), east-const/volatile type, pointer type (restrict)
 QualifierOrder: ['constexpr', 'inline', 'static', 'friend', 'type', 'const', 'volatile', 'restrict']
 ReferenceAlignment: Pointer
-ReflowComments: true
+ReflowComments: false
 RequiresClausePosition: WithPreceding
 RequiresExpressionIndentation: OuterScope
 ShortNamespaceLines: 1
