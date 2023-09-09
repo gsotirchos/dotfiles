@@ -1,5 +1,5 @@
 #
-# ~/.conda/conda_init
+# ~/.conda/conda_init.sh
 #
 
 case "$(uname -s)" in
