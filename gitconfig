@@ -10,7 +10,7 @@
 [push]
 	recurseSubmodules = check
 [alias]
-	glog = log --graph --decorate --all
+	glog = log --graph --decorate --all --stat
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
