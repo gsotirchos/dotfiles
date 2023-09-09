@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-#
-# ~/dotfiles/bin/ttt
-#
 # Simple script to convert whitespace separated text to latex table cells.
 
 USAGE="Usage:\n $(basename "$0") [-hl] source_file"

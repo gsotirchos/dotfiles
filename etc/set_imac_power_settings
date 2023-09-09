@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-#
-# ~/bin/power-settings
-#
-
 # check if ran on an iMac
 if [[ "$(sysctl hw.model)" != *"iMac"* ]]; then
     echo "Warning: these settings are meant to be used for an iMac"

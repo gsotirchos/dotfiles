@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 target_dir="$(realpath "$1")"
 destination_prefix="$2"
 
