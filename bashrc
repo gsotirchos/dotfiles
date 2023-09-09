@@ -125,7 +125,7 @@ main() {
 
     # Conda
     if [[ -f ~/.conda/conda_init ]]; then
-        source ~/.conda/conda_init
+        source ~/.conda/conda_init.sh
 
         if [[ -n "${CONDA_PREFIX}" ]]; then
             conda deactivate

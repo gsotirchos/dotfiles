@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # shellcheck disable=SC2016
 
 for plist_file in "${1}"/*.plist; do

@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 brew install basictex
 sudo tlmgr update --self
 sudo tlmgr install \

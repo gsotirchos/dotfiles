@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # function to append paths to an environment variable
 # fist argument: the name of an environment variable
 # second argument: the list of strings-paths to append

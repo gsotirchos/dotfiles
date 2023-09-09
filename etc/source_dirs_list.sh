@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # shellcheck disable=SC1090
 
 # the main function sources a list of files from file contents

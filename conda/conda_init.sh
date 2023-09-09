@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 #
 # ~/.conda/conda_init
 #
