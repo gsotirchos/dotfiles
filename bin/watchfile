@@ -30,7 +30,7 @@ if [[ "${#args[@]}" -ne 2 ]]; then
 fi
 
 watched_file="$(realpath "${args[0]}")"
-user_command="$(envsubst <<< "${args[1]}")"
+command_string="$(envsubst <<< "${args[1]}")"
 
 # functions to print timestamped formatted message
 message() {
@@ -48,7 +48,7 @@ message_bold() {
 }
 
 # function to execute command
-execute_cmd() {
+execute_command() {
     local RED_TEXT='\033[31m'
     local GREEN_TEXT='\033[32m'
     local BLUE_TEXT='\033[34m'
@@ -64,7 +64,7 @@ execute_cmd() {
 
     message_bold "Executing ==========================="
 
-    if eval "${user_command}"; then
+    if eval "${command_string}"; then
         message_bold "${GREEN_TEXT}Finished ============================${RESET}"
     else
         message_bold "${RED_TEXT}Failed ==============================${RESET}"
@@ -119,7 +119,7 @@ main() {
     trap 'echo & message "Terminated" && kill "${exec_pid}" &> /dev/null & exit 1' INT
 
     # execute command once first
-    execute_cmd &
+    execute_command &
     exec_pid=$!
 
     # watch file for changes, terminate and re-execute
@@ -137,7 +137,7 @@ main() {
         done
 
         # execute command
-        execute_cmd &
+        execute_command &
         exec_pid=$!
     done
 }
