@@ -1,158 +1,198 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2034
-# shellcheck disable=SC1083
+# shellcheck disable=SC2034,SC1083,SC2206
 
-set_prompt() {
-    local session_type="$1"
+main() {
+    set_vars() {
+        arr=("$@")
+        for i in "${arr[@]}"; do
+            var_tuple=($i)
+            export ${var_tuple[0]}="${var_tuple[1]}"
+        done
+    }
 
-    # Reset
-    local Reset='\[\e[0m\]'
+    unset_vars() {
+        arr=("$@")
+        for i in "${arr[@]}"; do
+            var_tuple=($i)
+            eval "unset ${var_tuple[0]}"
+        done
+    }
 
-    # Bold
-    local Bold='\[\e[0;1m\]'
+    # set color shortcuts
+    TEXT_FORMATTING_VARS=(
+        # Reset
+        'Reset \e[0m'
 
-    # Underline
-    local Underline='\[\e[0;4m\]'
+        # Bold
+        'Bold \e[0;1m'
 
-    # Bold underline
-    local BoldUnderline='\[\e[0;1;4m\]'
+        # Underline
+        'Underline \e[0;4m'
 
-    # Regular foreground
-    local Black='\[\e[30m\]'
-    local Red='\[\e[31m\]'
-    local Green='\[\e[32m\]'
-    local Yellow='\[\e[33m\]'
-    local Blue='\[\e[34m\]'
-    local Magenta='\[\e[35m\]'
-    local Cyan='\[\e[36m\]'
-    local White='\[\e[37m\]'
+        # Bold underline
+        'BoldUnderline \e[0;1;4m'
 
-    # High Intensity foreground
-    local IBlack='\[\e[90m\]'
-    local IRed='\[\e[91m\]'
-    local IGreen='\[\e[92m\]'
-    local IYellow='\[\e[93m\]'
-    local IBlue='\[\e[94m\]'
-    local IMagenta='\[\e[95m\]'
-    local ICyan='\[\e[96m\]'
-    local IWhite='\[\e[97m\]'
+        # Regular foreground
+        'Black \e[30m'
+        'Red \e[31m'
+        'Green \e[32m'
+        'Yellow \e[33m'
+        'Blue \e[34m'
+        'Magenta \e[35m'
+        'Cyan \e[36m'
+        'White \e[37m'
 
-    # Regular background
-    local OnBlack='\[\e[40m\]'
-    local OnRed='\[\e[41m\]'
-    local OnGreen='\[\e[42m\]'
-    local OnYellow='\[\e[43m\]'
-    local OnBlue='\[\e[44m\]'
-    local OnMagenta='\[\e[45m\]'
-    local OnCyan='\[\e[46m\]'
-    local OnWhite='\[\e[47m\]'
+        # High Intensity foreground
+        'IBlack \e[90m'
+        'IRed \e[91m'
+        'IGreen \e[92m'
+        'IYellow \e[93m'
+        'IBlue \e[94m'
+        'IMagenta \e[95m'
+        'ICyan \e[96m'
+        'IWhite \e[97m'
 
-    # High Intensity background
-    local OnIBlack='\[\e[100m\]'
-    local OnIRed='\[\e[101m\]'
-    local OnIGreen='\[\e[102m\]'
-    local OnIYellow='\[\e[103m\]'
-    local OnIBlue='\[\e[104m\]'
-    local OnIMagenta='\[\e[105m\]'
-    local OnICyan='\[\e[106m\]'
-    local OnIWhite='\[\e[107m\]'
+        # Regular background
+        'OnBlack \e[40m'
+        'OnRed \e[41m'
+        'OnGreen \e[42m'
+        'OnYellow \e[43m'
+        'OnBlue \e[44m'
+        'OnMagenta \e[45m'
+        'OnCyan \e[46m'
+        'OnWhite \e[47m'
 
-    # get the prompt user
-    local user="${IBlue}\${USER}${Reset}"
-    if [[ "${session_type}" == "remote_ssh" ]]; then
-        user="${user} ${IBlack}(ssh)${Reset}"
-    fi
+        # High Intensity background
+        'OnIBlack \e[100m'
+        'OnIRed \e[101m'
+        'OnIGreen \e[102m'
+        'OnIYellow \e[103m'
+        'OnIBlue \e[104m'
+        'OnIMagenta \e[105m'
+        'OnICyan \e[106m'
+        'OnIWhite \e[107m'
+    )
 
-    # get the hostname
-    local hostname=" at ${Cyan}\${HOSTNAME%.local}${Reset}"
+    set_prompt() {
+        set_vars "${TEXT_FORMATTING_VARS[@]}"
 
-    # get conda level and environment
-    if [[ -n "${CONDA_DEFAULT_ENV}" ]]; then
-        # get conda nest level
-        # TODO
-        local conda_lvl="$(format_nest_level "${CONDA_SHLVL}")"
-        if [[ -n "${CONDA_STACKED_2}" ]]; then
-            local is_stacked="${IGreen}"
+        session_type="$1"
+
+        # get the prompt user
+        local user="${IBlue}\${USER}${Reset}"
+
+        # get the SSH session status
+        if [[ "${session_type}" == "remote_ssh" ]]; then
+            user="${user} ${IBlack}(ssh)${Reset}"
         fi
-        local conda_env=" using ${Green}\${CONDA_DEFAULT_ENV}${Reset}${is_stacked}${conda_lvl}${Reset}"
-    fi
 
-    # get virtualenv level and environment
-    if [[ -n "${VIRTUAL_ENV}" ]]; then
-        local virtualenv_env="(${Green}$(basename "${VIRTUAL_ENV}")${Reset})"
-    fi
+        # get the hostname
+        local hostname=" at ${Cyan}\${HOSTNAME%.local}${Reset}"
 
-    # get the working directory
-    local work_dir=" in ${Bold}${Blue}\w${Reset}"
-
-    # get prompt sign and nest level
-    local prompt_sign="${Bold}${IBlack}\$${Reset}"
-    local shell_lvl="${IBlack}$(format_nest_level "${SHLVL}")${Reset}"
-
-    # check if current dir belongs to overlayed ROS package
-    if command -v "catkin" &> /dev/null \
-        && command -v "rospack" &> /dev/null; then
-        local ros_srcd
-
-        local current_workspace="$(catkin locate 2> /dev/null)"
-        if [[ -z "${current_workspace}" ]]; then
-            ros_srcd=""
-        elif rospack list | grep --max-count 1 "${current_workspace}" &> /dev/null; then
-            ros_srcd="${Green}✔︎${Reset}"
+        # get conda level and environment
+        if [[ -n "${CONDA_DEFAULT_ENV}" ]]; then
+            # get conda nest level
+            # TODO
+            local conda_lvl="$(format_nest_level "${CONDA_SHLVL}")"
+            if [[ -n "${CONDA_STACKED_2}" ]]; then
+                local is_stacked="${IGreen}"
+            fi
+            local conda_env=" using ${Green}\${CONDA_DEFAULT_ENV}${Reset}${is_stacked}${conda_lvl}${Reset}"
         fi
+
+        # get virtualenv level and environment
+        if [[ -n "${VIRTUAL_ENV}" ]]; then
+            local virtualenv_env="(${Green}$(basename "${VIRTUAL_ENV}")${Reset})"
+        fi
+
+        # get the working directory
+        local work_dir=" in ${Bold}${Blue}\w${Reset}"
+
+        # get prompt sign and nest level
+        local prompt_sign="${Bold}${IBlack}\$${Reset}"
+        local shell_lvl="${IBlack}$(format_nest_level "${SHLVL}")${Reset}"
+
+        # check if current dir belongs to overlayed ROS package
+        if command -v "catkin" &> /dev/null \
+            && command -v "rospack" &> /dev/null; then
+            local catkin_sourced
+
+            local current_workspace="$(catkin locate 2> /dev/null)"
+            if [[ -z "${current_workspace}" ]]; then
+                catkin_sourced=""
+            elif rospack list | grep --max-count 1 "${current_workspace}" &> /dev/null; then
+                catkin_sourced="${Green}✔︎${Reset}"
+            fi
+        fi
+
+        # return the prompt string
+        echo -e "  ${user}\$(get_singularity_status)${hostname}${conda_env}${virtualenv_env}${work_dir}${catkin_sourced}\n${prompt_sign}${shell_lvl}"
+
+        # unset color shortcuts
+        unset_vars "${color_vars[@]}"
+    }
+
+    # construct an indicator based on the nesting level
+    format_nest_level() { # TODO: doesn't work with root
+        # check shell nest level
+        case $1 in
+            0* | 1*) ;;
+            2)
+                echo "❭"
+                ;;
+            *)
+                echo "\$(($1 - 1))❭"
+                ;;
+        esac
+    }
+
+    # callback to print the last command exit status
+    print_last_status() {
+        local last_status=$?
+        set_vars "${TEXT_FORMATTING_VARS[@]}"
+        # local IBlack="\e[90m"
+        # local Reset="\e[0m"
+        echo -e "${IBlack}Exit ${last_status}${Reset}"
+        unset_vars "${TEXT_FORMATTING_VARS[@]}"
+    }
+
+    get_singularity_status() {
+        if [[ -n "${SINGULARITY_NAME}" ]]; then
+            set_vars "${TEXT_FORMATTING_VARS[@]}"
+            echo -e " through ${ICyan}singularity${Reset}"
+            unset_vars "${TEXT_FORMATTING_VARS[@]}"
+        fi
+    }
+
+    # notify the terminal
+    #if [[ "${session_type}" == "remote_ssh" ]]; then
+    #    export PROMPT_COMMAND+='echo -ne "\e]0;${HOSTNAME%.*}::$(dirs +0)\007"; '
+    #else
+    #    export PROMPT_COMMAND+='echo -ne "\e]0;$(dirs +0)\007"; '
+    #fi
+
+    # make git prompt command available
+    if [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh" ]]; then
+        source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh"
+    elif [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt" ]]; then
+        source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt"
     fi
 
-    # return the prompt string
-    echo "  ${user}${hostname}${conda_env}${virtualenv_env}${work_dir}${ros_srcd}\n${prompt_sign}${shell_lvl}"
+    # git prompt options
+    export GIT_PS1_SHOWCOLORHINTS=true
+    export GIT_PS1_SHOWDIRTYSTATE=true
+    export GIT_PS1_SHOWSTASHSTATE=true
+    export GIT_PS1_DESCRIBE_STYLE="contains"
+    export GIT_PS1_SHOWUNTRACKEDFILES=true
+    export GIT_PS1_SHOWUPSTREAM="auto"
+
+    export -f set_prompt
+
+    export PROMPT_COMMAND="${PROMPT_COMMAND%; }"'; __git_ps1 "$(set_prompt "'"${session_type}"'")" " "'
+    export PROMPT_COMMAND="${PROMPT_COMMAND%; }; trap print_last_status ERR"
+    export PS1="$(set_prompt "${session_type}")" # is set by __git_ps1
+    export PS2='\[\e[30m\]┃\[\e[0m\] '
 }
 
-# construct an indicator based on the nesting level
-format_nest_level() { # TODO: doesn't work with root
-    # check shell nest level
-    case $1 in
-        0* | 1*) ;;
-        2)
-            echo "❭"
-            ;;
-        *)
-            echo "\$(($1 - 1))❭"
-            ;;
-    esac
-}
-
-# callback to print the last command exit status
-print_last_status() {
-    local last_status=$?
-    local IBlack="\e[90m"
-    local Reset="\e[0m"
-    echo -e "${IBlack}Exit ${last_status}${Reset}"
-}
-
-# notify the terminal
-#if [[ "${session_type}" == "remote_ssh" ]]; then
-#    export PROMPT_COMMAND+='echo -ne "\e]0;${HOSTNAME%.*}::$(dirs +0)\007"; '
-#else
-#    export PROMPT_COMMAND+='echo -ne "\e]0;$(dirs +0)\007"; '
-#fi
-
-# make git prompt command available
-if [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh" ]]; then
-    source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh"
-elif [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt" ]]; then
-    source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt"
-fi
-
-# git prompt options
-export GIT_PS1_SHOWCOLORHINTS=true
-export GIT_PS1_SHOWDIRTYSTATE=true
-export GIT_PS1_SHOWSTASHSTATE=true
-export GIT_PS1_DESCRIBE_STYLE="contains"
-export GIT_PS1_SHOWUNTRACKEDFILES=true
-export GIT_PS1_SHOWUPSTREAM="auto"
-
-export -f set_prompt
-
-export PROMPT_COMMAND="${PROMPT_COMMAND%; }"'; __git_ps1 "$(set_prompt "'"${session_type}"'")" " "'
-export PROMPT_COMMAND="${PROMPT_COMMAND%; }; trap print_last_status ERR"
-export PS1="$(set_prompt "${session_type}")" # is set by __git_ps1
-export PS2='\[\e[30m\]┃\[\e[0m\] '
+main "$@"
+unset main
