@@ -21,56 +21,56 @@ main() {
     # set color shortcuts
     TEXT_FORMATTING_VARS=(
         # Reset
-        'Reset \e[0m'
+        'Reset \[\e[0m\]'
 
         # Bold
-        'Bold \e[0;1m'
+        'Bold \[\e[0;1m\]'
 
         # Underline
-        'Underline \e[0;4m'
+        'Underline \[\e[0;4m\]'
 
         # Bold underline
-        'BoldUnderline \e[0;1;4m'
+        'BoldUnderline \[\e[0;1;4m\]'
 
         # Regular foreground
-        'Black \e[30m'
-        'Red \e[31m'
-        'Green \e[32m'
-        'Yellow \e[33m'
-        'Blue \e[34m'
-        'Magenta \e[35m'
-        'Cyan \e[36m'
-        'White \e[37m'
+        'Black \[\e[30m\]'
+        'Red \[\e[31m\]'
+        'Green \[\e[32m\]'
+        'Yellow \[\e[33m\]'
+        'Blue \[\e[34m\]'
+        'Magenta \[\e[35m\]'
+        'Cyan \[\e[36m\]'
+        'White \[\e[37m\]'
 
         # High Intensity foreground
-        'IBlack \e[90m'
-        'IRed \e[91m'
-        'IGreen \e[92m'
-        'IYellow \e[93m'
-        'IBlue \e[94m'
-        'IMagenta \e[95m'
-        'ICyan \e[96m'
-        'IWhite \e[97m'
+        'IBlack \[\e[90m\]'
+        'IRed \[\e[91m\]'
+        'IGreen \[\e[92m\]'
+        'IYellow \[\e[93m\]'
+        'IBlue \[\e[94m\]'
+        'IMagenta \[\e[95m\]'
+        'ICyan \[\e[96m\]'
+        'IWhite \[\e[97m\]'
 
         # Regular background
-        'OnBlack \e[40m'
-        'OnRed \e[41m'
-        'OnGreen \e[42m'
-        'OnYellow \e[43m'
-        'OnBlue \e[44m'
-        'OnMagenta \e[45m'
-        'OnCyan \e[46m'
-        'OnWhite \e[47m'
+        'OnBlack \[\e[40m\]'
+        'OnRed \[\e[41m\]'
+        'OnGreen \[\e[42m\]'
+        'OnYellow \[\e[43m\]'
+        'OnBlue \[\e[44m\]'
+        'OnMagenta \[\e[45m\]'
+        'OnCyan \[\e[46m\]'
+        'OnWhite \[\e[47m\]'
 
         # High Intensity background
-        'OnIBlack \e[100m'
-        'OnIRed \e[101m'
-        'OnIGreen \e[102m'
-        'OnIYellow \e[103m'
-        'OnIBlue \e[104m'
-        'OnIMagenta \e[105m'
-        'OnICyan \e[106m'
-        'OnIWhite \e[107m'
+        'OnIBlack \[\e[100m\]'
+        'OnIRed \[\e[101m\]'
+        'OnIGreen \[\e[102m\]'
+        'OnIYellow \[\e[103m\]'
+        'OnIBlue \[\e[104m\]'
+        'OnIMagenta \[\e[105m\]'
+        'OnICyan \[\e[106m\]'
+        'OnIWhite \[\e[107m\]'
     )
 
     set_prompt() {
