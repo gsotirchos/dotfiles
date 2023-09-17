@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2034,SC1083,SC2206
+# shellcheck disable=SC1091,SC2155,SC2206,SC2154
 
 main() {
     set_vars() {
         arr=("$@")
         for i in "${arr[@]}"; do
             var_tuple=($i)
-            export ${var_tuple[0]}="${var_tuple[1]}"
+            export "${var_tuple[0]}=${var_tuple[1]}"
         done
     }
 
@@ -86,6 +86,9 @@ main() {
             user="${user} ${IBlack}(ssh)${Reset}"
         fi
 
+        # get singularity status
+        local singularity_status="$(get_singularity_status)"
+
         # get the hostname
         local hostname=" at ${Cyan}\${HOSTNAME%.local}${Reset}"
 
@@ -126,7 +129,7 @@ main() {
         fi
 
         # return the prompt string
-        echo -e "  ${user}\$(get_singularity_status)${hostname}${conda_env}${virtualenv_env}${work_dir}${catkin_sourced}\n${prompt_sign}${shell_lvl}"
+        echo -e "  ${user}${singularity_status}${hostname}${conda_env}${virtualenv_env}${work_dir}${catkin_sourced}\n${prompt_sign}${shell_lvl}"
 
         # unset color shortcuts
         unset_vars "${color_vars[@]}"
@@ -159,7 +162,7 @@ main() {
     get_singularity_status() {
         if [[ -n "${SINGULARITY_NAME}" ]]; then
             set_vars "${TEXT_FORMATTING_VARS[@]}"
-            echo -e " through ${ICyan}singularity${Reset}"
+            echo -E " through ${ICyan}singularity${Reset}"
             unset_vars "${TEXT_FORMATTING_VARS[@]}"
         fi
     }
