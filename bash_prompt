@@ -105,7 +105,7 @@ main() {
 
         # get virtualenv level and environment
         if [[ -n "${VIRTUAL_ENV}" ]]; then
-            local virtualenv_env="(${Green}$(basename "${VIRTUAL_ENV}")${Reset})"
+            local virtualenv_env=" (${IGreen}$(basename "${VIRTUAL_ENV}")${Reset})"
         fi
 
         # get the working directory

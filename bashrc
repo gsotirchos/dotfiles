@@ -124,7 +124,7 @@ main() {
     #xhost + "${IP}" &> /dev/null
 
     # Conda
-    if [[ -f ~/.conda/conda_init ]]; then
+    if [[ -f ~/.conda/conda_init.sh ]]; then
         source ~/.conda/conda_init.sh
 
         if [[ -n "${CONDA_PREFIX}" ]]; then
