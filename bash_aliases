@@ -101,6 +101,8 @@ alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
 if ! command -v "open" &> /dev/null; then
     alias open=xdg-open
 fi
+alias ros_container="ssh -t ubuntu-vm.local 'singularity exec --bind $HOME --home $HOME --writable ros-container/ bash'"
+alias ros_container_sudo="ssh -t ubuntu-vm.local 'sudo singularity shell --writable ros-container/'"
 
 # Python
 if command -v "python" &> /dev/null; then
@@ -121,7 +123,7 @@ if command -v "conda" &> /dev/null; then
         conda_mamba="conda"
     fi
     alias env_dump="${conda_mamba} env export | grep -v '^prefix: ' >"
-    alias ml="${conda_mamba} activate machine-learning"
+    # alias ml="${conda_mamba} activate machine-learning"
     unset conda_mamba
 fi
 
@@ -139,16 +141,6 @@ if command -v "catkin" &> /dev/null; then
             return 1
         fi
     }
-fi
-
-# Misc.
-if [[ "${os}" == "macos" ]]; then
-    if [[ -d "${HOME}/Applications/PlayOnMac/Guild Wars 2.app" ]]; then
-        alias guildwars2='${HOME}/Applications/PlayOnMac/Guild\ Wars\ 2.app/Contents/MacOS/playonmac'
-    fi
-    if [[ -d "/Applications/PlayOnMac.app" ]]; then
-        alias playonmac='/Applications/PlayOnMac.app/Contents/MacOS/playonmac'
-    fi
 fi
 
 if [[ "$(hostname)" == "ubuntu-vm" ]]; then
