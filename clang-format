@@ -126,8 +126,8 @@ PenaltyBreakFirstLessLess: 0
 PenaltyBreakOpenParenthesis: 0
 PenaltyBreakString: 0
 PenaltyBreakTemplateDeclaration: 10
-PenaltyExcessCharacter: 10
-PenaltyReturnTypeOnItsOwnLine: 60
+PenaltyExcessCharacter: 100
+PenaltyReturnTypeOnItsOwnLine: 400
 PenaltyIndentedWhitespace: 0
 PointerAlignment: Middle
 PPIndentWidth: -1
