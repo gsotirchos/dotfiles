@@ -65,7 +65,7 @@ let g:ale_cpp_ccls_init_options = {
 let g:ale_cpp_cc_executable = $CXX
 let g:ale_cpp_cc_options = '-std=' . $CXX_STD . ' -Wall -Wextra -Wpedantic'
 let g:ale_cpp_clangtidy_options = '-std=' . $CXX_STD
-let g:ale_cpp_cppcheck_options = '--enable=all'
+let g:ale_cpp_cppcheck_options = '--enable=all --suppress=missingIncludeSystem'
 
 " Python
 " use ruff and disable everything flake8
