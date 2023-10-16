@@ -63,7 +63,7 @@ main() {
     export CXX_STD="c++17"
     export CMAKE_GENERATOR="$(command -v ninja &> /dev/null \
         && echo "Ninja" \
-        || echo "Unix makefiles")"
+        || echo "")"
     export CMAKE_EXPORT_COMPILE_COMMANDS=1
 
     # append to the history file, don't overwrite it
