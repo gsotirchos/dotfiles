@@ -86,6 +86,7 @@ main() {
     # other shell options
     complete -f -o nospace cd # improve cd completion
     shopt -s direxpand        # expand variables in path completion
+    stty -ixon                # enable Ctrl+S for forward search
 
     export TUD_PC="145.94.60.174"
 
