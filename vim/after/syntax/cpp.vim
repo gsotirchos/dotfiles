@@ -19,6 +19,8 @@ syntax region myTagMark
 " highlight 'namespace', 'enum', and 'struct' names
 syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(using \)\=namespace[ \n]\+\)\@<=\h\w*"
 
+syntax match cPreProcVar "\(\s*#\w*\s\)\@<=\S*" containedIn=.*PreProc.* contained
+
 hi! link cCustom Function
 
 hi! link myParens Comment
@@ -27,6 +29,8 @@ hi! link myTagMark       SpecialComment
 "hi! link myScopeOperator Normal
 hi! link cTerminator     MembOperator
 hi! link cTypedef        Typedef
+"hi! link cDefine         Constant
+hi! link cPreProcVar     Constant
 hi! link cOperator       Statement
 hi! link cMember         Function
 "hi! link cppCast         Function
