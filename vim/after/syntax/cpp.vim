@@ -7,6 +7,8 @@ syntax match myOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP
 syntax match myOperator "\(\S\)\@<![<>!~:]\+[=]\=\(\S\)\@!"
 syntax match myOperator "\(\S\)\@<!\(\(==\)\|\(->\)\)\(\S\)\@!"
 
+syntax match myEquals "=" containedIn=None
+
 " highlight %Tag(...)% in comments
 syntax region myTagMark
 \   start="\(\".*\)\@<!\(% *Tag *(\)\@<="
@@ -23,8 +25,9 @@ syntax match cPreProcVar "\(\s*#\w*\s\)\@<=\S*" containedIn=.*PreProc.* containe
 
 hi! link cCustom Function
 
-hi! link myParens Comment
-hi! link myOperator OtherType
+hi! link myParens        Comment
+hi! link myOperator      OtherType
+hi! link myEquals        Statement
 hi! link myTagMark       SpecialComment
 "hi! link myScopeOperator Normal
 hi! link cTerminator     MembOperator

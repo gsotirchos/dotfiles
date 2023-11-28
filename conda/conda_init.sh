@@ -4,10 +4,10 @@
 
 case "$(uname -s)" in
     Linux*)
-        __conda_path="/opt/mambaforge" # NOTE: custom location
+        __conda_path="/opt/miniforge" # NOTE: custom location
         ;;
     Darwin*)
-        __conda_path="${HOMEBREW_PREFIX}/Caskroom/mambaforge/base"
+        __conda_path="${HOMEBREW_PREFIX}/Caskroom/miniforge/base"
         ;;
 esac
 
