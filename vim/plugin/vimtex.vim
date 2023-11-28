@@ -19,3 +19,9 @@ let g:vimtex_syntax_conceal = {
 \   'cites': 1,
 \   'styles': 0,
 \}
+
+let g:vimtex_delim_toggle_mod_list = [
+\   ['\l', '\r'],
+\   ['\left', '\right']
+\]
+
