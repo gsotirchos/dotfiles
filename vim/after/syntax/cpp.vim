@@ -2,12 +2,13 @@
 syntax match myParens "[(){}\[\]<>,;]" containedin=NONE
 syntax match MembOperator "[,;]" containedin=NONE
 syntax match MembOperator "\(\w\|[\])][ \n]*\)\@<=\(\(::\)\|\(->\)\|\(\.\)\)\([ \n]*\h\)\@=" containedin=NONE
+
+syntax match myEquals "=" containedIn=None
+
 syntax match myOperator "->" contains=TOP
 syntax match myOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP
 syntax match myOperator "\(\S\)\@<![<>!~:]\+[=]\=\(\S\)\@!"
 syntax match myOperator "\(\S\)\@<!\(\(==\)\|\(->\)\)\(\S\)\@!"
-
-syntax match myEquals "=" containedIn=None
 
 " highlight %Tag(...)% in comments
 syntax region myTagMark
