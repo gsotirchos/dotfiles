@@ -15,6 +15,7 @@ hi! link texSpecialChar      Special
 hi! link texOptEqual         Normal
 hi! link texOpt              Function
 
+hi! link texCmdLigature      texCmd
 hi! link texCmdStyle         OtherType
 hi! link texCmdStyleBold     texCmdStyle
 hi! link texCmdStyleItal     texCmdStyle
