@@ -120,7 +120,7 @@ exe "hi! Done           cterm=bold      ctermfg=2    ctermbg=NONE gui=bold      
 exe "hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=8    gui=bold      guifg=" . color_11 "guibg=" . color_8
 exe "hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE gui=bold      guifg=" . color_1  "guibg=" . color_bg
 exe "hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE gui=NONE      guifg=" . color_1  "guibg=" . color_bg
-exe "hi! Todo           cterm=bold      ctermfg=3    ctermbg=NONE gui=bold      guifg=" . color_3  "guibg=" . color_bg
+exe "hi! Todo           cterm=bold      ctermfg=9    ctermbg=11   gui=bold      guifg=" . color_9  "guibg=" . color_11
 exe "hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
 exe "hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE gui=underline guifg=" . color_1  "guibg=" . color_bg
 exe "hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE gui=underline guifg=" . color_3  "guibg=" . color_bg

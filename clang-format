@@ -12,7 +12,7 @@ AlignEscapedNewlines: Left
 AlignOperands: Align
 AlignTrailingComments:
   Kind: Always
-  OverEmptyLines: 1
+  OverEmptyLines: 0
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortEnumsOnASingleLine: false
@@ -112,7 +112,7 @@ LambdaBodyIndentation: Signature
 MacroBlockBegin: ''
 MacroBlockEnd: ''
 MaxEmptyLinesToKeep: 2
-NamespaceIndentation: All
+NamespaceIndentation: None
 ObjCBinPackProtocolList: Auto
 ObjCBlockIndentWidth: 4
 ObjCBreakBeforeNestedBlockParam: true
