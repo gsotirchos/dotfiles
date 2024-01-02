@@ -1,0 +1,30 @@
+# Uncomment lines below if you have problems with $PATH
+#SHELL := /bin/bash
+#PATH := /usr/local/bin:$(PATH)
+
+#PATH := $(HOME)/.platformio/packages/toolchain-gccarmnoneeabi/bin:$(PATH)
+#CC :=
+#CXX :=
+
+CPATH :=
+#C_INCLUDE_PATH :=
+#DYLD_LIBRARY_PATH := /opt/homebrew/lib
+#LIBRARY_PATH := /opt/homebrew/lib
+
+all:
+		pio -f run
+
+upload:
+		pio -f run --target upload
+
+clean:
+		pio -f run --target clean
+
+uploadfs:
+		pio -f run --target uploadfs
+
+update:
+		pio -f pkg update
+
+compiledb:
+		COMPILATIONDB_INCLUDE_TOOLCHAIN=True pio -f run --target compiledb
