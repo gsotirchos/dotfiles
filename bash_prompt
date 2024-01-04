@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1091,SC2155,SC2206,SC2154
+# shellcheck disable=SC1090,SC1091,SC2155,SC2206,SC2154
 
 main() {
     set_vars() {
@@ -164,11 +164,12 @@ main() {
     }
 
     # make git prompt command available
-    # if [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh" ]]; then
-    #     source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt.sh"
-    # elif [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt" ]]; then
-    #     source "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-prompt"
-    # fi
+    local git_prompt_path="/etc/bash_completion.d/git-prompt"
+    if [[ -f "${HOMEBREW_PREFIX}/${git_prompt_path}.sh" ]]; then
+        source "${HOMEBREW_PREFIX}/${git_prompt_path}.sh"
+    elif [[ -f "${git_prompt_path}" ]]; then
+        source "${git_prompt_path}"
+    fi
 
     # git prompt options
     export GIT_PS1_SHOWCOLORHINTS=true
