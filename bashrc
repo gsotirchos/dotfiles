@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# vim: set ft=bash:
 # shellcheck disable=SC1090,SC1091
 
 #
