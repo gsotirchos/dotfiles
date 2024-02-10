@@ -101,8 +101,8 @@ alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
 if ! command -v "open" &> /dev/null; then
     alias open=xdg-open
 fi
-alias ros_container="ssh -t ubuntu-vm.local 'singularity exec --bind \$HOME --home \$HOME --writable ros-container/ bash -l'"
-alias ros_container_sudo="ssh -t ubuntu-vm.local 'sudo singularity shell --writable ros-container/'"
+alias ros_container="ssh -t ubuntu-vm 'singularity exec --bind \$HOME --home \$HOME --writable ros-container/ bash -l'"
+alias ros_container_sudo="ssh -t ubuntu-vm 'sudo singularity shell --writable ros-container/'"
 
 # Python
 if command -v "python" &> /dev/null; then
