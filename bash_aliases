@@ -95,7 +95,7 @@ alias tree="\
     -I '.DS_Store|.localized|._*' --matchdirs" # cleaner tree
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
-alias htop="sudo htop"
+# alias htop="sudo htop"
 alias vimrc="vim ~/.vim/vimrc"
 alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
 if ! command -v "open" &> /dev/null; then
@@ -133,7 +133,7 @@ if command -v "conda" &> /dev/null; then
 fi
 
 # Google Cloud VM
-alias google_cloud_vm="ssh -i ~/.ssh/id_ed25519 gsotirch@35.214.194.184" # TODO
+# alias google_cloud_vm="ssh -i ~/.ssh/id_ed25519 gsotirch@35.214.194.184" # TODO
 
 # Catkin
 if command -v "catkin" &> /dev/null; then
