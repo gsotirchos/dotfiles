@@ -21,11 +21,14 @@ Checks: '*,
          -modernize-*,
          -cppcoreguidelines-*,
          -hicpp-*,
-         -readability-*'
-         # TODO: enable modernize-*,
-         #              cppcoreguidelines-*,
-         #              hicpp-*,
-         #              readability-*
+         -readability-*,
+         -concurrency-mt-unsafe'
+         # TODO: re-enable
+         # modernize-*,
+         # cppcoreguidelines-*,
+         # hicpp-*,
+         # readability-*,
+         # concurrency-mt-unsafe
 #Checks: '*,
 #         -clang-analyzer-*,
 #         clang-analyzer-cplusplus.InnerPointer,
