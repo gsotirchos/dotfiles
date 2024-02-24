@@ -22,7 +22,6 @@ main() {
     # prepare user folder
     mkdir -vp ~/.vim/undo
     mkdir -vp ~/.vim/spell
-    mkdir -vp ~/.vim/words
     mkdir -vp ~/.vim/tags
     mkdir -vp ~/.conda
     mkdir -vp ~/.local/bin
