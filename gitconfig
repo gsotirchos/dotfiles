@@ -1,18 +1,19 @@
 [credential]
-	helper = store
+    helper = store
 [user]
-	;name = gsotirchos
-	;email = gsotirch@gmail.com
-	name = gsotirchos
-	email = gsotirchos@student.tudelft.nl
+    ;name = gsotirchos
+    ;email = gsotirch@gmail.com
+    name = gsotirchos
+    email = gsotirchos@student.tudelft.nl
 [status]
-	submodulesummary = 1
+    submodulesummary = 1
 [push]
-	recurseSubmodules = check
+    recurseSubmodules = check
 [alias]
-	glog = log --graph --decorate --all --stat
+    glog = log --graph --decorate --all --stat
+    sync = !git stash && git pull && git stash apply && git add . && git commit -m \"${1-\"Update locally\"}\" && git push && git stash clear;
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
