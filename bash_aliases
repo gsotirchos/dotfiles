@@ -125,15 +125,12 @@ if command -v "conda" &> /dev/null; then
 
     alias env_dump="${conda_mamba} env export | grep -v '^prefix: ' >"
 
-    if conda env list | grep machine-learning &> /dev/null; then
+    if [[ -d "$(dirname "${CONDA_EXE}")/../envs/machine-learning" ]]; then
         alias ml="${conda_mamba} activate machine-learning &> /dev/null"
     fi
 
     unset conda_mamba
 fi
-
-# Google Cloud VM
-# alias google_cloud_vm="ssh -i ~/.ssh/id_ed25519 gsotirch@35.214.194.184" # TODO
 
 # Catkin
 if command -v "catkin" &> /dev/null; then
@@ -145,6 +142,19 @@ if command -v "catkin" &> /dev/null; then
             echo "Not a Catkin workspace: $(realpath --quiet "$1")"
             return 1
         fi
+    }
+fi
+
+# Git sync
+if ! command -v "git sync" &> /dev/null; then
+    git_sync() {
+        git stash \
+            && git pull \
+            && git stash apply \
+            && git add . \
+            && git commit -m "$1" \
+            && git push \
+            && git stash clear
     }
 fi
 
