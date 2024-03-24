@@ -123,7 +123,7 @@ if command -v "conda" &> /dev/null; then
         conda_mamba="conda"
     fi
 
-    alias env_dump="${conda_mamba} env export | grep -v '^prefix: ' >"
+    alias env_dump="${conda_mamba} env export | cut -f 1 -d '=' | /bin/grep -v '^prefix: ' >"
 
     if [[ -d "$(conda info --base)"/env/machine-learning ]]; then
         alias ml="${conda_mamba} activate machine-learning &> /dev/null"
