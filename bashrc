@@ -155,6 +155,12 @@ main() {
         source "${macos_dotfiles}"/etc/source_dirs_list.sh "${dotfiles}"/completion_dirs
     fi
 
+    # bash completion
+    if [[ -f /etc/profile.d/bash_completion.sh ]]; then
+        source /etc/profile.d/bash_completion.sh
+    fi
+
+
     # iTerm2 shell integration
     #if [[ "${os}" == "macos" ]]; then
     if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
@@ -163,6 +169,7 @@ main() {
     fi
 
     source ~/.iterm2_shell_integration.bash
+
     #fi
 }
 
