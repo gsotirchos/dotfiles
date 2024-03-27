@@ -90,7 +90,7 @@ main() {
         local singularity_status="$(get_singularity_status)"
 
         # get the hostname
-        local hostname=" at ${Cyan}\${HOSTNAME%.local}${Reset}"
+        local hostname=" on ${Cyan}\${HOSTNAME%.local}${Reset}"
 
         # get conda level and environment
         if [[ -n "${CONDA_DEFAULT_ENV}" ]]; then
