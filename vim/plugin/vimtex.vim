@@ -4,6 +4,23 @@ let g:vimtex_view_method = 'skim'
 let g:vimtex_view_skim_sync = 1
 let g:vimtex_view_skim_reading_bar = 1
 "let g:vimtex_compiler_latexmk = {'callback': 0}  " don't show QuickFix List
+let g:vimtex_compiler_latexmk = {
+    \ 'aux_dir' : '',
+    \ 'out_dir' : '',
+    \ 'callback' : 1,
+    \ 'continuous' : 1,
+    \ 'executable' : 'latexmk',
+    \ 'hooks' : [],
+    \ 'options' : [
+    \   '-pdf',
+    \   '-shell-escape',
+    \   '-verbose',
+    \   '-file-line-error',
+    \   '-synctex=1',
+    \   '-interaction=nonstopmode',
+    \ ],
+\}
+
 
 let g:vimtex_syntax_conceal = {
 \   'fancy': 1,
@@ -24,4 +41,3 @@ let g:vimtex_delim_toggle_mod_list = [
 \   ['\l', '\r'],
 \   ['\left', '\right']
 \]
-
