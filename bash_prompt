@@ -159,7 +159,7 @@ main() {
 
     get_singularity_status() {
         if [[ -n "${SINGULARITY_NAME}" ]]; then
-            echo " in ${ICyan}singularity${Reset}"
+            echo " through ${ICyan}singularity${Reset}"
         fi
     }
 
