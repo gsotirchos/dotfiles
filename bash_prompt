@@ -110,6 +110,7 @@ main() {
         fi
     }
 
+    # function to be getting virtualenv environment info
     __get_virtualenv_env() {
         if [[ -n "${VIRTUAL_ENV}" ]]; then
             echo -e "${Green}$(basename "${VIRTUAL_ENV}")${Reset})"
@@ -179,6 +180,10 @@ main() {
         # return the prompt string
         echo -e "  ${user}${singularity_status}${hostname}${work_dir}${catkin_sourced}${git_info}${Reset}\n${conda_env}${virtualenv_env}${prompt_sign}"
     }
+
+    if [[ $SHLVL -gt 1 ]]; then
+        return 0
+    fi
 
     if ! [[ "${PROMPT_COMMAND}" == *"__print_last_status"* ]]; then
         export PROMPT_COMMAND+=$'\n'"trap '__print_last_status \$BASH_COMMAND' ERR"
