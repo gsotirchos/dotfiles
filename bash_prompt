@@ -1,8 +1,68 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1090,SC1091,SC2155,SC2206,SC2154
 
+# set -o errtrace
+# set -o functrace
+# set -o history -o histexpand
+
+
 main() {
-    set_vars() {
+    TEXT_FORMATTING_VARS=(
+        # Reset
+        'Reset \e[0m'
+
+        # Bold
+        'Bold \e[0;1m'
+
+        # Underline
+        'Underline \e[0;4m'
+
+        # Bold underline
+        'BoldUnderline \e[0;1;4m'
+
+        # Regular foreground
+        'Black \e[30m'
+        'Red \e[31m'
+        'Green \e[32m'
+        'Yellow \e[33m'
+        'Blue \e[34m'
+        'Magenta \e[35m'
+        'Cyan \e[36m'
+        'White \e[37m'
+
+        # High Intensity foreground
+        'IBlack \e[90m'
+        'IRed \e[91m'
+        'IGreen \e[92m'
+        'IYellow \e[93m'
+        'IBlue \e[94m'
+        'IMagenta \e[95m'
+        'ICyan \e[96m'
+        'IWhite \e[97m'
+
+        # Regular background
+        'OnBlack \e[40m'
+        'OnRed \e[41m'
+        'OnGreen \e[42m'
+        'OnYellow \e[43m'
+        'OnBlue \e[44m'
+        'OnMagenta \e[45m'
+        'OnCyan \e[46m'
+        'OnWhite \e[47m'
+
+        # High Intensity background
+        'OnIBlack \e[100m'
+        'OnIRed \e[101m'
+        'OnIGreen \e[102m'
+        'OnIYellow \e[103m'
+        'OnIBlue \e[104m'
+        'OnIMagenta \e[105m'
+        'OnICyan \e[106m'
+        'OnIWhite \e[107m'
+    )
+
+    # function to EXPORT all color formatting variables
+    __export_color_vars() {
         arr=("$@")
         for i in "${arr[@]}"; do
             var_tuple=($i)
@@ -10,7 +70,9 @@ main() {
         done
     }
 
-    unset_vars() {
+    # function to UNSET all color formatting variables
+    # (not needed inside function)
+    __unset_color_vars() {
         arr=("$@")
         for i in "${arr[@]}"; do
             var_tuple=($i)
@@ -18,102 +80,88 @@ main() {
         done
     }
 
-    # set color shortcuts
-    TEXT_FORMATTING_VARS=(
-        # Reset
-        'Reset \[\e[0m\]'
+    # construct an indicator based on the nesting level
+    __format_nest_level() {
+        for i in $(seq 2 "$1"); do
+            echo -n "❭"
+        done
+    }
 
-        # Bold
-        'Bold \[\e[0;1m\]'
+    # function to be getting singularity status
+    __get_singularity_status() {
+        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
 
-        # Underline
-        'Underline \[\e[0;4m\]'
-
-        # Bold underline
-        'BoldUnderline \[\e[0;1;4m\]'
-
-        # Regular foreground
-        'Black \[\e[30m\]'
-        'Red \[\e[31m\]'
-        'Green \[\e[32m\]'
-        'Yellow \[\e[33m\]'
-        'Blue \[\e[34m\]'
-        'Magenta \[\e[35m\]'
-        'Cyan \[\e[36m\]'
-        'White \[\e[37m\]'
-
-        # High Intensity foreground
-        'IBlack \[\e[90m\]'
-        'IRed \[\e[91m\]'
-        'IGreen \[\e[92m\]'
-        'IYellow \[\e[93m\]'
-        'IBlue \[\e[94m\]'
-        'IMagenta \[\e[95m\]'
-        'ICyan \[\e[96m\]'
-        'IWhite \[\e[97m\]'
-
-        # Regular background
-        'OnBlack \[\e[40m\]'
-        'OnRed \[\e[41m\]'
-        'OnGreen \[\e[42m\]'
-        'OnYellow \[\e[43m\]'
-        'OnBlue \[\e[44m\]'
-        'OnMagenta \[\e[45m\]'
-        'OnCyan \[\e[46m\]'
-        'OnWhite \[\e[47m\]'
-
-        # High Intensity background
-        'OnIBlack \[\e[100m\]'
-        'OnIRed \[\e[101m\]'
-        'OnIGreen \[\e[102m\]'
-        'OnIYellow \[\e[103m\]'
-        'OnIBlue \[\e[104m\]'
-        'OnIMagenta \[\e[105m\]'
-        'OnICyan \[\e[106m\]'
-        'OnIWhite \[\e[107m\]'
-    )
-
-    set_prompt() {
-        set_vars "${TEXT_FORMATTING_VARS[@]}"
-
-        session_type="$1"
-
-        # get the prompt user
-        local user="${IBlue}\${USER}${Reset}"
-
-        # get the SSH session status
-        if [[ "${session_type}" == "remote_ssh" ]]; then
-            user="${user} ${IBlack}(ssh)${Reset}"
+        if [[ -n "${SINGULARITY_NAME}" ]]; then
+            echo -e " through ${ICyan}singularity${Reset}"
         fi
+    }
 
-        # get the singularity status
-        local singularity_status="$(get_singularity_status)"
+    # function to be getting conda environment info
+    __get_conda_env() {
+        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
 
-        # get the hostname
-        local hostname=" on ${Cyan}\${HOSTNAME%.local}${Reset}"
-
-        # get conda level and environment
         if [[ -n "${CONDA_DEFAULT_ENV}" ]]; then
             # get conda nest level
-            # TODO
-            local conda_lvl="$(format_nest_level "${CONDA_SHLVL}")"
+            local conda_lvl="$(__format_nest_level "${CONDA_SHLVL}")"
             if [[ -n "${CONDA_STACKED_2}" ]]; then
                 local is_stacked="${IGreen}"
             fi
-            local conda_env=" using ${Green}\${CONDA_DEFAULT_ENV}${Reset}${is_stacked}${conda_lvl}${Reset}"
+            echo -e "${Green}${CONDA_DEFAULT_ENV}${Reset}${is_stacked}${conda_lvl}${Reset} "
+        fi
+    }
+
+    __get_virtualenv_env() {
+        if [[ -n "${VIRTUAL_ENV}" ]]; then
+            echo -e "${Green}$(basename "${VIRTUAL_ENV}")${Reset})"
+        fi
+    }
+
+    # callback to print the last command exit status
+    __print_last_status() {
+        local last_status=$?
+        local last_command="$*"
+
+        # ignore useless exit status from __bp_precmd_invoke_cmd
+        if [[ "${last_command}" == *'type -t "$precmd_function" > /dev/null'* ]]; then
+            return 0
         fi
 
-        # get virtualenv level and environment
-        if [[ -n "${VIRTUAL_ENV}" ]]; then
-            local virtualenv_env=" (${IGreen}$(basename "${VIRTUAL_ENV}")${Reset})"
+        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
+        local exit_message="${IBlack}Exit ${last_status} (${last_command})${Reset}"
+        echo -e "${exit_message}"
+    }
+
+    __build_prompt() {
+        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
+
+        is_ssh_session="$1"
+
+        # get the prompt user
+        local user="\[${IBlue}\]\${USER}\[${Reset}\]"
+
+        # get the SSH session status and localhost name
+        if [[ "${is_ssh_session}" = true ]]; then
+            local hostname=" on \[${Cyan}\]\${HOSTNAME%.local} \[${IBlack}\](ssh)\[${Reset}\]"
         fi
 
         # get the working directory
-        local work_dir=" in ${Bold}${Blue}\w${Reset}"
+        local work_dir=" in \[${Bold}${Blue}\]\w\[${Reset}\]"
 
         # get prompt sign and nest level
-        local prompt_sign="${Bold}${IBlack}\$${Reset}"
-        local shell_lvl="${IBlack}$(format_nest_level "${SHLVL}")${Reset}"
+        local prompt_lvl="\[${Black}\]\$(__format_nest_level \${SHLVL})\[${Reset}\]"
+        local prompt_sign="\[${Bold}${IBlack}\]\$\[${Reset}\]${prompt_lvl} "
+
+        # get the singularity status
+        local singularity_status="\$(__get_singularity_status)"
+
+        # get git info
+        local git_info="\$(__git_ps1)"
+
+        # get conda level and environment
+        local conda_env="\$(__get_conda_env)"
+
+        # get virtualenv level and environment
+        local virtualenv_env="\$(__get_virtualenv_env)"
 
         # check if current dir belongs to overlayed ROS package
         if command -v "catkin" &> /dev/null \
@@ -129,63 +177,19 @@ main() {
         fi
 
         # return the prompt string
-        echo -e "  ${user}${singularity_status}${hostname}${conda_env}${virtualenv_env}${work_dir}${catkin_sourced}\n${prompt_sign}${shell_lvl}"
-
-        # unset color shortcuts
-        unset_vars "${color_vars[@]}"
+        echo -e "  ${user}${singularity_status}${hostname}${work_dir}${catkin_sourced}${git_info}${Reset}\n${conda_env}${virtualenv_env}${prompt_sign}"
     }
 
-    # construct an indicator based on the nesting level
-    format_nest_level() { # TODO: doesn't work with root
-        # check shell nest level
-        case $1 in
-            0* | 1*) ;;
-            2)
-                echo "❭"
-                ;;
-            *)
-                echo "\$(($1 - 1))❭"
-                ;;
-        esac
-    }
-
-    # callback to print the last command exit status
-    print_last_status() {
-        local last_status=$?
-        local IBlack="\e[90m"  # must be without \[ \]
-        local Reset="\e[0m"  # must be without \[ \]
-        echo -e "${IBlack}Exit ${last_status}${Reset}"
-    }
-
-    get_singularity_status() {
-        if [[ -n "${SINGULARITY_NAME}" ]]; then
-            echo " through ${ICyan}singularity${Reset}"
-        fi
-    }
-
-    # make git prompt command available
-    local git_prompt_path="/etc/bash_completion.d/git-prompt"
-    if [[ -f "${HOMEBREW_PREFIX}/${git_prompt_path}.sh" ]]; then
-        source "${HOMEBREW_PREFIX}/${git_prompt_path}.sh"
-    elif [[ -f "${git_prompt_path}" ]]; then
-        source "${git_prompt_path}"
+    if ! [[ "${PROMPT_COMMAND}" == *"__print_last_status"* ]]; then
+        export PROMPT_COMMAND+=$'\n'"trap '__print_last_status \$BASH_COMMAND' ERR"
+        # export PROMPT_COMMAND+=$'\n'"trap 'echo \$? \$BASH_COMMAND' ERR"
     fi
 
-    # git prompt options
-    export GIT_PS1_SHOWCOLORHINTS=true
-    export GIT_PS1_SHOWDIRTYSTATE=true
-    export GIT_PS1_SHOWSTASHSTATE=true
-    export GIT_PS1_DESCRIBE_STYLE="contains"
-    export GIT_PS1_SHOWUNTRACKEDFILES=true
-    export GIT_PS1_SHOWUPSTREAM="auto"
+    # if ! [[ "${PROMPT_COMMAND}" == *"__build_prompt"* ]]; then
+    #     export PROMPT_COMMAND+=$'\n''__git_ps1 "$(__build_prompt "'"${IS_SSH_SESSION}"'")" " "'
+    # fi
 
-    export -f set_prompt
-
-    if ! [[ "${PROMPT_COMMAND}" == *"set_prompt"* ]]; then
-        export PROMPT_COMMAND="${PROMPT_COMMAND%; }"'; __git_ps1 "$(set_prompt "'"${session_type}"'")" " "'
-        export PROMPT_COMMAND="${PROMPT_COMMAND%; }; trap print_last_status ERR"
-    fi
-    # export PS1="$(set_prompt "${session_type}")"  # is set by __git_ps1
+    export PS1="$(__build_prompt "${IS_SSH_SESSION}")"  # would be set by __git_ps1 ${...}
     export PS2='\[\e[30m\]┃\[\e[0m\] '
 }
 

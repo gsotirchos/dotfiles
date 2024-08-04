@@ -77,8 +77,9 @@ main() {
     export HISTFILESIZE=2000
 
     # instantly append to history every command
-    export PROMPT_COMMAND="${PROMPT_COMMAND%; }; history -a"
-    export PROMPT_COMMAND="${PROMPT_COMMAND#; }"
+    if ! [[ "${PROMPT_COMMAND}" == *"history -a"* ]]; then
+        export PROMPT_COMMAND+=$'\n''history -a'
+    fi
 
     # ignore certain filenames when auto-completing
     export FIGNORE=".DS_Store:"
@@ -92,16 +93,16 @@ main() {
 
     # check if this is a ssh session
     if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
-        local session_type="remote_ssh"
+        export IS_SSH_SESSION=true
     else
         case $(ps -o comm= -p "${PPID}") in
-            sshd | */sshd) local session_type="remote_ssh" ;;
+            sshd | */sshd) export IS_SSH_SESSION=true ;;
         esac
     fi
 
     # enable display on ssh connections
     if [[ "${os}" == "linux" ]]; then
-        if [[ "${session_type}" == "remote_ssh" ]]; then
+        if [[ "${IS_SSH_SESSION}" = true ]]; then
             if [[ "$(hostname)" == "ubuntu-ros-1" ]]; then
                 export DISPLAY=":20.0"
             else
@@ -145,11 +146,6 @@ main() {
         source ~/.bash_aliases
     fi
 
-    # custom prompt
-    if [[ -f ~/.bash_prompt ]]; then
-        source ~/.bash_prompt
-    fi
-
     # auto-completion
     if [[ -f "${dotfiles}"/completion_dirs ]]; then
         source "${macos_dotfiles}"/etc/source_dirs_list.sh "${dotfiles}"/completion_dirs
@@ -160,17 +156,43 @@ main() {
         source /etc/profile.d/bash_completion.sh
     fi
 
-
-    # iTerm2 shell integration
-    #if [[ "${os}" == "macos" ]]; then
-    if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
-        curl -L https://iterm2.com/shell_integration/bash \
-            -o ~/.iterm2_shell_integration.bash
+    # custom prompt
+    if [[ -f ~/.bash_prompt ]]; then
+        source ~/.bash_prompt
     fi
 
-    source ~/.iterm2_shell_integration.bash
+    # make git prompt command available
+    if ! command -v "__git_ps1" &> /dev/null; then
+        local git_prompt_path="/etc/bash_completion.d/git-prompt"
+        if [[ -f "${HOMEBREW_PREFIX}/${git_prompt_path}.sh" ]]; then
+            source "${HOMEBREW_PREFIX}/${git_prompt_path}.sh"
+        elif [[ -f "${git_prompt_path}" ]]; then
+            source "${git_prompt_path}"
+        fi
+    fi
 
-    #fi
+    # export git prompt options
+    export GIT_PS1_SHOWCOLORHINTS=true
+    export GIT_PS1_SHOWDIRTYSTATE=true
+    export GIT_PS1_SHOWSTASHSTATE=true
+    export GIT_PS1_DESCRIBE_STYLE="contains"
+    export GIT_PS1_SHOWUNTRACKEDFILES=true
+    export GIT_PS1_SHOWUPSTREAM="auto"
+
+    # enable iTerm2 shell integration on macOS
+    if [[ "${os}" == "macos" ]]; then
+        if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
+            curl -L https://iterm2.com/shell_integration/bash \
+                -o ~/.iterm2_shell_integration.bash
+        fi
+
+        # clean up PROMPT_COMMAND to avoid surprises...
+        export PROMPT_COMMAND="${PROMPT_COMMAND//__bp_precmd_invoke_cmd$'\n'/}"
+        export PROMPT_COMMAND="${PROMPT_COMMAND//$'\n'__bp_interactive_mode/}"
+        export PROMPT_COMMAND="${PROMPT_COMMAND//$'\n'__iterm2_prompt_command/}"
+
+        source ~/.iterm2_shell_integration.bash
+    fi
 }
 
 main "$@"
