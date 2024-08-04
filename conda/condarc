@@ -5,3 +5,4 @@ channels:
 channel_priority: flexible
 auto_activate_base: false
 auto_stack: true
+changeps1: false
