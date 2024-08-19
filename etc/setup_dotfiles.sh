@@ -33,7 +33,7 @@ main() {
     source "${DOTFILES}"/etc/symlink_dotfiles.sh "${DOTFILES}" "${HOME}/." # ~/.dotfiles/* -> ~/.*
     ln -sfv "${DOTFILES}"/vim/* ~/.vim                                     # ~/.dotfiles/vim/* -> ~/.vim/*
     ln -sfv "${DOTFILES}"/conda/* ~/.conda                                 # ~/.dotfiles/vim/* -> ~/.vim/*
-    ln -sfv "${DOTFILES}"/Zotero/translators* ~/Zotero/translators         # ~/.dotfiles/Zotero/translators/* -> ~/Zotero/translators/*
+    ln -sfv "${DOTFILES}"/Zotero/translators/* ~/Zotero/translators         # ~/.dotfiles/Zotero/translators/* -> ~/Zotero/translators/*
 
     # setup launch daemons and launch agents
     if command -v "launchctl" &> /dev/null; then
