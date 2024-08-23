@@ -4,6 +4,16 @@ nnoremap <C-z> <nop>
 " change leader
 let mapleader =  ';'
 
+" controllable mouse wheel scrolling
+noremap <ScrollWheelUp>     <C-Y>
+noremap <S-ScrollWheelUp>   <C-Y>
+noremap <ScrollWheelDown>   <C-E>
+noremap <S-ScrollWheelDown> <C-E>
+inoremap <ScrollWheelUp>     <C-o><C-Y>
+inoremap <S-ScrollWheelUp>   <C-o><C-Y>
+inoremap <ScrollWheelDown>   <C-o><C-E>
+inoremap <S-ScrollWheelDown> <C-o><C-E>
+
 " autocompletion mappings
 inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
 inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
