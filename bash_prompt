@@ -9,56 +9,56 @@
 main() {
     TEXT_FORMATTING_VARS=(
         # Reset
-        'Reset \e[0m'
+        'Reset \001\033[0m\002'
 
         # Bold
-        'Bold \e[0;1m'
+        'Bold \001\033[0;1m\002'
 
         # Underline
-        'Underline \e[0;4m'
+        'Underline \001\033[0;4m\002'
 
         # Bold underline
-        'BoldUnderline \e[0;1;4m'
+        'BoldUnderline \001\033[0;1;4m\002'
 
         # Regular foreground
-        'Black \e[30m'
-        'Red \e[31m'
-        'Green \e[32m'
-        'Yellow \e[33m'
-        'Blue \e[34m'
-        'Magenta \e[35m'
-        'Cyan \e[36m'
-        'White \e[37m'
+        'Black \001\033[30m\002'
+        'Red \001\033[31m\002'
+        'Green \001\033[32m\002'
+        'Yellow \001\033[33m\002'
+        'Blue \001\033[34m\002'
+        'Magenta \001\033[35m\002'
+        'Cyan \001\033[36m\002'
+        'White \001\033[37m\002'
 
         # High Intensity foreground
-        'IBlack \e[90m'
-        'IRed \e[91m'
-        'IGreen \e[92m'
-        'IYellow \e[93m'
-        'IBlue \e[94m'
-        'IMagenta \e[95m'
-        'ICyan \e[96m'
-        'IWhite \e[97m'
+        'IBlack \001\033[90m\002'
+        'IRed \001\033[91m\002'
+        'IGreen \001\033[92m\002'
+        'IYellow \001\033[93m\002'
+        'IBlue \001\033[94m\002'
+        'IMagenta \001\033[95m\002'
+        'ICyan \001\033[96m\002'
+        'IWhite \001\033[97m\002'
 
         # Regular background
-        'OnBlack \e[40m'
-        'OnRed \e[41m'
-        'OnGreen \e[42m'
-        'OnYellow \e[43m'
-        'OnBlue \e[44m'
-        'OnMagenta \e[45m'
-        'OnCyan \e[46m'
-        'OnWhite \e[47m'
+        'OnBlack \001\033[40m\002'
+        'OnRed \001\033[41m\002'
+        'OnGreen \001\033[42m\002'
+        'OnYellow \001\033[43m\002'
+        'OnBlue \001\033[44m\002'
+        'OnMagenta \001\033[45m\002'
+        'OnCyan \001\033[46m\002'
+        'OnWhite \001\033[47m\002'
 
         # High Intensity background
-        'OnIBlack \e[100m'
-        'OnIRed \e[101m'
-        'OnIGreen \e[102m'
-        'OnIYellow \e[103m'
-        'OnIBlue \e[104m'
-        'OnIMagenta \e[105m'
-        'OnICyan \e[106m'
-        'OnIWhite \e[107m'
+        'OnIBlack \001\033[100m\002'
+        'OnIRed \001\033[101m\002'
+        'OnIGreen \001\033[102m\002'
+        'OnIYellow \001\033[103m\002'
+        'OnIBlue \001\033[104m\002'
+        'OnIMagenta \001\033[105m\002'
+        'OnICyan \001\033[106m\002'
+        'OnIWhite \001\033[107m\002'
     )
 
     # function to EXPORT all color formatting variables
@@ -138,19 +138,19 @@ main() {
         is_ssh_session="$1"
 
         # get the prompt user
-        local user="\[${IBlue}\]\${USER}\[${Reset}\]"
+        local user="${IBlue}\${USER}${Reset}"
 
         # get the SSH session status and localhost name
         if [[ "${is_ssh_session}" = true ]]; then
-            local hostname=" on \[${Cyan}\]\${HOSTNAME%.local} \[${IBlack}\](ssh)\[${Reset}\]"
+            local hostname=" on ${Cyan}\${HOSTNAME%.local} ${IBlack}(ssh)${Reset}"
         fi
 
         # get the working directory
-        local work_dir=" in \[${Bold}${Blue}\]\w\[${Reset}\]"
+        local work_dir=" in ${Bold}${Blue}\w${Reset}"
 
         # get prompt sign and nest level
-        local prompt_lvl="\[${Black}\]\$(__format_nest_level \${SHLVL})\[${Reset}\]"
-        local prompt_sign="\[${Bold}${IBlack}\]\$\[${Reset}\]${prompt_lvl} "
+        local prompt_lvl="${Black}\$(__format_nest_level \${SHLVL})${Reset}"
+        local prompt_sign="${Bold}${IBlack}\$${Reset}${prompt_lvl} "
 
         # get the singularity status
         local singularity_status="\$(__get_singularity_status)"
@@ -178,7 +178,7 @@ main() {
         fi
 
         # return the prompt string
-        echo -e "  ${user}${singularity_status}${hostname}${work_dir}${catkin_sourced}${git_info}${Reset}\n${conda_env}${virtualenv_env}${prompt_sign}"
+        printf %b "  ${user}${singularity_status}${hostname}${work_dir}${catkin_sourced}${git_info}${Reset}\n${conda_env}${virtualenv_env}${prompt_sign}"
     }
 
     if [[ $SHLVL -gt 1 ]]; then
@@ -195,7 +195,7 @@ main() {
     # fi
 
     export PS1="$(__build_prompt "${IS_SSH_SESSION}")"  # would be set by __git_ps1 ${...}
-    export PS2='\[\e[30m\]┃\[\e[0m\] '
+    export PS2='\001\e[30m\002┃\001\e[0m\002 '
 }
 
 main "$@"
