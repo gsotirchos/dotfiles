@@ -43,23 +43,25 @@ augroup vimrc
     " remap <Return> so that it won't switch buffers in QuickFix/LocList buffers
     autocmd FileType qf nnoremap <buffer> <Return> <Return><C-W><C-W>
 
-    " enable syntax; for non-text files: load default syntax and show guides for non-text files
+    " enable syntax;
+    " for non-text files: load default syntax, show guides, use easytags
     let textFiletypes =
     \   ['markdown', 'qf', 'help', 'tex', 'latex', 'text', '']
-    autocmd BufWinEnter,BufRead * nested
+    autocmd ColorScheme * nested
     \   if !exists("g:syntax_on")
     \|      syntax on
-    \|      syntax enable
     \|  endif
+    \|  syntax enable
     \|  if index(textFiletypes, &filetype) < 0
-    \|      source $HOME/.vim/after/syntax/default.vim
-    \|      source $HOME/.vim/after/syntax/indent_guides.vim
+    \|      runtime after/syntax/default.vim
+    \|      runtime after/syntax/indent_guides.vim
     \|      let b:easytags_auto_update = 1
     \|  endif
     \|  set concealcursor=c
     \|  set conceallevel=1
 
-    autocmd BufWinEnter,BufRead,BufWrite * nested set statusline=%{%MyStatusline()%}
+    autocmd BufWinEnter,BufRead,BufWrite * nested
+    \   set statusline=%{%MyStatusline()%}
 
     " treat certain extensions as xml
     autocmd BufWinEnter,BufRead,BufWritePost

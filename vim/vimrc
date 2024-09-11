@@ -63,7 +63,7 @@ set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 set t_Co=16
 colorscheme sunyata
 set number  " show line numbers
-set numberwidth=1  " smallest width at start
+"set numberwidth=1  " smallest width at start
 "set nowrap  " don't wrap long lines
 set sidescroll=1  " enable sidescrolling
 set showmatch  " show matching parentheses
