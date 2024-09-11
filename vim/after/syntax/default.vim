@@ -1,4 +1,5 @@
 " marks
+syntax match Todo "TODO" containedin=.*Comment.*,pythonString contained
 syntax match Done "DONE\(\W.*\)\@=" containedin=.*Comment.* contained
 syntax match myMark "\(MARK:\s\)\@<=.*" containedin=.*Comment.* contained
 syntax match myUrl "http.:\/\/\S*" containedin=.*Comment.* contained
