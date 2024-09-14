@@ -21,7 +21,7 @@ hi! link pythonBuiltinObj  Function
 hi! link pythonClass       Identifier
 hi! link PythonExClass     Type
 hi! link pythonBuiltinType Type
-hi! link pythonDottedName  Type
+hi! link pythonDottedName  OtherType
 hi! link pythonDecorator   pythonDottedName
 
 " vim-easytags
