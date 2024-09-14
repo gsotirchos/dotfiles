@@ -75,7 +75,7 @@ PROJECT_ICON           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = $(HOME)/Public/shared  # ***
+OUTPUT_DIRECTORY       = $(HOME)/Public/shared/$(PROJECT_NAME)/  # ***
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create up to 4096
 # sub-directories (in 2 levels) under the output directory of each output format
@@ -981,10 +981,13 @@ INPUT_FILE_ENCODING    =
 # be provided as doxygen C comment), *.py, *.pyw, *.f90, *.f95, *.f03, *.f08,
 # *.f18, *.f, *.for, *.vhd, *.vhdl, *.ucf, *.qsf and *.ice.
 
-FILE_PATTERNS          = *.h \
-                         *.hpp \
-                         *.c \
-                         *.cpp  # ***
+FILE_PATTERNS          =
+#FILE_PATTERNS          = *.h \
+#                         *.hpp \
+#                         *.c \
+#                         *.cpp \
+#                         *.yaml \
+#                         *.py  # ***
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
