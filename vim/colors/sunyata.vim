@@ -73,8 +73,9 @@ exe "hi! Constant       cterm=NONE      ctermfg=9    ctermbg=NONE gui=NONE      
 exe "hi! Character      cterm=NONE      ctermfg=11   ctermbg=NONE gui=NONE      guifg=" . color_11 "guibg=" . color_bg
 exe "hi! link String  Constant"
 exe "hi! link Number  Character"
+exe "hi! link Boolean Character"
 exe "hi! link Float   Number"
-exe "hi! link Boolean Statement"
+" exe "hi! link Boolean Statement"
 
 " variable names
 exe "hi! Function       cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=" . color_6  "guibg=" . color_bg
@@ -87,7 +88,7 @@ exe "hi! link Repeat      Statement"
 exe "hi! link Label       Statement"
 exe "hi! link Keyword     Statement"
 exe "hi! link Exception   Statement"
-exe "hi! link Operator    Normal"
+exe "hi! link Operator    Statement"
 
 " generic Preprocessor
 exe "hi! PreProc        cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
