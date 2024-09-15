@@ -1,5 +1,3 @@
-"syntax match MembOperator ";"
-
 hi! link rustType           Type
 hi! link rustSigil          OtherType
 hi! link rustSelf           Identifier

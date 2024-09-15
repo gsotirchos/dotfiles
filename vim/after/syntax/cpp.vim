@@ -1,10 +1,11 @@
 " highlight 'namespace', 'enum', and 'struct' names
-syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(using \)\=namespace[ \n]\+\)\@<=\h\w*"
+syntax match cppNamespace "\(\(using\_s\+\)\=namespace\_s\+\)\@<=\h\w*" display
 
 " better preproc coloring
-syntax match cPreProcVar "\(\s*#\w*\s\)\@<=\S*" containedIn=.*PreProc.* contained
+syntax match cPreProcVar "\(#\w*\s\)\@<=\S*" containedin=.*PreProc.* contained display
 
-" syntax keyword cppSTLconstant nullptr
+syntax keyword cppSTLconstant nullptr
+
 
 "hi! link myScopeOperator Normal
 hi! link cTerminator     MembOperator

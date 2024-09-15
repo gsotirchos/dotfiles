@@ -2,7 +2,7 @@
 syntax match Todo "TODO" containedin=.*Comment.*,pythonString contained display
 syntax match Done "DONE\(\W.*\)\@=" containedin=.*Comment.* contained display
 syntax match myMark "\(MARK:\s\)\@<=.*" containedin=.*Comment.* contained display
-syntax match myUrl "http.:\/\/\S*" containedin=.*Comment.* contained
+syntax match myUrl "http.:\/\/\S*" containedin=.*Comment.* contained display
 
 " highlight %Tag(...)% in comments
 syntax region myTagMark
@@ -13,12 +13,10 @@ syntax region myTagMark
 " parentheses and member operators
 syntax match myParens "[(){}\[\]<>,;]" containedin=NONE display
 syntax match MembOperator "[,;]" containedin=NONE display
-"syntax match MembOperator "\(\w\|[\])][ \n]*\)\@<=\(\(::\)\|\(->\)\|\(\.\)\)\([ \n]*\h\)\@=" containedin=NONE
-syntax match MembOperator "\(\(::\)\|\(->\)\|\(\.\)\)\([ \n]*\h\)\@=" containedin=NONE display
+syntax match MembOperator "\(\(::\)\|\(->\)\|\(\.\)\)\(\_s*\h\)\@=" containedin=NONE display  " also \(\w\|[\])]\_s*\)\@<=
 
 " assignemnt and logical operators
-syntax match myEquals "=" containedIn=NONE display
-syntax match myOperator "->" contains=TOP display
+syntax match myEquals "=" containedin=NONE display
 syntax match myOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP display
 syntax match myOperator "\(\S\)\@<![<>!~:]\+[=]\=\(\S\)\@!" display
 syntax match myOperator "\(\S\)\@<!\(\(==\)\|\(->\)\)\(\S\)\@!" display

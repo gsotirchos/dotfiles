@@ -1,5 +1,6 @@
 set sw=2 ts=2 sts=2
 
+
 hi! link xmlTag             Comment
 hi! link xmlNamespace       Function
 hi! link xmlTagName         Statement
