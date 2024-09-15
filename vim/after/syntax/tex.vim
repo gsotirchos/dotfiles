@@ -1,10 +1,10 @@
-"syntax match texCmdBackslash "\\" containedin=.*texCmd.* contained
+"syntax match texCmdBackslash "\\" containedin=.*texCmd.* contained display
 
 
 "hi! clear texItalStyle
 "hi! clear texBoldStyle
 
-hi! link texCmdBackslash     Comment
+"hi! link texCmdBackslash     Comment
 
 hi! link texPartArgTitle     Normal
 hi! link texPartConcArgTitle SpecialComment

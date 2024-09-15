@@ -5,16 +5,12 @@ let python_highlight_all=1
 " \   end="\"\"\""
 " \   containedin=.*String.*
 
-syntax match myParens "[(){}\[\]<>,;]" containedin=NONE
-syntax match myOperator "[-+?!$%^&*\\|~/:<>]" containedIn=pythonOperator
-syntax match myEquals "=" containedIn=pythonOperator
+syntax match myOperator "\A" contained containedin=pythonOperator display
 
-hi! link pythonLongComment pythonString
-hi! link myParens          Comment
-hi! link myOperator        OtherType
-hi! link myEquals          Statement
+
+"hi! link pythonLongComment pythonString
 hi! link pythonDot         MembOperator
-hi! link pythonOperator    Statement
+"hi! link pythonOperator    Statement
 hi! link pythonImport      Statement
 "hi! link pythonNone        Function
 hi! link pythonBuiltinObj  Function

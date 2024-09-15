@@ -1,2 +1,2 @@
 hi! link matlabCellComment SpecialComment
-hi! link matlabSemicolon Comment
+hi! link matlabSemicolon   Comment
