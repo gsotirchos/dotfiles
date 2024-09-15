@@ -16,7 +16,7 @@ hi! link myEquals          Statement
 hi! link pythonDot         MembOperator
 hi! link pythonOperator    Statement
 hi! link pythonImport      Statement
-hi! link pythonNone        Function
+"hi! link pythonNone        Function
 hi! link pythonBuiltinObj  Function
 hi! link pythonClass       Identifier
 hi! link PythonExClass     Type

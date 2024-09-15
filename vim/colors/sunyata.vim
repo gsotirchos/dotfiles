@@ -69,13 +69,12 @@ exe "hi! Normal         cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      
 exe "hi! Comment        cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=" . color_8  "guibg=" . color_bg
 
 " constants
-exe "hi! Constant       cterm=NONE      ctermfg=9    ctermbg=NONE gui=NONE      guifg=" . color_9  "guibg=" . color_bg
+exe "hi! String         cterm=NONE      ctermfg=9    ctermbg=NONE gui=NONE      guifg=" . color_9  "guibg=" . color_bg
 exe "hi! Character      cterm=NONE      ctermfg=11   ctermbg=NONE gui=NONE      guifg=" . color_11 "guibg=" . color_bg
-exe "hi! link String  Constant"
-exe "hi! link Number  Character"
-exe "hi! link Boolean Character"
-exe "hi! link Float   Number"
-" exe "hi! link Boolean Statement"
+exe "hi! link Constant Character"
+" exe "hi! link Number   Character"
+" exe "hi! link Float    Number"
+" exe "hi! link Boolean  Character"
 
 " variable names
 exe "hi! Function       cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=" . color_6  "guibg=" . color_bg
