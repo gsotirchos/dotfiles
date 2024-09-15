@@ -4,6 +4,8 @@ syntax match cppNamespace "\(^\(.*;\+\)*[ \n]*\(using \)\=namespace[ \n]\+\)\@<=
 " better preproc coloring
 syntax match cPreProcVar "\(\s*#\w*\s\)\@<=\S*" containedIn=.*PreProc.* contained
 
+" syntax keyword cppSTLconstant nullptr
+
 "hi! link myScopeOperator Normal
 hi! link cTerminator     MembOperator
 hi! link cTypedef        Typedef
@@ -19,7 +21,7 @@ hi! link cppNamespace    Identifier
 "hi! link cppOperator     cOperator
 hi! link cppSTLvariable  cMember
 hi! link cppSTLnamespace cppNamespace
-hi! link cppSTLconstant  cppSTLvariable
+"hi! link cppSTLconstant  cppSTLvariable
 hi! link cppSTLiterator  cppSTLvariable
 hi! link cppSTLexception cppSTLvariable
 
@@ -35,5 +37,5 @@ set syntax=cpp.doxygen
 
 augroup cpp_syntax
     autocmd!
-    autocmd BufWinEnter *.cpp syntax keyword cppSTLconstant nullptr
+    autocmd VimEnter cpp syntax keyword cppSTLconstant nullptr
 augroup END
