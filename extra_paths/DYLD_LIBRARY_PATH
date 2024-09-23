@@ -3,7 +3,7 @@
 ${HOMEBREW_PREFIX}/opt/libomp/lib
 ${HOMEBREW_PREFIX}/opt/curl/lib
 ${HOMEBREW_PREFIX}/opt/llvm/lib
-${HOMEBREW_PREFIX}/opt/llvm/lib/c++
+#${HOMEBREW_PREFIX}/opt/llvm/lib/c++  # ⚠️
 $(xcrun --show-sdk-path)/usr/lib
 /usr/local/lib
 #/usr/lib  # ⚠️
