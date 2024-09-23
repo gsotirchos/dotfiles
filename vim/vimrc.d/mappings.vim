@@ -1,26 +1,14 @@
-" disable ctrl-z
-nnoremap <C-z> <nop>
+" Controllable mouse wheel scrolling
+noremap  <ScrollWheelUp>     <C-y>
+noremap  <S-ScrollWheelUp>   <C-y>
+noremap  <ScrollWheelDown>   <C-e>
+noremap  <S-ScrollWheelDown> <C-e>
+inoremap <ScrollWheelUp>     <C-o><C-y>
+inoremap <S-ScrollWheelUp>   <C-o><C-y>
+inoremap <ScrollWheelDown>   <C-o><C-e>
+inoremap <S-ScrollWheelDown> <C-o><C-e>
 
-" change leader
-let mapleader =  ';'
-
-" controllable mouse wheel scrolling
-noremap <ScrollWheelUp>     <C-Y>
-noremap <S-ScrollWheelUp>   <C-Y>
-noremap <ScrollWheelDown>   <C-E>
-noremap <S-ScrollWheelDown> <C-E>
-inoremap <ScrollWheelUp>     <C-o><C-Y>
-inoremap <S-ScrollWheelUp>   <C-o><C-Y>
-inoremap <ScrollWheelDown>   <C-o><C-E>
-inoremap <S-ScrollWheelDown> <C-o><C-E>
-
-" autocompletion mappings
-inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
-inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
-inoremap <expr> <Return> pumvisible() ? "\<C-y>" : "\<C-g>u\<Return>"
-inoremap <C-n> <C-x><C-u>
-
-" wrapped lines movement mappings
+" Movement on wrapped lines
 noremap  <silent> k       gk
 noremap  <silent> j       gj
 noremap  <silent> <Up>    gk
@@ -36,19 +24,13 @@ noremap  <silent> ^       g^
 noremap  <silent> $       g$
 noremap  <silent> <Space> za
 
-" execute last command with C-@
-noremap  <silent> <C-@> :@:<Return>
-inoremap <silent> <C-@> <Esc>:@:<Return>
-cnoremap <silent> <C-@> <C-e><C-u>@:<Return>
+" Movement in the autocompletion menu
+inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
+inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
+inoremap <expr> <Return> pumvisible() ? "\<C-y>" : "\<C-g>u\<Return>"
+inoremap <C-n> <C-x><C-u>
 
-" print highlight group under cursor
-map <F10> :echo
-\   'hi<' . synIDattr(synID(line('.'),col('.'),1),'name') . '> ' .
-\   'trans<' . synIDattr(synID(line('.'),col('.'),0),'name') . '> ' .
-\   'lo<' . synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name') . '>'
-\   <Return>
-
-" smart indent when entering insert mode with i on empty lines
+" Smart indenting when entering insert mode on empty lines
 function! IndentWithI()
     if len(getline('.')) == 0
         return  "\"_cc"
@@ -57,7 +39,7 @@ function! IndentWithI()
     endif
 endfunction
 nnoremap <expr> i IndentWithI()
-
+"
 function! IndentWithA()
     if len(getline('.')) == 0
         return  "\"_cc"
@@ -67,27 +49,20 @@ function! IndentWithA()
 endfunction
 nnoremap <expr> a IndentWithA()
 
-" use OS clipboard and copy-paste shortcuts
-if has('unnamedplus')
-    set clipboard=unnamed,unnamedplus
-else
-    set clipboard=unnamed
-endif
-"inoremap <D-v> <Space><ESC>"+gPi<Delete>
-"inoremap <D-v> <C-r>+
-"nnoremap <D-v> "+p
-"vnoremap <D-v> "+p
-"cnoremap <D-v> <C-r>+
-"vnoremap <D-c> "+y
+" Finding and replacing
+nnoremap <leader>r :%s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
+vnoremap <leader>r :s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
 
-" mab Shift+Tab to Ctrl+O in normal mode
-nnoremap <S-Tab> <C-o>
+" Case-insensitive searching (with '\c')
+noremap <silent> / :echo '/'<Return>/\c
+noremap <silent> ? :echo '?'<Return>?\c
 
-" swap p and P in visual mode
-vnoremap p P
-vnoremap P p
+" Execute last command with Ctrl+Space
+noremap  <silent> <C-Space> :@:<Return>
+inoremap <silent> <C-Space> <Esc>:@:<Return>
+cnoremap <silent> <C-Space> <C-e><C-u>@:<Return>
 
-" toggle LocList
+" Toggle LocList
 function! ToggleLocList()
     if get(getloclist(0, {'winid': 0}), 'winid', 0)
         "exec 'set laststatus=' . g:laststatus
@@ -106,7 +81,7 @@ function! ToggleLocList()
 endfunction
 nnoremap <silent> <leader>l :call ToggleLocList()<Return>
 
-" toggle QuickFix
+" Toggle QuickFix
 function! ToggleQuickFix()
     if get(getqflist({'winid': 0}), 'winid', 0)
         "exec 'set laststatus=' . g:laststatus
@@ -121,7 +96,7 @@ function! ToggleQuickFix()
 endfunction
 nnoremap <silent> <leader>q :call ToggleQuickFix()<Return>
 
-" toggle Preview
+" Toggle Preview
 function! TogglePreview()
     for nr in range(1, winnr('$'))
         if getwinvar(nr, '&previewwindow') == 1
@@ -133,27 +108,48 @@ function! TogglePreview()
 endfunction
 nnoremap <silent> <leader>p :call TogglePreview()<Return>
 
-" find ALE references
-nnoremap <silent> <leader>f :ALEFindReferences -relative<Return>
-
-" fix with ALE fixers
-nnoremap <silent> <leader>F :ALEFix<Return>
-
-" find-replace
-nnoremap <leader>r :%s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
-vnoremap <leader>r :s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
-
-" case-insensitive searching using '\c'
-noremap <silent> / :echo '/'<Return>/\c
-noremap <silent> ? :echo '?'<Return>?\c
-
-" show buffers list
+" Show buffers list
 nnoremap <leader>b :buffers<Return>:buffer<SPACE>
+
+" Use OS clipboard and copy-paste shortcuts
+if has('unnamedplus')
+    set clipboard=unnamed,unnamedplus
+else
+    set clipboard=unnamed
+endif
+"inoremap <D-v> <Space><ESC>"+gPi<Delete>
+"inoremap <D-v> <C-r>+
+"nnoremap <D-v> "+p
+"vnoremap <D-v> "+p
+"cnoremap <D-v> <C-r>+
+"vnoremap <D-c> "+y
+
+" Print highlight group under cursor
+map <F10> :echo
+\   'hi<' . synIDattr(synID(line('.'),col('.'),1),'name') . '> ' .
+\   'trans<' . synIDattr(synID(line('.'),col('.'),0),'name') . '> ' .
+\   'lo<' . synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name') . '>'
+\   <Return>
+
+" Change leader
+let mapleader =  ';'
+
+" Disable Ctrl+z
+nnoremap <C-z> <Nop>
+
+" Shift+Tab is Ctrl+O in normal mode
+nnoremap <S-Tab> <C-o>
+nnoremap <C-o>   <Nop>
+
+" Swap p and P in visual mode
+vnoremap p P
+vnoremap P p
 
 " other mappings
 nnoremap o o<Esc>
 nnoremap O O<Esc>
+nnoremap <silent> <leader>F :ALEFix<Return>
+nnoremap <silent> <leader>f :ALEFindReferences -relative<Return>
 nnoremap <silent> <leader>d :ALEGoToDefinition<Return>
 nnoremap <silent> <leader>t :ALEGoToTypeDefinition<Return>
 nnoremap <silent> <leader>i :ALEGoToImplementation<Return>
-"nnoremap <silent> <leader>a <Plug>DashSearch
