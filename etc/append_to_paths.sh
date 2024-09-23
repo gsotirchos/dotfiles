@@ -40,7 +40,9 @@ main() {
 
         #echo -e "\nappending to \$${global_var_name} from ${extra_paths_file}:"
         append_paths "${global_var_name}" "${extra_paths[@]}"
+        #echo -e "--- ${global_var_name}:\n${!global_var_name}"
     done
+
 }
 
 main "$@"
