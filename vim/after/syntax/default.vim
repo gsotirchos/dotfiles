@@ -13,10 +13,10 @@ syntax region myTagMark
 " parentheses and member operators
 syntax match myParens "[(){}\[\]<>,;]" containedin=NONE display
 syntax match MembOperator "[,;]" containedin=NONE display
-syntax match MembOperator "\(\(::\)\|\(->\)\|\(\.\)\)\(\_s*\h\)\@=" containedin=NONE display  " also \(\w\|[\])]\_s*\)\@<=
+syntax match MembOperator "\(\(::\)\|\(->\)\|\(\.\)\)\(\_s*\h\)\@=" containedin=NONE contains=TOP display  " also \(\w\|[\])]\_s*\)\@<=
 
 " assignemnt and logical operators
-syntax match myEquals "=" containedin=NONE display
+syntax match myEquals "\(\_s\)\@<==\(\_s\)\@=" containedin=NONE display
 syntax match myOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP display
 syntax match myOperator "\(\S\)\@<![<>!~:]\+[=]\=\(\S\)\@!" display
 syntax match myOperator "\(\S\)\@<!\(\(==\)\|\(->\)\)\(\S\)\@!" display
