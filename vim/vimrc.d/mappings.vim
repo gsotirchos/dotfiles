@@ -141,6 +141,12 @@ nnoremap <C-z> <Nop>
 nnoremap <S-Tab> <C-o>
 nnoremap <C-o>   <Nop>
 
+" Shift selected lines with Tab and Shift+Tab in visual mode
+vnoremap <Tab>   >gv
+vnoremap <S-Tab> <gv
+vnoremap >       <Nop>
+vnoremap <       <Nop>
+
 " Swap p and P in visual mode
 vnoremap p P
 vnoremap P p
