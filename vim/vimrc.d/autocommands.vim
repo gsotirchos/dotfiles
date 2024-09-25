@@ -47,7 +47,7 @@ augroup vimrc
     " for non-text files: load default syntax, show guides, use easytags
     let textFiletypes =
     \   ['markdown', 'qf', 'help', 'tex', 'latex', 'text', 'yaml', '']
-    autocmd ColorScheme,FileType,BufWinEnter * nested
+    autocmd ColorScheme,FileType * nested
     \   if !exists("g:syntax_on")
     \|      syntax on
     \|  endif
