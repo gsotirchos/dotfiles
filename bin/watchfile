@@ -62,12 +62,12 @@ execute_command() {
         clear
     fi
 
-    message_bold "Executing ==========================="
+    message_bold "Executing ==================================================="
 
     if eval "${command_string}"; then
-        message_bold "${GREEN_TEXT}Finished ============================${RESET}"
+        message_bold "${GREEN_TEXT}Finished ====================================================${RESET}"
     else
-        message_bold "${RED_TEXT}Failed ==============================${RESET}"
+        message_bold "${RED_TEXT}Failed ======================================================${RESET}"
     fi
 
     message "Watching ${BLUE_TEXT}${watched_file}${RESET}..."

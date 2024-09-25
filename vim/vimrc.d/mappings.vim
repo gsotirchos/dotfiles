@@ -1,3 +1,6 @@
+" Change leader
+let mapleader =  ';'
+
 " Controllable mouse wheel scrolling
 noremap  <ScrollWheelUp>     <C-y>
 noremap  <S-ScrollWheelUp>   <C-y>
@@ -131,9 +134,6 @@ map <F10> :echo
 \   'lo<' . synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name') . '>'
 \   <Return>
 
-" Change leader
-let mapleader =  ';'
-
 " Disable Ctrl+z
 nnoremap <C-z> <Nop>
 
@@ -152,10 +152,12 @@ vnoremap p P
 vnoremap P p
 
 " other mappings
+nnoremap Q <Nop>
 nnoremap o o<Esc>
 nnoremap O O<Esc>
-nnoremap <silent> <leader>F :ALEFix<Return>
-nnoremap <silent> <leader>f :ALEFindReferences -relative<Return>
-nnoremap <silent> <leader>d :ALEGoToDefinition<Return>
-nnoremap <silent> <leader>t :ALEGoToTypeDefinition<Return>
-nnoremap <silent> <leader>i :ALEGoToImplementation<Return>
+nnoremap <leader>F :ALEFix<Return>
+nnoremap <leader>f :ALEFindReferences -relative<Return>
+nnoremap <leader>d :ALEGoToDefinition<Return>
+nnoremap <leader>t :ALEGoToTypeDefinition<Return>
+nnoremap <leader>i :ALEGoToImplementation<Return>
+nnoremap <leader>Q :close<Return>
