@@ -40,9 +40,6 @@ augroup vimrc
     " don't spell check help or QuickFix/LocList buffers
     autocmd FileType help,qf set nospell
 
-    " remap <Return> so that it won't switch buffers in QuickFix/LocList buffers
-    autocmd FileType qf nnoremap <buffer> <Return> <Return><C-W><C-W>
-
     " enable syntax;
     " for non-text files: load default syntax, show guides, use easytags
     let textFiletypes =
