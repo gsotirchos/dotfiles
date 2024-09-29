@@ -156,6 +156,7 @@ exe "hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      
 exe "hi! PmenuSel       cterm=NONE      ctermfg=7    ctermbg=4    gui=NONE      guifg=" . color_7  "guibg=" . color_4
 exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=" . color_15 "guibg=" . color_bg
 exe "hi! link PmenuSbar   Pmenu"
+exe "hi! link Title       SpecialComment"
 exe "hi! link TabLineSel  SpecialComment"
 exe "hi! link TabLine     ToolbarButton"
 exe "hi! link TabLineFill ToolbarButton"

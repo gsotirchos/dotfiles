@@ -11,3 +11,5 @@ let g:tex_comment_nospell = 1
 let g:tex_indent_items = 0
 let g:tex_indent_and = 0
 let g:tex_indent_brace = 0
+
+nnoremap <C-Return> <plug>(vimtex-compile-ss)  " single-shot compile with Ctrl+Return
