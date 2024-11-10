@@ -53,8 +53,8 @@ endfunction
 nnoremap <expr> a IndentWithA()
 
 " Finding and replacing
-nnoremap <leader>r :%s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
-vnoremap <leader>r :s///g\|noh<Left><Left><Left><Left><Left><Left><Left>
+nnoremap <leader>r :%s///cg\|noh<Left><Left><Left><Left><Left><Left><Left><Left>
+vnoremap <leader>r :s///cg\|noh<Left><Left><Left><Left><Left><Left><Left><Left>
 
 " Case-insensitive searching (with '\c')
 noremap <silent> / :echo '/'<Return>/\c

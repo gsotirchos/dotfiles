@@ -171,4 +171,3 @@ runtime vimrc.d/mappings.vim
 
 " autocommands
 runtime vimrc.d/autocommands.vim
-
