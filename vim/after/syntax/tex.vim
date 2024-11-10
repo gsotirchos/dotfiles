@@ -1,6 +1,6 @@
-syntax match texCmdBackslash "\\" containedin=.*tex.*Cmd.* contained display cchar=\
+"syntax match texCmdBackslash "\\" containedin=.*tex.*Cmd.* contained display cchar=\
 
-hi! link texCmdBackslash     Comment
+"hi! link texCmdBackslash     Comment
 
 hi! link texDelim            MembOperator
 hi! link texBeginEnd         texStatement
@@ -13,6 +13,7 @@ hi! link texInputFile        PreProc
 hi! link texSpecialChar      Special
 hi! link texEnvArgName       Identifier
 hi! link texRefZone          OtherType
+hi! link texHrefArgTextC     underlined
 
 hi! link texCmdLigature      texCmd
 hi! link texCmdStyle         Type

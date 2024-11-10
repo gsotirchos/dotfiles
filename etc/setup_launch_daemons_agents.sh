@@ -1,6 +1,6 @@
 # shellcheck disable=SC2016
 
-for plist_file in "${1}"/*.plist; do
+for plist_file in "$1"/*.plist; do
     chown_plist_cmd='chown ${USER}:$(id --group --name "${USER}") '"${plist_file}"
     ln_plist_cmd="ln -sfv ${plist_file} $2/$(basename "${plist_file}")"
     unload_plist_cmd="launchctl unload -w $2/$(basename "${plist_file}")"

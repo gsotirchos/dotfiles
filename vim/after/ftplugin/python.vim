@@ -1,7 +1,7 @@
 let g:NERDCompactSexyComs = 1
 
 " execute script
-nnoremap <silent> <leader>x :w<return>:terminal python3 "%:p"<return>
+nnoremap <buffer> <silent> <leader>x :w<return>:terminal python3 "%:p"<return>
 
 " debug script
-nnoremap <silent> <leader>D :w<return>:terminal python3 -m pdb "%:p"<return>
+nnoremap <buffer> <silent> <leader>D :w<return>:terminal python3 -m pdb "%:p"<return>
