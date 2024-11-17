@@ -59,7 +59,7 @@ empty_trash() {
 
 # make a .url file with given link
 make_url() {
-    echo -e "[InternetShortcut]\nURL=$2" > "$1"
+    echo -e "[InternetShortcut]\nURL=$2" > "${1%%.url}.url"
 }
 
 # merge all build/*/copmile_commands.json to a single build/copmile_commands.json
@@ -148,17 +148,17 @@ if command -v "catkin" &> /dev/null; then
 fi
 
 # Git sync
-if ! command -v "git sync" &> /dev/null; then
-    git_sync() {
-        git stash \
-            && git pull \
-            && git stash apply \
-            && git add . \
-            && git commit -m "$1" \
-            && git push \
-            && git stash clear
-    }
-fi
+#if ! command -v "git sync" &> /dev/null; then
+#    git_sync() {
+#        git stash \
+#            && git pull \
+#            && git stash apply \
+#            && git add . \
+#            && git commit -m "$1" \
+#            && git push \
+#            && git stash clear
+#    }
+#fi
 
 if [[ "$(hostname)" == "ubuntu-vm" ]]; then
     dav_mount() {

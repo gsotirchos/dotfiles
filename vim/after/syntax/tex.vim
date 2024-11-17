@@ -9,6 +9,7 @@ hi! link texOpt              Function
 hi! link texOptEqual         Normal
 hi! link texPartArgTitle     Normal
 hi! link texPartConcArgTitle SpecialComment
+hi! link texTitleArg         SpecialComment
 hi! link texInputFile        PreProc
 hi! link texSpecialChar      Special
 hi! link texEnvArgName       Identifier
