@@ -9,7 +9,8 @@ hi! link vimBracket      Normal
 hi! link vimMapMod       Normal
 hi! link vimSetSep       Normal
 hi! link vimSetRegion    vimSet
-hi! link vimSep          Normal
+hi! link vimSep          MyOperator
+hi! link vimCmdSep       vimSep
 hi! link vimMapModKey    PreProc
 hi! link vimFunction     Function
 hi! link vimUserFunc     vimFunction

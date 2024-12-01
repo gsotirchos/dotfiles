@@ -49,13 +49,15 @@ augroup vimrc
     \|      syntax on
     \|  endif
     \|  syntax enable
+    \|  set nonumber
+    \|  set concealcursor=c
+    \|  set conceallevel=1
     \|  if index(textFiletypes, &filetype) < 0
+    \|      set number
     \|      runtime after/syntax/default.vim
     \|      runtime after/syntax/indent_guides.vim
     \|      let b:easytags_auto_update = 1
     \|  endif
-    \|  set concealcursor=c
-    \|  set conceallevel=1
 
     autocmd BufWinEnter,BufRead,BufWrite *
     \   set statusline=%{%MyStatusline()%}
@@ -85,6 +87,9 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWritePost
     \   *.m
     \   set ft=matlab
+
+    " treat C files as C++ files
+    autocmd FileType c set ft=cpp
 
     " use custom CMake autocompletion
     autocmd BufWinEnter,BufRead,BufWritePost
