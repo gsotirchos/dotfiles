@@ -3,7 +3,7 @@ let g:ale_echo_msg_format = '〈%linter%〉%s %(code)%'
 let g:ale_sign_column_always = 1
 let g:ale_sign_error = '▐'
 let g:ale_sign_warning = '▐'
-let g:ale_fix_on_save = 0  " TODO
+let g:ale_fix_on_save = 0
 let &omnifunc = 'ale#completion#OmniFunc'
 let &completefunc = 'ale#completion#OmniFunc'
 let g:ale_completion_enabled = 1
@@ -20,22 +20,22 @@ let g:ale_linters = {
 \}
 let g:ale_fixers = {
 \   'sh': [
-\       {-> execute('undojoin', 'silent!') + 0},
+\       { -> execute('undojoin', 'silent!') + 0 },
 \       'shfmt'],
 \   'cmake': [
-\       {-> execute('undojoin', 'silent!') + 0},
+\       { -> execute('undojoin', 'silent!') + 0 },
 \       'cmakeformat'],
 \   'cpp': [
-\       {-> execute('undojoin', 'silent!') + 0},
+\       { -> execute('undojoin', 'silent!') + 0 },
 \       'clang-format'],
 \   'python': [
-\       {-> execute('undojoin', 'silent!') + 0},
+\       { -> execute('undojoin', 'silent!') + 0 },
 \       'trim_whitespace',
 \       'isort',
 \       'autopep8',
 \       'ruff'],
 \   'tex': [
-\       {-> execute('undojoin', 'silent!') + 0},
+\       { -> execute('undojoin', 'silent!') + 0 },
 \       'latexindent'],
 \}
 

@@ -6,6 +6,10 @@ let python_highlight_all=1
 " \   containedin=.*String.*
 
 syntax match myOperator "\A" contained containedin=pythonOperator display
+syntax match myOperator "\.\.\." containedin=MembOperator display
+
+syntax keyword Keyword match
+syntax keyword Keyword case
 
 
 "hi! link pythonLongComment pythonString
