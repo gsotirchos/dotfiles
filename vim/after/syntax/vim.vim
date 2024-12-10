@@ -1,4 +1,5 @@
 syntax match vimComment "\".*" containedin=vim.*Comment
+syn match Error "\\@\d*[<>]\=!\==\="  " not working
 
 
 "hi! clear CursorLine

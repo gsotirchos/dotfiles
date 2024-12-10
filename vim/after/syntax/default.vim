@@ -16,7 +16,7 @@ syntax match MembOperator "[,;]" containedin=NONE display
 syntax match MembOperator "\(\(::\)\|\(->\)\|\(\.\)\)\(\_s*\h\)\@=" containedin=NONE contains=TOP display  " also \(\w\|[\])]\_s*\)\@<=
 
 " assignemnt and logical operators
-syntax match myEquals "\(\_s\)\@<==\(\_s\)\@=" containedin=NONE display
+syntax match myEquals "\(\W\|\_s\)\@<==\(\S\)\@!" containedin=NONE display
 syntax match myOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP display
 syntax match myOperator "\(\S\)\@<![<>!~:]\+[=]\=\(\S\)\@!" display
 syntax match myOperator "\(\S\)\@<!\(\(==\)\|\(->\)\)\(\S\)\@!" display
