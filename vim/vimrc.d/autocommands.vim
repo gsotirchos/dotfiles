@@ -23,9 +23,9 @@ augroup vimrc
     autocmd!
 
     " enable sign column (when appropriate), set textwidth, set wrapping indent
+    "\   call SetSyntax(line('$'))
     autocmd BufWinEnter,BufRead,BufWrite,VimResized *
-    \   call SetSyntax(line('$'))
-    \|  call SetSignColumn(@%, &modifiable)
+    \  call SetSignColumn(@%, &modifiable)
     \|  let b:numberwidth = 1 + float2nr(ceil(log10(line("$") + 1)))
     \|  let &textwidth = min([maxwinwidth, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
     \|  let &breakindentopt = "shift:" . (&ts-1)
@@ -37,7 +37,7 @@ augroup vimrc
     " always convert to utf-8
     autocmd BufWinEnter,BufRead,BufWritePost ?* silent! set fileencoding=utf-8
 
-    " don't spell check help or QuickFix/LocList buffers
+    " don't spell-check help or QuickFix/LocList buffers
     autocmd FileType help,qf set nospell
 
     " enable syntax;
