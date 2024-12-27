@@ -10,6 +10,7 @@ syntax match myOperator "\.\.\." containedin=MembOperator display
 
 syntax keyword Keyword match
 syntax keyword Keyword case
+syntax keyword Debug breakpoint
 
 
 "hi! link pythonLongComment pythonString
