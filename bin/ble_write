@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+import argparse
+import asyncio
+from bleak import BleakScanner, BleakClient
+
+async def connect_and_write_to_characteristic(device_name, characteristic_uuid, value):
+    """
+    Connects to a BLE device by name and writes a value to a specific characteristic.
+
+    :param device_name: The name of the BLE device.
+    :param characteristic_uuid: The UUID of the characteristic to write to
+    :param value: The value to write as a hex string.
+    """
+
+    print("Scanning for BLE devices...")
+    target_device = await BleakScanner.find_device_by_name(device_name)
+
+    if not target_device:
+        print(f"Device with name '{device_name}' not found.")
+        return
+    print(f"Found device: {target_device.name} ({target_device.address}). Connecting...")
+
+    async with BleakClient(target_device.address) as client:
+        print(f"Connected to {device_name}.")
+
+        # Check if the device has the desired characteristic
+        if characteristic_uuid not in [char.uuid
+                                       for svc in client.services
+                                       for char in svc.characteristics]:
+            print(f"Characteristic UUID {characteristic_uuid} not found on the device.")
+            return
+
+        print(f"Writing value {value} to characteristic {characteristic_uuid}...")
+        await client.write_gatt_char(characteristic_uuid, value, response=False)
+        await asyncio.sleep(0.05)
+        print(f"Successfully wrote value {value} to characteristic {characteristic_uuid}.")
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Connect to a BLE device and write a value to a specific characteristic."
+    )
+    parser.add_argument(
+        "-n", "--name", required=True, help="The name of the BLE device to connect to."
+    )
+    parser.add_argument(
+        "-u", "--uuid", required=True, help="The UUID of the characteristic to write to."
+    )
+    parser.add_argument(
+        "-v", "--value", required=True, help="The hexadecimal value to write (e.g., '00442200')."
+    )
+
+    args = parser.parse_args()
+    args.value = bytes.fromhex(args.value)
+
+    asyncio.run(connect_and_write_to_characteristic(args.name, args.uuid, args.value))
+
+if __name__ == "__main__":
+    main()

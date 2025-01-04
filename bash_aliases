@@ -127,11 +127,15 @@ if command -v "conda" &> /dev/null; then
 
     alias env_dump="${conda_mamba} env export | cut -f 1 -d '=' | /usr/bin/env grep -v '^prefix: ' >"
 
-    if [[ -d "$(conda info --base)"/env/machine-learning ]]; then
+    if [[ -d "$(conda info --base)"/envs/machine-learning ]]; then
         alias ml="${conda_mamba} activate machine-learning &> /dev/null"
     fi
 
     unset conda_mamba
+fi
+
+if command -v "ble_write" &> /dev/null; then
+    alias ble_lamp='ble_write -n "MIPOW SMART BULB" -u "0000fffc-0000-1000-8000-00805f9b34fb" -v'
 fi
 
 # Catkin
@@ -146,19 +150,6 @@ if command -v "catkin" &> /dev/null; then
         fi
     }
 fi
-
-# Git sync
-#if ! command -v "git sync" &> /dev/null; then
-#    git_sync() {
-#        git stash \
-#            && git pull \
-#            && git stash apply \
-#            && git add . \
-#            && git commit -m "$1" \
-#            && git push \
-#            && git stash clear
-#    }
-#fi
 
 if [[ "$(hostname)" == "ubuntu-vm" ]]; then
     dav_mount() {
