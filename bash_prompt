@@ -112,8 +112,25 @@ main() {
 
     # function to be getting virtualenv environment info
     __get_virtualenv_env() {
+        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
+
         if [[ -n "${VIRTUAL_ENV}" ]]; then
             echo -e "${Green}$(basename "${VIRTUAL_ENV}")${Reset})"
+        fi
+    }
+
+    # function to be checking if current dir belongs to overlayed ROS package
+    __get_catkin_sourced() {
+        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
+
+        if command -v "catkin" &> /dev/null \
+            && command -v "rospack" &> /dev/null; then
+            local current_workspace="$(catkin locate 2> /dev/null)"
+            if [[ -z "${current_workspace}" ]]; then
+                echo -e ""
+            elif rospack list | grep --max-count 1 "${current_workspace}" &> /dev/null; then
+                echo -e "${Green}✔︎${Reset}"
+            fi
         fi
     }
 
@@ -164,18 +181,8 @@ main() {
         # get virtualenv level and environment
         local virtualenv_env="\$(__get_virtualenv_env)"
 
-        # check if current dir belongs to overlayed ROS package
-        if command -v "catkin" &> /dev/null \
-            && command -v "rospack" &> /dev/null; then
-            local catkin_sourced
-
-            local current_workspace="$(catkin locate 2> /dev/null)"
-            if [[ -z "${current_workspace}" ]]; then
-                catkin_sourced=""
-            elif rospack list | grep --max-count 1 "${current_workspace}" &> /dev/null; then
-                catkin_sourced="${Green}✔︎${Reset}"
-            fi
-        fi
+        # get virtualenv level and environment
+        local catkin_sourced="\$(__get_catkin_sourced)"
 
         # return the prompt string
         printf %b "  ${user}${singularity_status}${hostname}${work_dir}${catkin_sourced}${git_info}${Reset}\n${conda_env}${virtualenv_env}${prompt_sign}"
