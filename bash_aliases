@@ -101,21 +101,12 @@ alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
 if ! command -v "open" &> /dev/null; then
     alias open=xdg-open
 fi
+alias py="python3"
+alias ipy="ipython"
 # alias ros_container="ssh -t ubuntu-vm 'singularity exec --bind \$HOME --home \$HOME --writable ros-container/ bash -l'"
 # alias ros_container_sudo="ssh -t ubuntu-vm 'sudo singularity shell --writable ros-container/'"
 alias ros_container="ssh -t qblox-laptop 'singularity exec --bind \$HOME --home \$HOME --writable ~/Workspaces/benchmarking_ws/benchmarking_container/ bash -l'"
 alias ros_container_sudo="ssh -t qblox-laptop 'sudo singularity shell --writable ~/Workspaces/benchmarking_ws/benchmarking_container/'"
-
-# Python
-if command -v "python" &> /dev/null; then
-    alias python="python3"
-    alias py="python3"
-fi
-
-# iPython
-if command -v "ipython" &> /dev/null; then
-    alias ipy="ipython"
-fi
 
 # Conda
 if command -v "conda" &> /dev/null; then
@@ -127,8 +118,8 @@ if command -v "conda" &> /dev/null; then
 
     alias env_dump="${conda_mamba} env export | cut -f 1 -d '=' | /usr/bin/env grep -v '^prefix: ' >"
 
-    if [[ -d "$(conda info --base)"/envs/machine-learning ]]; then
-        alias ml="${conda_mamba} activate machine-learning &> /dev/null"
+    if [[ -d "$(conda info --base)"/envs/sandbox ]]; then
+        alias sb="${conda_mamba} activate sandbox &> /dev/null"
     fi
 
     unset conda_mamba
