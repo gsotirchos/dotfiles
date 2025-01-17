@@ -1,10 +1,10 @@
 function! SetSyntax(num_lines)
-    if a:num_lines >= 300
-        syntax sync minlines=100 maxlines=300 ccomment
+    if a:num_lines >= 2000
+        syntax sync maxlines=2000
         set redrawtime=10000
     else
-        syntax sync fromstart ccomment
-        set redrawtime=2000
+        syntax sync fromstart
+        "set redrawtime=2000
     endif
 endfunction
 
@@ -23,9 +23,9 @@ augroup vimrc
     autocmd!
 
     " enable sign column (when appropriate), set textwidth, set wrapping indent
-    "\   call SetSyntax(line('$'))
     autocmd BufWinEnter,BufRead,BufWrite,VimResized *
-    \  call SetSignColumn(@%, &modifiable)
+    \   call SetSyntax(line('$'))
+    \|  call SetSignColumn(@%, &modifiable)
     \|  let b:numberwidth = 1 + float2nr(ceil(log10(line("$") + 1)))
     \|  let &textwidth = min([maxwinwidth, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
     \|  let &breakindentopt = "shift:" . (&ts-1)
@@ -42,24 +42,23 @@ augroup vimrc
 
     " enable syntax;
     " for non-text files: load default syntax, show guides, use easytags
-    let textFiletypes =
-    \   ['markdown', 'qf', 'help', 'tex', 'latex', 'text', 'yaml', '']
-    autocmd ColorScheme,FileType * nested
+    let textFiletypes = ['markdown', 'qf', 'help', 'tex', 'latex', 'text', 'yaml', '']
+    autocmd Colorscheme * nested
     \   if !exists("g:syntax_on")
     \|      syntax on
     \|  endif
     \|  syntax enable
-    \|  set nonumber
     \|  set concealcursor=c
     \|  set conceallevel=1
-    \|  if index(textFiletypes, &filetype) < 0
-    \|      set number
+
+    autocmd Colorscheme,BufWinEnter,BufRead,BufWritePost * nested
+    \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
     \|      runtime after/syntax/indent_guides.vim
     \|      let b:easytags_auto_update = 1
     \|  endif
 
-    autocmd BufWinEnter,BufRead,BufWrite *
+    autocmd BufWinEnter,BufRead,BufWritePost *
     \   set statusline=%{%MyStatusline()%}
 
     " treat certain extensions as XML
