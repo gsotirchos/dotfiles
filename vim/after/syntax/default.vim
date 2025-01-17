@@ -19,7 +19,7 @@ syntax match myOperator "\(\S\)\@<!\(\(==\)\|\(->\)\)\(\S\)\@!" display
 " parentheses and member operators
 syntax match myParens "[(){}\[\]<>,;]" containedin=NONE display
 syntax match MembOperator "[,;]" containedin=NONE display
-syntax match MembOperator "\(\(::\)\|\(->\)\|\(\.\)\)\(\_s*\h\)\@=" containedin=NONE display  " also \(\w\|[\])]\_s*\)\@<=
+syntax match MembOperator "\(\(::\)\|\(->\)\|\(\.\)\)\(\S\)\@=" containedin=NONE display  " also \(\w\|[\])]\_s*\)\@<=
 
 
 hi! link myMark     SpecialComment

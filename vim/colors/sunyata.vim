@@ -131,7 +131,7 @@ exe "hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      
 exe "hi! link SpellRare SpellLocal"
 
 " visual elements
-exe "hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
+exe "hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE gui=reverse   guifg=" . color_3  "guibg=" . color_bg
 exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   guifg=" . color_fg "guibg=" . color_bg
 exe "hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=" . color_fg "guibg=" . color_bg
 exe "hi! LineNr         cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=" . color_0  "guibg=" . color_bg
