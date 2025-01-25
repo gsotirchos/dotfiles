@@ -43,15 +43,18 @@ augroup vimrc
     " enable syntax;
     " for non-text files: load default syntax, show guides, use easytags
     let textFiletypes = ['markdown', 'qf', 'help', 'tex', 'latex', 'text', 'yaml', '']
-    autocmd Colorscheme * nested
+    autocmd Colorscheme *
     \   if !exists("g:syntax_on")
     \|      syntax on
     \|  endif
     \|  syntax enable
-    \|  set concealcursor=c
-    \|  set conceallevel=1
 
-    autocmd Colorscheme,BufWinEnter,BufRead,BufWritePost * nested
+    " autocmd BufWinEnter * echo 'BufWinEnter'
+    " autocmd Colorscheme * echo 'Colorscheme'
+    " autocmd BufRead * echo 'BufRead'
+
+    " autocmd Colorscheme,BufWinEnter,BufRead,BufWritePost *
+    autocmd Colorscheme,BufWinEnter *
     \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
     \|      runtime after/syntax/indent_guides.vim
@@ -70,9 +73,11 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWritePost
     \   *.msg,*.srv,*.action
     \   set ft=conf
+
     autocmd BufWinEnter,BufRead,BufWritePost
     \   *.vcg,*.dconf
     \   set ft=dosini
+
     autocmd BufWinEnter,BufRead,BufWritePost
     \   *.yml,*.rviz,*.env
     \   set ft=yaml
