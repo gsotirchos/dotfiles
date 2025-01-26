@@ -1,7 +1,6 @@
 [tool.pylint.'MESSAGES CONTROL']
-# disable = "too-many-arguments,not-callable"
 disable = "all"
-enable = ["syntax-error"]
+enable = "syntax-error"
 
 [tool.autopep8]
 max-line-length = 110
