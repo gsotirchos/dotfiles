@@ -15,7 +15,7 @@ let g:ale_virtualtext_prefix = ' ◀︎ '
 
 let g:ale_linters = {
 \   'cpp': ['clangd', 'cc', 'clangtidy', 'cppcheck'],
-\   'python': ['pylsp'],
+\   'python': ['pylsp', 'pylint'],
 \   'tex': ['texlab', 'chktex', 'proselint'],
 \}
 let g:ale_fixers = {
@@ -89,6 +89,7 @@ let g:ale_python_pylsp_config = {
 \       'pyls_isort': {
 \         'enabled': v:false}}}}
 let g:ale_python_autopep8_options = '--global-config ~/.pyproject.toml'
+let g:ale_python_pylint_options = '--rcfile ~/.pyproject.toml'
 
 " Tex
 let g:ale_tex_latexindent_options = '-m -rv'
