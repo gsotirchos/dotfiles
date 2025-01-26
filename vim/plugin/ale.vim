@@ -74,9 +74,10 @@ let g:ale_python_pylsp_config = {
 \     'plugins': {
 \       'ruff': {
 \         'enabled': v:true,
+\         'config': trim(system('readlink -f ~/.pyproject.toml')),
 \         'severities': {
-\           'F401': 'I'},
-\         'config': '~/.ruff.toml'},
+\           'F401': 'I',
+\           'F841': 'I'}},
 \       'flake8': {
 \         'enabled': v:false},
 \       'pycodestyle': {
@@ -87,7 +88,7 @@ let g:ale_python_pylsp_config = {
 \         'enabled': v:false},
 \       'pyls_isort': {
 \         'enabled': v:false}}}}
-let g:ale_python_autopep8_options = '--global-config ~/.pycodestyle'
+let g:ale_python_autopep8_options = '--global-config ~/.pyproject.toml'
 
 " Tex
 let g:ale_tex_latexindent_options = '-m -rv'
