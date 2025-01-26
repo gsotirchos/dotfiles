@@ -15,7 +15,7 @@ let g:ale_virtualtext_prefix = ' ◀︎ '
 
 let g:ale_linters = {
 \   'cpp': ['clangd', 'cc', 'clangtidy', 'cppcheck'],
-\   'python': ['pylsp', 'pylint'],
+\   'python': ['pylsp'],
 \   'tex': ['texlab', 'chktex', 'proselint'],
 \}
 let g:ale_fixers = {
@@ -42,7 +42,7 @@ let g:ale_fixers = {
 let b:threads = (str2nr(system('nproc')) + 1) / 2
 
 " CMake
-let g:ale_cmake_cmake_lint_options = '-c ' . $HOME . '/.cmake-format --'
+let g:ale_cmake_cmake_lint_options = '-c ~/.cmake-format --'
 
 " Shell
 let g:ale_sh_shellcheck_options = '--shell=bash'
@@ -60,7 +60,7 @@ let g:ale_cpp_clangd_options = '
 \   --header-insertion-decorators
 \   --pch-storage=memory'
 let g:ale_cpp_ccls_init_options = {
-\   'cache': {'directory': $HOME . '/.cache/ccls'},
+\   'cache': {'directory': '~/.cache/ccls'},
 \   'index': {'threads' : b:threads}}
 let g:ale_cpp_cc_executable = $CXX
 let g:ale_cpp_cc_options = '-std=' . $CXX_STD . ' -Wall -Wextra -Wpedantic'
@@ -78,6 +78,9 @@ let g:ale_python_pylsp_config = {
 \         'severities': {
 \           'F401': 'I',
 \           'F841': 'I'}},
+\       'pylint': {
+\         'enabled': v:true,
+\         'args': '--rcfile ~/.pyproject.toml'},
 \       'flake8': {
 \         'enabled': v:false},
 \       'pycodestyle': {
@@ -89,7 +92,6 @@ let g:ale_python_pylsp_config = {
 \       'pyls_isort': {
 \         'enabled': v:false}}}}
 let g:ale_python_autopep8_options = '--global-config ~/.pyproject.toml'
-let g:ale_python_pylint_options = '--rcfile ~/.pyproject.toml'
 
 " Tex
 let g:ale_tex_latexindent_options = '-m -rv'
