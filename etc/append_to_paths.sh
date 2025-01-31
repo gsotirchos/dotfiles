@@ -4,10 +4,10 @@
 append_paths() {
     local global_var_name="$1"
     local current_paths=":${!global_var_name}:"
-    local appended_paths=":"
-    local merged_paths=""
     shift
     local extra_paths=($(eval echo \"$@\"))
+    local appended_paths=":"
+    local merged_paths=""
 
     # group, in reverse order, the rest of the arguments-paths that exist
     for extra_path in "${extra_paths[@]}"; do
@@ -18,6 +18,7 @@ append_paths() {
             appended_paths="${appended_paths}${extra_path}:"
         fi
     done
+    unset extra_path
 
     # clean-up and merge the paths to the environment variable
     appended_paths="${appended_paths%:}"
@@ -42,6 +43,7 @@ main() {
         append_paths "${global_var_name}" "${extra_paths[@]}"
         #echo -e "--- ${global_var_name}:\n${!global_var_name}"
     done
+    unset extra_paths_file
 
 }
 
