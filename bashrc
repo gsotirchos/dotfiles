@@ -38,6 +38,7 @@ main() {
         macos_dotfiles="${HOME}"/.macos-dotfiles
     fi
 
+    # TIME ~0.3s
     # append extra paths from files to $PATH, $LIBRARY_PATH, etc.
     if [[ -d "${dotfiles}"/extra_paths ]]; then
         source "${macos_dotfiles}"/etc/append_to_paths.sh "${dotfiles}"/extra_paths
@@ -125,14 +126,23 @@ main() {
     #export DISPLAY="${IP}:0"
     #xhost + "${IP}" &> /dev/null
 
-    # Conda
-    if [[ -f ~/.conda/conda_init.sh ]]; then
-        source ~/.conda/conda_init.sh
+    # lazy conda initialization
+    conda() {
+        unset -f conda
 
-        #if [[ -n "${CONDA_PREFIX}" ]]; then
-        #    conda deactivate
-        #    conda activate "$(basename "${CONDA_PREFIX}")"
-        #fi
+        # TIME ~0.5s
+        if [[ -f ~/.conda/conda_init.sh ]]; then
+            source ~/.conda/conda_init.sh
+        fi
+
+        conda "$@"
+    }
+
+    # fix polluted subshell's environment from parent shell's conda env
+    if [[ -n "${CONDA_PREFIX}" ]]; then
+        env="$(basename "${CONDA_PREFIX}")"
+        conda deactivate
+        conda activate "${env}"
     fi
 
     # ROS
@@ -141,11 +151,13 @@ main() {
         source /opt/ros/noetic/setup.bash
     fi
 
+    # TIME ~0.3s
     # aliases
     if [[ -f ~/.bash_aliases ]]; then
         source ~/.bash_aliases
     fi
 
+    # TIME ~0.2s
     # auto-completion
     if [[ -f "${dotfiles}"/completion_dirs ]]; then
         source "${macos_dotfiles}"/etc/source_dirs_list.sh "${dotfiles}"/completion_dirs
@@ -195,5 +207,10 @@ main() {
     fi
 }
 
+# export env_before="$(env)"
 main "$@"
 unset main
+# export env_after="$(env)"
+# diff <(echo "$env_before") <(echo "$env_after") | grep [A-Z_1-9]+\=
+# diff <(echo "$env_before") <(echo "$env_after") | grep [a-z_]+\=
+# time bash -i -c 'exit'
