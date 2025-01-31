@@ -53,12 +53,12 @@ endfunction
 nnoremap <expr> a IndentWithA()
 
 " Replace word under cursor/selected
-nnoremap <leader>r :%s/<C-R><C-W>//cg\|noh<Left><Left><Left><Left><Left><Left><Left> <Backspace>
-vnoremap <leader>r "wy:%s/<C-R>w//cg\|noh<Left><Left><Left><Left><Left><Left><Left> <Backspace>
+nnoremap <silent> <leader>r :echo 'replace `' . expand('<cword>') . '` with: _'<Return>:%s///cg\|noh<Home><Right><Right><Right><C-R><C-W><Right>
+vnoremap <silent> <leader>r "wy:echo 'replace `' . getreg('w') . '` with: _'<Return>:%s///cg\|noh<Home><Right><Right><Right><C-R>w<Right>
 
 " Replace expression
 nnoremap <leader>R :%s///cg\|noh<Home><Right><Right><Right>
-vnoremap <leader>R :s///cg\|noh<Home><Right><Right><Right>
+vnoremap <leader>R :s///cg\|noh<Home><Right><Right><Right><Right><Right><Right><Right>
 
 " Case-insensitive searching (with '\c')
 noremap <silent> / :echo '/'<Return>/\c
