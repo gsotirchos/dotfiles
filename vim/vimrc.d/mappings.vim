@@ -52,9 +52,13 @@ function! IndentWithA()
 endfunction
 nnoremap <expr> a IndentWithA()
 
-" Finding and replacing
-nnoremap <leader>r :%s///cg\|noh<Left><Left><Left><Left><Left><Left><Left><Left>
-vnoremap <leader>r :s///cg\|noh<Left><Left><Left><Left><Left><Left><Left><Left>
+" Replace word under cursor/selected
+nnoremap <leader>r :%s/<C-R><C-W>//cg\|noh<Left><Left><Left><Left><Left><Left><Left> <Backspace>
+vnoremap <leader>r "wy:%s/<C-R>w//cg\|noh<Left><Left><Left><Left><Left><Left><Left> <Backspace>
+
+" Replace expression
+nnoremap <leader>R :%s///cg\|noh<Home><Right><Right><Right>
+vnoremap <leader>R :s///cg\|noh<Home><Right><Right><Right>
 
 " Case-insensitive searching (with '\c')
 noremap <silent> / :echo '/'<Return>/\c
