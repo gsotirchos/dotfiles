@@ -141,7 +141,7 @@ exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      
 exe "hi! StatusLine     cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=" . color_7  "guibg=" . color_8
 exe "hi! StatusLineNC   cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=" . color_fg "guibg=" . color_0
 exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
-exe "hi! link IncSearch        Search"
+exe "hi! IncSearch      cterm=reverse   ctermfg=11   ctermbg=NONE gui=reverse   guifg=" . color_3  "guibg=" . color_bg
 exe "hi! link Folded           CursorLineNr"
 exe "hi! link VertSplit        Comment"
 exe "hi! link StatusLineTerm   StatusLine"
