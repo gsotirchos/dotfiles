@@ -126,18 +126,6 @@ main() {
     #export DISPLAY="${IP}:0"
     #xhost + "${IP}" &> /dev/null
 
-    # lazy conda initialization
-    conda() {
-        unset -f conda
-
-        # TIME ~0.5s
-        if [[ -f ~/.conda/conda_init.sh ]]; then
-            source ~/.conda/conda_init.sh
-        fi
-
-        conda "$@"
-    }
-
     # fix polluted subshell's environment from parent shell's conda env
     if [[ -n "${CONDA_PREFIX}" ]]; then
         env="$(basename "${CONDA_PREFIX}")"
