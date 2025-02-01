@@ -49,10 +49,6 @@ augroup vimrc
     \|  endif
     \|  syntax enable
 
-    " autocmd BufWinEnter * echo 'BufWinEnter'
-    " autocmd Colorscheme * echo 'Colorscheme'
-    " autocmd BufRead * echo 'BufRead'
-
     " autocmd Colorscheme,BufWinEnter,BufRead,BufWritePost *
     autocmd Colorscheme,BufWinEnter *
     \   if index(textFiletypes, &filetype) < 0
@@ -60,6 +56,15 @@ augroup vimrc
     \|      runtime after/syntax/indent_guides.vim
     \|      let b:easytags_auto_update = 1
     \|  endif
+
+    " re-enable colorscheme (and syntax) when gaining back focus
+    autocmd FocusGained * nested
+    \   if !exists("g:syntax_on")
+    \|      colorscheme sunyata
+    \|  endif
+
+    " disable syntax when losing focus
+    "autocmd FocusLost * syntax off
 
     autocmd BufWinEnter,BufRead,BufWritePost *
     \   set statusline=%{%MyStatusline()%}
@@ -104,7 +109,7 @@ augroup vimrc
     " close loclists with buffer
     autocmd QuitPre * if empty(&buftype) | lclose | endif
 
-    " remember state
-    "au BufWinLeave,BufWrite * silent! mkview
-    "au BufWinEnter,BufRead * silent! loadview
+    " remember buffer state
+    au BufWinLeave * silent! mkview
+    au BufWinEnter * silent! loadview
 augroup END
