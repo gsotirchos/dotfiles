@@ -42,7 +42,7 @@ function! IndentWithI()
     endif
 endfunction
 nnoremap <expr> i IndentWithI()
-"
+
 function! IndentWithA()
     if len(getline('.')) == 0
         return  "\"_cc"
@@ -52,6 +52,10 @@ function! IndentWithA()
 endfunction
 nnoremap <expr> a IndentWithA()
 
+" Case-insensitive searching (with '\c')
+noremap <silent> / :echo '/'<Return>/\c
+noremap <silent> ? :echo '?'<Return>?\c
+
 " Replace word under cursor/selected
 nnoremap <silent> <leader>r :echo 'replace `' . expand('<cword>') . '` with: _'<Return>:%s///cg\|noh<Home><Right><Right><Right><C-R><C-W><Right>
 vnoremap <silent> <leader>r "wy:echo 'replace `' . getreg('w') . '` with: _'<Return>:%s///cg\|noh<Home><Right><Right><Right><C-R>w<Right>
@@ -60,9 +64,8 @@ vnoremap <silent> <leader>r "wy:echo 'replace `' . getreg('w') . '` with: _'<Ret
 nnoremap <leader>R :%s///cg\|noh<Home><Right><Right><Right>
 vnoremap <leader>R :s///cg\|noh<Home><Right><Right><Right><Right><Right><Right><Right>
 
-" Case-insensitive searching (with '\c')
-noremap <silent> / :echo '/'<Return>/\c
-noremap <silent> ? :echo '?'<Return>?\c
+" Hide search highlighting
+nnoremap <leader>n :noh<Return>
 
 " Execute last command with Ctrl+Space
 noremap  <silent> <C-Space> :@:<Return>
