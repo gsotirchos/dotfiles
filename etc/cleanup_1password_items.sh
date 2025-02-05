@@ -21,8 +21,8 @@ main() {
 
             title=$(echo "$item" | jq -r '.title')
             if [[ "$title" =~ \(.*\)$ ]]; then
-                fixed_title=$(echo "$title" | sed 's/ (.*)$//')
-                op item edit "$id" .title="$fixed_title" > /dev/null --vault "$vault" --account "$account"
+                fixed_title="${title% (*)}"
+                op item edit "$id" --vault "$vault" --account "$account" .title="$fixed_title" > /dev/null
                 echo "$id fixed title from '$title' to '$fixed_title'"
             fi
 
