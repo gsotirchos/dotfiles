@@ -4,7 +4,61 @@ main() {
     vault="${1:-"Private"}"
     account="${2:-"HQRXQK6P2FAE7NAAUUQF4ILVG4"}"
     declare -A itemMap
-    local id item fields username title fixed_title urls href website key
+    local id item fields username title fixed_title urls href website key prefixes modified
+    prefixes=(
+        www
+        www1
+        m
+        com
+        web
+        api
+        app
+        nl
+        se
+        uk
+        eu
+        es
+        dk
+        gr
+        na
+        no
+        sso
+        my
+        mijn
+        jouw
+        apps
+        auth
+        secure
+        connect
+        access
+        signin
+        login
+        user
+        customerlogin
+        customerconnect
+        career
+        careers
+        account
+        accounts
+        identity
+        id
+        idp
+        idmsa
+        odc
+        play
+        start
+        shop
+        store
+        applyweb
+        cloud
+        club
+        hub
+        community
+        help
+        press
+        books
+        data
+    )
 
     for id in $(op item list --categories Login --vault "$vault" --account "$account" --format=json | jq -r '.[] | select(.id != null) | .id'); do
         item=$(op item get "$id" --vault "$vault" --account "$account" --format=json)  # TIME consuming
@@ -59,10 +113,18 @@ main() {
             fixed_title="$website"
         fi
 
-        # remove "www." prefix if it exists
-        if [[ "$fixed_title" == "www."* ]]; then
-            fixed_title="${fixed_title#www.}"
-        fi
+        # remove prefixes like "www."
+        modified=true
+        while $modified; do
+            modified=false
+            for prefix in "${prefixes[@]}"; do
+                if [[ "$fixed_title" == "$prefix."* ]]; then
+                    fixed_title="${fixed_title#"$prefix."}"
+                    modified=true
+                    break
+                fi
+            done
+        done
 
         if [[ "$title" != "$fixed_title" ]]; then
             op item edit "$id" --vault "$vault" --account "$account" .title="$fixed_title" > /dev/null
