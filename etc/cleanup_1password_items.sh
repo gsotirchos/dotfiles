@@ -10,6 +10,7 @@ main() {
         www1
         m
         com
+        org
         web
         api
         app
@@ -28,11 +29,15 @@ main() {
         jouw
         apps
         auth
+        oauth
+        oauth2
         secure
         connect
         access
         signin
         login
+        inloggen
+        mygovlogin
         user
         customerlogin
         customerconnect
@@ -48,7 +53,10 @@ main() {
         play
         start
         shop
+        checkout
         store
+        mobile
+        manage
         applyweb
         cloud
         club
