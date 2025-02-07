@@ -41,15 +41,14 @@ augroup vimrc
     autocmd FileType help,qf set nospell
 
     " enable syntax;
-    " for non-text files: load default syntax, show guides, use easytags
-    let textFiletypes = ['markdown', 'qf', 'help', 'tex', 'latex', 'text', 'yaml', '']
     autocmd Colorscheme *
     \   if !exists("g:syntax_on")
     \|      syntax on
     \|  endif
     \|  syntax enable
 
-    " autocmd Colorscheme,BufWinEnter,BufRead,BufWritePost *
+    " for non-text files: load default syntax, show guides, use easytags
+    let textFiletypes = ['markdown', 'qf', 'help', 'tex', 'latex', 'text', 'yaml', '']
     autocmd Colorscheme,BufWinEnter *
     \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
@@ -89,7 +88,7 @@ augroup vimrc
 
     " treat .def and .sh files as bash files
     autocmd BufWinEnter,BufRead,BufWritePost
-    \   *.def,*.sh
+    \   *.def,*.bash,*.sh
     \   set ft=bash
 
     " treat .m files as Matlab files
