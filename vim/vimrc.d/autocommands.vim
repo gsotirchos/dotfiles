@@ -70,7 +70,7 @@ augroup vimrc
 
     " treat certain extensions as XML
     autocmd BufWinEnter,BufRead,BufWritePost
-    \   *.sdf,*.world,*.model,*.xacro*.config,*.launch,*.plist
+    \   *.sdf,*.world,*.model,*.xacro,*.config,*.launch,*.plist
     \   set ft=xml
 
     " treat certain ROS configuration files as conf files
@@ -109,6 +109,6 @@ augroup vimrc
     autocmd QuitPre * if empty(&buftype) | lclose | endif
 
     " remember buffer state
-    au BufWinLeave * silent! mkview
-    au BufWinEnter * silent! loadview
+    autocmd BufWinLeave * silent! mkview
+    autocmd BufWinEnter * silent! loadview
 augroup END
