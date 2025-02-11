@@ -126,25 +126,6 @@ main() {
     #export DISPLAY="${IP}:0"
     #xhost + "${IP}" &> /dev/null
 
-    # fix polluted subshell's environment from parent shell's conda env
-    if [[ -n "${CONDA_PREFIX}" ]]; then
-        env="$(basename "${CONDA_PREFIX}")"
-        conda deactivate
-        conda activate "${env}"
-    fi
-
-    # ROS
-    if [[ -f /opt/ros/noetic/setup.bash ]]; then
-        # source system's ROS environment
-        source /opt/ros/noetic/setup.bash
-    fi
-
-    # TIME ~0.3s
-    # aliases
-    if [[ -f ~/.bash_aliases ]]; then
-        source ~/.bash_aliases
-    fi
-
     # TIME ~0.2s
     # auto-completion
     if [[ -f "${dotfiles}"/completion_dirs ]]; then
@@ -156,9 +137,10 @@ main() {
         source /etc/profile.d/bash_completion.sh
     fi
 
-    # custom prompt
-    if [[ -f ~/.bash_prompt ]]; then
-        source ~/.bash_prompt
+    # TIME ~0.3s
+    # aliases
+    if [[ -f ~/.bash_aliases ]]; then
+        source ~/.bash_aliases
     fi
 
     # make git prompt command available
@@ -178,6 +160,24 @@ main() {
     export GIT_PS1_DESCRIBE_STYLE="contains"
     export GIT_PS1_SHOWUNTRACKEDFILES=true
     export GIT_PS1_SHOWUPSTREAM="auto"
+
+    # custom prompt
+    if [[ -f ~/.bash_prompt ]]; then
+        source ~/.bash_prompt
+    fi
+
+    # fix polluted subshell's environment from parent shell's conda env
+    if [[ -n "${CONDA_PREFIX}" ]]; then
+        env="$(basename "${CONDA_PREFIX}")"
+        conda deactivate
+        conda activate "${env}"
+    fi
+
+    # ROS
+    if [[ -f /opt/ros/noetic/setup.bash ]]; then
+        # source system's ROS environment
+        source /opt/ros/noetic/setup.bash
+    fi
 
     # enable iTerm2 shell integration on macOS
     if [[ "${os}" == "macos" ]]; then
