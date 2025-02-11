@@ -19,5 +19,5 @@ hi! link shEcho         Normal
 hi! link shCommandSub   Normal
 hi! link shCaseStart    Normal
 hi! link shSemicolon    MembOperator
-hi! link Delimiter      myOperator
+" hi! link Delimiter      myOperator
 hi! link shCmdSubRegion PreProc

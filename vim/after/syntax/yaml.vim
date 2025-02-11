@@ -1,8 +1,8 @@
 "syn match MembOperator "\." containedin=yamlFlowMappingKey display
 
 
-hi! link yamlBool Statement
-hi! link yamlKeyValueDelimiter Normal
-hi! link yamlFlowIndicator Normal
-hi! link yamlBlockMappingKey Function
+hi! link yamlKeyValueDelimiter        OtherType
+hi! link yamlFlowIndicator            Comment
+hi! link yamlFlowCollection           MembOperator
 hi! link yamlBlockCollectionItemStart MembOperator
+hi! link yamlBlockMappingKey          Function
