@@ -61,7 +61,6 @@ set encoding=utf-8  " encoding used for displaying inside vim
 set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 
 " appearance
-set t_Co=16
 colorscheme sunyata
 set concealcursor=c
 set conceallevel=1

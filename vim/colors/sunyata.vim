@@ -1,15 +1,14 @@
 " Vim color file
-" Maintainer:   Giorgos Sotirchos <630r63.7555@gmail.com>
-" Last Change:
-" URL:
+" Maintainer:   George Sotirchos <gsotirch@gmail.com>
 
 " cool help screens
 " :he group-name
 " :he highlight-groups
 " :he cterm-colors
 
-" your pick:
-set background=dark " or light
+"set background=dark " or light
+set notermguicolors
+set t_Co=16
 hi clear
 if exists("syntax_on")
     syntax reset
@@ -63,114 +62,114 @@ let color_bg='#000000'
 " Cursor         xxx guifg=bg guibg=fg
 
 
-exe "hi! Normal         cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=" . color_fg "guibg=" . color_bg
+hi! Normal         cterm=NONE      ctermfg=NONE ctermbg=NONE
 
 " comments
-exe "hi! Comment        cterm=NONE      ctermfg=8    ctermbg=NONE gui=NONE      guifg=" . color_8  "guibg=" . color_bg
+hi! Comment        cterm=NONE      ctermfg=8    ctermbg=NONE
 
 " constants
-exe "hi! String         cterm=NONE      ctermfg=9    ctermbg=NONE gui=NONE      guifg=" . color_9  "guibg=" . color_bg
-exe "hi! Character      cterm=NONE      ctermfg=11   ctermbg=NONE gui=NONE      guifg=" . color_11 "guibg=" . color_bg
-exe "hi! link Constant Character"
-" exe "hi! link Number   Character"
-" exe "hi! link Float    Number"
-" exe "hi! link Boolean  Character"
+hi! String         cterm=NONE      ctermfg=9    ctermbg=NONE
+hi! Character      cterm=NONE      ctermfg=11   ctermbg=NONE
+hi! link Constant Character"
+"hi! link Number   Character
+"hi! link Float    Number
+"hi! link Boolean  Character
 
 " variable names
-exe "hi! Function       cterm=NONE      ctermfg=6    ctermbg=NONE gui=NONE      guifg=" . color_6  "guibg=" . color_bg
-exe "hi! Identifier     cterm=NONE      ctermfg=14   ctermbg=NONE gui=NONE      guifg=" . color_14 "guibg=" . color_bg
+hi! Function       cterm=NONE      ctermfg=6    ctermbg=NONE
+hi! Identifier     cterm=NONE      ctermfg=14   ctermbg=NONE
 
 " statements
-exe "hi! Statement      cterm=bold      ctermfg=5    ctermbg=NONE gui=bold      guifg=" . color_5  "guibg=" . color_bg
-exe "hi! link Conditional Statement"
-exe "hi! link Repeat      Statement"
-exe "hi! link Label       Statement"
-exe "hi! link Keyword     Statement"
-exe "hi! link Exception   Statement"
-exe "hi! link Operator    Statement"
+hi! Statement      cterm=bold      ctermfg=5    ctermbg=NONE
+hi! link Conditional Statement
+hi! link Repeat      Statement
+hi! link Label       Statement
+hi! link Keyword     Statement
+hi! link Exception   Statement
+hi! link Operator    Statement
 
 " generic Preprocessor
-exe "hi! PreProc        cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
-exe "hi! link Include   PreProc"
-exe "hi! link Define    PreProc"
-exe "hi! link Macro     PreProc"
-exe "hi! link PreCondit PreProc"
+hi! PreProc        cterm=NONE      ctermfg=3    ctermbg=NONE
+hi! link Include   PreProc
+hi! link Define    PreProc
+hi! link Macro     PreProc
+hi! link PreCondit PreProc
 
 " types
-exe "hi! Type           cterm=bold      ctermfg=13   ctermbg=NONE gui=bold      guifg=" . color_12 "guibg=" . color_bg
-"exe "hi! link Type        Statement"
-exe "hi! link Structure    Statement"
-exe "hi! link StorageClass Statement"
-exe "hi! link Typedef      Statement"
+hi! Type           cterm=bold      ctermfg=13   ctermbg=NONE
+"hi! link Type        Statement"
+hi! link Structure    Statement
+hi! link StorageClass Statement
+hi! link Typedef      Statement
 
 " special symbols
-exe "hi! Delimiter      cterm=NONE      ctermfg=2    ctermbg=NONE gui=NONE      guifg=" . color_2  "guibg=" . color_bg
-exe "hi! link Tag         Delimiter"
-exe "hi! link Special     Character"
-exe "hi! link SpecialChar Character"
+hi! Delimiter      cterm=NONE      ctermfg=2    ctermbg=NONE
+hi! link Tag         Delimiter
+hi! link Special     Character
+hi! link SpecialChar Character
 
 " my custom groups
-exe "hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=NONE gui=bold      guifg=" . color_8  "guibg=" . color_bg
-exe "hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=" . color_13 "guibg=" . color_bg
-exe "hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE gui=bold      guifg=" . color_15 "guibg=" . color_bg
-exe "hi! DocComment     cterm=italic    ctermfg=8    ctermbg=NONE gui=italic    guifg=" . color_8  "guibg=" . color_bg
-exe "hi! Done           cterm=bold      ctermfg=2    ctermbg=NONE gui=bold      guifg=" . color_2  "guibg=" . color_bg
-exe "hi! Debug          cterm=bold      ctermfg=3    ctermbg=NONE gui=bold      guifg=" . color_3  "guibg=" . color_bg
+hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=NONE
+hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE
+hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE
+hi! DocComment     cterm=italic    ctermfg=8    ctermbg=NONE
+hi! Done           cterm=bold      ctermfg=2    ctermbg=NONE
+hi! Debug          cterm=bold      ctermfg=3    ctermbg=NONE
 
 " errors and warnings
-exe "hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=8    gui=bold      guifg=" . color_11 "guibg=" . color_8
-exe "hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE gui=bold      guifg=" . color_1  "guibg=" . color_bg
-exe "hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE gui=NONE      guifg=" . color_1  "guibg=" . color_bg
-exe "hi! Todo           cterm=bold      ctermfg=9    ctermbg=11   gui=bold      guifg=" . color_9  "guibg=" . color_11
-exe "hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
-exe "hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE gui=underline guifg=" . color_1  "guibg=" . color_bg
-exe "hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE gui=underline guifg=" . color_3  "guibg=" . color_bg
-exe "hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE gui=underline guifg=" . color_4  "guibg=" . color_bg
-exe "hi! Directory      cterm=NONE      ctermfg=12   ctermbg=NONE gui=NONE      guifg=" . color_12 "guibg=" . color_bg
-exe "hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
-exe "hi! link SpellRare SpellLocal"
+hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=8   
+hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE
+hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE
+hi! Todo           cterm=bold      ctermfg=9    ctermbg=11  
+hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE
+hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE
+hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE
+hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE
+hi! Directory      cterm=NONE      ctermfg=12   ctermbg=NONE
+hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE
+hi! link SpellRare SpellLocal
 
 " visual elements
-exe "hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE gui=reverse   guifg=" . color_3  "guibg=" . color_bg
-exe "hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   guifg=" . color_fg "guibg=" . color_bg
-exe "hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE gui=NONE      guifg=" . color_fg "guibg=" . color_bg
-exe "hi! LineNr         cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=" . color_0  "guibg=" . color_bg
-exe "hi! CursorLine     cterm=reverse   ctermfg=NONE ctermbg=NONE gui=reverse   guifg=" . color_fg "guibg=" . color_bg
-exe "hi! CursorLineNr   cterm=bold      ctermfg=0    ctermbg=NONE gui=bold      guifg=" . color_0  "guibg=" . color_bg
-exe "hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE gui=NONE      guifg=" . color_0  "guibg=" . color_bg
-exe "hi! StatusLine     cterm=NONE      ctermfg=7    ctermbg=8    gui=NONE      guifg=" . color_7  "guibg=" . color_8
-exe "hi! StatusLineNC   cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=" . color_fg "guibg=" . color_0
-exe "hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
-exe "hi! IncSearch      cterm=reverse   ctermfg=11   ctermbg=NONE gui=reverse   guifg=" . color_3  "guibg=" . color_bg
-exe "hi! link Folded           CursorLineNr"
-exe "hi! link VertSplit        Comment"
-exe "hi! link StatusLineTerm   StatusLine"
-exe "hi! link StatusLineTermNC StatusLineNC"
-exe "hi! link FoldColumn       EndOfBuffer"
+hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE
+hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE
+hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE
+hi! LineNr         cterm=NONE      ctermfg=0    ctermbg=NONE
+hi! CursorLine     cterm=reverse   ctermfg=NONE ctermbg=NONE
+hi! CursorLineNr   cterm=bold      ctermfg=0    ctermbg=NONE
+hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE
+hi! StatusLine     cterm=NONE      ctermfg=7    ctermbg=8
+hi! StatusLineNC   cterm=NONE      ctermfg=NONE ctermbg=0
+hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE
+hi! IncSearch      cterm=reverse   ctermfg=11   ctermbg=NONE
+hi! link Folded           CursorLineNr
+hi! link VertSplit        Comment
+hi! link StatusLineTerm   StatusLine
+hi! link StatusLineTermNC StatusLineNC
+hi! link FoldColumn       EndOfBuffer
 
 " menus and messages
-exe "hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
-exe "hi! ToolbarLine    cterm=NONE      ctermfg=NONE ctermbg=8    gui=NONE      guifg=" . color_fg "guibg=" . color_8
-exe "hi! ToolbarButton  cterm=bold      ctermfg=0    ctermbg=7    gui=NONE      guifg=" . color_0  "guibg=" . color_7
-exe "hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3    gui=NONE      guifg=" . color_0  "guibg=" . color_3
-exe "hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0    gui=NONE      guifg=" . color_fg "guibg=" . color_0
-exe "hi! PmenuSel       cterm=NONE      ctermfg=7    ctermbg=4    gui=NONE      guifg=" . color_7  "guibg=" . color_4
-exe "hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE gui=reverse   guifg=" . color_15 "guibg=" . color_bg
-exe "hi! link PmenuSbar   Pmenu"
-exe "hi! link Title       SpecialComment"
-exe "hi! link TabLineSel  SpecialComment"
-exe "hi! link TabLine     ToolbarButton"
-exe "hi! link TabLineFill ToolbarButton"
-exe "hi! link ModeMsg     Type"
-exe "hi! link MoreMsg     ModeMsg"
-exe "hi! link Conceal     LineNr"
-exe "hi! link Ignore      Conceal"
-exe "hi! link SpecialKey  Conceal"
-exe "hi! link NonText     Conceal"
+hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE
+hi! ToolbarLine    cterm=NONE      ctermfg=NONE ctermbg=8
+hi! ToolbarButton  cterm=bold      ctermfg=0    ctermbg=7
+hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3
+hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0
+hi! PmenuSel       cterm=NONE      ctermfg=7    ctermbg=4
+hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE
+hi! link PmenuSbar   Pmenu
+hi! link Title       SpecialComment
+hi! link TabLineSel  SpecialComment
+hi! link TabLine     ToolbarButton
+hi! link TabLineFill ToolbarButton
+hi! link ModeMsg     Type
+hi! link MoreMsg     ModeMsg
+hi! link Conceal     LineNr
+hi! link Ignore      Conceal
+hi! link SpecialKey  Conceal
+hi! link NonText     Conceal
 
 " ALE
-exe "hi! ALEVirtualTextError   cterm=NONE ctermfg=1  ctermbg=NONE gui=NONE      guifg=" . color_1  "guibg=" . color_bg
-exe "hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=NONE gui=NONE      guifg=" . color_3  "guibg=" . color_bg
-exe "hi! ALEVirtualTextInfo    cterm=NONE ctermfg=0  ctermbg=NONE gui=NONE      guifg=" . color_0  "guibg=" . color_bg
-exe "hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo"
-exe "hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo"
+hi! ALEVirtualTextError   cterm=NONE ctermfg=1  ctermbg=NONE
+hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=NONE
+hi! ALEVirtualTextInfo    cterm=NONE ctermfg=0  ctermbg=NONE
+hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo
+hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
