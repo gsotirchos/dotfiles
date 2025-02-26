@@ -109,14 +109,11 @@ alias ros_container="ssh -t qblox-laptop 'singularity exec --bind \$HOME --home 
 alias ros_container_sudo="ssh -t qblox-laptop 'sudo singularity shell --writable ~/Workspaces/benchmarking_ws/benchmarking_container/'"
 
 # Conda
-if command -v "conda" &> /dev/null; then
+if [[ -f ~/.conda/conda_init.sh ]]; then
     # lazy conda initialization
     conda() {
         # TIME ~0.5s
-        if [[ -f ~/.conda/conda_init.sh ]]; then
-            source ~/.conda/conda_init.sh
-        fi
-
+        source ~/.conda/conda_init.sh
         conda "$@"
     }
 
@@ -127,10 +124,7 @@ if command -v "conda" &> /dev/null; then
     fi
 
     alias env_dump="${conda_mamba} env export | cut -f 1 -d '=' | /usr/bin/env grep -v '^prefix: ' >"
-
-    if [[ -d "$(conda info --base)"/envs/sandbox ]]; then
-        alias sb="${conda_mamba} activate sandbox &> /dev/null"
-    fi
+    alias sb="${conda_mamba} activate sandbox &> /dev/null"
 
     unset conda_mamba
 fi
