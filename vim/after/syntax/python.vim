@@ -24,6 +24,7 @@ hi! link PythonExClass     Type
 hi! link pythonBuiltinType Type
 hi! link pythonDottedName  OtherType
 hi! link pythonDecorator   pythonDottedName
+hi! link pythonStrFormat   MyParens
 
 " vim-easytags
 hi! link pythonClassTag    pythonClass
