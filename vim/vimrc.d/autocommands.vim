@@ -32,7 +32,7 @@ augroup vimrc
     \|  let &sidescrolloff = winwidth('%') / 2
 
     " autosave named files
-    autocmd CursorHold ?* nested if empty(&buftype) | update | endif
+    autocmd CursorHold ?* nested if empty(&buftype) && &modified | update | endif
 
     " always convert to utf-8
     autocmd BufWinEnter,BufRead,BufWritePost ?* silent! set fileencoding=utf-8
@@ -48,7 +48,7 @@ augroup vimrc
     \|  syntax enable
 
     " for non-text files: load default syntax, show guides, use easytags
-    let textFiletypes = ['markdown', 'qf', 'help', 'tex', 'latex', 'text', 'yaml', '']
+    let textFiletypes = ['markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', 'yaml', '']
     autocmd Colorscheme,BufWinEnter *
     \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
@@ -70,7 +70,7 @@ augroup vimrc
 
     " treat certain extensions as XML
     autocmd BufWinEnter,BufRead,BufWritePost
-    \   *.sdf,*.world,*.model,*.xacro,*.config,*.launch,*.plist
+    \   *.sdf,*.world,*.model,*.xacro,*.launch,*.plist
     \   set ft=xml
 
     " treat certain ROS configuration files as conf files

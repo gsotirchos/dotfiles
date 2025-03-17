@@ -9,7 +9,7 @@
 "set background=dark " or light
 set notermguicolors
 set t_Co=16
-hi clear
+hi! clear
 if exists("syntax_on")
     syntax reset
 endif
@@ -65,7 +65,7 @@ let color_bg='#000000'
 hi! Normal         cterm=NONE      ctermfg=NONE ctermbg=NONE
 
 " comments
-hi! Comment        cterm=NONE      ctermfg=8    ctermbg=NONE
+hi! Comment        cterm=NONE      ctermfg=7    ctermbg=NONE term=NONE
 
 " constants
 hi! String         cterm=NONE      ctermfg=9    ctermbg=NONE
@@ -109,7 +109,7 @@ hi! link Special     Character
 hi! link SpecialChar Character
 
 " my custom groups
-hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=NONE
+hi! MembOperator   cterm=bold      ctermfg=7    ctermbg=NONE
 hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE
 hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE
 hi! DocComment     cterm=italic    ctermfg=8    ctermbg=NONE
@@ -117,11 +117,11 @@ hi! Done           cterm=bold      ctermfg=2    ctermbg=NONE
 hi! Debug          cterm=bold      ctermfg=3    ctermbg=NONE
 
 " errors and warnings
-hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=8   
+hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=8
 hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE
 hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE
-hi! Todo           cterm=bold      ctermfg=9    ctermbg=11  
 hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE
+hi! Todo           cterm=bold      ctermfg=9    ctermbg=11
 hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE
 hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE
 hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE
@@ -131,29 +131,30 @@ hi! link SpellRare SpellLocal
 
 " visual elements
 hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE
+hi! IncSearch      cterm=reverse   ctermfg=11   ctermbg=NONE
 hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE
 hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE
-hi! LineNr         cterm=NONE      ctermfg=0    ctermbg=NONE
-hi! CursorLine     cterm=reverse   ctermfg=NONE ctermbg=NONE
-hi! CursorLineNr   cterm=bold      ctermfg=0    ctermbg=NONE
 hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE
-hi! StatusLine     cterm=NONE      ctermfg=7    ctermbg=8
-hi! StatusLineNC   cterm=NONE      ctermfg=NONE ctermbg=0
 hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE
-hi! IncSearch      cterm=reverse   ctermfg=11   ctermbg=NONE
-hi! link Folded           CursorLineNr
+hi! StatusLine     cterm=NONE      ctermfg=15   ctermbg=8
+hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0
+hi! Folded         cterm=bold      ctermfg=8    ctermbg=NONE
+hi! Conceal        cterm=NONE      ctermfg=8    ctermbg=NONE
+hi! link LineNr           Conceal
+hi! link CursorLineNr     Comment
 hi! link VertSplit        Comment
 hi! link StatusLineTerm   StatusLine
 hi! link StatusLineTermNC StatusLineNC
 hi! link FoldColumn       EndOfBuffer
+hi! clear CursorLine
 
 " menus and messages
 hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE
 hi! ToolbarLine    cterm=NONE      ctermfg=NONE ctermbg=8
 hi! ToolbarButton  cterm=bold      ctermfg=0    ctermbg=7
 hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3
-hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0
-hi! PmenuSel       cterm=NONE      ctermfg=7    ctermbg=4
+hi! Pmenu          cterm=NONE      ctermfg=15   ctermbg=0
+hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=4
 hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE
 hi! link PmenuSbar   Pmenu
 hi! link Title       SpecialComment
@@ -162,14 +163,13 @@ hi! link TabLine     ToolbarButton
 hi! link TabLineFill ToolbarButton
 hi! link ModeMsg     Type
 hi! link MoreMsg     ModeMsg
-hi! link Conceal     LineNr
+hi! link NonText     Conceal
 hi! link Ignore      Conceal
 hi! link SpecialKey  Conceal
-hi! link NonText     Conceal
 
 " ALE
 hi! ALEVirtualTextError   cterm=NONE ctermfg=1  ctermbg=NONE
 hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=NONE
-hi! ALEVirtualTextInfo    cterm=NONE ctermfg=0  ctermbg=NONE
+hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8  ctermbg=NONE
 hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo
 hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo

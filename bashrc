@@ -180,7 +180,7 @@ main() {
     fi
 
     # enable iTerm2 shell integration on macOS
-    if [[ "${os}" == "macos" ]]; then
+    if [[ "$TERM_PROGRAM" = "iTerm.app" ]]; then
         if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
             curl -L https://iterm2.com/shell_integration/bash \
                 -o ~/.iterm2_shell_integration.bash
@@ -200,5 +200,5 @@ main "$@"
 unset main
 # export env_after="$(env)"
 # diff <(echo "$env_before") <(echo "$env_after") | grep [A-Z_1-9]+\=
-# diff <(echo "$env_before") <(echo "$env_after") | grep [a-z_]+\=
+# diff <(echo "$env_before") <(echo "$ensudo bash -c "$(declare -f); exec suv_after") | grep [a-z_]+\=
 # time bash -i -c 'exit'
