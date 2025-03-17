@@ -18,6 +18,8 @@ Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
 Plugin 'dense-analysis/ale'
+"Plugin 'airblade/vim-gitgutter'  " TODO
+Plugin 'github/copilot.vim'
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-easytags'
 Plugin 'scrooloose/nerdcommenter'
@@ -65,7 +67,7 @@ colorscheme sunyata
 set concealcursor=c
 set conceallevel=1
 "set nonumber  " hide line numbers
-"set numberwidth=1  " smallest width at start
+set numberwidth=1  " smallest width at start
 "set nowrap  " don't wrap long lines
 set sidescroll=1  " enable sidescrolling
 set showmatch  " show matching parentheses
@@ -93,7 +95,8 @@ function! MyStatusline()
         let left_hand_side = '%( %y%)'
 
         if (&ft == '')
-            let parent_dir = getcwd() . '/'
+            " let parent_dir = getcwd() . '/'
+            let parent_dir = substitute(expand('%:p:h'), expand('~'), '~', '') . '/'
             let filetype_field_length = 0
             let half_name_length = 5  " len('[No Name]') / 2
         else
@@ -114,8 +117,8 @@ function! MyStatusline()
         let file_name_field = '%t%m%a   '
         let left_hand_side .= ' ' . parent_dir_field  . file_name_field
     endif
-    let lines_field = '%' . (b:numberwidth + 2) . '(L: %l%)/%-' . (b:numberwidth + 1) . '(%L%)'
-    let columns_field = '%6(C: %c%)/%-4(' . len(getline(".")) . '%)'
+    let lines_field = '%' . (b:numberwidth + 0) . '(%l%)/%-' . (b:numberwidth + 0) . '(%Ll%)'
+    let columns_field = '%4(%c%)/%-5(' . len(getline(".")) . 'c%)'
     return left_hand_side . '%=' . lines_field . columns_field
 endfunction
 

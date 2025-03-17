@@ -7,8 +7,8 @@
 
 # if not running interactively, don't do anything
 case $- in
-    *i*) ;;
-
+    *i*)
+        ;;
     *)
         return
         ;;
@@ -18,7 +18,7 @@ esac
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # dark theme toggle (run in background)
-(source ~/.dotfiles/etc/toggle_dark_mode.sh &) &> /dev/null
+#(source ~/.dotfiles/etc/toggle_dark_mode.sh &) &> /dev/null
 
 # source bashrc
 if [[ -f ~/.bashrc ]]; then

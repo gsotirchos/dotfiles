@@ -1,0 +1,23 @@
+palette = 0=60636F
+palette = 1=D52753
+palette = 2=23974A
+palette = 3=E1804F
+palette = 4=355FC5
+palette = 5=A75296
+palette = 6=0088A9
+palette = 7=888888
+palette = 8=B4B4B4
+palette = 9=E14F64
+palette = 10=3CBC66
+palette = 11=C5A332
+palette = 12=62A2FF
+palette = 13=D76BC6
+palette = 14=00B3A1
+palette = 15=E0E0E0
+background = F9F9F9
+foreground = 373A41
+cursor-color = BBBBBB
+cursor-text = FFFFFF
+selection-background = DAF0FF
+selection-foreground = 373A41
+

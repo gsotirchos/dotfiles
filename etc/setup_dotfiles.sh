@@ -23,6 +23,7 @@ main() {
     mkdir -vp ~/.vim/undo
     mkdir -vp ~/.vim/spell
     mkdir -vp ~/.vim/tags
+    mkdir -vp ~/.config/ghostty
     mkdir -vp ~/.conda
     mkdir -vp ~/.local/bin
     mkdir -v ~/Zotero/translators
@@ -30,10 +31,11 @@ main() {
 
     # make soft symlinks
     echo -e "${BR_TEXT}- Symlinking dotfiles (${DOTFILES})${TEXT}"
-    source "${DOTFILES}"/etc/symlink_dotfiles.sh "${DOTFILES}" "${HOME}/." # ~/.dotfiles/* -> ~/.*
-    ln -sfv "${DOTFILES}"/vim/* ~/.vim                                     # ~/.dotfiles/vim/* -> ~/.vim/*
-    ln -sfv "${DOTFILES}"/conda/* ~/.conda                                 # ~/.dotfiles/vim/* -> ~/.vim/*
-    ln -sfv "${DOTFILES}"/Zotero/translators/* ~/Zotero/translators        # ~/.dotfiles/Zotero/translators/* -> ~/Zotero/translators/*
+    source "${DOTFILES}"/etc/symlink_dotfiles.sh "${DOTFILES}" "${HOME}/."  # ~/.dotfiles/* -> ~/.*
+    ln -sfv "${DOTFILES}"/vim/*                ~/.vim
+    ln -sfv "${DOTFILES}"/conda/*              ~/.conda
+    ln -sfv "${DOTFILES}"/config/ghostty/*     ~/.config/ghostty
+    ln -sfv "${DOTFILES}"/Zotero/translators/* ~/Zotero/translators
 
     # setup launch daemons and launch agents
     if command -v "launchctl" &> /dev/null; then

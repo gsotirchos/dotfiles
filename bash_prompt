@@ -7,7 +7,7 @@
 
 
 main() {
-    TEXT_FORMATTING_VARS=(
+    export TEXT_FORMATTING_VARS=(
         # Reset
         'Reset \001\033[0m\002'
 
@@ -69,6 +69,7 @@ main() {
             export "${var_tuple[0]}=${var_tuple[1]}"
         done
     }
+    export -f __export_color_vars
 
     # function to UNSET all color formatting variables
     # (not needed inside function)
@@ -79,6 +80,7 @@ main() {
             eval "unset ${var_tuple[0]}"
         done
     }
+    export -f __unset_color_vars
 
     # construct an indicator based on the nesting level
     __format_nest_level() {
@@ -86,6 +88,7 @@ main() {
             echo -n "❭"
         done
     }
+    export -f __format_nest_level
 
     # function to be getting singularity status
     __get_singularity_status() {
@@ -95,6 +98,7 @@ main() {
             echo -e " through ${ICyan}singularity${Reset}"
         fi
     }
+    export -f __get_singularity_status
 
     # function to be getting conda environment info
     __get_conda_env() {
@@ -109,6 +113,7 @@ main() {
             echo -e "${Green}${CONDA_DEFAULT_ENV}${Reset}${is_stacked}${conda_lvl}${Reset} "
         fi
     }
+    export -f __get_conda_env
 
     # function to be getting virtualenv environment info
     __get_virtualenv_env() {
@@ -118,6 +123,7 @@ main() {
             echo -e "${Green}$(basename "${VIRTUAL_ENV}")${Reset})"
         fi
     }
+    export -f __get_virtualenv_env
 
     # function to be checking if current dir belongs to overlayed ROS package
     __get_catkin_sourced() {
@@ -133,6 +139,7 @@ main() {
             fi
         fi
     }
+    export -f __get_catkin_sourced
 
     # callback to print the last command exit status
     __print_last_status() {
@@ -140,7 +147,8 @@ main() {
         local last_command="$*"
 
         # ignore useless exit status from __bp_precmd_invoke_cmd
-        if [[ "${last_command}" == *'type -t "$precmd_function" > /dev/null'* ]]; then
+        #if [[ "${last_command}" == *'type -t "$precmd_function" > /dev/null'* ]]; then
+        if [[ "${last_command}" == *'return ${1:+"$1"}'* ]]; then
             return 0
         fi
 
@@ -148,6 +156,7 @@ main() {
         local exit_message="${IBlack}Exit ${last_status} (${last_command})${Reset}"
         echo -e "${exit_message}"
     }
+    export -f __print_last_status
 
     __build_prompt() {
         __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
@@ -155,7 +164,7 @@ main() {
         is_ssh_session="$1"
 
         # get the prompt user
-        local user="${IBlue}\${USER}${Reset}"
+        local user="${Bold}${IBlue}\${USER}${Reset}"
 
         # get the SSH session status and localhost name
         if [[ "${is_ssh_session}" = true ]]; then
@@ -167,7 +176,7 @@ main() {
 
         # get prompt sign and nest level
         local prompt_lvl="${Black}\$(__format_nest_level \${SHLVL})${Reset}"
-        local prompt_sign="${Bold}${IBlack}\$${Reset}${prompt_lvl} "
+        local prompt_sign="${Bold}${White}\$${Reset}${prompt_lvl} "
 
         # get the singularity status
         local singularity_status="\$(__get_singularity_status)"
@@ -187,6 +196,7 @@ main() {
         # return the prompt string
         printf %b "  ${user}${singularity_status}${hostname}${work_dir}${catkin_sourced}${git_info}${Reset}\n${conda_env}${virtualenv_env}${prompt_sign}"
     }
+    export -f __build_prompt
 
     if [[ $SHLVL -gt 1 ]]; then
         return 0
@@ -194,15 +204,10 @@ main() {
 
     if ! [[ "${PROMPT_COMMAND}" == *"__print_last_status"* ]]; then
         export PROMPT_COMMAND+=$'\n'"trap '__print_last_status \$BASH_COMMAND' ERR"
-        # export PROMPT_COMMAND+=$'\n'"trap 'echo \$? \$BASH_COMMAND' ERR"
     fi
 
-    # if ! [[ "${PROMPT_COMMAND}" == *"__build_prompt"* ]]; then
-    #     export PROMPT_COMMAND+=$'\n''__git_ps1 "$(__build_prompt "'"${IS_SSH_SESSION}"'")" " "'
-    # fi
-
     export PS1="$(__build_prompt "${IS_SSH_SESSION}")"  # would be set by __git_ps1 ${...}
-    export PS2='\001\e[30m\002┃\001\e[0m\002 '
+    export PS2='\001\e[90m\002┃\001\e[0m\002 '
 }
 
 main "$@"
