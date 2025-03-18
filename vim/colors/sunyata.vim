@@ -136,7 +136,7 @@ hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE
 hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE
 hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE
 hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE
-hi! StatusLine     cterm=NONE      ctermfg=15   ctermbg=8
+hi! StatusLine     cterm=NONE      ctermfg=NONE ctermbg=8
 hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0
 hi! Folded         cterm=bold      ctermfg=8    ctermbg=NONE
 hi! Conceal        cterm=NONE      ctermfg=8    ctermbg=NONE
