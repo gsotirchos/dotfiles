@@ -10,11 +10,11 @@ window-height = 24
 
 macos-titlebar-style = tabs
 shell-integration-features = no-cursor
-quit-after-last-window-closed = true
+quit-after-last-window-closed = false
 
 cursor-style = block
 cursor-style-blink = false
-cursor-opacity = 0.4
+cursor-opacity = 1.0
 
 theme = light:WIP, dark:xcode
 
