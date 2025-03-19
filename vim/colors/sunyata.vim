@@ -97,7 +97,6 @@ hi! link PreCondit PreProc
 
 " types
 hi! Type           cterm=bold      ctermfg=13   ctermbg=NONE
-"hi! link Type        Statement"
 hi! link Structure    Statement
 hi! link StorageClass Statement
 hi! link Typedef      Statement
@@ -124,7 +123,7 @@ hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE
 hi! Todo           cterm=bold      ctermfg=9    ctermbg=11
 hi! SpellBad       cterm=underline ctermfg=1    ctermbg=NONE
 hi! SpellCap       cterm=underline ctermfg=3    ctermbg=NONE
-hi! underlined     cterm=underline ctermfg=4    ctermbg=NONE
+hi! Underlined     cterm=underline ctermfg=4    ctermbg=NONE
 hi! Directory      cterm=NONE      ctermfg=12   ctermbg=NONE
 hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE
 hi! link SpellRare SpellLocal
@@ -132,7 +131,8 @@ hi! link SpellRare SpellLocal
 " visual elements
 hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE
 hi! IncSearch      cterm=reverse   ctermfg=11   ctermbg=NONE
-hi! Visual         cterm=reverse   ctermfg=NONE ctermbg=NONE
+hi! clear Visual
+hi! Visual                                      ctermbg=0
 hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE
 hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE
 hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE
@@ -173,3 +173,13 @@ hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=NONE
 hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8  ctermbg=NONE
 hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo
 hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
+
+" vimdiff
+hi! clear DiffAdd
+hi! clear DiffChange
+hi! clear DiffDelete
+hi! clear DiffText
+hi! DiffAdd ctermfg=10 ctermbg=0
+hi! DiffChange ctermbg=0
+hi! DiffDelete ctermfg=9 ctermbg=0
+hi! DiffText ctermfg=11 ctermbg=0
