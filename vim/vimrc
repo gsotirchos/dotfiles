@@ -77,9 +77,11 @@ set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
 let &listchars = 'tab:|->,trail:·,conceal:◌,extends:…,precedes:…,nbsp:_'
 function! MyFoldText()  " custom fold text
-    let sub1 = substitute(getline(v:foldstart), '\(^\s*\S.\{,80}\S\)\%(\s.\{-}\)\=$', '\1', 'g')
-    let sub2 = substitute(getline(v:foldend), '^\%(.\{-}\s*\)\=\(\S.\{,25}\)$', '\1', 'g')
-    return (sub1 . ' ... ' . sub2 .'  (' . (v:foldend - v:foldstart + 1) . ' lines)')
+    let fold_left = substitute(getline(v:foldstart), '\(^\s*\S.\{,80}\S\)\%(\s.\{-}\)\=$', '\1', 'g')
+    let last_space_pos = len(matchstr(getline(v:foldstart-1), '^\s*'))
+    let fold_left = strpart(fold_left, 0, last_space_pos) . '└─' . fold_left[last_space_pos+2:]
+    let fold_right = substitute(getline(v:foldend), '^\%(.\{-}\s*\)\=\(\S.\{,25}\)$', '\1', 'g')
+    return (fold_left . ' ... ' . fold_right . '  (' . (v:foldend - v:foldstart + 1) . ' lines)')
 endfunction
 set foldtext=MyFoldText()
 set laststatus=2  " always show statusline
@@ -110,9 +112,9 @@ function! MyStatusline()
             let half_name_length = max([1, float2nr(floor(len(expand("%:~:t")) / 2.0))])
         endif
 
-        let path_field_length = max([0, min([50,
-        \   winwidth(0) / 2 - filetype_field_length - half_name_length
-        \])])  " there is a 50 char hard limit
+        let path_field_length = max(
+        \   [0, min([50, winwidth(0) / 2 - filetype_field_length - half_name_length])]
+        \)  " use max 50 chars for path field
         let parent_dir_field = '%<%-' . path_field_length . '(' . parent_dir . '%)'
         let file_name_field = '%t%m%a   '
         let left_hand_side .= ' ' . parent_dir_field  . file_name_field
