@@ -154,6 +154,7 @@ set shellcmdflag=-l\ -c  " login shell for '!'
 " folding
 set foldenable  " enable folding
 set foldmethod=indent  " fold only based on intentation
+set foldignore=  " don't ignore any lines
 set foldlevel=2  " depth of first folding
 set foldnestmax=99  " depth of last folding
 set foldcolumn=0  " hide fold column
