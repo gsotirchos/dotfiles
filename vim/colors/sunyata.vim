@@ -116,7 +116,7 @@ hi! Done           cterm=bold      ctermfg=2    ctermbg=NONE
 hi! Debug          cterm=bold      ctermfg=3    ctermbg=NONE
 
 " errors and warnings
-hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=8
+hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=0
 hi! Error          cterm=bold      ctermfg=1    ctermbg=NONE
 hi! ErrorMsg       cterm=NONE      ctermfg=1    ctermbg=NONE
 hi! WarningMsg     cterm=NONE      ctermfg=3    ctermbg=NONE
@@ -136,10 +136,12 @@ hi! Visual                                      ctermbg=0
 hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE
 hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE
 hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE
-hi! StatusLine     cterm=NONE      ctermfg=NONE ctermbg=8
+hi! clear StatusLine
+hi! StatusLine                                  ctermbg=8
 hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0
-hi! Folded         cterm=bold      ctermfg=8    ctermbg=NONE
-hi! Conceal        cterm=NONE      ctermfg=8    ctermbg=NONE
+hi! Folded         cterm=NONE      ctermfg=8    ctermbg=None
+hi! clear Conceal
+hi! Conceal                        ctermfg=8
 hi! link LineNr           Conceal
 hi! link CursorLineNr     Comment
 hi! link VertSplit        Comment
@@ -149,11 +151,13 @@ hi! link FoldColumn       EndOfBuffer
 hi! clear CursorLine
 
 " menus and messages
+hi! ModeMsg        cterm=bold      ctermfg=4    ctermbg=NONE
+hi! MsgArea        cterm=NONE      ctermfg=15   ctermbg=NONE
 hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE
 hi! ToolbarLine    cterm=NONE      ctermfg=NONE ctermbg=8
 hi! ToolbarButton  cterm=bold      ctermfg=0    ctermbg=7
 hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3
-hi! Pmenu          cterm=NONE      ctermfg=15   ctermbg=0
+hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0
 hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=4
 hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE
 hi! link PmenuSbar   Pmenu
@@ -161,7 +165,6 @@ hi! link Title       SpecialComment
 hi! link TabLineSel  SpecialComment
 hi! link TabLine     ToolbarButton
 hi! link TabLineFill ToolbarButton
-hi! link ModeMsg     Type
 hi! link MoreMsg     ModeMsg
 hi! link NonText     Conceal
 hi! link Ignore      Conceal
