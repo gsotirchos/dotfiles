@@ -32,6 +32,7 @@ inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
 inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
 inoremap <expr> <Return> pumvisible() ? "\<C-y>" : "\<C-g>u\<Return>"
 inoremap <C-n> <C-x><C-u>
+inoremap <C-f> <C-x><C-f>
 
 " Smart indenting when entering insert mode on empty lines
 function! IndentWithI()

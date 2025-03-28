@@ -15,27 +15,6 @@ if exists("syntax_on")
 endif
 let g:colors_name="sunyata"
 
-" Colors
-let color_0='#000000'
-let color_1='#E90B18'
-let color_2='#799F79'
-let color_3='#989774'
-let color_4='#779D9D'
-let color_5='#D3D3D3'
-let color_6='#D3D3D3'
-let color_7='#959595'
-let color_8='#303030'
-let color_9=color_1
-let color_10=color_2
-let color_11=color_3
-let color_12=color_4
-let color_13=color_5
-let color_14=color_6
-let color_15='#FFFFFF'
-
-let color_fg='#959595'
-let color_bg='#000000'
-
 "hi Normal
 "
 " OR
@@ -110,7 +89,7 @@ hi! link SpecialChar Character
 " my custom groups
 hi! MembOperator   cterm=bold      ctermfg=7    ctermbg=NONE
 hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE
-hi! SpecialComment cterm=bold      ctermfg=15   ctermbg=NONE
+hi! SpecialComment cterm=bold      ctermfg=NONE ctermbg=NONE
 hi! DocComment     cterm=italic    ctermfg=8    ctermbg=NONE
 hi! Done           cterm=bold      ctermfg=2    ctermbg=NONE
 hi! Debug          cterm=bold      ctermfg=3    ctermbg=NONE
@@ -152,14 +131,14 @@ hi! clear CursorLine
 
 " menus and messages
 hi! ModeMsg        cterm=bold      ctermfg=4    ctermbg=NONE
-hi! MsgArea        cterm=NONE      ctermfg=15   ctermbg=NONE
+hi! MsgArea        cterm=NONE      ctermfg=NONE ctermbg=NONE
 hi! Question       cterm=NONE      ctermfg=3    ctermbg=NONE
 hi! ToolbarLine    cterm=NONE      ctermfg=NONE ctermbg=8
 hi! ToolbarButton  cterm=bold      ctermfg=0    ctermbg=7
 hi! WildMenu       cterm=NONE      ctermfg=0    ctermbg=3
 hi! Pmenu          cterm=NONE      ctermfg=NONE ctermbg=0
 hi! PmenuSel       cterm=NONE      ctermfg=15   ctermbg=4
-hi! PmenuThumb     cterm=reverse   ctermfg=15   ctermbg=NONE
+hi! PmenuThumb     cterm=reverse   ctermfg=NONE ctermbg=NONE
 hi! link PmenuSbar   Pmenu
 hi! link Title       SpecialComment
 hi! link TabLineSel  SpecialComment
