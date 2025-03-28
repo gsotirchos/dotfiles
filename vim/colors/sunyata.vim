@@ -149,13 +149,6 @@ hi! link NonText     Conceal
 hi! link Ignore      Conceal
 hi! link SpecialKey  Conceal
 
-" ALE
-hi! ALEVirtualTextError   cterm=NONE ctermfg=1  ctermbg=NONE
-hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=NONE
-hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8  ctermbg=NONE
-hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo
-hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
-
 " vimdiff
 hi! clear DiffAdd
 hi! clear DiffChange
@@ -165,3 +158,14 @@ hi! DiffAdd ctermfg=10 ctermbg=0
 hi! DiffChange ctermbg=0
 hi! DiffDelete ctermfg=9 ctermbg=0
 hi! DiffText ctermfg=11 ctermbg=0
+
+" ALE
+hi! ALEVirtualTextError   cterm=NONE ctermfg=1  ctermbg=NONE
+hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=NONE
+hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8  ctermbg=NONE
+hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo
+hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
+
+" copilot
+"hi! link CopilotSuggestion NonText
+"hi! link CopilotAnnotation Comment
