@@ -28,6 +28,3 @@ hi! link myUrl      Underlined
 hi! link myParens   Comment
 hi! link myEquals   Statement
 hi! link myOperator OtherType
-
-"hi! link CopilotSuggestion NonText
-"hi! link CopilotAnnotation Comment
