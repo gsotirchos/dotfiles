@@ -18,12 +18,12 @@ Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
 Plugin 'dense-analysis/ale'
-"Plugin 'airblade/vim-gitgutter'  " TODO
 Plugin 'github/copilot.vim'
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-easytags'
-Plugin 'scrooloose/nerdcommenter'
+"Plugin 'airblade/vim-gitgutter'  " TODO
 Plugin 'tpope/vim-rsi'
+Plugin 'scrooloose/nerdcommenter'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'bfrg/vim-cpp-modern'
 Plugin 'vim-python/python-syntax'
