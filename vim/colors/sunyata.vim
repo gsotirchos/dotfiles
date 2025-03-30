@@ -9,7 +9,7 @@
 "set background=dark " or light
 set notermguicolors
 set t_Co=16
-hi! clear
+"hi! clear
 if exists("syntax_on")
     syntax reset
 endif
@@ -169,3 +169,8 @@ hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
 " copilot
 "hi! link CopilotSuggestion NonText
 "hi! link CopilotAnnotation Comment
+hi! link CopilotWelcome ModeMsg
+hi! link CopilotSeparatorLine NonText
+hi! link CopilotSeparatorIcon Normal
+hi! link CopilotPrompt NonText
+"hi! link CopilotWaiting Comment
