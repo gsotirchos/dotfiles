@@ -45,3 +45,7 @@ let g:vimtex_delim_toggle_mod_list = [
 \   ['\l', '\r'],
 \   ['\left', '\right']
 \]
+
+" single-shot compile with Ctrl+Return or Cmd+Return
+nnoremap <buffer> <silent> <C-Return> <Plug>(vimtex-compile-ss)
+nnoremap <buffer> <silent>  <Plug>(vimtex-compile-ss)

@@ -19,6 +19,8 @@ Plugin 'VundleVim/Vundle.vim'
 "" plugins start here
 Plugin 'dense-analysis/ale'
 Plugin 'github/copilot.vim'
+"Plugin 'DanBradbury/copilot-chat.vim'
+Plugin 'gsotirchos/copilot-chat.vim'
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-easytags'
 "Plugin 'airblade/vim-gitgutter'  " TODO
