@@ -1,7 +1,7 @@
 set sw=2 ts=2 sts=2
 
 
-hi! link xmlTag             Comment
+hi! link xmlTag             MyParens
 hi! link xmlNamespace       Function
 hi! link xmlTagName         Statement
 hi! link xmlAttrib          Function

@@ -55,6 +55,7 @@ augroup vimrc
     \|      runtime after/syntax/indent_guides.vim
     \|      let b:easytags_auto_update = 1
     \|  endif
+    "\|      let b:easytags_auto_highlight = 1
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested

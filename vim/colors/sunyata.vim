@@ -44,7 +44,8 @@ let g:colors_name="sunyata"
 hi! Normal         cterm=NONE      ctermfg=NONE ctermbg=NONE
 
 " comments
-hi! Comment        cterm=NONE      ctermfg=7    ctermbg=NONE term=NONE
+"hi! Comment        cterm=NONE      ctermfg=7    ctermbg=NONE term=NONE
+hi! Comment        cterm=NONE      ctermfg=2    ctermbg=NONE term=NONE
 
 " constants
 hi! String         cterm=NONE      ctermfg=9    ctermbg=NONE
@@ -87,12 +88,18 @@ hi! link Special     Character
 hi! link SpecialChar Character
 
 " my custom groups
+hi! MyParens       cterm=NONE      ctermfg=7    ctermbg=NONE
 hi! MembOperator   cterm=bold      ctermfg=7    ctermbg=NONE
 hi! OtherType      cterm=NONE      ctermfg=12   ctermbg=NONE
 hi! SpecialComment cterm=bold      ctermfg=NONE ctermbg=NONE
 hi! DocComment     cterm=italic    ctermfg=8    ctermbg=NONE
 hi! Done           cterm=bold      ctermfg=2    ctermbg=NONE
 hi! Debug          cterm=bold      ctermfg=3    ctermbg=NONE
+hi! link MyNote     Normal
+hi! link MyTagMark  SpecialComment
+hi! link MyUrl      Underlined
+hi! link MyEquals   Statement
+hi! link MyOperator OtherType
 
 " errors and warnings
 hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=0
@@ -108,8 +115,10 @@ hi! SpellLocal     cterm=NONE      ctermfg=3    ctermbg=NONE
 hi! link SpellRare SpellLocal
 
 " visual elements
-hi! Search         cterm=reverse   ctermfg=3    ctermbg=NONE
-hi! IncSearch      cterm=reverse   ctermfg=11   ctermbg=NONE
+hi! clear Search
+hi! Search         cterm=NONE      ctermfg=NONE ctermbg=3
+hi! clear IncSearch
+hi! IncSearch      cterm=NONE      ctermfg=NONE ctermbg=11
 hi! clear Visual
 hi! Visual                                      ctermbg=0
 hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE
@@ -119,11 +128,10 @@ hi! clear StatusLine
 hi! StatusLine                                  ctermbg=8
 hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0
 hi! Folded         cterm=NONE      ctermfg=8    ctermbg=None
-hi! clear Conceal
-hi! Conceal                        ctermfg=8
-hi! link LineNr           Conceal
-hi! link CursorLineNr     Comment
-hi! link VertSplit        Comment
+hi! LineNr         cterm=NONE      ctermfg=8
+hi! CursorLineNr   cterm=NONE      ctermfg=7
+hi! link Conceal          LineNr
+hi! link VertSplit        LineNr
 hi! link StatusLineTerm   StatusLine
 hi! link StatusLineTermNC StatusLineNC
 hi! link FoldColumn       EndOfBuffer
