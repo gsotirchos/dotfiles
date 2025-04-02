@@ -55,7 +55,6 @@ augroup vimrc
     \|      runtime after/syntax/indent_guides.vim
     \|      let b:easytags_auto_update = 1
     \|  endif
-    "\|      let b:easytags_auto_highlight = 1
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested
@@ -66,7 +65,7 @@ augroup vimrc
     " disable syntax when losing focus
     "autocmd FocusLost * syntax off
 
-    autocmd BufWinEnter,BufRead,BufWritePost *
+    autocmd BufWinEnter,BufRead *
     \   set statusline=%{%MyStatusline()%}
 
     " treat certain extensions as XML
