@@ -139,7 +139,7 @@ endfunction
 
 " Autocommand to update the Git info cache after saving the file
 augroup GitInfoStatus
-    autocmd! BufWritePost * call s:UpdateGitInfoCache()
+    autocmd! FocusLost * call s:UpdateGitInfoCache()
 augroup END
 
 " Function to get the right-hand side content (line and column info)
