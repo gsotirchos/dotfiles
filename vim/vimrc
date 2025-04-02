@@ -22,7 +22,7 @@ Plugin 'github/copilot.vim'
 "Plugin 'DanBradbury/copilot-chat.vim'
 Plugin 'gsotirchos/copilot-chat.vim'
 Plugin 'xolox/vim-misc'
-"Plugin 'xolox/vim-easytags'
+Plugin 'xolox/vim-easytags'
 "Plugin 'airblade/vim-gitgutter'  " TODO
 Plugin 'tpope/vim-rsi'
 Plugin 'scrooloose/nerdcommenter'
@@ -68,9 +68,9 @@ set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 colorscheme sunyata
 set concealcursor=c
 set conceallevel=1
-"set nonumber  " hide line numbers
+"set number  " show line numbers
 set numberwidth=1  " smallest width at start
-"set nowrap  " don't wrap long lines
+"set wrap  " wrap long lines
 set sidescroll=1  " enable sidescrolling
 set showmatch  " show matching parentheses
 set noshowcmd  " hide typed command
@@ -78,10 +78,7 @@ let &fillchars = 'vert:│,diff:-,eob: ,lastline:.,fold: ,foldopen:▾,foldsep:�
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
 let &listchars = 'tab:|->,trail:·,conceal:◌,extends:…,precedes:…,nbsp:_'
-runtime vimrc.d/myfoldtext.vim  " custom fold text method
-set foldtext=MyFoldText()
 set laststatus=2  " always show statusline
-runtime vimrc.d/mystatusline.vim  " custom status line method
 
 " behavior
 set timeoutlen=1500  " set leader timeout to 1.5s
@@ -117,6 +114,8 @@ set foldignore=  " don't ignore any lines
 set foldlevel=2  " depth of first folding
 set foldnestmax=99  " depth of last folding
 set foldcolumn=0  " hide fold column
+runtime vimrc.d/myfoldtext.vim  " custom fold text method
+set foldtext=MyFoldText()
 
 " searching
 set smartcase  " case sensitive only if Uppercase
@@ -134,6 +133,9 @@ set wildmenu  " display completion matches in a status line
 
 " mappings
 runtime vimrc.d/mappings.vim
+
+" custom status line (source before autocommands.vim)
+runtime vimrc.d/statusline.vim
 
 " autocommands
 runtime vimrc.d/autocommands.vim
