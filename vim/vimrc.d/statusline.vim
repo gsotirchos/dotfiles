@@ -14,11 +14,11 @@ endfunction
 
 " Function to get the left-hand side content for regular editor windows
 function! s:GetRegularEditorLeftSide()
-    let left_hand_side = '%( %Y %)'
+    let filetype_field = '%( %{&filetype} %)'
     let git_info_field = s:GetGitInfoField()
     let parent_dir_field = s:GetParentDirectoryField(len(git_info_field))
-    let file_name_field = '%t%m%a'
-    let left_hand_side .= git_info_field . parent_dir_field . file_name_field . ' '
+    let file_name_field = '%t%m%a '
+    let left_hand_side = filetype_field . git_info_field . parent_dir_field . file_name_field
     return left_hand_side
 endfunction
 
