@@ -1,5 +1,5 @@
 let s:MAX_PATH_LENGTH = 50
-let s:HALF_NO_NAME_LENGTH = len('[No Name]') / 2 + 1
+let s:HALF_NO_NAME_LENGTH = len('[No Name]') / 2
 
 " Function to get the left-hand side content based on filetype
 function! s:GetLeftSideContent()
@@ -46,7 +46,7 @@ function! s:CalculatePathFieldLength(filetype_field_length, git_info_field_lengt
     \   0,
     \   min([
     \       s:MAX_PATH_LENGTH,
-    \       winwidth(0) / 2 - a:filetype_field_length - a:git_info_field_length - a:half_name_length])
+    \       winwidth(0) / 2 - a:filetype_field_length - a:git_info_field_length - a:half_name_length - 1])
     \ ])
 endfunction
 
@@ -106,8 +106,8 @@ function! s:UpdateGitInfoCache()
     let diff_info = ''
     let upstream = trim(system(git_command_prefix . 'rev-parse --verify --quiet @{upstream} 2> /dev/null'))
     if v:shell_error == 0
-        let ahead = len(split(system(git_command_prefix . 'log --oneline HEAD..@{upstream} 2> /dev/null'), '\n')) - 1
-        let behind = len(split(system(git_command_prefix . 'log --oneline @{upstream}..HEAD 2> /dev/null'), '\n')) - 1
+        let ahead = trim(system(git_command_prefix . 'rev-list --count @{upstream}..HEAD 2> /dev/null'))
+        let behind = trim(system(git_command_prefix . 'rev-list --count HEAD..@{upstream} 2> /dev/null'))
         let diff_info = ''
         if ahead > 0
             let diff_info .= '>' . ahead
