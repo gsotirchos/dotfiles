@@ -1,5 +1,6 @@
-syntax match vimComment "\".*" containedin=vim.*Comment
+syn match vimComment "\".*" containedin=vim.*Comment
 syn match Error "\\@\d*[<>]\=!\==\="  " not working
+syn match vimContinue "|" contained containedin=vimAugroup
 
 
 "hi! clear CursorLine
@@ -24,8 +25,8 @@ hi! link vimGroupName    vimVar
 hi! link vimOption       vimVar
 hi! link vimOptionVarName vimVar
 hi! link vimFTOption     PreProc
-hi! link vimOper         Operator
-hi! link vimContinue     Comment
+hi! link vimOper         MyOperator
+hi! link vimContinue     MyParens
 
 " ALE
 "hi! link ALEErrorLine   Normal
