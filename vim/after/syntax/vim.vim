@@ -27,6 +27,7 @@ hi! link vimOptionVarName vimVar
 hi! link vimFTOption     PreProc
 hi! link vimOper         MyOperator
 hi! link vimContinue     MyParens
+hi! link vimAutoGroupTag Identifier
 
 " ALE
 "hi! link ALEErrorLine   Normal
