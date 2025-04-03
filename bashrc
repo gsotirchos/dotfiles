@@ -132,6 +132,11 @@ main() {
         source "${macos_dotfiles}"/etc/source_dirs_list.sh "${dotfiles}"/completion_dirs
     fi
 
+    # set __git_ps1 function
+    if [[ -f "${macos_dotfiles}"/etc/set_git_ps1.sh ]]; then
+        source "${macos_dotfiles}"/etc/set_git_ps1.sh
+    fi
+
     # bash completion
     if [[ -f /etc/profile.d/bash_completion.sh ]]; then
         source /etc/profile.d/bash_completion.sh
@@ -142,24 +147,6 @@ main() {
     if [[ -f ~/.bash_aliases ]]; then
         source ~/.bash_aliases
     fi
-
-    # make git prompt command available
-    if ! command -v "__git_ps1" &> /dev/null; then
-        local git_prompt_path="/etc/bash_completion.d/git-prompt"
-        if [[ -f "${HOMEBREW_PREFIX}/${git_prompt_path}.sh" ]]; then
-            source "${HOMEBREW_PREFIX}/${git_prompt_path}.sh"
-        elif [[ -f "${git_prompt_path}" ]]; then
-            source "${git_prompt_path}"
-        fi
-    fi
-
-    # export git prompt options
-    export GIT_PS1_SHOWCOLORHINTS=true
-    export GIT_PS1_SHOWDIRTYSTATE=true
-    export GIT_PS1_SHOWSTASHSTATE=true
-    export GIT_PS1_DESCRIBE_STYLE="contains"
-    export GIT_PS1_SHOWUNTRACKEDFILES=true
-    export GIT_PS1_SHOWUPSTREAM="auto"
 
     # custom prompt
     if [[ -f ~/.bash_prompt ]]; then
