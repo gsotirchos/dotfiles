@@ -114,7 +114,7 @@ set foldignore=  " don't ignore any lines
 set foldlevel=2  " depth of first folding
 set foldnestmax=99  " depth of last folding
 set foldcolumn=0  " hide fold column
-runtime vimrc.d/myfoldtext.vim  " custom fold text method
+runtime vimrc.d/foldtext.vim  " custom fold text method
 set foldtext=MyFoldText()
 
 " searching

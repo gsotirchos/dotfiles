@@ -116,9 +116,9 @@ hi! link SpellRare SpellLocal
 
 " visual elements
 hi! clear Search
-hi! Search         cterm=NONE      ctermfg=NONE ctermbg=3
+hi! Search         cterm=NONE      ctermfg=15   ctermbg=3
 hi! clear IncSearch
-hi! IncSearch      cterm=NONE      ctermfg=NONE ctermbg=11
+hi! IncSearch      cterm=NONE      ctermfg=15   ctermbg=11
 hi! clear Visual
 hi! Visual                                      ctermbg=0
 hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE
