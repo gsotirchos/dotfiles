@@ -1,12 +1,21 @@
 let s:MAX_PATH_LENGTH = 50
 let s:HALF_NO_NAME_LENGTH = len('[No Name]') / 2
 
+" Function to get the right-hand side content (line and column info)
+function! s:GetRightSideContent()
+    let lines_field = '%' . (b:numberwidth + 0) . '(%l%)/%-' . (b:numberwidth + 0) . '(%Ll%)'
+    let columns_field = '%4(%c%)/%-5(' . len(getline(".")) . 'c%)'
+    return '%=' . b:SLFileInfo . lines_field . columns_field . '%*'
+endfunction
+
 " Function to get the left-hand side content based on filetype
 function! s:GetLeftSideContent()
     if (&filetype == 'qf')  " LocationList or QuickFix List
-        return '%( %q%)'
+        return b:SLFileInfo . ' %q %*'
     elseif (&filetype =~# '^.*preview.*$')  " Preview window
-        return '%( %y%)'
+        return b:SLFileInfo . '%( %Y %)%*'
+    elseif (&buftype ==# 'terminal')  " Terminal window
+        return b:SLFileInfo . '%( %t %)%*'
     else
         return s:GetRegularEditorLeftSide()
     endif
@@ -14,7 +23,7 @@ endfunction
 
 " Function to get the left-hand side content for regular editor windows
 function! s:GetRegularEditorLeftSide()
-    let filetype_field = '%( %{&filetype} %)'
+    let filetype_field = '%( %Y %)'
     if !exists('b:parent_path_cached')
         call s:UpdateParentPathCache()
     endif
@@ -24,7 +33,7 @@ function! s:GetRegularEditorLeftSide()
     let git_info_field =  '%( %{b:git_info_cached} %)'
     let parent_path_field = s:GetParentDirectoryField()
     let file_name_field = '%t%m%a '
-    let left_hand_side = '%#SLFileType#' . filetype_field . '%#SLGitInfo#' . git_info_field . '%#SLFilePath#' .  parent_path_field . '%#SLFileName#' . file_name_field . '%*'
+    let left_hand_side = b:SLFileInfo . filetype_field . b:SLGitInfo . git_info_field . b:SLFilePath .  parent_path_field . b:SLFileName . file_name_field . '%*'
     return left_hand_side
 endfunction
 
@@ -54,18 +63,17 @@ endfunction
 
 " Function to actually fetch all Git info for the current file
 function! s:UpdateGitInfoCache()
-    let git_ps1_string = trim(system(' cd ' . b:full_parent_path_cached . ' && __git_ps1 2> /dev/null'))
-    if v:shell_error == 1
-        let b:git_info_cached = '(git error)'
-    else
+    let git_ps1_string = trim(system('source ~/.dotfiles/etc/set_git_ps1.sh && cd ' . b:full_parent_path_cached . ' && GIT_PS1_SHOWCOLORHINTS= __git_ps1 2> /dev/null'))
+    if v:shell_error == 0
         let b:git_info_cached = slice(substitute(git_ps1_string, ' ', '', ''), 1, -1)
-        echo "b:git_info_cached: " . b:git_info_cached
+    else
+        let b:git_info_cached = ''
     endif
 endfunction
 
 " Function to store the current file's parent path
 function! s:UpdateParentPathCache()
-    if (&filetype == 'help')
+    if (&filetype == 'help' || &buftype ==# 'terminal')
         let b:parent_path_cached = ''
         let b:full_parent_path_cached = ''
     else
@@ -74,18 +82,33 @@ function! s:UpdateParentPathCache()
     endif
 endfunction
 
+function! s:SetColors()
+    let b:SLFileInfo = '%#SLFileInfo#'
+    let b:SLFilePath = '%#SLFilePath#'
+    let b:SLFileName = '%#SLFileName#'
+    let b:SLGitInfo = '%#SLGitInfo#'
+endfunction
+
+function! s:UnsetColors()
+    let b:SLFileInfo = '%#SLFileInfoNC#'
+    let b:SLFilePath = '%#SLFilePathNC#'
+    let b:SLFileName = '%#SLFileNameNC#'
+    let b:SLGitInfo = '%#SLGitInfoNC#'
+endfunction
+
 " Autocommand to update the Git info cache after saving the file
 augroup GitInfoStatus
-    autocmd! BufWinEnter,BufRead,BufWritePost * call s:UpdateGitInfoCache()
-    autocmd! BufWinEnter,BufRead,BufWritePost * call s:UpdateParentPathCache()
+    autocmd!
+    autocmd! BufWrite *
+    \   call s:UpdateParentPathCache()
+    \|  call s:UpdateGitInfoCache()
+    autocmd! BufEnter,BufWinEnter,FocusGained *
+    \   call s:SetColors()
+    \|  set statusline=%{%MyStatusline()%}
+    autocmd! BufLeave,BufWinLeave,FocusLost *
+    \   call s:UnsetColors()
+    \|  set statusline=%{%MyStatusline()%}
 augroup END
-
-" Function to get the right-hand side content (line and column info)
-function! s:GetRightSideContent()
-    let lines_field = '%' . (b:numberwidth + 0) . '(%l%)/%-' . (b:numberwidth + 0) . '(%Ll%)'
-    let columns_field = '%4(%c%)/%-5(' . len(getline(".")) . 'c%)'
-    return '%=' . '%#SLFileInfo#' . lines_field . columns_field . '%*'
-endfunction
 
 " Main statusline function
 function! MyStatusline()
