@@ -31,15 +31,6 @@ augroup vimrc
     \|  let &breakindentopt = "shift:" . (&ts-1)
     \|  let &sidescrolloff = winwidth('%') / 2
 
-    " autosave named files
-    autocmd CursorHold ?* nested if empty(&buftype) && &modified | update | endif
-
-    " always convert to utf-8
-    autocmd BufWinEnter,BufRead,BufWritePost ?* silent! set fileencoding=utf-8
-
-    " don't spell-check help or QuickFix/LocList buffers
-    autocmd FileType help,qf set nospell
-
     " enable syntax;
     autocmd Colorscheme *
     \   if !exists("g:syntax_on")
@@ -65,45 +56,58 @@ augroup vimrc
     " disable syntax when losing focus
     "autocmd FocusLost * syntax off
 
-    autocmd BufWinEnter,BufRead *
+    " don't spell-check help or QuickFix/LocList buffers
+    autocmd FileType help,qf set nospell
+
+    " autosave named files
+    autocmd CursorHold ?* nested if empty(&buftype) && &modified | update | endif
+
+    " set statusline function
+    autocmd BufWinEnter,BufRead
+    \   *
     \   set statusline=%{%MyStatusline()%}
 
+    " always convert to utf-8
+    autocmd BufWinEnter,BufRead,BufWritePre
+    \   ?*
+    \   silent! set fileencoding=utf-8
+
     " treat certain extensions as XML
-    autocmd BufWinEnter,BufRead,BufWritePost
+    autocmd BufWinEnter,BufRead,BufWritePre
     \   *.sdf,*.world,*.model,*.xacro,*.launch,*.plist
     \   set ft=xml
 
     " treat certain ROS configuration files as conf files
-    autocmd BufWinEnter,BufRead,BufWritePost
+    autocmd BufWinEnter,BufRead,BufWritePre
     \   *.msg,*.srv,*.action
     \   set ft=conf
 
-    autocmd BufWinEnter,BufRead,BufWritePost
+    autocmd BufWinEnter,BufRead,BufWritePre
     \   *.vcg,*.dconf
     \   set ft=dosini
 
-    autocmd BufWinEnter,BufRead,BufWritePost
+    autocmd BufWinEnter,BufRead,BufWritePre
     \   *.yml,*.rviz,*.env
     \   set ft=yaml
 
     " treat .def and .sh files as bash files
-    autocmd BufWinEnter,BufRead,BufWritePost
+    autocmd BufWinEnter,BufRead,BufWritePre
     \   *.def,*.bash,*.sh
     \   set ft=bash
 
     " treat .m files as Matlab files
-    autocmd BufWinEnter,BufRead,BufWritePost
+    autocmd BufWinEnter,BufRead,BufWritePre
     \   *.m
     \   set ft=matlab
 
-    " treat C files as C++ files
-    autocmd FileType c set ft=cpp
-
     " use custom CMake autocompletion
-    autocmd BufWinEnter,BufRead,BufWritePost
+    autocmd BufWinEnter,BufRead,BufWritePre
     \   CMakeLists.txt,*.cmake
     \   set complete=.,k
     \|  set dictionary=$HOME/.vim/words/cmake.txt
+
+    " treat C files as C++ files
+    autocmd FileType c set ft=cpp
 
     " close loclists with buffer
     autocmd QuitPre * if empty(&buftype) | lclose | endif
