@@ -59,6 +59,7 @@ function! s:UpdateGitInfoCache()
         let b:git_info_cached = '(git error)'
     else
         let b:git_info_cached = slice(substitute(git_ps1_string, ' ', '', ''), 1, -1)
+        echo "b:git_info_cached: " . b:git_info_cached
     endif
 endfunction
 
