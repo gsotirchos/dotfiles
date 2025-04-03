@@ -24,7 +24,7 @@ function! s:GetRegularEditorLeftSide()
     let git_info_field =  '%( %{b:git_info_cached} %)'
     let parent_path_field = s:GetParentDirectoryField()
     let file_name_field = '%t%m%a '
-    let left_hand_side = filetype_field . git_info_field . parent_path_field . file_name_field
+    let left_hand_side = '%#SLFileType#' . filetype_field . '%#SLGitInfo#' . git_info_field . '%#SLFilePath#' .  parent_path_field . '%#SLFileName#' . file_name_field . '%*'
     return left_hand_side
 endfunction
 
@@ -83,7 +83,7 @@ augroup END
 function! s:GetRightSideContent()
     let lines_field = '%' . (b:numberwidth + 0) . '(%l%)/%-' . (b:numberwidth + 0) . '(%Ll%)'
     let columns_field = '%4(%c%)/%-5(' . len(getline(".")) . 'c%)'
-    return '%=' . lines_field . columns_field
+    return '%=' . '%#SLFileInfo#' . lines_field . columns_field . '%*'
 endfunction
 
 " Main statusline function
