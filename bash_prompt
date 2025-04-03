@@ -5,83 +5,83 @@
 # set -o functrace
 # set -o history -o histexpand
 
+TEXT_FORMATTING_VARS=(
+    # Reset
+    'Reset \001\033[0m\002'
+
+    # Bold
+    'Bold \001\033[0;1m\002'
+
+    # Underline
+    'Underline \001\033[0;4m\002'
+
+    # Bold underline
+    'BoldUnderline \001\033[0;1;4m\002'
+
+    # Regular foreground
+    'Black \001\033[30m\002'
+    'Red \001\033[31m\002'
+    'Green \001\033[32m\002'
+    'Yellow \001\033[33m\002'
+    'Blue \001\033[34m\002'
+    'Magenta \001\033[35m\002'
+    'Cyan \001\033[36m\002'
+    'White \001\033[37m\002'
+
+    # High Intensity foreground
+    'IBlack \001\033[90m\002'
+    'IRed \001\033[91m\002'
+    'IGreen \001\033[92m\002'
+    'IYellow \001\033[93m\002'
+    'IBlue \001\033[94m\002'
+    'IMagenta \001\033[95m\002'
+    'ICyan \001\033[96m\002'
+    'IWhite \001\033[97m\002'
+
+    # Regular background
+    'OnBlack \001\033[40m\002'
+    'OnRed \001\033[41m\002'
+    'OnGreen \001\033[42m\002'
+    'OnYellow \001\033[43m\002'
+    'OnBlue \001\033[44m\002'
+    'OnMagenta \001\033[45m\002'
+    'OnCyan \001\033[46m\002'
+    'OnWhite \001\033[47m\002'
+
+    # High Intensity background
+    'OnIBlack \001\033[100m\002'
+    'OnIRed \001\033[101m\002'
+    'OnIGreen \001\033[102m\002'
+    'OnIYellow \001\033[103m\002'
+    'OnIBlue \001\033[104m\002'
+    'OnIMagenta \001\033[105m\002'
+    'OnICyan \001\033[106m\002'
+    'OnIWhite \001\033[107m\002'
+)
+
+# function to EXPORT all color formatting variables
+__export_color_vars() {
+    arr=("$@")
+    for i in "${arr[@]}"; do
+        var_tuple=($i)
+        export "${var_tuple[0]}=${var_tuple[1]}"
+    done
+}
+
+# function to UNSET all color formatting variables
+# (not needed inside function)
+__unset_color_vars() {
+    arr=("$@")
+    for i in "${arr[@]}"; do
+        var_tuple=($i)
+        eval "unset ${var_tuple[0]}"
+    done
+}
+
+
+__export_color_vars "${TEXT_FORMATTING_VARS[@]}"
 
 main() {
-    export TEXT_FORMATTING_VARS=(
-        # Reset
-        'Reset \001\033[0m\002'
-
-        # Bold
-        'Bold \001\033[0;1m\002'
-
-        # Underline
-        'Underline \001\033[0;4m\002'
-
-        # Bold underline
-        'BoldUnderline \001\033[0;1;4m\002'
-
-        # Regular foreground
-        'Black \001\033[30m\002'
-        'Red \001\033[31m\002'
-        'Green \001\033[32m\002'
-        'Yellow \001\033[33m\002'
-        'Blue \001\033[34m\002'
-        'Magenta \001\033[35m\002'
-        'Cyan \001\033[36m\002'
-        'White \001\033[37m\002'
-
-        # High Intensity foreground
-        'IBlack \001\033[90m\002'
-        'IRed \001\033[91m\002'
-        'IGreen \001\033[92m\002'
-        'IYellow \001\033[93m\002'
-        'IBlue \001\033[94m\002'
-        'IMagenta \001\033[95m\002'
-        'ICyan \001\033[96m\002'
-        'IWhite \001\033[97m\002'
-
-        # Regular background
-        'OnBlack \001\033[40m\002'
-        'OnRed \001\033[41m\002'
-        'OnGreen \001\033[42m\002'
-        'OnYellow \001\033[43m\002'
-        'OnBlue \001\033[44m\002'
-        'OnMagenta \001\033[45m\002'
-        'OnCyan \001\033[46m\002'
-        'OnWhite \001\033[47m\002'
-
-        # High Intensity background
-        'OnIBlack \001\033[100m\002'
-        'OnIRed \001\033[101m\002'
-        'OnIGreen \001\033[102m\002'
-        'OnIYellow \001\033[103m\002'
-        'OnIBlue \001\033[104m\002'
-        'OnIMagenta \001\033[105m\002'
-        'OnICyan \001\033[106m\002'
-        'OnIWhite \001\033[107m\002'
-    )
-
-    # function to EXPORT all color formatting variables
-    __export_color_vars() {
-        arr=("$@")
-        for i in "${arr[@]}"; do
-            var_tuple=($i)
-            export "${var_tuple[0]}=${var_tuple[1]}"
-        done
-    }
-    export -f __export_color_vars
-
-    # function to UNSET all color formatting variables
-    # (not needed inside function)
-    __unset_color_vars() {
-        arr=("$@")
-        for i in "${arr[@]}"; do
-            var_tuple=($i)
-            eval "unset ${var_tuple[0]}"
-        done
-    }
-    export -f __unset_color_vars
-
     # construct an indicator based on the nesting level
     __format_nest_level() {
         for i in $(seq 2 "$1"); do
@@ -92,8 +92,6 @@ main() {
 
     # function to be getting singularity status
     __get_singularity_status() {
-        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
-
         if [[ -n "${SINGULARITY_NAME}" ]]; then
             echo -e " through ${ICyan}singularity${Reset}"
         fi
@@ -102,8 +100,6 @@ main() {
 
     # function to be getting conda environment info
     __get_conda_env() {
-        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
-
         if [[ -n "${CONDA_DEFAULT_ENV}" ]]; then
             # get conda nest level
             local conda_lvl="$(__format_nest_level "${CONDA_SHLVL}")"
@@ -117,8 +113,6 @@ main() {
 
     # function to be getting virtualenv environment info
     __get_virtualenv_env() {
-        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
-
         if [[ -n "${VIRTUAL_ENV}" ]]; then
             echo -e "${Green}$(basename "${VIRTUAL_ENV}")${Reset})"
         fi
@@ -127,8 +121,6 @@ main() {
 
     # function to be checking if current dir belongs to overlayed ROS package
     __get_catkin_sourced() {
-        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
-
         if command -v "catkin" &> /dev/null \
             && command -v "rospack" &> /dev/null; then
             local current_workspace="$(catkin locate 2> /dev/null)"
@@ -152,15 +144,12 @@ main() {
             return 0
         fi
 
-        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
         local exit_message="${IBlack}Exit ${last_status} (${last_command})${Reset}"
         echo -e "${exit_message}"
     }
     export -f __print_last_status
 
     __build_prompt() {
-        __export_color_vars "${TEXT_FORMATTING_VARS[@]}"
-
         is_ssh_session="$1"
 
         # get the prompt user
@@ -206,7 +195,7 @@ main() {
         export PROMPT_COMMAND+=$'\n'"trap '__print_last_status \$BASH_COMMAND' ERR"
     fi
 
-    export PS1="$(__build_prompt "${IS_SSH_SESSION}")"  # would be set by __git_ps1 ${...}
+    export PS1="$(__build_prompt "${is_ssh_session}")"  # would be set by __git_ps1 ${...}
     export PS2='\001\e[90m\002┃\001\e[0m\002 '
 }
 
