@@ -183,11 +183,15 @@ hi! link CopilotPrompt NonText
 " statusline
 hi! clear StatusLine
 hi! clear StatusLineNC
+hi! StatusLine     cterm=NONE                   ctermbg=0
+hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0
 hi! SLGitInfo      cterm=NONE      ctermfg=0    ctermbg=7
 hi! SLFileInfo     cterm=NONE                   ctermbg=8
 hi! SLFilePath     cterm=NONE      ctermfg=7    ctermbg=0
 hi! SLFileName     cterm=bold                   ctermbg=0
-hi! StatusLine                                  ctermbg=0
-hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0
+hi! link SLGitInfoNC      StatusLineNC
+hi! link SLFileInfoNC     StatusLineNC
+hi! link SLFilePathNC     StatusLineNC
+hi! link SLFileNameNC     StatusLineNC
 hi! link StatusLineTerm   StatusLine
 hi! link StatusLineTermNC StatusLineNC

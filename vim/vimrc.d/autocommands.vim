@@ -23,10 +23,12 @@ augroup vimrc
     autocmd!
 
     " enable sign column (when appropriate), set textwidth, set wrapping indent
-    autocmd BufWinEnter,BufRead,BufWrite,VimResized *
+    autocmd BufWinEnter,BufRead,BufWrite *
     \   call SetSyntax(line('$'))
     \|  call SetSignColumn(@%, &modifiable)
-    \|  let b:numberwidth = 1 + float2nr(ceil(log10(line("$") + 1)))
+
+    autocmd BufWinEnter,BufRead,TextChanged,TextChangedI,VimResized *
+    \   let b:numberwidth = 1 + float2nr(ceil(log10(line("$") + 1)))
     \|  let &textwidth = min([maxwinwidth, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
     \|  let &breakindentopt = "shift:" . (&ts-1)
     \|  let &sidescrolloff = winwidth('%') / 2
@@ -65,10 +67,6 @@ augroup vimrc
     " don't spell-check help or QuickFix/LocList buffers
     autocmd FileType help,qf
     \   set nospell
-
-    " set statusline function
-    autocmd BufWinEnter,BufRead,FocusGained *
-    \   set statusline=%{%MyStatusline()%}
 
     " always convert to utf-8
     autocmd BufWinEnter,BufRead,BufWritePre ?*
