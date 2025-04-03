@@ -54,10 +54,11 @@ endfunction
 
 " Function to actually fetch all Git info for the current file
 function! s:UpdateGitInfoCache()
-    " TODO: trim parens
-    let b:git_info_cached = trim(system(' cd ' . b:full_parent_path_cached . ' && __git_ps1 2> /dev/null'))
+    let git_ps1_string = trim(system(' cd ' . b:full_parent_path_cached . ' && __git_ps1 2> /dev/null'))
     if v:shell_error == 1
         let b:git_info_cached = '(git error)'
+    else
+        let b:git_info_cached = slice(substitute(git_ps1_string, ' ', '', ''), 1, -1)
     endif
 endfunction
 
