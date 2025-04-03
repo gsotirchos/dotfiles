@@ -31,7 +31,7 @@ augroup vimrc
     \|  let &breakindentopt = "shift:" . (&ts-1)
     \|  let &sidescrolloff = winwidth('%') / 2
 
-    " enable syntax;
+    " enable syntax
     autocmd Colorscheme *
     \   if !exists("g:syntax_on")
     \|      syntax on
@@ -56,20 +56,22 @@ augroup vimrc
     " disable syntax when losing focus
     "autocmd FocusLost * syntax off
 
-    " don't spell-check help or QuickFix/LocList buffers
-    autocmd FileType help,qf set nospell
-
     " autosave named files
-    autocmd CursorHold ?* nested if empty(&buftype) && &modified | update | endif
+    autocmd CursorHold,FocusGained ?* nested
+    \   if empty(&buftype) && &modified
+    \|      update
+    \|  endif
+
+    " don't spell-check help or QuickFix/LocList buffers
+    autocmd FileType help,qf
+    \   set nospell
 
     " set statusline function
-    autocmd BufWinEnter,BufRead
-    \   *
+    autocmd BufWinEnter,BufRead,FocusGained *
     \   set statusline=%{%MyStatusline()%}
 
     " always convert to utf-8
-    autocmd BufWinEnter,BufRead,BufWritePre
-    \   ?*
+    autocmd BufWinEnter,BufRead,BufWritePre ?*
     \   silent! set fileencoding=utf-8
 
     " treat certain extensions as XML
@@ -107,10 +109,14 @@ augroup vimrc
     \|  set dictionary=$HOME/.vim/words/cmake.txt
 
     " treat C files as C++ files
-    autocmd FileType c set ft=cpp
+    autocmd FileType c
+    \   set ft=cpp
 
     " close loclists with buffer
-    autocmd QuitPre * if empty(&buftype) | lclose | endif
+    autocmd QuitPre *
+    \   if empty(&buftype)
+    \|      lclose
+    \|  endif
 
     " remember buffer state
     autocmd BufWinLeave * silent! mkview
