@@ -124,16 +124,11 @@ hi! Visual                                      ctermbg=0
 hi! SignColumn     cterm=NONE      ctermfg=NONE ctermbg=NONE
 hi! EndOfBuffer    cterm=NONE      ctermfg=0    ctermbg=NONE
 hi! ColorColumn    cterm=NONE      ctermfg=3    ctermbg=NONE
-hi! clear StatusLine
-hi! StatusLine                                  ctermbg=8
-hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0
 hi! Folded         cterm=NONE      ctermfg=8    ctermbg=None
 hi! LineNr         cterm=NONE      ctermfg=8
 hi! CursorLineNr   cterm=NONE      ctermfg=7
 hi! link Conceal          LineNr
 hi! link VertSplit        LineNr
-hi! link StatusLineTerm   StatusLine
-hi! link StatusLineTermNC StatusLineNC
 hi! link FoldColumn       EndOfBuffer
 hi! clear CursorLine
 
@@ -173,6 +168,8 @@ hi! ALEVirtualTextWarning cterm=NONE ctermfg=3  ctermbg=NONE
 hi! ALEVirtualTextInfo    cterm=NONE ctermfg=8  ctermbg=NONE
 hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo
 hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
+"hi! link ALEErrorLine    Normal
+"hi! link ALEWarningLine  Normal
 
 " copilot
 "hi! link CopilotSuggestion NonText
@@ -182,3 +179,15 @@ hi! link CopilotSeparatorLine NonText
 hi! link CopilotSeparatorIcon Normal
 hi! link CopilotPrompt NonText
 "hi! link CopilotWaiting Comment
+
+" statusline
+hi! clear StatusLine
+hi! clear StatusLineNC
+hi! SLGitInfo      cterm=NONE      ctermfg=0    ctermbg=7
+hi! SLFileInfo     cterm=NONE                   ctermbg=8
+hi! SLFilePath     cterm=NONE      ctermfg=7    ctermbg=0
+hi! SLFileName     cterm=bold                   ctermbg=0
+hi! StatusLine                                  ctermbg=0
+hi! StatusLineNC   cterm=NONE      ctermfg=7    ctermbg=0
+hi! link StatusLineTerm   StatusLine
+hi! link StatusLineTermNC StatusLineNC
