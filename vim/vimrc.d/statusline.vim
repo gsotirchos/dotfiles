@@ -63,6 +63,7 @@ endfunction
 
 " Function to actually fetch all Git info for the current file
 function! s:UpdateGitInfoCache()
+    " TODO: silence
     let git_ps1_string = trim(system('source ~/.dotfiles/etc/set_git_ps1.sh && cd ' . b:full_parent_path_cached . ' && GIT_PS1_SHOWCOLORHINTS= __git_ps1 2> /dev/null'))
     if v:shell_error == 0
         let b:git_info_cached = slice(substitute(git_ps1_string, ' ', '', ''), 1, -1)
@@ -96,8 +97,7 @@ function! s:UnsetColors()
     let b:SLGitInfo = '%#SLGitInfoNC#'
 endfunction
 
-" Autocommand to update the Git info cache after saving the file
-augroup GitInfoStatus
+augroup statusline
     autocmd!
     autocmd! BufWrite *
     \   call s:UpdateParentPathCache()
