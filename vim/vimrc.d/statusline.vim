@@ -104,10 +104,10 @@ augroup GitInfoStatus
     \|  call s:UpdateGitInfoCache()
     autocmd! BufEnter,BufWinEnter,FocusGained *
     \   call s:SetColors()
-    \|  set statusline=%{%MyStatusline()%}
+    \|  setlocal statusline=%{%MyStatusline()%}
     autocmd! BufLeave,BufWinLeave,FocusLost *
     \   call s:UnsetColors()
-    \|  set statusline=%{%MyStatusline()%}
+    \|  setlocal statusline=%{%MyStatusline()%}
 augroup END
 
 " Main statusline function
