@@ -15,11 +15,11 @@ endfunction
 " Function to get the left-hand side content for regular editor windows
 function! s:GetRegularEditorLeftSide()
     let filetype_field = '%( %{&filetype} %)'
+    if !exists('b:parent_path_cached')
+        call s:UpdateParentPathCache()
+    endif
     if !exists('b:git_info_cached')
         call s:UpdateGitInfoCache()
-    endif
-    if !exists('b:parent_path_cache')
-        call s:UpdateParentPathCache()
     endif
     let git_info_field =  '%( %{b:git_info_cached} %)'
     let parent_path_field = s:GetParentDirectoryField()
@@ -38,7 +38,7 @@ function! s:GetParentDirectoryField()
     endif
 
     let path_field_length = s:CalculatePathFieldLength(filetype_field_length, git_info_field_length, half_name_length)
-    let parent_path_field = '%<%-' . path_field_length . '( %{b:parent_path_cache}%)'
+    let parent_path_field = '%<%-' . path_field_length . '( %{b:parent_path_cached}%)'
     return parent_path_field
 endfunction
 
@@ -54,9 +54,8 @@ endfunction
 
 " Function to actually fetch all Git info for the current file
 function! s:UpdateGitInfoCache()
-    " TODO: make it work for different directories
     " TODO: trim parens
-    let b:git_info_cached = trim(system('__git_ps1 2> /dev/null'))
+    let b:git_info_cached = trim(system(' cd ' . b:full_parent_path_cached . ' && __git_ps1 2> /dev/null'))
     if v:shell_error == 1
         let b:git_info_cached = '(git error)'
     endif
@@ -65,9 +64,11 @@ endfunction
 " Function to store the current file's parent path
 function! s:UpdateParentPathCache()
     if (&filetype == 'help')
-        let b:parent_path_cache = ''
+        let b:parent_path_cached = ''
+        let b:full_parent_path_cached = ''
     else
-        let b:parent_path_cache = substitute(expand('%:p:h'), expand('~'), '~', '') . '/'
+        let b:parent_path_cached = substitute(expand('%:p:h'), expand('~'), '~', '') . '/'
+        let b:full_parent_path_cached = resolve(expand('%:p:h'))
     endif
 endfunction
 
