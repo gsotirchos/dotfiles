@@ -53,6 +53,9 @@ function! IndentWithA()
 endfunction
 nnoremap <expr> a IndentWithA()
 
+" Search :help for word under cursor
+nnoremap <silent> <leader>h :help <C-R><C-W><Return>
+
 " Case-insensitive searching (with '\c')
 noremap <silent> / :echo '/'<Return>/\c
 noremap <silent> ? :echo '?'<Return>?\c
@@ -142,9 +145,6 @@ map <F10> :echo
 \   'lo<' . synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name') . '>'
 \   <Return>
 
-" Disable Ctrl+z
-nnoremap <C-z> <Nop>
-
 " Shift+Tab is Ctrl+O in normal mode
 nnoremap <S-Tab> <C-o>
 nnoremap <C-o>   <Nop>
@@ -160,7 +160,8 @@ vnoremap p P
 vnoremap P p
 
 " other mappings
-nnoremap Q <Nop>
+nnoremap <C-z> <Nop>
+nnoremap <C-]> <Nop>
 nnoremap o o<Esc>
 nnoremap O O<Esc>
 nnoremap <leader>F :ALEFix<Return>
