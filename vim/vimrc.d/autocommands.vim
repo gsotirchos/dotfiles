@@ -29,6 +29,7 @@ augroup vimrc
 
     autocmd BufWinEnter,BufRead,TextChanged,TextChangedI,VimResized *
     \   let b:numberwidth = 1 + float2nr(ceil(log10(line("$") + 1)))
+    \|  let b:gutterwidth = exists('b:gutterwidth') ? b:gutterwidth : 0
     \|  let &textwidth = min([maxwinwidth, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
     \|  let &breakindentopt = "shift:" . (&ts-1)
     \|  let &sidescrolloff = winwidth('%') / 2
@@ -46,8 +47,8 @@ augroup vimrc
     \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
     \|      runtime after/syntax/indent_guides.vim
-    \|      let b:easytags_auto_update = 1
     \|  endif
+    " \|      let b:easytags_auto_update = 1
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested
@@ -68,9 +69,10 @@ augroup vimrc
     autocmd FileType help,qf
     \   set nospell
 
-    " always convert to utf-8
     autocmd BufWinEnter,BufRead,BufWritePre ?*
     \   silent! set fileencoding=utf-8
+    \ | let b:easytags_file = $HOME . '/.vim/tags/' . substitute(slice(expand('%:p'), 1), '/', '.', 'g') . '.tags'
+    \ | let &tags = b:easytags_file
 
     " treat certain extensions as XML
     autocmd BufWinEnter,BufRead,BufWritePre
