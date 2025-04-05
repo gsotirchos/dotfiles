@@ -164,7 +164,7 @@ main() {
         local work_dir=" in ${Bold}${Blue}\w${Reset}"
 
         # get prompt sign and nest level
-        local prompt_lvl="${Black}\$(__format_nest_level \${SHLVL})${Reset}"
+        local prompt_lvl="${IBlack}\$(__format_nest_level \${SHLVL})${Reset}"
         local prompt_sign="${Bold}${White}\$${Reset}${prompt_lvl} "
 
         # get the singularity status

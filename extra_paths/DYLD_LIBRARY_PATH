@@ -1,4 +1,4 @@
-#${HOMEBREW_PREFIX}/lib  #⚠️  (messes with conda/mamba)
+#${HOMEBREW_PREFIX}/lib  #(messes_with_conda/mamba)⚠️
 ${HOMEBREW_PREFIX}/opt/libomp/lib
 ${HOMEBREW_PREFIX}/opt/curl/lib
 ${HOMEBREW_PREFIX}/opt/llvm/lib
