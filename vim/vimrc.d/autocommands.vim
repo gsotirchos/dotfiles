@@ -92,10 +92,11 @@ augroup vimrc
     \   *.yml,*.rviz,*.env
     \   set ft=yaml
 
-    " treat .def and .sh files as bash files
-    autocmd BufWinEnter,BufRead,BufWritePre
-    \   *.def,*.bash,*.sh
-    \   set ft=bash
+    " highlight .def and .sh files as bash files
+    autocmd FileType def
+    \   set syn=bash
+    autocmd FileType sh
+    \   set syn=bash
 
     " treat .m files as Matlab files
     autocmd BufWinEnter,BufRead,BufWritePre
