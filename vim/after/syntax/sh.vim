@@ -2,6 +2,7 @@ syn clear bashSpecialVariables
 syn clear shSpecialDQ
 
 hi! link shVariable     Function
+hi! link shFunctionTag  Function
 hi! link shDerefVar     shVariable
 hi! link shDerefSimple  shDerefVar
 hi! link shDerefDelim   shDoubleQuote
