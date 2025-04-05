@@ -60,7 +60,7 @@ augroup vimrc
     "autocmd FocusLost * syntax off
 
     " autosave named files
-    autocmd CursorHold,FocusGained ?* nested
+    autocmd CursorHold,FocusGained,FocusLost ?* nested
     \   if empty(&buftype) && &modified
     \|      update
     \|  endif
