@@ -28,15 +28,15 @@ augroup vimrc
     \|  call SetSignColumn(@%, &modifiable)
 
     autocmd BufWinEnter,BufRead,TextChanged,TextChangedI,VimResized *
-    \   let b:numberwidth = 1 + float2nr(ceil(log10(line("$") + 1)))
+    \   let b:numberwidth = 1 + float2nr(ceil(log10(line('$') + 1)))
     \|  let b:gutterwidth = exists('b:gutterwidth') ? b:gutterwidth : 0
     \|  let &textwidth = min([maxwinwidth, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
-    \|  let &breakindentopt = "shift:" . (&ts-1)
+    \|  let &breakindentopt = 'shift:' . (&ts-1)
     \|  let &sidescrolloff = winwidth('%') / 2
 
     " enable syntax
     autocmd Colorscheme *
-    \   if !exists("g:syntax_on")
+    \   if !exists('g:syntax_on')
     \|      syntax on
     \|  endif
     \|  syntax enable
@@ -52,7 +52,7 @@ augroup vimrc
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested
-    \   if !exists("g:syntax_on")
+    \   if !exists('g:syntax_on')
     \|      colorscheme sunyata
     \|  endif
 
@@ -70,9 +70,9 @@ augroup vimrc
     \   set nospell
 
     autocmd BufWinEnter,BufRead,BufWritePre ?*
-    \   silent! set fileencoding=utf-8
+    \   silent! let &fileencoding = 'utf-8'
     \ | let b:easytags_file = $HOME . '/.vim/tags/' . substitute(slice(expand('%:p'), 1), '/', '.', 'g') . '.tags'
-    \ | let &tags = b:easytags_file
+    \|  let &tags = b:easytags_file
 
     " treat certain extensions as XML
     autocmd BufWinEnter,BufRead,BufWritePre

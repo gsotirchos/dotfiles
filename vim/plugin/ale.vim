@@ -13,6 +13,7 @@ let g:ale_virtualtext_single = 1
 "let g:ale_virtualtext_prefix = '〈%linter%〉%type%: '
 let g:ale_virtualtext_prefix = ' ◀︎ '
 
+let g:ale_linter_aliases = {'bash': 'sh'}
 let g:ale_linters = {
 \   'cpp': ['clangd', 'cc', 'clangtidy', 'cppcheck'],
 \   'python': ['pylsp'],

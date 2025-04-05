@@ -171,7 +171,7 @@ main() {
         local singularity_status="\$(__get_singularity_status)"
 
         # get git info
-        local git_info="\$(__git_ps1)"
+        local git_info="\$(git rev-parse --git-dir &> /dev/null && __git_ps1)"
 
         # get conda level and environment
         local conda_env="\$(__get_conda_env)"

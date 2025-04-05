@@ -4,7 +4,7 @@ let s:HALF_NO_NAME_LENGTH = len('[No Name]') / 2
 " Function to get the right-hand side content (line and column info)
 function! s:GetRightSideContent()
     let lines_field = '%' . (b:numberwidth + 0) . '(%l%)/%-' . (b:numberwidth + 0) . '(%LL%)'
-    let columns_field = '%4(%c%)/%-5(' . len(getline(".")) . 'C%)'
+    let columns_field = '%4(%c%)/%-5(' . len(getline('.')) . 'C%)'
     return '%=' . b:SLFileInfo . lines_field . columns_field . '%*'
 endfunction
 
@@ -37,9 +37,9 @@ endfunction
 
 " Function to get parent directory information (path and its field)
 function! s:GetParentDirectoryField()
-    let filetype_field_length = empty(&filetype) ? 0 : len(" " . &filetype . " ")
-    let git_info_field_length = empty(b:git_info_cached) ? 0 : len(" " . b:git_info_cached . " ")
-    let half_name_length = max([1, float2nr(floor(len(expand("%:~:t")) / 2.0))])
+    let filetype_field_length = empty(&filetype) ? 0 : len(' ' . &filetype . ' ')
+    let git_info_field_length = empty(b:git_info_cached) ? 0 : len(' ' . b:git_info_cached . ' ')
+    let half_name_length = max([1, float2nr(floor(len(expand('%:~:t')) / 2.0))])
     if (&filetype == '')
         let half_name_length = s:HALF_NO_NAME_LENGTH
     endif
