@@ -48,7 +48,7 @@ let g:ale_cmake_cmake_lint_options = '-c ~/.cmake-format --'
 " Shell
 let g:ale_sh_shellcheck_options = '--shell=bash'
 let g:ale_sh_shfmt_options = '-ln=bash -i ' . &ts . ' -ci -bn -sr'
-let g:ale_sh_bashate_options = "--ignore E003,E006,E042"
+let g:ale_sh_bashate_options = "--ignore E003,E005,E006,E042"
 
 " C++
 let g:ale_cpp_clangd_options = '
