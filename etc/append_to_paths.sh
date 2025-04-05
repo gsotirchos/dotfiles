@@ -35,10 +35,14 @@ append_paths() {
     # Populate the set with existing paths (for faster lookup)
     IFS=':' read -ra existing_paths <<< "${!global_var_name}"
     for path in "${existing_paths[@]}"; do
-        added_paths["$path"]=1
+        if [[ "${path}" ]]; then
+            #echo "adding existing: $path"
+            added_paths["$path"]=1
+        fi
     done
 
-    local new_path_string="${!global_var_name}"
+    local new_paths_array=()  # array >>> than string!
+    new_paths_array+=("${!global_var_name}")
 
     for path in "${paths_to_add[@]}"; do
         if [[ "${added_paths["$path"]}" ]]; then
@@ -49,13 +53,13 @@ append_paths() {
             continue
         fi
         #echo -e "appended to $global_var_name: $path"
-        filtered_paths+=("$path")
-        new_path_string="$path:$new_path_string"  # TIME: ~200ms !!!
+        new_paths_array+=("$path")
         added_paths["$path"]=1
     done
 
-    export "$global_var_name=$new_path_string"
+    IFS=":" export "$global_var_name=${new_paths_array[*]}"  # 😗👌
 }
 
 main "$@"
 unset main
+unset append_paths
