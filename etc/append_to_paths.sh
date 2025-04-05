@@ -3,6 +3,11 @@
 # the main function appends paths from file contents to $PATH, $LIBRARY_PATH, etc.
 # input argument: the directory containing the files specifying the paths to be appended
 main() {
+    # don't run in subshell
+    if [[ $SHLVL -gt 1 ]]; then
+        return 1
+    fi
+
     local extra_paths_dir
     extra_paths_dir="$(realpath "$1")"
     local -A modified_env_vars

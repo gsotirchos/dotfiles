@@ -38,7 +38,7 @@ main() {
         macos_dotfiles="${HOME}"/.macos-dotfiles
     fi
 
-    # TIME ~300s
+    # TIME ~60ms
     # append extra paths from files to $PATH, $LIBRARY_PATH, etc.
     if [[ -d "${dotfiles}"/extra_paths ]]; then
         source "${macos_dotfiles}"/etc/append_to_paths.sh "${dotfiles}"/extra_paths
@@ -126,7 +126,7 @@ main() {
     #export DISPLAY="${IP}:0"
     #xhost + "${IP}" &> /dev/null
 
-    # TIME ~200ms
+    # TIME ~170ms
     # bash completion
     if [[ -f "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh ]]; then
         source "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh
