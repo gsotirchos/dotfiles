@@ -1,4 +1,3 @@
-# vim: set ft=yaml:
 ${HOMEBREW_PREFIX}/include
 ${HOMEBREW_PREFIX}/opt/openjdk*/include
 ${HOMEBREW_PREFIX}/opt/libomp/include
