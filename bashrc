@@ -38,7 +38,7 @@ main() {
         macos_dotfiles="${HOME}"/.macos-dotfiles
     fi
 
-    # TIME ~0.3s
+    # TIME ~300s
     # append extra paths from files to $PATH, $LIBRARY_PATH, etc.
     if [[ -d "${dotfiles}"/extra_paths ]]; then
         source "${macos_dotfiles}"/etc/append_to_paths.sh "${dotfiles}"/extra_paths
@@ -126,10 +126,10 @@ main() {
     #export DISPLAY="${IP}:0"
     #xhost + "${IP}" &> /dev/null
 
-    # TIME ~0.2s
-    # auto-completion
-    if [[ -f "${dotfiles}"/completion_dirs ]]; then
-        source "${macos_dotfiles}"/etc/source_dirs_list.sh "${dotfiles}"/completion_dirs
+    # TIME ~200ms
+    # bash completion
+    if [[ -f "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh ]]; then
+        source "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh
     fi
 
     # set __git_ps1 function
@@ -137,12 +137,6 @@ main() {
         source "${macos_dotfiles}"/etc/set_git_ps1.sh
     fi
 
-    # bash completion
-    if [[ -f /etc/profile.d/bash_completion.sh ]]; then
-        source /etc/profile.d/bash_completion.sh
-    fi
-
-    # TIME ~0.3s
     # aliases
     if [[ -f ~/.bash_aliases ]]; then
         source ~/.bash_aliases

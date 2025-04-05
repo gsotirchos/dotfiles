@@ -3,7 +3,8 @@ font-size = 14
 font-synthetic-style = false
 adjust-cell-width = -5%
 
-window-padding-x = 24
+window-padding-x = 21
+window-padding-y = 0
 window-step-resize = true
 window-width = 80
 window-height = 24
