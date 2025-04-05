@@ -112,7 +112,7 @@ alias ros_container_sudo="ssh -t qblox-laptop 'sudo singularity shell --writable
 if [[ -f ~/.conda/conda_init.sh ]]; then
     # lazy conda initialization
     conda() {
-        # TIME ~0.5s
+        # TIME ~500ms
         source ~/.conda/conda_init.sh
         conda "$@"
     }
