@@ -27,9 +27,7 @@ function! s:GetRegularEditorLeftSide()
     if !exists('b:parent_path_cached')
         call s:UpdateParentPathCache()
     endif
-    if !exists('b:git_info_cached')
-        let b:git_info_cached = ''
-    endif
+    let b:git_info_cached = exists('b:git_info_cached') ? b:git_info_cached : ''
     let git_info_field =  '%( %{b:git_info_cached} %)'
     let parent_path_field = s:GetParentDirectoryField()
     let file_name_field = '%t%m%a '
@@ -63,7 +61,9 @@ endfunction
 
 " Function to actually fetch all Git info for the current file
 function! s:UpdateGitInfoCache()
-    " TODO: silence
+    if !exists('b:git_info_cached')
+        call s:UpdateParentPathCache()
+    endif
     let git_ps1_string = trim(system('source ~/.dotfiles/etc/set_git_ps1.sh && cd ' . b:full_parent_path_cached . ' && GIT_PS1_SHOWCOLORHINTS= __git_ps1 2> /dev/null'))
     if v:shell_error == 0
         let b:git_info_cached = slice(substitute(git_ps1_string, ' ', '', ''), 1, -1)
@@ -101,13 +101,13 @@ augroup statusline
     autocmd!
     autocmd! BufWrite *
     \   call s:UpdateParentPathCache()
-    \|  call s:UpdateGitInfoCache()
     autocmd! BufEnter,BufWinEnter,FocusGained *
     \   call s:SetColors()
     \|  setlocal statusline=%{%MyStatusline()%}
     autocmd! BufLeave,BufWinLeave,FocusLost *
     \   call s:UnsetColors()
     \|  setlocal statusline=%{%MyStatusline()%}
+    \|  call s:UpdateGitInfoCache()
 augroup END
 
 " Main statusline function
