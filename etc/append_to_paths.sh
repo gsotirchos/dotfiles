@@ -1,50 +1,60 @@
-# function to append paths to an environment variable
-# fist argument: the name of an environment variable
-# second argument: the list of strings-paths to append
-append_paths() {
-    local global_var_name="$1"
-    local current_paths=":${!global_var_name}:"
-    shift
-    local extra_paths=($(eval echo \"$@\"))
-    local appended_paths=":"
-    local merged_paths=""
+#!/usr/bin/env bash
+# shellcheck disable=SC1090,SC1091
 
-    # group, in reverse order, the rest of the arguments-paths that exist
-    for extra_path in "${extra_paths[@]}"; do
-        if [[ -d "${extra_path}" ]]; then
-            #echo "${extra_path}"
-            current_paths="${current_paths//:$extra_path:/:}"
-            appended_paths="${appended_paths//:$extra_path:/:}"
-            appended_paths="${appended_paths}${extra_path}:"
-        fi
-    done
-    unset extra_path
-
-    # clean-up and merge the paths to the environment variable
-    appended_paths="${appended_paths%:}"
-    current_paths="${current_paths#:}"
-    merged_paths="${appended_paths#:}:${current_paths%:}"
-    export "${global_var_name}=${merged_paths%:}"
-}
-
-# the main function to call the append_paths() function for every file in the specified directory
-# input argument: the directory containing text files,
-# each files' contents are appended to the environment variable with the name of the file
+# the main function appends paths from file contents to $PATH, $LIBRARY_PATH, etc.
+# input argument: the directory containing the files specifying the paths to be appended
 main() {
-    local extra_paths_dir="$(realpath "$1")"
+    local extra_paths_dir
+    extra_paths_dir="$(realpath "$1")"
 
     for extra_paths_file in "${extra_paths_dir}"/*; do
-        local global_var_name="$(basename "${extra_paths_file}")"
-        local global_var_name="${global_var_name%%.*}"
-        local extra_paths
-        readarray -t extra_paths < <(envsubst < "${extra_paths_file}")
+        # Only process regular files (the path definition files)
+        if [[ -f "$extra_paths_file" ]]; then
+            local global_var_name
+            global_var_name="$(basename "${extra_paths_file}")"
+            global_var_name="${global_var_name%%.*}"
 
-        #echo -e "\nappending to \$${global_var_name} from ${extra_paths_file}:"
-        append_paths "${global_var_name}" "${extra_paths[@]}"
-        #echo -e "--- ${global_var_name}:\n${!global_var_name}"
+            local extra_paths
+            readarray -t extra_paths < <(envsubst < "${extra_paths_file}")  # expand env vars in paths
+
+            # append paths to global variable
+            append_paths "$global_var_name" "${extra_paths[@]}"
+        fi
     done
-    unset extra_paths_file
+}
+# append paths to global variable
+# input argument 1: the global variable name
+# input argument 2...: the paths to be appended
+append_paths() {
+    local global_var_name="$1"
+    shift
 
+    local paths_to_add=($(eval echo \"$@\"))  # expand widlcards
+    local -A added_paths  # Use an associative array as a set
+
+    # Populate the set with existing paths (for faster lookup)
+    IFS=':' read -ra existing_paths <<< "${!global_var_name}"
+    for path in "${existing_paths[@]}"; do
+        added_paths["$path"]=1
+    done
+
+    local new_path_string="${!global_var_name}"
+
+    for path in "${paths_to_add[@]}"; do
+        if [[ "${added_paths["$path"]}" ]]; then
+            continue
+        fi
+        if [[ "${path:0:1}" == "#" ]]; then
+            #echo "skipped: $path"
+            continue
+        fi
+        #echo -e "appended to $global_var_name: $path"
+        filtered_paths+=("$path")
+        new_path_string="$path:$new_path_string"  # TIME: ~200ms !!!
+        added_paths["$path"]=1
+    done
+
+    export "$global_var_name=$new_path_string"
 }
 
 main "$@"
