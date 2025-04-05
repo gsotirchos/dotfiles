@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC1091
 
 # the main function appends paths from file contents to $PATH, $LIBRARY_PATH, etc.
 # input argument: the directory containing the files specifying the paths to be appended
