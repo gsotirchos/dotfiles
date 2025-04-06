@@ -1,4 +1,4 @@
-# shellcheck disable=SC2139
+# shellcheck disable=SC1090,SC2139
 
 #
 # ~/.bash_aliases
@@ -77,7 +77,7 @@ barrier_client() {
         --name TUD1001405 \
         --enable-crypto \
         --log /var/log/barrier.log \
-        $1:24800
+        "$1":24800
 }
 
 # System

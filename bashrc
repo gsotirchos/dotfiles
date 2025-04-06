@@ -21,26 +21,26 @@ main() {
     esac
 
     # set dotfiles path
-    local dotfiles="$(
-        builtin cd "$(
+    local dotfiles="$( \
+        builtin cd "$( \
             dirname "$(realpath "${BASH_SOURCE[0]}")"
         )" > /dev/null && pwd
     )"
 
-    local macos_dotfiles="${HOME}"/.macos-dotfiles
+    local macos_dotfiles="${HOME}/.macos-dotfiles"
 
     # set macos-dotfiles path
-    if [[ "${dotfiles}" == "${HOME}"/.dotfiles ]]; then
+    if [[ "${dotfiles}" == "${HOME}/.dotfiles" ]]; then
         macos_dotfiles="${dotfiles}"
     else
-        dotfiles="${HOME}"/.dotfiles
-        macos_dotfiles="${HOME}"/.macos-dotfiles
+        dotfiles="${HOME}/.dotfiles"
+        macos_dotfiles="${HOME}/.macos-dotfiles"
     fi
 
     # TIME ~60ms
     # append extra paths from files to $PATH, $LIBRARY_PATH, etc.
     if [[ -d "${dotfiles}"/extra_paths ]]; then
-        source "${macos_dotfiles}"/etc/append_to_paths.sh "${dotfiles}"/extra_paths
+        source "${macos_dotfiles}/etc/append_to_paths.sh" "${dotfiles}/extra_paths"
     fi
 
     ## prepare dynamic libraries path
@@ -61,9 +61,11 @@ main() {
     export CC="$(command -v gcc-7 || command -v clang)"
     export CXX="$(command -v g++-7 || command -v clang++)"
     export CXX_STD="c++17"
-    export CMAKE_GENERATOR="$(command -v ninja &> /dev/null \
-        && echo "Ninja" \
-        || echo "")"
+    export CMAKE_GENERATOR="$( \
+        command -v ninja &> /dev/null \
+            && echo "Ninja" \
+            || echo "" \
+    )"
     export CMAKE_EXPORT_COMPILE_COMMANDS=1
 
     # append to the history file, don't overwrite it
@@ -88,8 +90,6 @@ main() {
     complete -f -o nospace cd  # improve cd completion
     shopt -s direxpand  # expand variables in path completion
     [[ $- == *i* ]] && stty -ixon  # enable Ctrl+S for forward search
-
-    export TUD_PC="145.94.60.174"
 
     # check if this is a ssh session
     if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
@@ -128,12 +128,12 @@ main() {
     # TIME ~170ms
     # bash completion
     if [[ -f "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh ]]; then
-        source "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh
+        source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
     fi
 
     # set __git_ps1 function
     if [[ -f "${macos_dotfiles}"/etc/set_git_ps1.sh ]]; then
-        source "${macos_dotfiles}"/etc/set_git_ps1.sh
+        source "${macos_dotfiles}/etc/set_git_ps1.sh"
     fi
 
     # aliases
@@ -156,13 +156,13 @@ main() {
     # ROS
     if [[ -f /opt/ros/noetic/setup.bash ]]; then
         # source system's ROS environment
-        source /opt/ros/noetic/setup.bash
+        source "/opt/ros/noetic/setup.bash"
     fi
 
     # enable iTerm2 shell integration on macOS
     if [[ "$TERM_PROGRAM" = "iTerm.app" ]]; then
         if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
-            curl -L https://iterm2.com/shell_integration/bash \
+            curl -L "https://iterm2.com/shell_integration/bash" \
                 -o ~/.iterm2_shell_integration.bash
         fi
 

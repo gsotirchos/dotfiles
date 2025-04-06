@@ -30,9 +30,11 @@ noremap  <silent> <Space> za
 " Movement in the autocompletion menu
 inoremap <expr> <silent> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
 inoremap <expr> <silent> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
-inoremap <expr> <Return> pumvisible() ? "\<C-y>" : "\<C-g>u\<Return>"
+inoremap <expr> <silent> <Return> pumvisible() ? "\<C-y>" : "\<C-g>u\<Return>"
+inoremap <expr> <silent> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-Tab>"
+inoremap <expr> <silent> <C-z> pumvisible() ? "\<C-x>\<C-z>" : "\<Plug>(copilot-dismiss)"
+inoremap <expr> <silent> <C-l> empty(copilot#GetDisplayedSuggestion().text) ? "\<Plug>(copilot-suggest)" : "\<Plug>(copilot-next)"
 inoremap <C-n> <C-x><C-u>
-inoremap <C-f> <C-x><C-f>
 
 " Smart indenting when entering insert mode on empty lines
 function! IndentWithI()

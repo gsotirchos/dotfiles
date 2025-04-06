@@ -21,11 +21,11 @@ Plugin 'dense-analysis/ale'
 Plugin 'github/copilot.vim'
 "Plugin 'DanBradbury/copilot-chat.vim'  " TODO
 Plugin 'gsotirchos/copilot-chat.vim'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'tpope/vim-rsi'
+"Plugin 'airblade/vim-gitgutter'  " TODO
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-easytags'
-"Plugin 'airblade/vim-gitgutter'  " TODO
-Plugin 'tpope/vim-rsi'
-Plugin 'scrooloose/nerdcommenter'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'bfrg/vim-cpp-modern'
 Plugin 'vim-python/python-syntax'
@@ -40,7 +40,6 @@ Plugin 'lervag/vimtex'
 "Plugin 'peterhoeg/vim-qml'
 "Plugin 'PProvost/vim-ps1'
 "Plugin 'yuezk/vim-js'
-"Plugin 'rizzatti/dash.vim'
 
 "" plugins end here
 call vundle#end()  " required

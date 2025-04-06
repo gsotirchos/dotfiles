@@ -47,8 +47,8 @@ augroup vimrc
     \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
     \|      runtime after/syntax/indent_guides.vim
+    \|      HighlightTags
     \|  endif
-    " \|      let b:easytags_auto_update = 1
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested
@@ -92,12 +92,6 @@ augroup vimrc
     \   *.yml,*.rviz,*.env
     \   set ft=yaml
 
-    " highlight .def and .sh files as bash files
-    autocmd FileType def
-    \   set syn=bash
-    autocmd FileType sh
-    \   set syn=bash
-
     " treat .m files as Matlab files
     autocmd BufWinEnter,BufRead,BufWritePre
     \   *.m
@@ -108,6 +102,12 @@ augroup vimrc
     \   CMakeLists.txt,*.cmake
     \   set complete=.,k
     \|  set dictionary=$HOME/.vim/words/cmake.txt
+
+    " highlight .def and .sh files as bash files
+    autocmd FileType def
+    \   set syn=bash
+    autocmd FileType sh
+    \   set syn=bash
 
     " treat C files as C++ files
     autocmd FileType c
