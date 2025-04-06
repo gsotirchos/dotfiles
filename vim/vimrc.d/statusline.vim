@@ -64,7 +64,7 @@ function! s:UpdateGitInfoCache()
     if !exists('b:git_info_cached')
         call s:UpdateParentPathCache()
     endif
-    let git_ps1_string = trim(system('source ~/.dotfiles/etc/set_git_ps1.sh && cd ' . b:full_parent_path_cached . ' && GIT_PS1_SHOWCOLORHINTS= __git_ps1 2> /dev/null'))
+    let git_ps1_string = trim(system('IN_VIM=true source ~/.dotfiles/etc/set_git_ps1.sh && cd ' . b:full_parent_path_cached . ' && __git_ps1 2> /dev/null'))
     if v:shell_error == 0
         let b:git_info_cached = slice(substitute(git_ps1_string, ' ', '', ''), 1, -1)
     else
@@ -101,13 +101,13 @@ augroup statusline
     autocmd!
     autocmd! BufWrite *
     \   call s:UpdateParentPathCache()
+    \|  call s:UpdateGitInfoCache()
     autocmd! BufEnter,BufWinEnter,FocusGained *
     \   call s:SetColors()
     \|  setlocal statusline=%{%MyStatusline()%}
-    autocmd! BufLeave,BufWinLeave,FocusLost *
+    autocmd! BufLeave,FocusLost *
     \   call s:UnsetColors()
     \|  setlocal statusline=%{%MyStatusline()%}
-    \|  call s:UpdateGitInfoCache()
 augroup END
 
 " Main statusline function

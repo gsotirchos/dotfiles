@@ -9,9 +9,15 @@ if ! command -v "__git_ps1" &> /dev/null; then
 fi
 
 # export git prompt options
-export GIT_PS1_SHOWCOLORHINTS=true
+export GIT_PS1_SHOWUPSTREAM=auto
 export GIT_PS1_SHOWDIRTYSTATE=true
 export GIT_PS1_SHOWSTASHSTATE=true
-export GIT_PS1_DESCRIBE_STYLE=contains
-export GIT_PS1_SHOWUNTRACKEDFILES=true
-export GIT_PS1_SHOWUPSTREAM=auto
+if [[ "${IN_VIM}" != true ]]; then
+    export GIT_PS1_SHOWCOLORHINTS=true
+    export GIT_PS1_DESCRIBE_STYLE=contains
+    export GIT_PS1_SHOWUNTRACKEDFILES=true
+else
+    export GIT_PS1_SHOWCOLORHINTS=
+    export GIT_PS1_DESCRIBE_STYLE=
+    export GIT_PS1_SHOWUNTRACKEDFILES=
+fi
