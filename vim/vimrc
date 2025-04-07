@@ -17,7 +17,8 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 "" plugins start here
-Plugin 'dense-analysis/ale'
+Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+"Plugin 'dense-analysis/ale'
 Plugin 'github/copilot.vim'
 "Plugin 'DanBradbury/copilot-chat.vim'  " TODO
 Plugin 'gsotirchos/copilot-chat.vim'

@@ -1,5 +1,7 @@
 let s:MAX_PATH_LENGTH = 50
 let s:HALF_NO_NAME_LENGTH = len('[No Name]') / 2
+let s:GIT_INFO_UPDATE_TIMEOUT = 5
+let s:times_left_to_update_git_info = 0
 
 " Function to get the right-hand side content (line and column info)
 function! s:GetRightSideContent()
@@ -99,15 +101,20 @@ endfunction
 
 augroup statusline
     autocmd!
-    autocmd! BufWrite *
+    autocmd! BufReadPost,BufWrite *
     \   call s:UpdateParentPathCache()
-    \|  call s:UpdateGitInfoCache()
+    \|  let s:times_left_to_update_git_info -= 1
+    \|  if s:times_left_to_update_git_info <= 0
+    \|      call s:UpdateGitInfoCache()
+    \|      let s:times_left_to_update_git_info = s:GIT_INFO_UPDATE_TIMEOUT
+    \|  endif
     autocmd! BufEnter,BufWinEnter,FocusGained *
     \   call s:SetColors()
     \|  setlocal statusline=%{%MyStatusline()%}
     autocmd! BufLeave,FocusLost *
     \   call s:UnsetColors()
     \|  setlocal statusline=%{%MyStatusline()%}
+    \|  call s:UpdateGitInfoCache()
 augroup END
 
 " Main statusline function
