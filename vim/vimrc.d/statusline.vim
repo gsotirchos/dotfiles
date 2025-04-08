@@ -5,8 +5,8 @@ let s:times_left_to_update_git_info = 0
 
 " Function to get the right-hand side content (line and column info)
 function! s:GetRightSideContent()
-    let lines_field = '%' . (b:numberwidth + 0) . '(%l%)/%-' . (b:numberwidth + 0) . '(%LL%)'
-    let columns_field = '%4(%c%)/%-5(' . len(getline('.')) . 'C%)'
+    let lines_field = ' %' . (b:numberwidth + 0) . '(L%l%)/%-' . (b:numberwidth + 0) . '(%L%)'
+    let columns_field = '%4(C%c%)/%-4(' . len(getline('.')) . '%)'
     return '%=' . b:SLFileInfo . lines_field . columns_field . '%*'
 endfunction
 

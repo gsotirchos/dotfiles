@@ -1,7 +1,8 @@
 " comment marks
 syntax match Todo "TODO" containedin=.*Comment.*,pythonString contained display
-syntax match Done "DONE\(\W.*\)\@=" containedin=.*Comment.* contained display
-syntax match MyNote "\(NOTE:\s\)\@<=.*" containedin=.*Comment.* contained display
+syntax match Done "DONE" containedin=.*Comment.* contained display
+syntax match MyNote "NOTE" containedin=.*Comment.* contained display
+"syntax match MyNote "\(NOTE:\s\)\@<=.*" containedin=.*Comment.* contained display
 syntax match MyUrl "http.:\/\/\S*" containedin=.*Comment.* contained display
 
 " highlight %Tag(...)% in comments
