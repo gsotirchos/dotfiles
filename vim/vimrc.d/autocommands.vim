@@ -47,7 +47,9 @@ augroup vimrc
     \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
     \|      runtime after/syntax/indent_guides.vim
-    \|      HighlightTags
+    \|      if exists(':HighlightTags')
+    \|          HighlightTags
+    \|      endif
     \|  endif
 
     " re-enable colorscheme (and syntax) when gaining back focus

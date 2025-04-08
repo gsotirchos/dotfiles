@@ -10,3 +10,5 @@ function! MyFoldText()
     let fold_right = substitute(getline(v:foldend), '^\%(.\{-}\s*\)\=\(\S.\{,25}\)$', '\1', 'g')
     return (fold_left . ' ... ' . fold_right . '  (' . (v:foldend - v:foldstart + 1) . ' lines)')
 endfunction
+
+set foldtext=MyFoldText()
