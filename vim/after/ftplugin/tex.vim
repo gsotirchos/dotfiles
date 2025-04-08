@@ -1,4 +1,4 @@
-source ${HOME}/.vim/after/ftplugin/markdown.vim
+runtime after/ftplugin/markdown.vim
 set colorcolumn=+2
 set complete-=i  " don't scan included files
 

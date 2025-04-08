@@ -1,1 +1,1 @@
-source ${HOME}/.vim/after/ftplugin/tex.vim
+runtime after/ftplugin/tex.vim

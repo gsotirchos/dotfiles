@@ -67,10 +67,6 @@ augroup vimrc
     \|      update
     \|  endif
 
-    " don't spell-check help or QuickFix/LocList buffers
-    autocmd FileType help,qf
-    \   set nospell
-
     autocmd BufWinEnter,BufRead,BufWritePre ?*
     \   silent! let &fileencoding = 'utf-8'
     \ | let b:easytags_file = $HOME . '/.vim/tags/' . substitute(slice(expand('%:p'), 1), '/', '.', 'g') . '.tags'
@@ -100,20 +96,21 @@ augroup vimrc
     \   set ft=matlab
 
     " use custom CMake autocompletion
-    autocmd BufWinEnter,BufRead,BufWritePre
-    \   CMakeLists.txt,*.cmake
+    autocmd Filetype cmake
     \   set complete=.,k
     \|  set dictionary=$HOME/.vim/words/cmake.txt
 
-    " highlight .def and .sh files as bash files
-    autocmd FileType def
-    \   set syn=bash
-    autocmd FileType sh
+    " don't spell-check help or QuickFix/LocList buffers
+    autocmd FileType help,qf
+    \   set nospell
+
+    " use bash highlighting for def and sh filetypes
+    autocmd FileType def,sh
     \   set syn=bash
 
-    " treat C files as C++ files
+    " use C++ highlighting for C files
     autocmd FileType c
-    \   set ft=cpp
+    \   set syn=cpp
 
     " close loclists with buffer
     autocmd QuitPre *
