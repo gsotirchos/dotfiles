@@ -18,7 +18,7 @@ Plugin 'xolox/vim-easytags'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'bfrg/vim-cpp-modern'
 Plugin 'vim-python/python-syntax'
-Plugin 'lervag/vimtex'
-"Plugin 'preservim/vim-markdown'
+Plugin 'lervag/vimtex'  " TODO: coc-vimtex?
+"Plugin 'preservim/vim-markdown'  " TODO: coc-markdownlint?
 "Plugin 'vim-scripts/DoxygenToolkit.vim'
 call vundle#end()
