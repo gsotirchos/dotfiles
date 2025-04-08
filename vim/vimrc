@@ -2,53 +2,12 @@
 " ~/.vim/vimrc
 "
 
-" settings before loading plugins
-let g:polyglot_disabled = ['autoindent']
-
-"""""""""""""""""""""""""""""""""""""""""""
-set nocompatible  " be iMproved, required
+set nocompatible  " be IMproved, required
 filetype off  " required
-
-" set the runtime path to include Vundle and initialize
-set rtp+=$HOME/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-
-"" plugins start here
-Plugin 'neoclide/coc.nvim', {'branch': 'release'}
-"Plugin 'dense-analysis/ale'
-Plugin 'github/copilot.vim'
-"Plugin 'DanBradbury/copilot-chat.vim'  " TODO
-Plugin 'gsotirchos/copilot-chat.vim'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'tpope/vim-rsi'
-"Plugin 'airblade/vim-gitgutter'  " TODO
-Plugin 'xolox/vim-misc'
-Plugin 'xolox/vim-easytags'
-Plugin 'sheerun/vim-polyglot'
-Plugin 'bfrg/vim-cpp-modern'
-Plugin 'vim-python/python-syntax'
-Plugin 'lervag/vimtex'
-"Plugin 'preservim/vim-markdown'
-"Plugin 'vim-scripts/DoxygenToolkit.vim'
-"Plugin 'adimit/prolog.vim'
-"Plugin 'PontusPersson/pddl.vim'
-"Plugin 'neovimhaskell/haskell-vim'
-"Plugin 'JuliaEditorSupport/julia-vim'
-"Plugin 'keith/swift.vim'
-"Plugin 'peterhoeg/vim-qml'
-"Plugin 'PProvost/vim-ps1'
-"Plugin 'yuezk/vim-js'
-
-"" plugins end here
-call vundle#end()  " required
-"""""""""""""""""""""""""""""""""""""""""""
+runtime vimrc.d/plugins.vim
+filetype plugin indent on
 
 runtime $VIMRUNTIME/defaults.vim
-
-filetype plugin indent on
 
 " saving
 set updatetime=400  " autoupdate delay
@@ -63,11 +22,12 @@ set autoread  " auto-read modified open files
 set fileencodings=ucs-bom,utf-8,cp1253,default,latin1  " tried on open
 set encoding=utf-8  " encoding used for displaying inside vim
 set fileformats=unix,mac,dos  " format order to be tried on a new buffer
+set nrformats=bin,hex,blank  " number formats to be checked for
 
 " appearance
 colorscheme sunyata
-set concealcursor=c
-set conceallevel=1
+set concealcursor=c  " only conceal command mode
+set conceallevel=1  " only conceal using 1 character
 "set number  " show line numbers
 set numberwidth=1  " smallest width at start
 "set wrap  " wrap long lines
@@ -81,7 +41,8 @@ let &listchars = 'tab:|->,trail:·,conceal:◌,extends:…,precedes:…,nbsp:_'
 set laststatus=2  " always show statusline
 
 " behavior
-set timeoutlen=1500  " set leader timeout to 1.5s
+set timeoutlen=1500  " leader timeout
+set ttimeoutlen=50  " key sequence timeout
 set maxmempattern=100000  " set maximum memory for pattern matching to 100Mb
 "set regexpengine=1  " use old regex engine (WARNING: it's laggy)
 set mouse=a  " enable mouse
@@ -96,7 +57,7 @@ set softtabstop=4  " ├ 4 spaces per Tab, fold every 4
 set shiftwidth=4   " ┘
 set nojoinspaces  " don't insert 2 spaces after '.', '?' or '!'
 set nofixendofline  " preserve EOL and the end of file
-set backspace=2  " allow backspace in insert mode
+set backspace=indent,eol,start  " allow backspace in insert mode
 set scrolloff=3  " lines to scoll before the reaching last
 set sidescrolloff=5  " columnts to sroll before reaching the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
@@ -104,8 +65,12 @@ set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 set formatoptions=1jnpr  " no automatic line breaking
 set breakindent  " wrap preserving indentation
 set display=lastline  " show last wrapped line in window
+set smoothscroll  " scroll screen lines (when wrap is on)
 set shell=$SHELL\ -l  " login shell for 'term'
-set shellcmdflag=-l\ -c  " login shell for '!'
+set shellcmdflag=-c  " login shell for '!'
+set nolangremap  " disable a legacy behavior that can break plugin maps
+let &clipboard = has('unnamedplus') ? 'unnamed,unnamedplus' : 'unnamed'
+
 
 " folding
 set foldenable  " enable folding
@@ -114,8 +79,6 @@ set foldignore=  " don't ignore any lines
 set foldlevel=2  " depth of first folding
 set foldnestmax=99  " depth of last folding
 set foldcolumn=0  " hide fold column
-runtime vimrc.d/foldtext.vim  " custom fold text method
-set foldtext=MyFoldText()
 
 " searching
 set smartcase  " case sensitive only if Uppercase
@@ -128,14 +91,15 @@ set complete=t,.,i  " scan tags, curr. buffer, incl. files
 set shortmess=mnrxcoTWF  " minimal message shortening & shut off completion messages
 set belloff+=ctrlg  " silent completion
 set wildmenu  " display completion matches in a status line
-"let g:apc_enable_ft = {'*':1, 'cpp':0}  " auto popup
-"let g:apc_cr_confirm = 1  " return inserts selected
 
-" mappings
-runtime vimrc.d/mappings.vim
+" custom fold text method
+runtime vimrc.d/foldtext.vim
 
 " custom status line (source before autocommands.vim)
 runtime vimrc.d/statusline.vim
 
 " autocommands
 runtime vimrc.d/autocommands.vim
+
+" mappings
+runtime vimrc.d/mappings.vim

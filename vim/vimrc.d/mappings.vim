@@ -16,25 +16,30 @@ noremap  <silent> k       gk
 noremap  <silent> j       gj
 noremap  <silent> <Up>    gk
 noremap  <silent> <Down>  gj
-"inoremap <silent> <Up>    <C-o>gk
-"inoremap <silent> <Down>  <C-o>gj
+inoremap <silent> <Up>    <C-o>gk
+inoremap <silent> <Down>  <C-o>gj
 noremap  <silent> <Home>  g<Home>
 noremap  <silent> <End>   g<End>
 inoremap <silent> <Home>  <C-o>g<Home>
 inoremap <silent> <End>   <C-o>g<End>
+inoremap <silent> <C-u>   <C-g>u<C-u>
+inoremap <silent> <C-w>   <C-g>u<C-w>
 noremap  <silent> 0       g0
 noremap  <silent> ^       g^
 noremap  <silent> $       g$
 noremap  <silent> <Space> za
 
 " Movement in the autocompletion menu
-inoremap <silent> <expr> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
-inoremap <silent> <expr> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
-inoremap <silent> <expr> <Return> pumvisible() ? "\<C-y>" : "\<C-g>u\<Return>"
-inoremap <silent> <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-Tab>"
-inoremap <silent> <expr> <C-z> pumvisible() ? "\<C-x>\<C-z>" : "\<Plug>(copilot-dismiss)"
-inoremap <silent> <expr> <C-l> empty(copilot#GetDisplayedSuggestion().text) ? "\<Plug>(copilot-suggest)" : "\<Plug>(copilot-next)"
-inoremap <C-n> <C-x><C-u>
+"inoremap <silent> <C-n> <C-x><C-u>
+"inoremap <silent> <expr> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
+"inoremap <silent> <expr> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
+"inoremap <silent> <expr> <Return> pumvisible() ? "\<C-y>" : "\<C-g>u\<Return>"
+"inoremap <silent> <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-Tab>"
+"inoremap <silent> <expr> <C-z> pumvisible() ? "\<C-x>\<C-z>" : "\<Plug>(copilot-dismiss)"
+"inoremap <silent> <expr> <C-l>
+"\    empty(copilot#GetDisplayedSuggestion().text) ?
+"\        "\<Plug>(copilot-suggest)" :
+"\        "\<Plug>(copilot-next)"
 
 " Smart indenting when entering insert mode on empty lines
 function! IndentWithI()
@@ -80,6 +85,12 @@ cnoremap <silent> <C-Space> <C-e><C-u>@:<Return>
 
 " Toggle LocList
 function! ToggleLocList()
+    if !exists('s:coc_diagnostics_opened')
+        if exists(':CocDiagnostics')
+            :CocDiagnostics
+            let s:coc_diagnostics_opened = v:true
+        endif
+    endif
     if get(getloclist(0, {'winid': 0}), 'winid', 0)
         "exec 'set laststatus=' . g:laststatus
         lclose
@@ -120,19 +131,17 @@ function! TogglePreview()
             return
         endif
     endfor
-    :ALEDetail
+    if exists(':ALEDetail')
+        :ALEDetail
+        return
+    endif
 endfunction
 nnoremap <silent> <leader>p :call TogglePreview()<Return>
 
 " Show buffers list
 nnoremap <leader>b :buffers<Return>:buffer<SPACE>
 
-" Use OS clipboard and copy-paste shortcuts
-if has('unnamedplus')
-    set clipboard=unnamed,unnamedplus
-else
-    set clipboard=unnamed
-endif
+" Clipboard copying/pasting
 "inoremap <D-v> <Space><ESC>"+gPi<Delete>
 "inoremap <D-v> <C-r>+
 "nnoremap <D-v> "+p
@@ -141,7 +150,7 @@ endif
 "vnoremap <D-c> "+y
 
 " Print highlight group under cursor
-map <F10> :echo
+nnoremap <F10> :echo
 \   'hi<' . synIDattr(synID(line('.'),col('.'),1),'name') . '> ' .
 \   'trans<' . synIDattr(synID(line('.'),col('.'),0),'name') . '> ' .
 \   'lo<' . synIDattr(synIDtrans(synID(line('.'),col('.'),1)),'name') . '>'
@@ -161,14 +170,14 @@ vnoremap <       <Nop>
 vnoremap p P
 vnoremap P p
 
-" other mappings
+" Other mappings
 nnoremap <C-z> <Nop>
 nnoremap <C-]> <Nop>
 nnoremap o o<Esc>
 nnoremap O O<Esc>
-nnoremap <leader>F :ALEFix<Return>
-nnoremap <leader>f :ALEFindReferences -relative<Return>
-nnoremap <leader>d :ALEGoToDefinition<Return>
-nnoremap <leader>t :ALEGoToTypeDefinition<Return>
-nnoremap <leader>i :ALEGoToImplementation<Return>
 nnoremap <leader>Q :close<Return>
+"nnoremap <leader>F :ALEFix<Return>
+"nnoremap <leader>f :ALEFindReferences -relative<Return>
+"nnoremap <leader>d :ALEGoToDefinition<Return>
+"nnoremap <leader>t :ALEGoToTypeDefinition<Return>
+"nnoremap <leader>i :ALEGoToImplementation<Return>

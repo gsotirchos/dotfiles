@@ -1,0 +1,22 @@
+{
+    "diagnostic.virtualText": true,
+    // "diagnostic.infoSign": "▐",
+    // "diagnostic.hintSign": "▐",
+    // "diagnostic.errorSign": "▐",
+    // "diagnostic.warningSign": "▐",
+    // "diagnostic.floatConfig": {...}
+    "diagnostic.highlightLimit": 0,
+    "diagnostic.virtualTextCurrentLineOnly": false,
+    "diagnostic.virtualTextLineSeparator": "|",
+    "diagnostic.virtualTextPrefix": " ⏴ ",
+    "diagnostic.messageDelay": 400,
+
+    "pyright.inlayHints.functionReturnTypes": false,
+    "pyright.inlayHints.variableTypes": false,
+    "pyright.inlayHints.parameterTypes": false,
+
+    // TODO: clangd, cc, clang-tidy, cppcheck
+    // TODO: shellcheck, bashate
+    // TODO: cmake-format?
+    // TODO: disable ctags for python
+}
