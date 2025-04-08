@@ -42,6 +42,8 @@ noremap  <silent> <Space> za
 "\        "\<Plug>(copilot-next)"
 
 " Smart indenting when entering insert mode on empty lines
+nnoremap <expr> i IndentWithI()
+nnoremap <expr> a IndentWithA()
 function! IndentWithI()
     if len(getline('.')) == 0
         return  "\"_cc"
@@ -49,8 +51,6 @@ function! IndentWithI()
         return  "i"
     endif
 endfunction
-nnoremap <expr> i IndentWithI()
-
 function! IndentWithA()
     if len(getline('.')) == 0
         return  "\"_cc"
@@ -58,57 +58,65 @@ function! IndentWithA()
         return  "a"
     endif
 endfunction
-nnoremap <expr> a IndentWithA()
 
-" Search :help for word under cursor
-nnoremap <silent> <leader>h :help <C-R><C-W><Return>
+" Search documentation for the word under cursor
+"nnoremap <silent> <leader>h :help <C-R><C-W><Return>
+nnoremap <silent> <leader>h :call ShowDocumentation()<Return>
+function! ShowDocumentation()
+    if CocAction('hasProvider', 'hover')
+        call CocActionAsync('doHover')
+    else
+        call feedkeys('K', 'in')
+    endif
+endfunction
 
 " Case-insensitive searching (with '\c')
 noremap <silent> / :echo '/'<Return>/\c
 noremap <silent> ? :echo '?'<Return>?\c
 
-" Replace word under cursor/selected
-nnoremap <silent> <leader>r :echo 'replace `' . expand('<cword>') . '` with: _'<Return>:%s///cg\|noh<Home><Right><Right><Right>\<<C-R><C-W>\><Right>
-vnoremap <silent> <leader>r "wy:echo 'replace `' . getreg('w') . '` with: _'<Return>:%s///cg\|noh<Home><Right><Right><Right>\<<C-R>w\><Right>
+" Search & replace word under cursor/selected
+"nnoremap <silent> <leader>r
+"\    :echo 'replace `' . expand('<cword>') . '` with: _'<Return>
+"\    :%s///cg\|noh<Home><Right><Right><Right>\<<C-R><C-W>\><Right>
+"vnoremap <silent> <leader>r
+"\    "wy:echo 'replace `' . getreg('w') . '` with: _'<Return>
+"\    :%s///cg\|noh<Home><Right><Right><Right>\<<C-R>w\><Right>
 
 " Replace expression
 nnoremap <leader>R :%s///cg\|noh<Home><Right><Right><Right>
 vnoremap <leader>R :s///cg\|noh<Home><Right><Right><Right><Right><Right><Right><Right>
 
-" Hide search highlighting
+" Clear highlighted search
 nnoremap <leader>n :noh<Return>
 
-" Execute last command with Ctrl+Space
+" Re-execute last command with Ctrl+Space
 noremap  <silent> <C-Space> :@:<Return>
 inoremap <silent> <C-Space> <Esc>:@:<Return>
 cnoremap <silent> <C-Space> <C-e><C-u>@:<Return>
 
 " Toggle LocList
+nnoremap <silent> <leader>l :call ToggleLocList()<Return>
 function! ToggleLocList()
-    if !exists('s:coc_diagnostics_opened')
-        if exists(':CocDiagnostics')
-            :CocDiagnostics
-            let s:coc_diagnostics_opened = v:true
-        endif
-    endif
     if get(getloclist(0, {'winid': 0}), 'winid', 0)
-        "exec 'set laststatus=' . g:laststatus
         lclose
     else
+        let l:loclist_win_height = winheight(0) / 3
         let l:line_nr = line('.')
-        exec 'lopen ' . winheight(0) / 3
+        if !exists('l:coc_diagnostics_opened')
+            if exists(':CocDiagnostics')
+                :CocDiagnostics
+                let l:coc_diagnostics_opened = v:true
+            endif
+        endif
+        exec 'lopen ' . l:loclist_win_height
         exec ':silent! /|' . l:line_nr . ' col'
         nohlsearch
         set cursorline
-        "let g:laststatus = &laststatus
-        "if len(getbufinfo({'bufloaded': 1})) == 2
-        "    set laststatus=0
-        "endif
     endif
 endfunction
-nnoremap <silent> <leader>l :call ToggleLocList()<Return>
 
 " Toggle QuickFix
+nnoremap <silent> <leader>q :call ToggleQuickFix()<Return>
 function! ToggleQuickFix()
     if get(getqflist({'winid': 0}), 'winid', 0)
         "exec 'set laststatus=' . g:laststatus
@@ -121,9 +129,9 @@ function! ToggleQuickFix()
         "endif
     endif
 endfunction
-nnoremap <silent> <leader>q :call ToggleQuickFix()<Return>
 
 " Toggle Preview
+nnoremap <silent> <leader>p :call TogglePreview()<Return>
 function! TogglePreview()
     for nr in range(1, winnr('$'))
         if getwinvar(nr, '&previewwindow') == 1
@@ -136,7 +144,6 @@ function! TogglePreview()
         return
     endif
 endfunction
-nnoremap <silent> <leader>p :call TogglePreview()<Return>
 
 " Show buffers list
 nnoremap <leader>b :buffers<Return>:buffer<SPACE>
@@ -181,3 +188,5 @@ nnoremap <leader>Q :close<Return>
 "nnoremap <leader>d :ALEGoToDefinition<Return>
 "nnoremap <leader>t :ALEGoToTypeDefinition<Return>
 "nnoremap <leader>i :ALEGoToImplementation<Return>
+
+runtime vimrc.d/coc_mappings.vim

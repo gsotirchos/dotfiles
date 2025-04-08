@@ -1,14 +1,14 @@
 {
     "diagnostic.virtualText": true,
-    // "diagnostic.infoSign": "▐",
-    // "diagnostic.hintSign": "▐",
-    // "diagnostic.errorSign": "▐",
-    // "diagnostic.warningSign": "▐",
+    "diagnostic.infoSign": "▐",
+    "diagnostic.hintSign": "▐",
+    "diagnostic.errorSign": "▐",
+    "diagnostic.warningSign": "▐",
     // "diagnostic.floatConfig": {...}
     "diagnostic.highlightLimit": 0,
     "diagnostic.virtualTextCurrentLineOnly": false,
     "diagnostic.virtualTextLineSeparator": "|",
-    "diagnostic.virtualTextPrefix": "⏴ ",
+    "diagnostic.virtualTextPrefix": " ⏴ ",
     "diagnostic.messageDelay": 400,
 
     "pyright.inlayHints.functionReturnTypes": false,

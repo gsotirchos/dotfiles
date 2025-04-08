@@ -1,6 +1,6 @@
 "syntax match texCmdBackslash "\\" containedin=.*tex.*Cmd.* contained display cchar=\
 
-"hi! link texCmdBackslash     MyParens
+"hi! link texCmdBackslash     Info
 
 hi! link texDelim            MembOperator
 hi! link texBeginEnd         texStatement
