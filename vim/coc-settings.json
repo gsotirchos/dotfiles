@@ -8,7 +8,7 @@
     "diagnostic.highlightLimit": 0,
     "diagnostic.virtualTextCurrentLineOnly": false,
     "diagnostic.virtualTextLineSeparator": "|",
-    "diagnostic.virtualTextPrefix": " ⏴ ",
+    "diagnostic.virtualTextPrefix": "⏴ ",
     "diagnostic.messageDelay": 400,
 
     "pyright.inlayHints.functionReturnTypes": false,
