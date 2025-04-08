@@ -22,7 +22,7 @@ set autoread  " auto-read modified open files
 set fileencodings=ucs-bom,utf-8,cp1253,default,latin1  " tried on open
 set encoding=utf-8  " encoding used for displaying inside vim
 set fileformats=unix,mac,dos  " format order to be tried on a new buffer
-set nrformats=bin,hex,blank  " number formats to be checked for
+set nrformats=bin,hex  " number formats to be checked for
 
 " appearance
 colorscheme sunyata
