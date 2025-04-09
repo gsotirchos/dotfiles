@@ -1,10 +1,9 @@
 {
     "diagnostic.virtualText": true,
-    "diagnostic.infoSign": "▐",
     "diagnostic.hintSign": "▐",
+    "diagnostic.infoSign": "▐",
     "diagnostic.errorSign": "▐",
     "diagnostic.warningSign": "▐",
-    // "diagnostic.floatConfig": {...}
     "diagnostic.highlightLimit": 0,
     "diagnostic.virtualTextCurrentLineOnly": false,
     "diagnostic.virtualTextLineSeparator": "|",
@@ -14,6 +13,14 @@
     "pyright.inlayHints.functionReturnTypes": false,
     "pyright.inlayHints.variableTypes": false,
     "pyright.inlayHints.parameterTypes": false,
+
+    // check: https://github.com/fannheyward/coc-pyright/blob/master/package.json#L185
+    // and: https://github.com/microsoft/pyright/blob/main/docs/configuration.md#diagnostic-settings-defaults
+    "python.analysis.typeCheckingMode": "off",
+    //"python.analysis.diagnosticSeverityOverrides": {
+    //    "reportIncompatibleVariableOverride": "none",
+    //    "reportIncompatibleMethodOverride": "none",
+    //}
 
     // TODO: clangd, cc, clang-tidy, cppcheck
     // TODO: shellcheck, bashate

@@ -106,18 +106,18 @@ command! -nargs=0 OrganizeImports :call CocActionAsync('runCommand', 'editor.act
 
 " Mappings for CoCList
 " Show all diagnostics
-nnoremap <silent> <nowait> <space>a :<C-u>CocList diagnostics<cr>
+nnoremap <silent> <Leader><Space>a :<C-u>CocList diagnostics<cr>
 " Manage extensions
-nnoremap <silent> <nowait> <space>e :<C-u>CocList extensions<cr>
+nnoremap <silent> <Leader><Space>e :<C-u>CocList extensions<cr>
 " Show commands
-nnoremap <silent> <nowait> <space>c :<C-u>CocList commands<cr>
+nnoremap <silent> <Leader><Space>c :<C-u>CocList commands<cr>
 " Find symbol of current document
-nnoremap <silent> <nowait> <space>o :<C-u>CocList outline<cr>
+nnoremap <silent> <Leader><Space>o :<C-u>CocList outline<cr>
 " Search workspace symbols
-nnoremap <silent> <nowait> <space>s :<C-u>CocList -I symbols<cr>
+nnoremap <silent> <Leader><Space>s :<C-u>CocList -I symbols<cr>
 " Do default action for next item
-nnoremap <silent> <nowait> <space>j :<C-u>CocNext<Return>
+nnoremap <silent> <Leader><Space>j :<C-u>CocNext<Return>
 " Do default action for previous item
-nnoremap <silent> <nowait> <space>k :<C-u>CocPrev<Return>
+nnoremap <silent> <Leader><Space>k :<C-u>CocPrev<Return>
 " Resume latest coc list
-nnoremap <silent> <nowait> <space>p :<C-u>CocListResume<Return>
+nnoremap <silent> <Leader><Space>p :<C-u>CocListResume<Return>
