@@ -60,8 +60,8 @@ function! IndentWithA()
 endfunction
 
 " Search documentation for the word under cursor
-"nnoremap <silent> <leader>h :help <C-R><C-W><Return>
-nnoremap <silent> <leader>h :call ShowDocumentation()<Return>
+"nnoremap <silent> <Leader>h :help <C-R><C-W><Return>
+nnoremap <silent> <Leader>h :call ShowDocumentation()<Return>
 function! ShowDocumentation()
     if CocAction('hasProvider', 'hover')
         call CocActionAsync('doHover')
@@ -75,19 +75,19 @@ noremap <silent> / :echo '/'<Return>/\c
 noremap <silent> ? :echo '?'<Return>?\c
 
 " Search & replace word under cursor/selected
-"nnoremap <silent> <leader>r
-"\    :echo 'replace `' . expand('<cword>') . '` with: _'<Return>
-"\    :%s///cg\|noh<Home><Right><Right><Right>\<<C-R><C-W>\><Right>
-"vnoremap <silent> <leader>r
-"\    "wy:echo 'replace `' . getreg('w') . '` with: _'<Return>
-"\    :%s///cg\|noh<Home><Right><Right><Right>\<<C-R>w\><Right>
+nnoremap <silent> <Leader>rr
+\    :echo 'replace `' . expand('<cword>') . '` with: _'<Return>
+\    :%s///cg\|noh<Home><Right><Right><Right>\<<C-R><C-W>\><Right>
+vnoremap <silent> <Leader>rr
+\    "wy:echo 'replace `' . getreg('w') . '` with: _'<Return>
+\    :%s///cg\|noh<Home><Right><Right><Right>\<<C-R>w\><Right>
 
 " Replace expression
-nnoremap <leader>R :%s///cg\|noh<Home><Right><Right><Right>
-vnoremap <leader>R :s///cg\|noh<Home><Right><Right><Right><Right><Right><Right><Right>
+nnoremap <Leader>RR :%s///cg\|noh<Home><Right><Right><Right>
+vnoremap <Leader>RR :s///cg\|noh<Home><Right><Right><Right><Right><Right><Right><Right>
 
 " Clear highlighted search
-nnoremap <leader>n :noh<Return>
+nnoremap <Leader>n :noh<Return>
 
 " Re-execute last command with Ctrl+Space
 noremap  <silent> <C-Space> :@:<Return>
@@ -95,7 +95,7 @@ inoremap <silent> <C-Space> <Esc>:@:<Return>
 cnoremap <silent> <C-Space> <C-e><C-u>@:<Return>
 
 " Toggle LocList
-nnoremap <silent> <leader>l :call ToggleLocList()<Return>
+nnoremap <silent> <Leader>l :call ToggleLocList()<Return>
 function! ToggleLocList()
     if get(getloclist(0, {'winid': 0}), 'winid', 0)
         lclose
@@ -116,7 +116,7 @@ function! ToggleLocList()
 endfunction
 
 " Toggle QuickFix
-nnoremap <silent> <leader>q :call ToggleQuickFix()<Return>
+nnoremap <silent> <Leader>q :call ToggleQuickFix()<Return>
 function! ToggleQuickFix()
     if get(getqflist({'winid': 0}), 'winid', 0)
         "exec 'set laststatus=' . g:laststatus
@@ -131,7 +131,7 @@ function! ToggleQuickFix()
 endfunction
 
 " Toggle Preview
-nnoremap <silent> <leader>p :call TogglePreview()<Return>
+nnoremap <silent> <Leader>p :call TogglePreview()<Return>
 function! TogglePreview()
     for nr in range(1, winnr('$'))
         if getwinvar(nr, '&previewwindow') == 1
@@ -146,7 +146,7 @@ function! TogglePreview()
 endfunction
 
 " Show buffers list
-nnoremap <leader>b :buffers<Return>:buffer<SPACE>
+nnoremap <Leader>b :buffers<Return>:buffer<SPACE>
 
 " Clipboard copying/pasting
 "inoremap <D-v> <Space><ESC>"+gPi<Delete>
@@ -182,11 +182,11 @@ nnoremap <C-z> <Nop>
 nnoremap <C-]> <Nop>
 nnoremap o o<Esc>
 nnoremap O O<Esc>
-nnoremap <leader>Q :close<Return>
-"nnoremap <leader>F :ALEFix<Return>
-"nnoremap <leader>f :ALEFindReferences -relative<Return>
-"nnoremap <leader>d :ALEGoToDefinition<Return>
-"nnoremap <leader>t :ALEGoToTypeDefinition<Return>
-"nnoremap <leader>i :ALEGoToImplementation<Return>
+nnoremap <Leader>Q :close<Return>
+"nnoremap <Leader>F :ALEFix<Return>
+"nnoremap <Leader>f :ALEFindReferences -relative<Return>
+"nnoremap <Leader>d :ALEGoToDefinition<Return>
+"nnoremap <Leader>t :ALEGoToTypeDefinition<Return>
+"nnoremap <Leader>i :ALEGoToImplementation<Return>
 
 runtime vimrc.d/coc_mappings.vim
