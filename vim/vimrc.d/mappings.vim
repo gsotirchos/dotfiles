@@ -60,13 +60,12 @@ function! IndentWithA()
 endfunction
 
 " Search documentation for the word under cursor
-"nnoremap <silent> <Leader>h :help <C-R><C-W><Return>
 nnoremap <silent> <Leader>h :call ShowDocumentation()<Return>
 function! ShowDocumentation()
     if CocAction('hasProvider', 'hover')
         call CocActionAsync('doHover')
     else
-        call feedkeys('K', 'in')
+        :help <C-R><C-W><Return>
     endif
 endfunction
 
