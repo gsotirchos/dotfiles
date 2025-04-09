@@ -145,7 +145,7 @@ function! TogglePreview()
 endfunction
 
 " Show buffers list
-nnoremap <Leader>b :buffers<Return>:buffer<SPACE>
+nnoremap <Leader>b :buffers<Return>:buffer<Space>
 
 " Clipboard copying/pasting
 "inoremap <D-v> <Space><ESC>"+gPi<Delete>
