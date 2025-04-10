@@ -65,7 +65,7 @@ function! ShowDocumentation()
     if CocAction('hasProvider', 'hover')
         call CocActionAsync('doHover')
     else
-        :help <C-R><C-W><Return>
+        call feedkeys('K', 'in')
     endif
 endfunction
 
