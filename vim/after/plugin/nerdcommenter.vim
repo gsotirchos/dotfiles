@@ -1,14 +1,16 @@
-" disable some mappings
-"<Leader>cc
-"<Leader>c<Space>
-"<Leader>cu
-unmap <Leader>cn
-unmap <Leader>cm
-unmap <Leader>ci
-unmap <Leader>cs
-unmap <Leader>cy
-unmap <Leader>c$
-unmap <Leader>cA
-unmap <Leader>ca
-unmap <Leader>cl
-unmap <Leader>cb
+" enabled mappings:
+" <Leader>cc
+" <Leader>c<Space>
+" <Leader>cu
+
+" disabled mappings:
+silent! unmap <Leader>cn
+silent! unmap <Leader>cm
+silent! unmap <Leader>ci
+silent! unmap <Leader>cs
+silent! unmap <Leader>cy
+silent! unmap <Leader>c$
+silent! unmap <Leader>cA
+silent! unmap <Leader>ca
+silent! unmap <Leader>cl
+silent! unmap <Leader>cb
