@@ -60,6 +60,12 @@
     "texlab.latexindent.modifyLineBreaks": true,  // "-m"
     "texlab.latexindent.replacement": "-rv",
 
+    // https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.jsonc
+    "markdownlint.config": {
+        "default": true,
+        "line_length": false
+    }
+
     // TODO: clangd, cc, clang-tidy, cppcheck
     // TODO: shellcheck, bashate
     // TODO: cmake-format?
