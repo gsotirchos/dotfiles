@@ -70,6 +70,7 @@ set shell=$SHELL\ -l  " login shell for 'term'
 set shellcmdflag=-c  " login shell for '!'
 set nolangremap  " disable a legacy behavior that can break plugin maps
 let &clipboard = has('unnamedplus') ? 'unnamed,unnamedplus' : 'unnamed'
+set viewoptions=folds,cursor,curdir
 
 
 " folding

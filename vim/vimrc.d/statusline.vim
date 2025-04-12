@@ -103,10 +103,11 @@ augroup statusline
     autocmd!
     autocmd! BufReadPost,BufWrite *
     \   call s:UpdateParentPathCache()
-    \|  let s:times_left_to_update_git_info -= 1
     \|  if s:times_left_to_update_git_info <= 0
     \|      call s:UpdateGitInfoCache()
     \|      let s:times_left_to_update_git_info = s:GIT_INFO_UPDATE_TIMEOUT
+    \|  else
+    \|      let s:times_left_to_update_git_info -= 1
     \|  endif
     autocmd! BufEnter,BufWinEnter,FocusGained *
     \   call s:SetColors()
