@@ -1,3 +1,4 @@
+${HOME}/.mujoco/mujoco210/bin
 #${HOMEBREW_PREFIX}/lib  #(messes_with_conda/mamba)⚠️
 ${HOMEBREW_PREFIX}/opt/libomp/lib
 ${HOMEBREW_PREFIX}/opt/curl/lib
