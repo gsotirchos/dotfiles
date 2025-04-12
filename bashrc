@@ -45,9 +45,7 @@ main() {
 
     ## prepare dynamic libraries path
     #if [[ "${os}" == "linux" ]]; then
-    #    export LD_LIBRARY_PATH="${LIBRARY_PATH}"
-    #elif [[ "${os}" == "macos" ]]; then
-    #    export DYLD_LIBRARY_PATH="${LIBRARY_PATH}"
+    #   export LD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}"
     #fi
 
     # set the locale to English
@@ -58,8 +56,8 @@ main() {
     export SHELL="$(which bash)"
 
     # set cmake makefile generator, compiler, and standard
-    export CC="$(command -v gcc-7 || command -v clang)"
-    export CXX="$(command -v g++-7 || command -v clang++)"
+    export CC="$(command -v gcc-11 || command -v clang)"
+    export CXX="$(command -v g++-11 || command -v clang++)"
     export CXX_STD="c++17"
     export CMAKE_GENERATOR="$( \
         command -v ninja &> /dev/null \
