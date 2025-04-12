@@ -2,6 +2,10 @@
 
 "hi! link texCmdBackslash     Info
 
+hi! link texSection          Statement
+hi! link texDelimiter        MembOperator
+hi! link texRefZone          texBeginEndName
+
 hi! link texDelim            MembOperator
 hi! link texBeginEnd         texStatement
 hi! link texBeginEndName     Identifier
@@ -13,7 +17,6 @@ hi! link texTitleArg         SpecialComment
 hi! link texInputFile        PreProc
 hi! link texSpecialChar      Special
 hi! link texEnvArgName       Identifier
-hi! link texRefZone          OtherType
 hi! link texHrefArgTextC     underlined
 
 hi! link texCmdLigature      texCmd

@@ -1,4 +1,4 @@
-function! SetSyntax(num_lines)
+function! s:SetSyntax(num_lines)
     if a:num_lines >= 2000
         syntax sync maxlines=2000
         set redrawtime=10000
@@ -8,7 +8,7 @@ function! SetSyntax(num_lines)
     endif
 endfunction
 
-function! SetSignColumn(file_name, is_modifiable)
+function! s:SetSignColumn(file_name, is_modifiable)
     "if empty(a:file_name) || !a:is_modifiable
         let &signcolumn = 'no'
         let b:gutterwidth = 0
@@ -24,8 +24,8 @@ augroup vimrc
 
     " enable sign column (when appropriate), set textwidth, set wrapping indent
     autocmd BufWinEnter,BufRead,BufWrite *
-    \   call SetSyntax(line('$'))
-    \|  call SetSignColumn(@%, &modifiable)
+    \   call s:SetSyntax(line('$'))
+    \|  call s:SetSignColumn(@%, &modifiable)
 
     autocmd BufWinEnter,BufRead,TextChanged,TextChangedI,VimResized *
     \   let b:numberwidth = 1 + float2nr(ceil(log10(line('$') + 1)))
@@ -47,9 +47,6 @@ augroup vimrc
     \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
     \|      runtime after/syntax/indent_guides.vim
-    \|      if exists(':HighlightTags')
-    \|          HighlightTags
-    \|      endif
     \|  endif
 
     " re-enable colorscheme (and syntax) when gaining back focus
@@ -69,8 +66,8 @@ augroup vimrc
 
     autocmd BufWinEnter,BufRead,BufWritePre ?*
     \   silent! let &fileencoding = 'utf-8'
-    \ | let b:easytags_file = $HOME . '/.vim/tags/' . substitute(slice(expand('%:p'), 1), '/', '.', 'g') . '.tags'
-    \|  let &tags = b:easytags_file
+    "\| let b:easytags_file = $HOME . '/.vim/tags/' . substitute(slice(expand('%:p'), 1), '/', '.', 'g') . '.tags'
+    "\|  let &tags = b:easytags_file
 
     " treat certain extensions as XML
     autocmd BufWinEnter,BufRead,BufWritePre
@@ -101,7 +98,7 @@ augroup vimrc
     \|  set dictionary=$HOME/.vim/words/cmake.txt
 
     " don't spell-check help or QuickFix/LocList buffers
-    autocmd FileType help,qf
+    autocmd FileType help,qf,bib
     \   set nospell
 
     " use bash highlighting for def and sh filetypes
@@ -118,7 +115,6 @@ augroup vimrc
     \|      lclose
     \|  endif
 
-    " remember buffer state
     autocmd BufWinLeave * silent! mkview
     autocmd BufWinEnter * silent! loadview
 augroup END
