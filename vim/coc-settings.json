@@ -15,6 +15,10 @@
     "diagnostic.virtualTextPrefix": " ⏴ ",
     "diagnostic.virtualTextFormat": "%message ",
 
+    "git.branchCharacter": "",
+    "git.stagedDecorator": "+",
+    "git.untrackedDecorator": "%",
+
     "pyright.inlayHints.functionReturnTypes": false,
     "pyright.inlayHints.variableTypes": false,
     "pyright.inlayHints.parameterTypes": false,

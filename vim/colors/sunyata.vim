@@ -182,6 +182,13 @@ hi! DiffAdd                        ctermfg=10   ctermbg=0
 hi! DiffChange                                  ctermbg=0
 hi! DiffDelete                     ctermfg=9    ctermbg=0
 hi! DiffText                       ctermfg=11   ctermbg=0
+hi! DiffAdded                      ctermfg=2
+hi! DiffChanged                    ctermfg=none
+hi! DiffRemoved                    ctermfg=1
+hi! link diffNewFile SpecialComment
+hi! link diffFile    SpecialComment
+hi! link diffLine    SpecialComment
+hi! link diffSubname SpecialComment
 
 " ALE
 hi! link ALEVirtualTextError        ErrorMsg
