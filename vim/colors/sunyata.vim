@@ -95,6 +95,7 @@ hi! Done           cterm=bold      ctermfg=2    ctermbg=none
 hi! Debug          cterm=bold      ctermfg=11   ctermbg=none
 hi! MembOperator   cterm=bold      ctermfg=7    ctermbg=none
 hi! Info           cterm=none      ctermfg=7    ctermbg=none
+hi! MyStrikethrough cterm=strikethrough ctermfg=7 ctermbg=none
 hi! link MyParens   Info
 hi! link MyNote     Normal
 hi! link MyTagMark  SpecialComment
@@ -113,6 +114,7 @@ hi! Todo           cterm=bold      ctermfg=15   ctermbg=11
 hi! SpellBad       cterm=underline ctermfg=1    ctermbg=none
 hi! SpellCap       cterm=underline ctermfg=3    ctermbg=none
 hi! Underlined     cterm=underline ctermfg=4    ctermbg=none
+hi! MyStrikethrough cterm=strikethrough
 hi! Directory      cterm=none      ctermfg=12   ctermbg=none
 hi! SpellLocal     cterm=none      ctermfg=3    ctermbg=none
 hi! link SpellRare SpellLocal
