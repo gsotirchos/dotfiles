@@ -67,7 +67,10 @@
     // https://github.com/DavidAnson/markdownlint/blob/main/schema/.markdownlint.jsonc
     "markdownlint.config": {
         "default": true,
-        "line_length": false
+        "line_length": false,
+        "MD004": false,
+        "MD032": false,
+        "MD035": false,
     }
 
     // TODO: clangd, cc, clang-tidy, cppcheck
