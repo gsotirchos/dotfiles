@@ -9,10 +9,10 @@
 "set background=dark " or light
 set notermguicolors
 set t_Co=16
+"if exists("syntax_on")
+"    syntax reset
+"endif
 "hi! clear
-if exists("syntax_on")
-    syntax reset
-endif
 let g:colors_name="sunyata"
 
 "hi Normal

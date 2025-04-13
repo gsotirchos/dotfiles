@@ -2,24 +2,24 @@
 let mapleader =  ';'
 
 " Controllable mouse wheel scrolling
-noremap  <ScrollWheelUp>     <C-y>
-noremap  <S-ScrollWheelUp>   <C-y>
-noremap  <ScrollWheelDown>   <C-e>
-noremap  <S-ScrollWheelDown> <C-e>
-inoremap <ScrollWheelUp>     <C-o><C-y>
-inoremap <S-ScrollWheelUp>   <C-o><C-y>
-inoremap <ScrollWheelDown>   <C-o><C-e>
-inoremap <S-ScrollWheelDown> <C-o><C-e>
+noremap  <silent> <ScrollWheelUp>     <C-y>
+noremap  <silent> <S-ScrollWheelUp>   <C-y>
+noremap  <silent> <ScrollWheelDown>   <C-e>
+noremap  <silent> <S-ScrollWheelDown> <C-e>
+inoremap <silent> <ScrollWheelUp>     <C-o><C-y>
+inoremap <silent> <S-ScrollWheelUp>   <C-o><C-y>
+inoremap <silent> <ScrollWheelDown>   <C-o><C-e>
+inoremap <silent> <S-ScrollWheelDown> <C-o><C-e>
 
 " Movement on wrapped lines
 noremap  <silent> k       gk
 noremap  <silent> j       gj
 noremap  <silent> <Up>    gk
 noremap  <silent> <Down>  gj
-inoremap <silent> <Up>    <C-o>gk
-inoremap <silent> <Down>  <C-o>gj
 noremap  <silent> <Home>  g<Home>
 noremap  <silent> <End>   g<End>
+inoremap <silent> <Up>    <C-o>gk
+inoremap <silent> <Down>  <C-o>gj
 inoremap <silent> <Home>  <C-o>g<Home>
 inoremap <silent> <End>   <C-o>g<End>
 inoremap <silent> <C-u>   <C-g>u<C-u>
@@ -27,7 +27,6 @@ inoremap <silent> <C-w>   <C-g>u<C-w>
 noremap  <silent> 0       g0
 noremap  <silent> ^       g^
 noremap  <silent> $       g$
-noremap  <silent> <Space> za
 
 " Movement in the autocompletion menu
 "inoremap <silent> <C-n> <C-x><C-u>
@@ -70,8 +69,8 @@ function! ShowDocumentation()
 endfunction
 
 " Case-insensitive searching (with '\c')
-noremap <silent> / :echo '/'<Return>/\c
-noremap <silent> ? :echo '?'<Return>?\c
+nnoremap <silent> / :echo '/'<Return>/\c
+nnoremap <silent> ? :echo '?'<Return>?\c
 
 " Search & replace word under cursor/selected
 nnoremap <silent> <Leader>rr
@@ -89,7 +88,7 @@ vnoremap <Leader>RR :s///cg\|noh<Home><Right><Right><Right><Right><Right><Right>
 nnoremap <Leader>n :noh<Return>
 
 " Re-execute last command with Ctrl+Space
-noremap  <silent> <C-Space> :@:<Return>
+nnoremap <silent> <C-Space> :@:<Return>
 inoremap <silent> <C-Space> <Esc>:@:<Return>
 cnoremap <silent> <C-Space> <C-e><C-u>@:<Return>
 
@@ -163,25 +162,26 @@ nnoremap <F10> :echo
 \   <Return>
 
 " Shift+Tab is Ctrl+O in normal mode
-nnoremap <S-Tab> <C-o>
-nnoremap <C-o>   <Nop>
+nnoremap <silent> <S-Tab> <C-o>
+nnoremap <silent> <C-o>   <Nop>
 
 " Shift selected lines with Tab and Shift+Tab in visual mode
-vnoremap <Tab>   >gv
-vnoremap <S-Tab> <gv
-vnoremap >       <Nop>
-vnoremap <       <Nop>
+vnoremap <silent> <Tab>   >gv
+vnoremap <silent> <S-Tab> <gv
+noremap  <silent> >       <Nop>
+noremap  <silent> <       <Nop>
 
 " Swap p and P in visual mode
 vnoremap p P
 vnoremap P p
 
 " Other mappings
-nnoremap <C-z> <Nop>
-nnoremap <C-]> <Nop>
-nnoremap o o<Esc>
-nnoremap O O<Esc>
+noremap <C-z> <Nop>
+noremap <C-]> <Nop>
 nnoremap <Leader>Q :close<Return>
+nnoremap <silent> o o<Esc>
+nnoremap <silent> O O<Esc>
+nnoremap <silent> <Space> za
 "nnoremap <Leader>F :ALEFix<Return>
 "nnoremap <Leader>f :ALEFindReferences -relative<Return>
 "nnoremap <Leader>d :ALEGoToDefinition<Return>
