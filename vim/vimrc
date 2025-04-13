@@ -33,7 +33,7 @@ set numberwidth=1  " smallest width at start
 "set wrap  " wrap long lines
 set sidescroll=1  " enable sidescrolling
 set showmatch  " show matching parentheses
-set noshowcmd  " hide typed command
+set showcmd  " show typed command
 let &fillchars = 'vert:│,diff:-,eob: ,lastline:.,fold: ,foldopen:▾,foldsep:│,foldclose:▸'
 set showbreak=…  " show '…' at start of wrapped lines
 set list  " show non-text characters
@@ -71,7 +71,7 @@ set shellcmdflag=-c  " login shell for '!'
 set nolangremap  " disable a legacy behavior that can break plugin maps
 let &clipboard = has('unnamedplus') ? 'unnamed,unnamedplus' : 'unnamed'
 set viewoptions=folds,cursor,curdir
-
+set diffopt=internal,filler,closeoff,inline:simple,foldcolumn:0
 
 " folding
 set foldenable  " enable folding
@@ -89,9 +89,9 @@ set incsearch  " do incremental search
 " autocompletion
 set completeopt=menuone,noinsert,preview,popup  " select 1st item without inserting
 set complete=t,.,i  " scan tags, curr. buffer, incl. files
-set shortmess=mnrxcoTWF  " minimal message shortening & shut off completion messages
-set belloff+=ctrlg  " silent completion
+set shortmess=mnrxoTWF  " shorter messages
 set wildmenu  " display completion matches in a status line
+set wildoptions=pum  " and use popup menu for wildmenu instead
 
 " custom fold text method
 runtime vimrc.d/foldtext.vim

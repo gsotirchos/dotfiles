@@ -35,11 +35,11 @@ augroup vimrc
     \|  let &sidescrolloff = winwidth('%') / 2
 
     " enable syntax
-    autocmd Colorscheme *
+    autocmd Colorscheme * nested
     \   if !exists('g:syntax_on')
     \|      syntax on
     \|  endif
-    \|  syntax enable
+    "\|  syntax enable
 
     " for non-text files: load default syntax, show guides, use easytags
     let textFiletypes = ['markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', 'yaml', '']
