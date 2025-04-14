@@ -48,6 +48,14 @@ augroup vimrc
     \|      runtime after/syntax/default.vim
     \|      runtime after/syntax/indent_guides.vim
     \|  endif
+    autocmd BufEnter *
+    \   if index(textFiletypes, &filetype) < 0
+    \|      set nospell
+    \|  else
+    \|      set spell
+    \|  endif
+    autocmd FileType help,qf,bib
+    \   set nospell
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested
@@ -89,10 +97,6 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWritePre
     \   *.m
     \   set ft=matlab
-
-    " don't spell-check help or QuickFix/LocList buffers
-    autocmd FileType help,qf,bib
-    \   set nospell
 
     " use bash highlighting for def and sh filetypes
     autocmd FileType def,sh
