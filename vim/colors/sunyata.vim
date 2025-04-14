@@ -134,7 +134,7 @@ hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
 hi! Folded         cterm=none      ctermfg=8    ctermbg=none
 hi! LineNr         cterm=none      ctermfg=8
 hi! CursorLineNr   cterm=none      ctermfg=7
-hi! link Conceal    LineNr
+hi! link Conceal    OtherType
 hi! link VertSplit  LineNr
 hi! link FoldColumn EndOfBuffer
 hi! clear CursorLine
@@ -155,9 +155,9 @@ hi! link TabLineSel  SpecialComment
 hi! link TabLine     ToolbarButton
 hi! link TabLineFill ToolbarButton
 hi! link MoreMsg     ModeMsg
-hi! link NonText     Conceal
-hi! link Ignore      Conceal
-hi! link SpecialKey  Conceal
+hi! link NonText     LineNr
+hi! link Ignore      NonText
+hi! link SpecialKey  NonText
 
 " Statusline
 hi! clear StatusLine
