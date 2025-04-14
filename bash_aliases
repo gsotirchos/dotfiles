@@ -86,7 +86,8 @@ alias mv="mv -iv"               # confirmatory, verbose move
 alias cp="cp -ivr"              # confirmatory, verbose, recursive
 alias ln="ln -iv"               # confirmatory, verbose
 alias ls="ls -h --color=always" # human-readable, colored
-alias ll="ls -l"                # list ls := ll
+alias ll="ls -l"                # ll = list ls
+alias la="ls -la"               # la = list all ls
 alias grep="grep --color -E -n" # colored, extended regexp, line no.
 alias tree="\
     tree -lNC -L 2 \
