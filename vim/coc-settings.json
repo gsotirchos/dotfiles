@@ -71,6 +71,7 @@
         "MD004": false,
         "MD032": false,
         "MD035": false,
+        "MD041": false,
     }
 
     // TODO: clangd, cc, clang-tidy, cppcheck
