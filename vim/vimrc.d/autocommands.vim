@@ -42,7 +42,7 @@ augroup vimrc
     "\|  syntax enable
 
     " for non-text files: load default syntax, show guides, use easytags
-    let textFiletypes = ['markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', 'yaml', '']
+    let textFiletypes = ['vimwiki', 'markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', 'yaml', '']
     autocmd Colorscheme,BufWinEnter *
     \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
@@ -61,13 +61,11 @@ augroup vimrc
     " autosave named files
     autocmd CursorHold,FocusGained,FocusLost ?* nested
     \   if empty(&buftype) && &modified
-    \|      update
+    \|      silent! update
     \|  endif
 
     autocmd BufWinEnter,BufRead,BufWritePre ?*
     \   silent! let &fileencoding = 'utf-8'
-    "\| let b:easytags_file = $HOME . '/.vim/tags/' . substitute(slice(expand('%:p'), 1), '/', '.', 'g') . '.tags'
-    "\|  let &tags = b:easytags_file
 
     " treat certain extensions as XML
     autocmd BufWinEnter,BufRead,BufWritePre
@@ -92,11 +90,6 @@ augroup vimrc
     \   *.m
     \   set ft=matlab
 
-    " use custom CMake autocompletion
-    autocmd Filetype cmake
-    \   set complete=.,k
-    \|  set dictionary=$HOME/.vim/words/cmake.txt
-
     " don't spell-check help or QuickFix/LocList buffers
     autocmd FileType help,qf,bib
     \   set nospell
@@ -104,10 +97,6 @@ augroup vimrc
     " use bash highlighting for def and sh filetypes
     autocmd FileType def,sh
     \   set syn=bash
-
-    " use C++ highlighting for C files
-    autocmd FileType c
-    \   set syn=cpp
 
     " close loclists with buffer
     autocmd QuitPre *

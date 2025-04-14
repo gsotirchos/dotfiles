@@ -51,9 +51,9 @@ hi! Comment        cterm=none      ctermfg=2    ctermbg=none term=none
 hi! String         cterm=none      ctermfg=9    ctermbg=none
 hi! Character      cterm=none      ctermfg=11   ctermbg=none
 hi! link Constant Character"
-"hi! link Number   Character
-"hi! link Float    Number
-"hi! link Boolean  Character
+hi! link Number   Character
+hi! link Float    Number
+hi! link Boolean  Character
 
 " variable names
 hi! Function       cterm=none      ctermfg=6    ctermbg=none

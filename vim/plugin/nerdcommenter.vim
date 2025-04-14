@@ -11,5 +11,6 @@ let g:NERDTrimTrailingWhitespace  = 1  " remove trailing spaces after delimiters
 
 let g:NERDCustomDelimiters = {
 \   'python': {'left': '#', 'leftAlt': '"""', 'rightAlt': '"""'},
-\   'cpp': {'left': '//', 'leftAlt': '/*', 'rightAlt': '*/'}
+\   'cpp': {'left': '//', 'leftAlt': '/*', 'rightAlt': '*/'},
+\   'vimwiki': {'left': '<!--', 'right': '-->'},
 \}

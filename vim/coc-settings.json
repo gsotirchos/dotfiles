@@ -10,7 +10,7 @@
     "diagnostic.virtualText": true,
     "diagnostic.virtualTextCurrentLineOnly": false,
     "diagnostic.virtualTextLines": 1,
-    //"diagnostic.virtualTextLimitInOneLine": 1,
+    "diagnostic.virtualTextLimitInOneLine": 1,
     "diagnostic.virtualTextLineSeparator": " | ",
     "diagnostic.virtualTextPrefix": " ⏴ ",
     "diagnostic.virtualTextFormat": "%message ",
