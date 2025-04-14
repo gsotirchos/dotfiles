@@ -1,12 +1,13 @@
 hi! link Title            SpecialComment
 hi! link mkdRule          Info
-hi! link mkdCodeDelimiter OtherType
 hi! link mkdHeading       Info
 hi! link mkdDelimiter     Info
+hi! link mkdURL           MyUrl
+hi! link mkdCode          String
+hi! link mkdCodeDelimiter OtherType
+hi! link mkdStrike        MyStrikethrough
 hi! link htmlTag          Info
 hi! link htmlEndTag       htmlTag
-hi! link mkdCode          String
-hi! link mkdStrike        MyStrikethrough
 
 
 syntax match mkdStrike "\(\~\~\)\@<=.*\(\~\~\)\@=" containedin=mkdCode display
