@@ -1,5 +1,9 @@
-" TODO: add check here
-let g:wiki_root = $HOME . '/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vaults/Wiki'
+if has('mac')
+    let g:wiki_root = $HOME . '/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vaults/Wiki'
+else
+    let g:wiki_root = $HOME . '/Documents/Obsidian/Wiki'
+endif
+call mkdir(g:wiki_root, 'p')
 let g:wiki_zotero_root = $HOME . '/Zotero'
 let g:wiki_global_load = 0
 let g:wiki_completion_enabled = 0
