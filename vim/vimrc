@@ -71,7 +71,7 @@ set shellcmdflag=-c  " login shell for '!'
 set nolangremap  " disable a legacy behavior that can break plugin maps
 let &clipboard = has('unnamedplus') ? 'unnamed,unnamedplus' : 'unnamed'
 set viewoptions=folds,cursor,curdir
-set diffopt=internal,filler,closeoff,inline:simple,foldcolumn:0
+set diffopt=internal,filler,closeoff,foldcolumn:0  "  ,inline:simple
 
 " folding
 set foldenable  " enable folding

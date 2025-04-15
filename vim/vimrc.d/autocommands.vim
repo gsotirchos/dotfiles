@@ -47,15 +47,12 @@ augroup vimrc
     \   if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
     \|      runtime after/syntax/indent_guides.vim
-    \|  endif
-    autocmd BufEnter *
-    \   if index(textFiletypes, &filetype) < 0
-    \|      set nospell
+    \|      setlocal nospell
     \|  else
-    \|      set spell
+    \|      setlocal spell
     \|  endif
     autocmd FileType help,qf,bib
-    \   set nospell
+    \   setlocal nospell
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested
