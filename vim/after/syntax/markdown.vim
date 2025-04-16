@@ -2,6 +2,8 @@ hi! link Title            SpecialComment
 hi! link mkdRule          Info
 hi! link mkdHeading       Info
 hi! link mkdDelimiter     Info
+hi! link mkdCodeStart     Info
+hi! link mkdCodeEnd       Info
 hi! link mkdURL           MyUrl
 hi! link mkdCode          String
 hi! link mkdCodeDelimiter OtherType
