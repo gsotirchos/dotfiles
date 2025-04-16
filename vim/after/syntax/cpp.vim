@@ -34,7 +34,7 @@ hi! link cMemberTag   cMember
 hi! link cEnumTag     cMemberTag
 
 " Doxygen
-set syntax+=.doxygen
+setlocal syntax+=.doxygen
 
 augroup cpp_syntax
     autocmd!

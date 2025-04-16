@@ -1,4 +1,6 @@
 "let cpp_no_cpp11 = 1
+"
+let g:python_highlight_all = 1
 
 "let g:vim_markdown_auto_insert_bullets = 1
 let g:vim_markdown_math = 1

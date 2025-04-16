@@ -1,2 +1,2 @@
-set complete=.,k
-set dictionary=$HOME/.vim/words/cmake.txt
+setlocal complete=.,k
+setlocal dictionary=$HOME/.vim/words/cmake.txt

@@ -1,4 +1,4 @@
-let g:NERDCompactSexyComs = 1
+let b:NERDCompactSexyComs = 1
 
 " execute script
 nnoremap <silent> <buffer> <leader>x :w<return>:terminal python3 "%:p"<return>
