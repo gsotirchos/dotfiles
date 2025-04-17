@@ -18,6 +18,10 @@ function! s:SetSignColumn(file_name, is_modifiable)
     "endif
 endfunction
 
+function! s:UpdateIndentGuides()
+    let &l:listchars = &g:listchars . ',leadmultispace:│' . repeat(' ', &sw - 1)
+endfunction
+
 augroup vimrc
     " clear existing definitions in this group
     autocmd!
@@ -44,15 +48,17 @@ augroup vimrc
     " for non-text files: load default syntax, show guides, use easytags
     let textFiletypes = ['vimwiki', 'markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', 'yaml', '']
     autocmd Colorscheme,BufWinEnter *
-    \   if index(textFiletypes, &filetype) < 0
+    \       call s:UpdateIndentGuides()
+    \|  if index(textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
-    \|      runtime after/syntax/indent_guides.vim
     \|      setlocal nospell
     \|  else
     \|      setlocal spell
     \|  endif
     autocmd FileType help,qf,bib
     \   setlocal nospell
+    autocmd OptionSet shiftwidth
+    \   call s:UpdateIndentGuides()
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested
