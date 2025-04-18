@@ -63,7 +63,7 @@ hi! DocComment     cterm=italic    ctermfg=8    ctermbg=none
 hi! Done           cterm=bold      ctermfg=2    ctermbg=none
 hi! Debug          cterm=bold      ctermfg=11   ctermbg=none
 hi! MembOperator   cterm=bold      ctermfg=7    ctermbg=none
-hi! Dimmed           cterm=none      ctermfg=7    ctermbg=none
+hi! Dimmed         cterm=none      ctermfg=7    ctermbg=none
 hi! MyStrikethrough cterm=strikethrough ctermfg=7 ctermbg=none
 hi! link MyParens   Dimmed
 hi! link MyNote     Normal
@@ -84,7 +84,7 @@ hi! SpellBad       cterm=underline ctermfg=1    ctermbg=none
 hi! SpellCap       cterm=underline ctermfg=3    ctermbg=none
 hi! SpellLocal     cterm=none      ctermfg=3    ctermbg=none
 hi! link SpellRare SpellLocal
-hi! link DimmedMsg   Dimmed
+hi! link InfoMsg Dimmed
 
 " visual elements
 hi! clear CursorLine
@@ -98,11 +98,11 @@ hi! Visual                                      ctermbg=0
 hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
 hi! CursorLineNr   cterm=none      ctermfg=7    ctermbg=none
 hi! NonText        cterm=none      ctermfg=8    ctermbg=none
-hi! link LineNr      NonText
-hi! link VertSplit   NonText
-hi! link Folded      NonText
-hi! link FoldColumn  NonText
-hi! link Conceal     OtherType
+hi! link LineNr     NonText
+hi! link VertSplit  NonText
+hi! link Folded     NonText
+hi! link FoldColumn NonText
+hi! link Conceal    OtherType
 
 " menus and messages
 hi! Underlined     cterm=underline ctermfg=4    ctermbg=none
@@ -129,12 +129,12 @@ hi! clear StatusLine
 hi! clear StatusLineNC
 hi! StatusLine     cterm=none                   ctermbg=0
 hi! StatusLineNC   cterm=none      ctermfg=7    ctermbg=0
-hi! SLGitDimmed      cterm=reverse   ctermfg=7    ctermbg=none
-hi! SLFileDimmed     cterm=none                   ctermbg=8
+hi! SLGitInfo      cterm=reverse   ctermfg=7    ctermbg=none
+hi! SLFileInfo     cterm=none                   ctermbg=8
 hi! SLFilePath     cterm=none      ctermfg=7    ctermbg=0
 hi! SLFileName     cterm=bold                   ctermbg=0
-hi! link SLGitDimmedNC      StatusLineNC
-hi! link SLFileDimmedNC     StatusLineNC
+hi! link SLGitInfoNC      StatusLineNC
+hi! link SLFileInfoNC     StatusLineNC
 hi! link SLFilePathNC     StatusLineNC
 hi! link SLFileNameNC     StatusLineNC
 hi! link StatusLineTerm   StatusLine
@@ -160,25 +160,25 @@ hi! link diffSubname SpecialComment
 " ALE
 hi! link ALEVirtualTextError        ErrorMsg
 hi! link ALEVirtualTextWarning      WarningMsg
-hi! link ALEVirtualTextDimmed         MyParens
-hi! link ALEVirtualTextStyleError   ALEVirtualTextDimmed
-hi! link ALEVirtualTextStyleWarning ALEVirtualTextDimmed
-"hi! link ALEErrorLine    Normal
-"hi! link ALEWarningLine  Normal
+hi! link ALEVirtualTextInfo         Dimmed
+hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo
+hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
+"hi! link ALEErrorLine               Normal
+"hi! link ALEWarningLine             Normal
 
 " CoC
 hi! CocHighlightText                                    ctermbg=0
 hi! CocVirtualText         cterm=none      ctermfg=8    ctermbg=0
 hi! CocErrorFloat          cterm=none      ctermfg=1    ctermbg=0
 hi! CocWarningFloat        cterm=none      ctermfg=3    ctermbg=0
-hi! CocDimmedFloat           cterm=none      ctermfg=none ctermbg=0
+hi! CocInfoFloat           cterm=none      ctermfg=none ctermbg=0
 hi! CocHintFloat           cterm=none      ctermfg=12   ctermbg=0
 hi! link CocErrorSign          ErrorMsg
 hi! link CocErrorVirtualText   CocErrorFloat
 hi! link CocWarningSign        WarningMsg
 hi! link CocWarningVirtualText CocWarningFloat
-hi! link CocDimmedSign           DimmedMsg
-hi! link CocDimmedVirtualText    CocDimmedFloat
+hi! link CocInfoSign           InfoMsg
+hi! link CocInfoVirtualText    CocInfoFloat
 hi! link CocHintSign           HintMsg
 hi! link CocHintVirtualText    CocHintFloat
 hi! link CocHighlightRead      CocHighlightText
