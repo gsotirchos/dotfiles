@@ -1,3 +1,4 @@
+setlocal nospell
 setlocal nonumber
 setlocal wrap
 

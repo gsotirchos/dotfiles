@@ -129,14 +129,13 @@ hi! IncSearch      cterm=none      ctermfg=15   ctermbg=11
 hi! clear Visual
 hi! Visual                                      ctermbg=0
 hi! SignColumn     cterm=none      ctermfg=none ctermbg=none
-hi! EndOfBuffer    cterm=none      ctermfg=0    ctermbg=none
 hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
 hi! Folded         cterm=none      ctermfg=8    ctermbg=none
 hi! LineNr         cterm=none      ctermfg=8
 hi! CursorLineNr   cterm=none      ctermfg=7
-hi! link Conceal    OtherType
-hi! link VertSplit  LineNr
-hi! link FoldColumn EndOfBuffer
+hi! link Conceal     OtherType
+hi! link VertSplit   LineNr
+hi! link FoldColumn  LineNr
 hi! clear CursorLine
 
 " menus and messages
@@ -144,8 +143,6 @@ hi! ModeMsg        cterm=bold      ctermfg=4    ctermbg=none
 hi! MsgArea        cterm=none      ctermfg=none ctermbg=none
 hi! Question       cterm=none      ctermfg=3    ctermbg=none
 hi! ToolbarLine    cterm=none      ctermfg=none ctermbg=8
-hi! ToolbarButton  cterm=bold      ctermfg=0    ctermbg=7
-hi! WildMenu       cterm=none      ctermfg=0    ctermbg=3
 hi! Pmenu          cterm=none      ctermfg=none ctermbg=0
 hi! PmenuSel       cterm=none      ctermfg=none ctermbg=4
 hi! PmenuThumb     cterm=reverse   ctermfg=none ctermbg=none
@@ -157,6 +154,7 @@ hi! link TabLineFill ToolbarButton
 hi! link MoreMsg     ModeMsg
 hi! link NonText     LineNr
 hi! link Ignore      NonText
+hi! link EndOfBuffer NonText
 hi! link SpecialKey  NonText
 
 " Statusline
@@ -164,7 +162,7 @@ hi! clear StatusLine
 hi! clear StatusLineNC
 hi! StatusLine     cterm=none                   ctermbg=0
 hi! StatusLineNC   cterm=none      ctermfg=7    ctermbg=0
-hi! SLGitInfo      cterm=none      ctermfg=0    ctermbg=7
+hi! SLGitInfo      cterm=reverse   ctermfg=7    ctermbg=none
 hi! SLFileInfo     cterm=none                   ctermbg=8
 hi! SLFilePath     cterm=none      ctermfg=7    ctermbg=0
 hi! SLFileName     cterm=bold                   ctermbg=0

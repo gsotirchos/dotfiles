@@ -62,7 +62,7 @@ set scrolloff=3  " lines to scoll before the reaching last
 set sidescrolloff=5  " columnts to sroll before reaching the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 "set wrap lbr  " wrap lines by word
-set formatoptions=1jnpr  " no automatic line breaking
+set formatoptions=1jnpr2  " no automatic line breaking
 set breakindent  " wrap preserving indentation
 set display=lastline  " show last wrapped line in window
 set smoothscroll  " scroll screen lines (when wrap is on)
@@ -72,6 +72,7 @@ set nolangremap  " disable a legacy behavior that can break plugin maps
 let &clipboard = has('unnamedplus') ? 'unnamed,unnamedplus' : 'unnamed'
 set viewoptions=folds,cursor,curdir
 set diffopt=internal,filler,closeoff,foldcolumn:0  "  ,inline:simple
+set path+=**  " search all sub-directories
 
 " folding
 set foldenable  " enable folding
