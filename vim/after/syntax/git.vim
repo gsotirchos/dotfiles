@@ -1,4 +1,4 @@
 hi! link gitHashAbbrev     PreProc
 hi! link gitIdentity       Identifier
-hi! link gitEmailDelimiter Info
+hi! link gitEmailDelimiter Dimmed
 hi! link gitDiff           Function

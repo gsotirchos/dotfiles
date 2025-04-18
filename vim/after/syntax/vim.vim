@@ -8,7 +8,7 @@ syn match vimOper "=" containedin=vimSynContains contained
 "hi! clear CursorLine
 "hi! clear CursorColumn
 hi! link vim9Comment      Normal
-hi! link vimSep           Info
+hi! link vimSep           Dimmed
 hi! link vimSetSep        vimSep
 hi! link vimCmdSep        vimSep
 hi! link vimParenSep      vimSep

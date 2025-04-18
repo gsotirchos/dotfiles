@@ -3,9 +3,9 @@
 "endif
 
 hi! link VimwikiHeaderChar mkdHeading
-hi! link VimwikiNoExistsLink Info
+hi! link VimwikiNoExistsLink Dimmed
 hi! link VimwikiHR mkdRule
 hi! link VimwikiCode mkdCode
 hi! link VimwikiCellSeparator mkdRule
 hi! link VimwikiDelText MyStrikethrough
-hi! link VimwikiDelimiter Info
+hi! link VimwikiDelimiter Dimmed
