@@ -30,15 +30,15 @@ noremap  <silent> $       g$
 
 " Movement in the autocompletion menu
 "inoremap <silent> <C-n> <C-x><C-u>
-"inoremap <silent> <expr> <Up> pumvisible() ? "\<C-p>" : "\<C-o>gk"
-"inoremap <silent> <expr> <Down> pumvisible() ? "\<C-n>" : "\<C-o>gj"
-"inoremap <silent> <expr> <Return> pumvisible() ? "\<C-y>" : "\<C-g>u\<Return>"
-"inoremap <silent> <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-Tab>"
-"inoremap <silent> <expr> <C-z> pumvisible() ? "\<C-x>\<C-z>" : "\<Plug>(copilot-dismiss)"
+"inoremap <silent> <expr> <Up> pumvisible() ? '<C-p>' : '<C-o>gk'
+"inoremap <silent> <expr> <Down> pumvisible() ? '<C-n>' : '<C-o>gj'
+"inoremap <silent> <expr> <Return> pumvisible() ? '<C-y>' : '<C-g>u<Return>'
+"inoremap <silent> <expr> <S-Tab> pumvisible() ? '<C-p>' : '<C-Tab>'
+"inoremap <silent> <expr> <C-z> pumvisible() ? '<C-x><C-z>' : '<Plug>(copilot-dismiss)'
 "inoremap <silent> <expr> <C-l>
 "\    empty(copilot#GetDisplayedSuggestion().text) ?
-"\        "\<Plug>(copilot-suggest)" :
-"\        "\<Plug>(copilot-next)"
+"\        '<Plug>(copilot-suggest)' :
+"\        '<Plug>(copilot-next)'
 
 " Smart indenting when entering insert mode on empty lines
 nnoremap <expr> i IndentWithI()
@@ -187,5 +187,3 @@ nnoremap <silent> <Space> za
 "nnoremap <Leader>d :ALEGoToDefinition<Return>
 "nnoremap <Leader>t :ALEGoToTypeDefinition<Return>
 "nnoremap <Leader>i :ALEGoToImplementation<Return>
-
-runtime vimrc.d/coc_mappings.vim

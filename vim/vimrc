@@ -94,14 +94,8 @@ set shortmess=mnrxoTWF  " shorter messages
 set wildmenu  " display completion matches in a status line
 set wildoptions=pum  " and use popup menu for wildmenu instead
 
-" custom fold text method
 runtime vimrc.d/foldtext.vim
-
-" custom status line (source before autocommands.vim)
 runtime vimrc.d/statusline.vim
-
-" autocommands
 runtime vimrc.d/autocommands.vim
-
-" mappings
 runtime vimrc.d/mappings.vim
+runtime vimrc.d/coc_mappings.vim

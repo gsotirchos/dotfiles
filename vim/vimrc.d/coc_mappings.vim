@@ -1,26 +1,17 @@
 " Use tab for trigger completion with characters ahead and navigate
 " NOTE: There's always complete item selected by default, you may want to enable
 " no select by `"suggest.noselect": true` in your configuration file
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" NOTE: Use command ':verbose imap <C-n>' to make sure tab is not mapped by
 " other plugin before putting this into your config
-inoremap <expr> <C-p> coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"
-inoremap <silent> <expr> <C-n>
-\   coc#pum#visible() ?
-\       coc#pum#next(1) :
-"\       CheckBackspace() ?
-"\           "\<Tab>" :
-\           coc#refresh()
-"function! CheckBackspace() abort
-"    let col = col('.') - 1
-"    return !col || getline('.')[col - 1] =~# '\s'
-"endfunction
+inoremap <silent> <expr> <C-n> coc#pum#visible() ? coc#pum#next(1) : coc#refresh()
+inoremap <silent> <expr> <C-p> coc#pum#visible() ? coc#pum#prev(1) : ''
 
 " Make <Return> to accept selected completion item or notify coc.nvim to format
 " <C-g>u breaks current undo, please make your own choice
 inoremap <silent> <expr> <Return>
 \   coc#pum#visible() ?
 \       coc#pum#confirm() :
-\       "\<C-g>u\<Return>\<C-r>=coc#on_enter()\<Return>"
+\       '<C-g>u<Return><C-r>=coc#on_enter()<Return>'
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
@@ -77,12 +68,12 @@ omap ac <Plug>(coc-classobj-a)
 
 " Remap <C-f> and <C-b> to scroll float windows/popups
 if has('nvim-0.4.0') || has('patch-8.2.0750')
-    nnoremap <silent> <nowait> <expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-    nnoremap <silent> <nowait> <expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-    inoremap <silent> <nowait> <expr> <C-f> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
-    inoremap <silent> <nowait> <expr> <C-b> coc#float#has_scroll() ? "\<C-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
-    vnoremap <silent> <nowait> <expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-    vnoremap <silent> <nowait> <expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+    nnoremap <silent> <nowait> <expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : '<C-f>'
+    nnoremap <silent> <nowait> <expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : '<C-b>'
+    inoremap <silent> <nowait> <expr> <C-f> coc#float#has_scroll() ? '<C-r>=coc#float#scroll(1)<Return>' : '<C-f>'
+    inoremap <silent> <nowait> <expr> <C-b> coc#float#has_scroll() ? '<C-r>=coc#float#scroll(0)<Return>' : '<C-b>'
+    vnoremap <silent> <nowait> <expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : '<C-f>'
+    vnoremap <silent> <nowait> <expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : '<C-b>'
 endif
 
 " Use CTRL-S for selections ranges
@@ -106,15 +97,15 @@ command! -nargs=0 OrganizeImports :call CocActionAsync('runCommand', 'editor.act
 
 " Mappings for CoCList
 " Show all diagnostics
-nnoremap <silent> <Leader><Space>a :<C-u>CocList diagnostics<cr>
+nnoremap <silent> <Leader><Space>a :<C-u>CocList diagnostics<Return>
 " Manage extensions
-nnoremap <silent> <Leader><Space>e :<C-u>CocList extensions<cr>
+nnoremap <silent> <Leader><Space>e :<C-u>CocList extensions<Return>
 " Show commands
-nnoremap <silent> <Leader><Space>c :<C-u>CocList commands<cr>
+nnoremap <silent> <Leader><Space>c :<C-u>CocList commands<Return>
 " Find symbol of current document
-nnoremap <silent> <Leader><Space>o :<C-u>CocList outline<cr>
+nnoremap <silent> <Leader><Space>o :<C-u>CocList outline<Return>
 " Search workspace symbols
-nnoremap <silent> <Leader><Space>s :<C-u>CocList -I symbols<cr>
+nnoremap <silent> <Leader><Space>s :<C-u>CocList -I symbols<Return>
 " Do default action for next item
 nnoremap <silent> <Leader><Space>j :<C-u>CocNext<Return>
 " Do default action for previous item

@@ -8,4 +8,4 @@ setlocal formatoptions-=c
 setlocal formatoptions-=q  " no auto-wrapping text & comments
 setlocal conceallevel=2
 let b:copilot_enabled = 0
-"let g:markdown_recommended_style = 1  " setlocal sw=2, ts=2, sts=2
+"let g:markdown_recommended_style = 1  " setlocal sw=4, ts=4, sts=4
