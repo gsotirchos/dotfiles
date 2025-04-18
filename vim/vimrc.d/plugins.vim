@@ -9,9 +9,8 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 Plugin 'github/copilot.vim'
 Plugin 'sheerun/vim-polyglot'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'tpope/vim-rsi'
-Plugin 'tpope/vim-commentary'
 Plugin 'lervag/wiki.vim'
+Plugin 'tpope/vim-commentary'
+Plugin 'tpope/vim-rsi'
 "Plugin 'gsotirchos/copilot-chat.vim'  " TODO: 'DanBradbury/copilot-chat.vim'
 call vundle#end()
