@@ -1,4 +1,4 @@
-hi! link xmlTag             Info
+hi! link xmlTag             Dimmed
 hi! link xmlNamespace       Function
 hi! link xmlTagName         Statement
 hi! link xmlAttrib          Function

@@ -4,3 +4,4 @@ hi! link helpHyperTextJump  ModeMsg
 hi! link helpHeadline       SpecialComment
 hi! link helpHeader         helpHeadline
 hi! link helpURL            MyUrl
+hi! link helpSectionDelim   NonText

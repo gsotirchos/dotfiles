@@ -22,7 +22,7 @@ hi! link PythonExClass     Type
 hi! link pythonBuiltinType Type
 hi! link pythonDottedName  OtherType
 hi! link pythonDecorator   pythonDottedName
-hi! link pythonStrFormat   Info
+hi! link pythonStrFormat   Dimmed
 
 " vim-easytags
 hi! link pythonClassTag    pythonClass

@@ -1,72 +1,20 @@
 " Vim color file
 " Maintainer:   George Sotirchos <gsotirch@gmail.com>
 
-" cool help screens
-" :he group-name
-" :he highlight-groups
-" :he cterm-colors
+" handy help sections:
+" group-name, highlight-groups, cterm-colors
 
-"set background=dark " or light
 set notermguicolors
 set t_Co=16
+"hi! clear
 "if exists("syntax_on")
 "    syntax reset
 "endif
-"hi! clear
 let g:colors_name="sunyata"
-
-"hi Normal
-"
-" OR
-"
-" highlight clear Normal
-" set background&
-" highlight clear
-" if &background == "light"
-"   highlight Error ...
-"   ...
-" else
-"   highlight Error ...
-"   ...
-" endif
-"
-" A good way to see what your colorscheme does is to follow this procedure:
-" :w
-" :so %
-"
-" Then to see what the current setting is use the highlight command.
-" For example,
-" :hi Cursor
-" gives
-" Cursor         xxx guifg=bg guibg=fg
 
 
 hi! Normal         cterm=none      ctermfg=none ctermbg=none
-
-" comments
-"hi! Comment        cterm=none      ctermfg=7    ctermbg=none term=none
 hi! Comment        cterm=none      ctermfg=2    ctermbg=none term=none
-
-" constants
-hi! String         cterm=none      ctermfg=9    ctermbg=none
-hi! Character      cterm=none      ctermfg=11   ctermbg=none
-hi! link Constant Character"
-hi! link Number   Character
-hi! link Float    Number
-hi! link Boolean  Character
-
-" variable names
-hi! Function       cterm=none      ctermfg=6    ctermbg=none
-hi! Identifier     cterm=none      ctermfg=14   ctermbg=none
-
-" statements
-hi! Statement      cterm=bold      ctermfg=5    ctermbg=none
-hi! link Conditional Statement
-hi! link Repeat      Statement
-hi! link Label       Statement
-hi! link Keyword     Statement
-hi! link Exception   Statement
-hi! link Operator    Statement
 
 " generic Preprocessor
 hi! PreProc        cterm=none      ctermfg=3    ctermbg=none
@@ -81,6 +29,27 @@ hi! link Structure    Statement
 hi! link StorageClass Statement
 hi! link Typedef      Statement
 
+" statements
+hi! Statement      cterm=bold      ctermfg=5    ctermbg=none
+hi! link Conditional Statement
+hi! link Repeat      Statement
+hi! link Label       Statement
+hi! link Keyword     Statement
+hi! link Exception   Statement
+hi! link Operator    Statement
+
+" variable names
+hi! Function       cterm=none      ctermfg=6    ctermbg=none
+hi! Identifier     cterm=none      ctermfg=14   ctermbg=none
+
+" constants
+hi! String         cterm=none      ctermfg=9    ctermbg=none
+hi! Character      cterm=none      ctermfg=11   ctermbg=none
+hi! link Constant Character"
+hi! link Number   Character
+hi! link Float    Number
+hi! link Boolean  Character
+
 " special symbols
 hi! Delimiter      cterm=none      ctermfg=2    ctermbg=none
 hi! link Tag         Delimiter
@@ -94,9 +63,9 @@ hi! DocComment     cterm=italic    ctermfg=8    ctermbg=none
 hi! Done           cterm=bold      ctermfg=2    ctermbg=none
 hi! Debug          cterm=bold      ctermfg=11   ctermbg=none
 hi! MembOperator   cterm=bold      ctermfg=7    ctermbg=none
-hi! Info           cterm=none      ctermfg=7    ctermbg=none
+hi! Dimmed           cterm=none      ctermfg=7    ctermbg=none
 hi! MyStrikethrough cterm=strikethrough ctermfg=7 ctermbg=none
-hi! link MyParens   Info
+hi! link MyParens   Dimmed
 hi! link MyNote     Normal
 hi! link MyTagMark  SpecialComment
 hi! link MyUrl      Underlined
@@ -113,35 +82,34 @@ hi! HintMsg        cterm=none      ctermfg=12   ctermbg=none
 hi! Todo           cterm=bold      ctermfg=15   ctermbg=11
 hi! SpellBad       cterm=underline ctermfg=1    ctermbg=none
 hi! SpellCap       cterm=underline ctermfg=3    ctermbg=none
-hi! Underlined     cterm=underline ctermfg=4    ctermbg=none
-hi! MyStrikethrough cterm=strikethrough
-hi! Directory      cterm=none      ctermfg=12   ctermbg=none
 hi! SpellLocal     cterm=none      ctermfg=3    ctermbg=none
 hi! link SpellRare SpellLocal
-hi! link InfoMsg   Info
+hi! link DimmedMsg   Dimmed
 
-" TODO
 " visual elements
-hi! clear Search
-hi! Search         cterm=none      ctermfg=15   ctermbg=3
-hi! clear IncSearch
-hi! IncSearch      cterm=none      ctermfg=15   ctermbg=11
-hi! clear Visual
-hi! Visual                                      ctermbg=0
-hi! SignColumn     cterm=none      ctermfg=none ctermbg=none
-hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
-hi! Folded         cterm=none      ctermfg=8    ctermbg=none
-hi! LineNr         cterm=none      ctermfg=8
-hi! CursorLineNr   cterm=none      ctermfg=7
-hi! link Conceal     OtherType
-hi! link VertSplit   LineNr
-hi! link FoldColumn  LineNr
 hi! clear CursorLine
+hi! clear Search
+hi! clear IncSearch
+hi! clear Visual
+hi! clear SignColumn
+hi! Search         cterm=none      ctermfg=15   ctermbg=3
+hi! IncSearch      cterm=none      ctermfg=15   ctermbg=11
+hi! Visual                                      ctermbg=0
+hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
+hi! CursorLineNr   cterm=none      ctermfg=7    ctermbg=none
+hi! NonText        cterm=none      ctermfg=8    ctermbg=none
+hi! link LineNr      NonText
+hi! link VertSplit   NonText
+hi! link Folded      NonText
+hi! link FoldColumn  NonText
+hi! link Conceal     OtherType
 
 " menus and messages
+hi! Underlined     cterm=underline ctermfg=4    ctermbg=none
+hi! Directory      cterm=none      ctermfg=12   ctermbg=none
 hi! ModeMsg        cterm=bold      ctermfg=4    ctermbg=none
-hi! MsgArea        cterm=none      ctermfg=none ctermbg=none
 hi! Question       cterm=none      ctermfg=3    ctermbg=none
+hi! MsgArea        cterm=none      ctermfg=none ctermbg=none
 hi! ToolbarLine    cterm=none      ctermfg=none ctermbg=8
 hi! Pmenu          cterm=none      ctermfg=none ctermbg=0
 hi! PmenuSel       cterm=none      ctermfg=none ctermbg=4
@@ -152,7 +120,6 @@ hi! link TabLineSel  SpecialComment
 hi! link TabLine     ToolbarButton
 hi! link TabLineFill ToolbarButton
 hi! link MoreMsg     ModeMsg
-hi! link NonText     LineNr
 hi! link Ignore      NonText
 hi! link EndOfBuffer NonText
 hi! link SpecialKey  NonText
@@ -162,12 +129,12 @@ hi! clear StatusLine
 hi! clear StatusLineNC
 hi! StatusLine     cterm=none                   ctermbg=0
 hi! StatusLineNC   cterm=none      ctermfg=7    ctermbg=0
-hi! SLGitInfo      cterm=reverse   ctermfg=7    ctermbg=none
-hi! SLFileInfo     cterm=none                   ctermbg=8
+hi! SLGitDimmed      cterm=reverse   ctermfg=7    ctermbg=none
+hi! SLFileDimmed     cterm=none                   ctermbg=8
 hi! SLFilePath     cterm=none      ctermfg=7    ctermbg=0
 hi! SLFileName     cterm=bold                   ctermbg=0
-hi! link SLGitInfoNC      StatusLineNC
-hi! link SLFileInfoNC     StatusLineNC
+hi! link SLGitDimmedNC      StatusLineNC
+hi! link SLFileDimmedNC     StatusLineNC
 hi! link SLFilePathNC     StatusLineNC
 hi! link SLFileNameNC     StatusLineNC
 hi! link StatusLineTerm   StatusLine
@@ -182,9 +149,9 @@ hi! DiffAdd                        ctermfg=10   ctermbg=0
 hi! DiffChange                                  ctermbg=0
 hi! DiffDelete                     ctermfg=9    ctermbg=0
 hi! DiffText                       ctermfg=11   ctermbg=0
-hi! DiffAdded                      ctermfg=2
-hi! DiffChanged                    ctermfg=none
-hi! DiffRemoved                    ctermfg=1
+hi! DiffAdded                      ctermfg=2    ctermbg=none
+hi! DiffChanged                    ctermfg=none ctermbg=none
+hi! DiffRemoved                    ctermfg=1    ctermbg=none
 hi! link diffNewFile SpecialComment
 hi! link diffFile    SpecialComment
 hi! link diffLine    SpecialComment
@@ -193,9 +160,9 @@ hi! link diffSubname SpecialComment
 " ALE
 hi! link ALEVirtualTextError        ErrorMsg
 hi! link ALEVirtualTextWarning      WarningMsg
-hi! link ALEVirtualTextInfo         MyParens
-hi! link ALEVirtualTextStyleError   ALEVirtualTextInfo
-hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
+hi! link ALEVirtualTextDimmed         MyParens
+hi! link ALEVirtualTextStyleError   ALEVirtualTextDimmed
+hi! link ALEVirtualTextStyleWarning ALEVirtualTextDimmed
 "hi! link ALEErrorLine    Normal
 "hi! link ALEWarningLine  Normal
 
@@ -204,14 +171,14 @@ hi! CocHighlightText                                    ctermbg=0
 hi! CocVirtualText         cterm=none      ctermfg=8    ctermbg=0
 hi! CocErrorFloat          cterm=none      ctermfg=1    ctermbg=0
 hi! CocWarningFloat        cterm=none      ctermfg=3    ctermbg=0
-hi! CocInfoFloat           cterm=none      ctermfg=none ctermbg=0
+hi! CocDimmedFloat           cterm=none      ctermfg=none ctermbg=0
 hi! CocHintFloat           cterm=none      ctermfg=12   ctermbg=0
 hi! link CocErrorSign          ErrorMsg
 hi! link CocErrorVirtualText   CocErrorFloat
 hi! link CocWarningSign        WarningMsg
 hi! link CocWarningVirtualText CocWarningFloat
-hi! link CocInfoSign           InfoMsg
-hi! link CocInfoVirtualText    CocInfoFloat
+hi! link CocDimmedSign           DimmedMsg
+hi! link CocDimmedVirtualText    CocDimmedFloat
 hi! link CocHintSign           HintMsg
 hi! link CocHintVirtualText    CocHintFloat
 hi! link CocHighlightRead      CocHighlightText
@@ -220,7 +187,7 @@ hi! link CocHighlightRead      CocHighlightText
 "hi! link CopilotSuggestion    NonText
 "hi! link CopilotAnnotation    Comment
 hi! link CopilotWelcome       ModeMsg
+hi! link CopilotPrompt        NonText
 hi! link CopilotSeparatorLine NonText
 hi! link CopilotSeparatorIcon Normal
-hi! link CopilotPrompt        NonText
 "hi! link CopilotWaiting       Comment
