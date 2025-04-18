@@ -46,17 +46,13 @@ augroup vimrc
     "\|  syntax enable
 
     " for non-text files: load default syntax, show guides, use easytags
-    let textFiletypes = ['vimwiki', 'markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', 'yaml', '']
+    let s:textFiletypes = ['vimwiki', 'markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', '']
     autocmd Colorscheme,BufWinEnter *
-    \       call s:UpdateIndentGuides()
-    \|  if index(textFiletypes, &filetype) < 0
+    \   if index(s:textFiletypes, &filetype) < 0
     \|      runtime after/syntax/default.vim
     \|      setlocal nospell
-    \|  else
-    \|      setlocal spell
     \|  endif
-    autocmd FileType help,qf,bib
-    \   setlocal nospell
+    \|  call s:UpdateIndentGuides()
     autocmd OptionSet shiftwidth
     \   call s:UpdateIndentGuides()
 
@@ -65,9 +61,6 @@ augroup vimrc
     \   if !exists('g:syntax_on')
     \|      colorscheme sunyata
     \|  endif
-
-    " disable syntax when losing focus
-    "autocmd FocusLost * syntax off
 
     " autosave named files
     autocmd CursorHold,FocusGained,FocusLost ?* nested
