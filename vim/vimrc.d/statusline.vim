@@ -59,7 +59,7 @@ function! s:FormatField(str, max_len)
         let l:str = l:start_part . '…' . l:end_part
     elseif len(l:str) < a:max_len
         let l:padding_len = a:max_len - len(l:str)
-        let l:str = l:str . printf('%*s', l:padding_len, '')
+        let l:str .= repeat(' ', l:padding_len)
     endif
     return l:str
 endfunction
