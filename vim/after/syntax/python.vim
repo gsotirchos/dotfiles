@@ -1,7 +1,7 @@
 " syntax region pythonLongComment
-" \   start="\"\"\""
-" \   end="\"\"\""
-" \   containedin=.*String.*
+"     \ start="\"\"\""
+"     \ end="\"\"\""
+"     \ containedin=.*String.*
 
 syntax match myOperator "\A" contained containedin=pythonOperator display
 syntax match myOperator "\.\.\." containedin=MembOperator display

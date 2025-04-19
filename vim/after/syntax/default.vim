@@ -7,9 +7,9 @@ syntax match MyUrl "http.:\/\/\S*" containedin=.*Comment.* contained display
 
 " highlight %Tag(...)% in comments
 syntax region MyTagMark
-\   start="\(\".*\)\@<!\(% *Tag *(\)\@<="
-\   end="\() *%\)\@="
-\   containedin=.*Comment.* contained oneline
+    \ start="\(\".*\)\@<!\(% *Tag *(\)\@<="
+    \ end="\() *%\)\@="
+    \ containedin=.*Comment.* contained oneline
 
 " assignemnt and logical operators
 syntax match MyParens "[(){}\[\]<>,;]" containedin=NONE display
