@@ -11,7 +11,7 @@
 "nnoremap <Leader>cu       <Plug>Commentary<Plug>Commentary
 
 nnoremap <Leader>c<Space> :echo "🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣"<Return>
-onoremap <Leader>c<Space> :echo "🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣"<Return>
+vnoremap <Leader>c<Space> :echo "🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣"<Return>
 
 augroup commentary
     autocmd FileType *
