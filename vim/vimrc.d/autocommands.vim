@@ -19,7 +19,7 @@ function! s:SetSignColumn(file_name, is_modifiable)
 endfunction
 
 function! s:UpdateIndentGuides()
-    let &l:listchars = &g:listchars . ',leadmultispace:│' . repeat(' ', &sw - 1)
+    let &l:listchars = &g:listchars . ',leadmultispace: ' . repeat(repeat(' ', &sw - 1) . '│', 5)
 endfunction
 
 augroup vimrc
