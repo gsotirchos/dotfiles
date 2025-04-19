@@ -23,6 +23,8 @@ theme = light:WIP, dark:xcode
 keybind = super+up=jump_to_prompt:-2
 keybind = super+down=jump_to_prompt:+2
 keybind = super+enter=unbind
+keybind = super+ctrl+right=unbind
+keybind = super+ctrl+left=unbind
 keybind = super+1=unbind
 keybind = super+2=unbind
 keybind = super+3=unbind
