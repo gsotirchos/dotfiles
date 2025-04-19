@@ -155,3 +155,4 @@ nnoremap Q     <Nop>
 nnoremap <C-z> <Nop>
 nnoremap <C-]> <Nop>
 nnoremap <Leader>Q :close<Return>
+command! -nargs=0 Q :q
