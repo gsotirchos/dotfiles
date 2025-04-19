@@ -7,7 +7,7 @@ filetype off  " required
 runtime vimrc.d/plugins.vim
 filetype plugin indent on
 
-runtime $VIMRUNTIME/defaults.vim
+source $VIMRUNTIME/defaults.vim
 
 " saving
 set updatetime=400  " autoupdate delay
