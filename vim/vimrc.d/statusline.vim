@@ -1,19 +1,16 @@
-let s:MAX_PATH_LENGTH = 50
-let s:HALF_NO_NAME_LENGTH = len('[No Name]') / 2
-
 function! s:GetRightSideContent()
     let lines_field = ' %' . (b:numberwidth + 0) . '(L%l%)/%-' . (b:numberwidth + 0) . '(%L%)'
     let columns_field = '%4(C%c%)/%-4(' . len(getline('.')) . '%)'
-    return '%=' . b:SLFileInfo . lines_field . columns_field . '%*'
+    return '%=' . b:SLFileInfoHL . lines_field . columns_field . '%*'
 endfunction
 
 function! s:GetLeftSideContent()
     if (&filetype == 'qf')  " LocationList or QuickFix List
-        return b:SLFileInfo . ' %q %*'
+        return b:SLFileInfoHL . ' %q %*'
     elseif (&filetype =~# '^.*preview.*$')  " Preview window
-        return b:SLFileInfo . '%( %Y %)%*'
+        return b:SLFileInfoHL . '%( %Y %)%*'
     elseif (&buftype ==# 'terminal')  " Terminal window
-        return b:SLFileInfo . '%( %t %)%*'
+        return b:SLFileInfoHL . '%( %t %)%*'
     else
         return s:GetRegularEditorLeftSide()
     endif
@@ -27,30 +24,44 @@ function! s:GetRegularEditorLeftSide()
     let git_info_field =  '%( %{get(g:, "coc_git_status", "")} %)'
     let parent_path_field = s:GetParentDirectoryField()
     let file_name_field = '%t%m%a '
-    let left_hand_side = b:SLFileInfo . filetype_field . b:SLGitInfo . git_info_field . b:SLFilePath .  parent_path_field . b:SLFileName . file_name_field . '%*'
+    let left_hand_side = b:SLFileInfoHL . filetype_field . b:SLGitInfoHL . git_info_field . b:SLFilePathHL .  parent_path_field . b:SLFileNameHL . file_name_field . '%*'
     return left_hand_side
 endfunction
 
 function! s:GetParentDirectoryField()
-    let filetype_field_length = empty(&filetype) ? 0 : len(' ' . &filetype . ' ')
-    let git_info_field_length = empty(get(g:, 'coc_git_status', '')) ? 0 : len(' ' . g:coc_git_status . ' ')
-    let half_name_length = max([1, float2nr(floor(len(expand('%:~:t')) / 2.0))])
-    if (&filetype == '')
-        let half_name_length = s:HALF_NO_NAME_LENGTH
-    endif
-
-    let path_field_length = s:CalculatePathFieldLength(filetype_field_length, git_info_field_length, half_name_length)
-    let parent_path_field = '%<%-' . path_field_length . '( %{b:parent_path_cached}%)'
+    let l:path_field_length = s:CalculatePathFieldLength()
+    let parent_path_field = '%( '. s:FormatField(b:parent_path_cached, l:path_field_length) . '%)'
     return parent_path_field
 endfunction
 
-function! s:CalculatePathFieldLength(filetype_field_length, git_info_field_length, half_name_length)
-    return max([
-        \0,
-        \min([
-            \s:MAX_PATH_LENGTH,
-            \winwidth(0) / 2 - a:filetype_field_length - a:git_info_field_length - a:half_name_length])
-        \])
+function! s:CalculatePathFieldLength()
+    let l:filetype_field_length = empty(&filetype) ? 0 : len(' ' . &filetype . ' ')
+    let l:git_info_field_length = empty(get(g:, 'coc_git_status', '')) ? 0 : len(' ' . g:coc_git_status . ' ')
+    if (&filetype == '')
+        let l:half_name_length = len('[No Name]') / 2
+    else
+        let l:half_name_length = max([1, float2nr(floor(len(expand('%:t')) / 2.0))])
+    endif
+    return max([0, winwidth(0) / 2 - l:filetype_field_length - l:git_info_field_length - l:half_name_length - 1])
+endfunction
+
+function! s:FormatField(str, max_len)
+    if a:max_len <= 4
+        return ""
+    endif
+    let l:str = a:str
+    if len(l:str) > a:max_len
+        let l:keep_len = a:max_len - 1
+        let l:start_len = float2nr(floor(l:keep_len / 2.0))
+        let l:end_len = l:keep_len - l:start_len
+        let l:start_part = a:str[: l:start_len - 1]
+        let l:end_part = a:str[len(a:str) - l:end_len :]
+        let l:str = l:start_part . '…' . l:end_part
+    elseif len(l:str) < a:max_len
+        let l:padding_len = a:max_len - len(l:str)
+        let l:str = l:str . printf('%*s', l:padding_len, '')
+    endif
+    return l:str
 endfunction
 
 function! s:UpdateParentPathCache()
@@ -64,17 +75,17 @@ function! s:UpdateParentPathCache()
 endfunction
 
 function! s:SetFocusedColors()
-    let b:SLFileInfo = '%#SLFileInfo#'
-    let b:SLFilePath = '%#SLFilePath#'
-    let b:SLFileName = '%#SLFileName#'
-    let b:SLGitInfo = '%#SLGitInfo#'
+    let b:SLFileInfoHL = '%#SLFileInfo#'
+    let b:SLFilePathHL = '%#SLFilePath#'
+    let b:SLFileNameHL = '%#SLFileName#'
+    let b:SLGitInfoHL = '%#SLGitInfo#'
 endfunction
 
 function! s:SetUnfocusedColors()
-    let b:SLFileInfo = '%#SLFileInfoNC#'
-    let b:SLFilePath = '%#SLFilePathNC#'
-    let b:SLFileName = '%#SLFileNameNC#'
-    let b:SLGitInfo = '%#SLGitInfoNC#'
+    let b:SLFileInfoHL = '%#SLFileInfoNC#'
+    let b:SLFilePathHL = '%#SLFilePathNC#'
+    let b:SLFileNameHL = '%#SLFileNameNC#'
+    let b:SLGitInfoHL = '%#SLGitInfoNC#'
 endfunction
 
 function! MyStatusline()
