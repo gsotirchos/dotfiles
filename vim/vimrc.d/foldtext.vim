@@ -1,17 +1,45 @@
-function! MyFoldText()
-    let l:first_line = getline(v:foldstart)
-    let l:first_non_space_pos = match(l:first_line, '\S')
-    let l:last_space_pos = max([0, l:first_non_space_pos  - 1])
-    let l:fold_left_orig = substitute(l:first_line, '\(^\s*\S.\{,80}\S\)\%(\s.\{-}\)\=$', '\1', 'g')
-    let l:leading_spaces = strpart(l:fold_left_orig, 0, l:last_space_pos + 1 - &shiftwidth)
-    let l:num_dashes = &shiftwidth - 2
-    let l:dashes = repeat('─', max([0, l:num_dashes]))
-    let l:fold_char = len(getline(v:foldend + 1)) == 0 ? '└' : '├'
-    let l:fold_left =
-        \ l:leading_spaces . l:fold_char . l:dashes . ' '
-        \ . strpart(l:fold_left_orig, l:first_non_space_pos)
+function! s:FoldText()
+    let l:fold_left = substitute(getline(v:foldstart), '\%(^\s*\)\=\(\S.\{,50}\S\)\%(\s.\{-}\)\=$', '\1', 'g')
     let l:fold_right = substitute(getline(v:foldend), '^\%(.\{-}\s*\)\=\(\S.\{,25}\)$', '\1', 'g')
-    return l:fold_left . ' ... ' . l:fold_right . '  (' . (v:foldend - v:foldstart + 1) . ' lines)'
+    let l:fold_prefix = s:GetFoldPrefix()
+    let l:folded_lines_count = (v:foldend - v:foldstart + 1)
+    return l:fold_prefix . l:fold_left . ' ... ' . l:fold_right . '  (' . l:folded_lines_count . ' lines)'
 endfunction
 
-set foldtext=MyFoldText()
+function! s:GetFoldPrefix()
+    let l:first_line = getline(v:foldstart)
+    let l:first_non_space_pos = match(l:first_line, '\S')
+    let l:last_leading_char_pos = max([0, l:first_non_space_pos - &shiftwidth])
+    let b:leadmultispace = s:GetLeadMultispace()
+    if len(b:leadmultispace) == 0
+        let l:fold_lead_chars = strpart(l:first_line, 0, l:last_leading_char_pos, v:true)
+    elseif len(b:leadmultispace) >= l:last_leading_char_pos
+        let l:fold_lead_chars = strpart(b:leadmultispace, 0, l:last_leading_char_pos, v:true)
+    elseif len(b:leadmultispace) < l:last_leading_char_pos
+        let l:padding_length = l:last_leading_char_pos - len(b:leadmultispace)
+        let l:fold_lead_chars = b:leadmultispace . repeat(' ', l:padding_length)
+    endif
+    let l:fold_dashes = repeat('─', max([0, &shiftwidth - 2]))
+    let l:fold_char = s:NestLevelDecreased() ? '└' : '├'
+    return l:fold_lead_chars . l:fold_char . l:fold_dashes . ' '
+endfunction
+
+function! s:GetLeadMultispace()
+    if exists('b:leadmultispace')
+        return b:leadmultispace
+    endif
+    let l:listchars_pairs = split(&listchars, ',')
+    for l:pair in l:listchars_pairs
+        let l:split_pair = split(l:pair, ':')
+        if l:split_pair[0] == 'leadmultispace'
+            return l:split_pair[1]
+        endif
+    endfor
+    return ''
+endfunction
+
+function! s:NestLevelDecreased()
+    return match(getline(v:foldstart - 1), '\S') - match(getline(v:foldend + 1), '\S') > 0
+endfunction
+
+set foldtext=s:FoldText()
