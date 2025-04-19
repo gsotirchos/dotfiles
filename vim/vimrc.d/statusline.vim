@@ -46,11 +46,11 @@ endfunction
 
 function! s:CalculatePathFieldLength(filetype_field_length, git_info_field_length, half_name_length)
     return max([
-    \   0,
-    \   min([
-    \       s:MAX_PATH_LENGTH,
-    \       winwidth(0) / 2 - a:filetype_field_length - a:git_info_field_length - a:half_name_length])
-    \ ])
+        \0,
+        \min([
+            \s:MAX_PATH_LENGTH,
+            \winwidth(0) / 2 - a:filetype_field_length - a:git_info_field_length - a:half_name_length])
+        \])
 endfunction
 
 function! s:UpdateParentPathCache()
@@ -86,11 +86,11 @@ endfunction
 augroup statusline
     autocmd!
     autocmd! BufReadPost,BufWrite *
-    \   call s:UpdateParentPathCache()
+        \ call s:UpdateParentPathCache()
     autocmd! BufEnter,BufWinEnter,FocusGained *
-    \   call s:SetFocusedColors()
-    \|  setlocal statusline=%{%MyStatusline()%}
+        \ call s:SetFocusedColors()
+        \|setlocal statusline=%{%MyStatusline()%}
     autocmd! BufLeave,FocusLost *
-    \   call s:SetUnfocusedColors()
-    \|  setlocal statusline=%{%MyStatusline()%}
+        \ call s:SetUnfocusedColors()
+        \|setlocal statusline=%{%MyStatusline()%}
 augroup END

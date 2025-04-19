@@ -92,7 +92,7 @@ hi! clear Search
 hi! clear IncSearch
 hi! clear Visual
 hi! clear SignColumn
-hi! Search         cterm=none      ctermfg=15   ctermbg=3
+hi! Search                                      ctermbg=0
 hi! IncSearch      cterm=none      ctermfg=15   ctermbg=11
 hi! Visual                                      ctermbg=0
 hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
@@ -167,7 +167,6 @@ hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
 "hi! link ALEWarningLine             Normal
 
 " CoC
-hi! CocHighlightText                                    ctermbg=0
 hi! CocVirtualText         cterm=none      ctermfg=8    ctermbg=0
 hi! CocErrorFloat          cterm=none      ctermfg=1    ctermbg=0
 hi! CocWarningFloat        cterm=none      ctermfg=3    ctermbg=0
@@ -181,6 +180,7 @@ hi! link CocInfoSign           InfoMsg
 hi! link CocInfoVirtualText    CocInfoFloat
 hi! link CocHintSign           HintMsg
 hi! link CocHintVirtualText    CocHintFloat
+hi! link CocHighlightText      Search
 hi! link CocHighlightRead      CocHighlightText
 
 " Copilot

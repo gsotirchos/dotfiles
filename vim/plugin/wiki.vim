@@ -9,16 +9,16 @@ let g:wiki_global_load = 0
 let g:wiki_completion_enabled = 0
 
 let g:wiki_mappings_global = {
-\   'n_<Plug>(wiki-link-next)': '<A-]>',
-\   'n_<Plug>(wiki-link-prev)': '<A-[>',
-\   'n_<Plug>(wiki-journal-prev)': '<A-}>',
-\   'n_<Plug>(wiki-journal-next)': '<A-{>',
+    \'n_<Plug>(wiki-link-next)': '<A-]>',
+    \'n_<Plug>(wiki-link-prev)': '<A-[>',
+    \'n_<Plug>(wiki-journal-prev)': '<A-}>',
+    \'n_<Plug>(wiki-journal-next)': '<A-{>',
 \}
 
 augroup MyWikiAutocmds
 autocmd!
 autocmd User WikiBufferInitialized
-\   let &l:path = substitute(expand(g:wiki_root), ' ', '\\ ', 'g')
+    \ let &l:path = substitute(expand(g:wiki_root), ' ', '\\ ', 'g')
 augroup END
 
 " useful list management plugins

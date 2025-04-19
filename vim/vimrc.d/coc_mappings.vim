@@ -9,9 +9,9 @@ inoremap <silent> <expr> <C-p> coc#pum#visible() ? coc#pum#prev(1) : ''
 " Make <Return> to accept selected completion item or notify coc.nvim to format
 " <C-g>u breaks current undo, please make your own choice
 inoremap <silent> <expr> <Return>
-\   coc#pum#visible() ?
-\       coc#pum#confirm() :
-\       '<C-g>u<Return><C-r>=coc#on_enter()<Return>'
+    \ coc#pum#visible() ?
+        \ coc#pum#confirm() :
+        \ '<C-g>u<Return><C-r>=coc#on_enter()<Return>'
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
