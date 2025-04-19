@@ -4,14 +4,14 @@
 "nmap gcc <Plug>CommentaryLine
 "nmap gcu <Plug>Commentary<Plug>Commentary
 
-"nnoremap <Leader>cc       <Plug>Commentary
-"onoremap <Leader>c<Space> <Plug>Commentary
 "xnoremap <Leader>c<Space> <Plug>Commentary
 "nnoremap <Leader>c<Space> <Plug>CommentaryLine
+"onoremap <Leader>c<Space> <Plug>Commentary
+"nnoremap <Leader>cc       <Plug>Commentary
 "nnoremap <Leader>cu       <Plug>Commentary<Plug>Commentary
 
-nnoremap <Leader>c<Space> <Nop>
-onoremap <Leader>c<Space> <Nop>
+nnoremap <Leader>c<Space> :echo "🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣"<Return>
+onoremap <Leader>c<Space> :echo "🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣"<Return>
 
 augroup commentary
     autocmd FileType *
