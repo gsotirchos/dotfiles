@@ -200,7 +200,7 @@ main() {
     fi
 
     export PS1="$(__build_prompt "${is_ssh_session}")"  # would be set by __git_ps1 ${...}
-    export PS2='\001\e[90m\002┃\001\e[0m\002 '
+    export PS2='\001\e[90m\002│\001\e[0m\002 '
 }
 
 main "$@"
