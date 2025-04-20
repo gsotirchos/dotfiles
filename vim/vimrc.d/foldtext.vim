@@ -1,5 +1,5 @@
 function! s:FoldText()
-    let l:fold_left = substitute(getline(v:foldstart), '\%(^\s*\)\=\(\S.\{,50}\S\)\%(\s.\{-}\)\=$', '\1', 'g')
+    let l:fold_left = substitute(getline(v:foldstart), '\%(^\s*\)\=\(\S.\{,50}\)\%(\s.\{-}\)\=$', '\1', 'g')
     let l:fold_right = substitute(getline(v:foldend), '^\%(.\{-}\s*\)\=\(\S.\{,25}\)$', '\1', 'g')
     let l:fold_prefix = s:GetFoldPrefix()
     let l:folded_lines_count = (v:foldend - v:foldstart + 1)
@@ -32,6 +32,8 @@ function! s:GetLeadMultispace()
     for l:pair in l:listchars_pairs
         let l:split_pair = split(l:pair, ':')
         if l:split_pair[0] == 'leadmultispace'
+            return l:split_pair[1]
+        elseif l:split_pair[0] == 'multispace'
             return l:split_pair[1]
         endif
     endfor
