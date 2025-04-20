@@ -1,11 +1,8 @@
-[tool.autopep8]
-max-line-length = 110
-max-complexity = 25
-
+# https://docs.astral.sh/ruff/configuration
 [tool.ruff]
 line-length = 100
 cache-dir = "~/.cache/ruff"
-target-version = "py310"
+target-version = "py39"
 exclude = [
     ".bzr",
     ".direnv",
@@ -30,19 +27,35 @@ exclude = [
     "venv",
 ]
 
+# https://docs.astral.sh/ruff/rules
 [tool.ruff.lint]
-select = ["E", "F", "B"]
-ignore = ["B905"]
-fixable = [
-    "A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN",
-    "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN",
-    "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI",
-    "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-unfixable = ["F401", "F841", "B007"]
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-[tool.ruff.lint.mccabe]
-max-complexity = 25
+select = [
+    "E", "W",  # pep8/pycodestyle conventions
+    "B",  # flake8-bugbear
+    "NPY",  # numpy-specific
+    "PERF",  # perfilint
+    "C90",  # McCabe complexity
+]
+ignore = [  # ignored rules for linting:
+    #"B905"  # zip-without-explicit-strict
+]
+unfixable = [  # ignored rules for fixing:
+    "F401",  # unused-import
+    "F841",  # unused-variable
+    "B007",  # unused-loop-control-variable
+]
 
 [tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["E402", "F403"]
+"__init__.py" = [
+    "E402",  # module-import-not-at-top-of-file
+    "F403"  # undefined-local-with-import-star
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 5
+
+
+# TODO: remove
+[tool.autopep8]
+max-line-length = 100
+max-complexity = 5
