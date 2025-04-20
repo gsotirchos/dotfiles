@@ -115,7 +115,7 @@ if [[ -f ~/.conda/conda_init.sh ]]; then
     # lazy conda initialization
     conda() {
         # TIME ~500ms
-        echo -ne "${White}Initializing conda...${Reset}"
+        echo -ne "${White}Initializing conda ... ${Reset}"
         source ~/.conda/conda_init.sh
         echo -e "${White} done.${Reset}"
         conda "$@"
