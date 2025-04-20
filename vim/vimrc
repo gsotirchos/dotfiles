@@ -52,12 +52,12 @@ set splitright  " open new vertical windows at right
 set previewheight=3  " set preview window height to 3
 set autoindent  " autointent
 set expandtab  " replace tabs with spaces
-set tabstop=4      " ┐
+set tabstop=4 "      ┐
 set softtabstop=4  " ├ 4 spaces per Tab, fold every 4
-set shiftwidth=4   " ┘
+set shiftwidth=4  "  ┘
 set nojoinspaces  " don't insert 2 spaces after '.', '?' or '!'
 set nofixendofline  " preserve EOL and the end of file
-set backspace=indent,eol,start  " allow backspace in insert mode
+set backspace=  " disable backspace in insert mode
 set scrolloff=3  " lines to scoll before the reaching last
 set sidescrolloff=5  " columnts to sroll before reaching the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
@@ -72,7 +72,7 @@ set nolangremap  " disable a legacy behavior that can break plugin maps
 let &clipboard = has('unnamedplus') ? 'unnamed,unnamedplus' : 'unnamed'
 set viewoptions=folds,cursor,curdir
 set diffopt=internal,filler,closeoff,foldcolumn:0  "  ,inline:simple
-set path=**  " search all sub-directories
+let &path = $PWD == $HOME ? $PWD : '**'  " search all sub-directories except in $HOME
 
 " folding
 set foldenable  " enable folding
@@ -89,7 +89,7 @@ set incsearch  " do incremental search
 
 " autocompletion
 set completeopt=menuone,noinsert,preview,popup  " select 1st item without inserting
-set complete=t,.,i  " scan tags, curr. buffer, incl. files
+set complete=t,.,i,kspell  " scan tags, this, included, dictionary
 set shortmess=mnrxoTWF  " shorter messages
 set wildmenu  " display completion matches in a status line
 set wildoptions=pum  " and use popup menu for wildmenu instead

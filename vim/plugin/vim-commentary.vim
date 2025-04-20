@@ -10,8 +10,8 @@
 "nnoremap <Leader>cc       <Plug>Commentary
 "nnoremap <Leader>cu       <Plug>Commentary<Plug>Commentary
 
-nnoremap <Leader>c<Space> :echo "🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣"<Return>
-vnoremap <Leader>c<Space> :echo "🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣"<Return>
+nnoremap <Leader>c<Space> :echo "🗿🗿🗿🗿🗿🗿🗿🗿🗿🗿"<Return>
+vnoremap <Leader>c<Space> <Esc>:echo "🗿🗿🗿🗿🗿🗿🗿🗿🗿🗿"<Return>
 
 augroup commentary
     autocmd FileType *

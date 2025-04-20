@@ -10,7 +10,9 @@ Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 Plugin 'github/copilot.vim'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'lervag/wiki.vim'
+Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-rsi'
+Plugin 'wikitopian/hardmode'
 "Plugin 'gsotirchos/copilot-chat.vim'  " TODO: 'DanBradbury/copilot-chat.vim'
 call vundle#end()
