@@ -149,6 +149,7 @@ vnoremap P p
 
 " Other mappings
 nnoremap <silent> <Space> za
+nnoremap <silent> <S-Space> zA
 nnoremap <silent> o o<Esc>
 nnoremap <silent> O O<Esc>
 nnoremap Q     <Nop>

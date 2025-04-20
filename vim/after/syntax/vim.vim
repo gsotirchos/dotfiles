@@ -28,6 +28,7 @@ hi! link vimUserCmdAttrNargs String
 hi! link vimSynRegOpt        vimSynContains
 hi! link vimSynRegPat        Normal
 hi! link vimSynPatRange      String
+hi! link vimCollection       vimSynPatRange
 hi! link vimPatSep           MyOperator
 hi! link vimPatSepR          Special
 hi! link vimGroup            Identifier
