@@ -22,6 +22,14 @@
     "pyright.inlayHints.functionReturnTypes": false,
     "pyright.inlayHints.variableTypes": false,
     "pyright.inlayHints.parameterTypes": false,
+    //"python.formatting.provider": "ruff",
+    //"python.linting.ruffEnabled": true,
+    //"python.linting.ruffArgs": [
+    //    "--config=~/.dotfiles/pyproject.toml",
+    //],
+    "python.formatting.autopep8Args": [
+        "--global-config=~/.dotfiles/pyproject.toml",
+    ],
 
     // https://github.com/fannheyward/coc-pyright/blob/master/package.json#L185
     // https://github.com/microsoft/pyright/blob/main/docs/configuration.md#diagnostic-settings-defaults

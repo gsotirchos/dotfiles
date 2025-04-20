@@ -1,7 +1,3 @@
-[tool.pylint.'MESSAGES CONTROL']
-disable = "all"
-enable = "syntax-error"
-
 [tool.autopep8]
 max-line-length = 110
 max-complexity = 25
