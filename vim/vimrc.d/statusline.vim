@@ -5,9 +5,11 @@ function! s:GetRightSideContent()
 endfunction
 
 function! s:GetLeftSideContent()
-    if (&filetype == 'qf')  " LocationList or QuickFix List
+    if (&filetype =~# '^.*preview.*$')  " Preview window
+        return b:SLFileInfoHL . '%( %Y %)%*'
+    elseif (&filetype == 'qf')  " LocationList or QuickFix List
         return b:SLFileInfoHL . ' %q %*'
-    elseif (&filetype =~# '^.*preview.*$')  " Preview window
+    elseif (&filetype == 'netrw')  " Preview window
         return b:SLFileInfoHL . '%( %Y %)%*'
     elseif (&buftype ==# 'terminal')  " Terminal window
         return b:SLFileInfoHL . '%( %t %)%*'
@@ -88,7 +90,7 @@ function! s:SetUnfocusedColors()
     let b:SLGitInfoHL = '%#SLGitInfoNC#'
 endfunction
 
-function! MyStatusline()
+function! MyStatusLine()
     let left_hand_side = s:GetLeftSideContent()
     let right_hand_side = s:GetRightSideContent()
     return left_hand_side . right_hand_side
@@ -100,8 +102,8 @@ augroup statusline
         \ call s:UpdateParentPathCache()
     autocmd! BufEnter,BufWinEnter,FocusGained *
         \ call s:SetFocusedColors()
-        \|setlocal statusline=%{%MyStatusline()%}
+        \|setlocal statusline=%{%MyStatusLine()%}
     autocmd! BufLeave,FocusLost *
         \ call s:SetUnfocusedColors()
-        \|setlocal statusline=%{%MyStatusline()%}
+        \|setlocal statusline=%{%MyStatusLine()%}
 augroup END

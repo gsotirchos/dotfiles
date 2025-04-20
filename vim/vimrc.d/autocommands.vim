@@ -104,12 +104,20 @@ augroup vimrc
     autocmd FileType def,sh
         \ set syn=bash
 
+    autocmd FileType netrw
+        \ setlocal bufhidden=delete
+
+    autocmd BufEnter *
+        \ if winnr('$') == 1 && &buftype == 'quickfix'
+            \| quit
+        \| endif
+
     " close loclists with buffer
     autocmd QuitPre *
         \ if empty(&buftype)
             \|lclose
         \|endif
 
-    autocmd BufWinLeave * silent! mkview
+    autocmd BufWinLeave ?* mkview
     autocmd BufWinEnter * silent! loadview
 augroup END
