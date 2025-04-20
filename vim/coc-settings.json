@@ -1,5 +1,11 @@
 {
-    "suggest.autoTrigger": "trigger",
+    "suggest.autoTrigger": "none",
+    // invoke with `call CocAction('diagnosticRefresh')` in autocommand
+    //"diagnostic.autoRefresh": false,
+    //"diagnostic.enable": false,
+    "pullDiagnostic.onChange": false,
+    "signature.enable": false,
+    "inlayHint.enable": false,
 
     "diagnostic.hintSign": "▐",
     "diagnostic.infoSign": "▐",
@@ -19,9 +25,13 @@
     "git.stagedDecorator": "+",
     "git.untrackedDecorator": "%",
 
-    "pyright.inlayHints.functionReturnTypes": false,
-    "pyright.inlayHints.variableTypes": false,
-    "pyright.inlayHints.parameterTypes": false,
+    // https://github.com/fannheyward/coc-pyright/blob/master/package.json#L185
+    // https://github.com/microsoft/pyright/blob/main/docs/configuration.md#diagnostic-settings-defaults
+    "python.analysis.typeCheckingMode": "off",  // static type checking
+    //"python.analysis.diagnosticSeverityOverrides": {
+    //    "reportIncompatibleVariableOverride": "none",
+    //    "reportIncompatibleMethodOverride": "none",
+    //}
     "python.formatting.provider": "ruff",
     "python.linting.ruffEnabled": true,
     "python.linting.ruffArgs": [
@@ -30,14 +40,9 @@
     "python.formatting.autopep8Args": [
         "--global-config=~/.dotfiles/pyproject.toml",
     ],
-
-    // https://github.com/fannheyward/coc-pyright/blob/master/package.json#L185
-    // https://github.com/microsoft/pyright/blob/main/docs/configuration.md#diagnostic-settings-defaults
-    "python.analysis.typeCheckingMode": "off",
-    //"python.analysis.diagnosticSeverityOverrides": {
-    //    "reportIncompatibleVariableOverride": "none",
-    //    "reportIncompatibleMethodOverride": "none",
-    //}
+    //"pyright.inlayHints.functionReturnTypes": false,
+    //"pyright.inlayHints.variableTypes": false,
+    //"pyright.inlayHints.parameterTypes": false,
 
     // https://github.com/fannheyward/coc-texlab?tab=readme-ov-file#configuration
     // https://github.com/latex-lsp/texlab/wiki/Configuration
