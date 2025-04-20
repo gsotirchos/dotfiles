@@ -19,6 +19,9 @@ augroup MyWikiAutocmds
 autocmd!
 autocmd User WikiBufferInitialized
     \ let &l:path = substitute(expand(g:wiki_root), ' ', '\\ ', 'g')
+    \|if getcwd() != g:wiki_root
+    \|    silent! exec 'cd ' . g:wiki_root
+    \|endif
 augroup END
 
 " useful list management plugins
