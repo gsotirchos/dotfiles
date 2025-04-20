@@ -1,21 +1,25 @@
-function! s:SetSyntax(num_lines)
+function! s:UpdateSyntax(num_lines)
     if a:num_lines >= 2000
         syntax sync maxlines=2000
-        set redrawtime=10000
+        setlocal redrawtime=10000
     else
         syntax sync fromstart
-        "set redrawtime=2000
+        "setlocal redrawtime=2000
     endif
 endfunction
 
-function! s:SetSignColumn(file_name, is_modifiable)
+function! s:UpdateSignColumn(file_name, is_modifiable)
     "if empty(a:file_name) || !a:is_modifiable
-        let &signcolumn = 'no'
+        setlocal signcolumn=no
         let b:gutterwidth = 0
     "elseif (&signcolumn =~ '')
-    "    let &signcolumn = 'yes'
+    "    setlocal signcolumn=yes
     "    let b:gutterwidth = 2
     "endif
+endfunction
+
+function! s:UpdateBreakindentopt()
+    let &breakindentopt = 'shift:' . (&sw - 1)
 endfunction
 
 function! s:UpdateIndentGuides()
@@ -28,14 +32,14 @@ augroup vimrc
 
     " enable sign column (when appropriate), set textwidth, set wrapping indent
     autocmd BufWinEnter,BufRead,BufWrite *
-        \ call s:SetSyntax(line('$'))
-        \|call s:SetSignColumn(@%, &modifiable)
+        \ call s:UpdateBreakindentopt()
+        \|call s:UpdateSyntax(line('$'))
+        \|call s:UpdateSignColumn(@%, &modifiable)
 
     autocmd BufWinEnter,BufRead,TextChanged,TextChangedI,VimResized *
         \ let b:numberwidth = 1 + float2nr(ceil(log10(line('$') + 1)))
         \|let b:gutterwidth = exists('b:gutterwidth') ? b:gutterwidth : 0
         \|let &textwidth = min([maxwinwidth, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
-        \|let &breakindentopt = 'shift:' . (&ts-1)
         \|let &sidescrolloff = winwidth('%') / 2
 
     " enable syntax
@@ -54,7 +58,9 @@ augroup vimrc
         \|endif
         \|call s:UpdateIndentGuides()
     autocmd OptionSet shiftwidth
-        \ call s:UpdateIndentGuides()
+        \ call s:UpdateBreakindentopt()
+        \|call s:UpdateIndentGuides()
+
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested
