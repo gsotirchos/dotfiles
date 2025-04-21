@@ -1,6 +1,13 @@
-"syntax match texCmdBackslash "\\" containedin=.*tex.*Cmd.* contained display cchar=\
+syn match texCmdBackslash "\\" containedin=texStatement,texTypeStyle,texNewCmd contained conceal
+syn match texStatement "newline" containedin=texStatement contained conceal cchar=⏎
+syn match texSpecialChar "\\\\" containedin=texSpecialChar contained conceal cchar=⏎
+syn match texSpecialChar "\\{" containedin=texSpecialChar contained conceal cchar={
+syn match texSpecialChar "\\}" containedin=texSpecialChar contained conceal cchar=}
+syn match texSpecialChar "\\_" containedin=texSpecialChar contained conceal cchar=_
+syn match texSectionZone "\\ " containedin=texSectionZone conceal cchar=_
 
-"hi! link texCmdBackslash     Dimmed
+
+hi! link texCmdBackslash     Dimmed
 
 hi! link texSection          Statement
 hi! link texDelimiter        MembOperator

@@ -4,6 +4,7 @@
     //"diagnostic.autoRefresh": false,
     //"diagnostic.enable": false,
     "pullDiagnostic.onChange": false,
+    "fileSystemWatch.enable": false,
     "signature.enable": false,
     "inlayHint.enable": false,
 
@@ -60,7 +61,7 @@
         "-outdir=build",
         "%f",
     ],
-    "texlab.build.forwardSearchAfter": true,
+    "texlab.build.forwardSearchAfter": false,
     "texlab.forwardSearch.executable": "/Applications/Skim.app/Contents/SharedSupport/displayline",
     "texlab.forwardSearch.args": [
         //"-r",
@@ -73,7 +74,7 @@
     ],
     "texlab.chktex.onOpenAndSave": true,
     "texlab.formatterLineLength": 9999,
-    "texlab.latexindent.local": "~/.latexindent.yaml",
+    "texlab.latexindent.local": "~/.dotfiles/latexindent.yaml",
     "texlab.latexindent.modifyLineBreaks": true,  // "-m"
     "texlab.latexindent.replacement": "-rv",
 
