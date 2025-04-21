@@ -47,18 +47,16 @@
 
     // https://github.com/fannheyward/coc-texlab?tab=readme-ov-file#configuration
     // https://github.com/latex-lsp/texlab/wiki/Configuration
-    "texlab.build.onSave": true,
+    "texlab.build.onSave": false,
     //"texlab.build.isContinuous": true,
     "texlab.auxDirectory": "build",
     "texlab.build.args": [  // latexmk ...
         "-pdf",
-        "-shell-escape",
         "-verbose",
-        "-file-line-error",
-        "-synctex=1",
-        "-interaction=nonstopmode",
+        "-logfilewarninglist",
         "-bibtex",
         "-outdir=build",
+        "-latexoption=\"-synctex=1 -interaction=nonstopmode -file-line-error -shell-escape\"",
         "%f",
     ],
     "texlab.build.forwardSearchAfter": false,

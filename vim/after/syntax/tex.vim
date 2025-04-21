@@ -9,19 +9,19 @@ syn match texSectionZone "\\ " containedin=texSectionZone conceal cchar=_
 
 hi! link texCmdBackslash     Dimmed
 
-hi! link texSection          Statement
+"hi! link texSection          Statement
+hi! link texBeginEnd         Function
+hi! link texBeginEndModifier Special
 hi! link texDelimiter        MembOperator
 hi! link texRefZone          texBeginEndName
-
 hi! link texDelim            MembOperator
-hi! link texBeginEnd         texStatement
 hi! link texBeginEndName     Identifier
 hi! link texOpt              Function
 hi! link texOptEqual         Normal
 hi! link texPartArgTitle     Normal
 hi! link texPartConcArgTitle SpecialComment
 hi! link texTitleArg         SpecialComment
-hi! link texInputFile        PreProc
+hi! link texInputFile        String
 hi! link texSpecialChar      Special
 hi! link texEnvArgName       Identifier
 hi! link texHrefArgTextC     underlined
