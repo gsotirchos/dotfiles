@@ -142,6 +142,7 @@ vnoremap <silent> <Tab>   >gv
 vnoremap <silent> <S-Tab> <gv
 noremap  <silent> >       <Nop>
 noremap  <silent> <       <Nop>
+inoremap <silent> <S-Tab> <C-d>
 
 " Swap p and P in visual mode (don't replace clipboard)
 vnoremap p P
