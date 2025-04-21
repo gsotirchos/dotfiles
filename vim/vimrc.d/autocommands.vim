@@ -104,9 +104,6 @@ augroup vimrc
     autocmd FileType def,sh
         \ set syn=bash
 
-    autocmd FileType netrw
-        \ setlocal bufhidden=delete
-
     autocmd BufEnter *
         \ if winnr('$') == 1 && &buftype == 'quickfix'
             \| quit
