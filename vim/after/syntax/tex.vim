@@ -5,6 +5,12 @@ syn match texSpecialChar "\\{" containedin=texSpecialChar contained conceal ccha
 syn match texSpecialChar "\\}" containedin=texSpecialChar contained conceal cchar=}
 syn match texSpecialChar "\\_" containedin=texSpecialChar contained conceal cchar=_
 syn match texSectionZone "\\ " containedin=texSectionZone conceal cchar=_
+syn match texBeginEnd "\\begin\|\\end" containedin=texStatement
+
+"syn clear texBadMath
+if !exists("g:tex_no_math")
+    call TexNewMathZone("M","align",1)
+endif
 
 
 hi! link texCmdBackslash     Dimmed

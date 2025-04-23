@@ -29,10 +29,11 @@
     // https://github.com/fannheyward/coc-pyright/blob/master/package.json#L185
     // https://github.com/microsoft/pyright/blob/main/docs/configuration.md#diagnostic-settings-defaults
     "python.analysis.typeCheckingMode": "off",  // static type checking
-    //"python.analysis.diagnosticSeverityOverrides": {
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportUnusedVariable": "none",
     //    "reportIncompatibleVariableOverride": "none",
     //    "reportIncompatibleMethodOverride": "none",
-    //}
+    },
     "python.formatting.provider": "ruff",
     "python.linting.ruffEnabled": true,
     "python.linting.ruffArgs": [
@@ -84,7 +85,6 @@
         "MD007": false,
         "MD031": false,
         "MD032": false,
-        "MD035": false,
         "MD041": false,
         "MD047": false,
     }
