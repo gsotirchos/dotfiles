@@ -71,8 +71,10 @@ nnoremap <Leader>b :buffers<Return>:buffer<Space>
 " Search documentation for the word under cursor
 nnoremap <silent> <Leader>h :call ShowDocumentation()<Return>
 function! ShowDocumentation()
-    if CocAction('hasProvider', 'hover')
-        call CocActionAsync('doHover')
+    if exists('*CocAction')
+        if CocAction('hasProvider', 'hover')
+            call CocActionAsync('doHover')
+        endif
     else
         call feedkeys('K', 'in')
     endif

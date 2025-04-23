@@ -38,7 +38,7 @@ endfunction
 
 function! s:CalculatePathFieldLength()
     let l:filetype_field_length = empty(&filetype) ? 0 : len(' ' . &filetype . ' ')
-    let l:git_info_field_length = empty(get(g:, 'coc_git_status', '')) ? 0 : len(' ' . g:coc_git_status . ' ')
+    let l:git_info_field_length = !exists("g:coc_git_status") ? 0 : len(' ' . get(g:, 'coc_git_status', '') . ' ')
     if (&filetype == '')
         let l:half_name_length = len('[No Name]') / 2
     else

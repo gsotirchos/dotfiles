@@ -2,6 +2,7 @@ font-family = Cascadia Code PL
 font-size = 14
 font-synthetic-style = false
 adjust-cell-width = -5%
+#adjust-cell-height = +5%
 
 window-padding-x = 21
 window-padding-y = 0

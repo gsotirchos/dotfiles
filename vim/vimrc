@@ -57,7 +57,7 @@ set softtabstop=4  " ├ 4 spaces per Tab, fold every 4
 set shiftwidth=4  "  ┘
 set nojoinspaces  " don't insert 2 spaces after '.', '?' or '!'
 set nofixendofline  " preserve EOL and the end of file
-set backspace=  " disable backspace in insert mode
+set backspace=indent,eol,nostop
 set scrolloff=3  " lines to scoll before the reaching last
 set sidescrolloff=5  " columnts to sroll before reaching the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders

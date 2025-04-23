@@ -7,7 +7,7 @@ let g:coc_global_extensions = [
 \   'coc-texlab',
 \]
 
-augroup coc
+augroup coc-nvim
     autocmd!
     autocmd CursorHold, CursorHoldI call CocAction('diagnosticRefresh')
 augroup END
