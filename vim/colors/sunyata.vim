@@ -140,6 +140,14 @@ hi! link SLFileNameNC     StatusLineNC
 hi! link StatusLineTerm   StatusLine
 hi! link StatusLineTermNC StatusLineNC
 
+"netrw
+hi! netrwDir cterm=bold ctermfg=4
+hi! netrwExe cterm=bold ctermfg=2
+hi! netrwSymlink cterm=bold ctermfg=6
+hi! link netrwClassify Dimmed
+hi! link netrwTreebar NonText
+hi! link netrwLink MyOperator
+
 " Vimdiff
 hi! clear DiffAdd
 hi! clear DiffChange
