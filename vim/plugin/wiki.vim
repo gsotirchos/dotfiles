@@ -15,7 +15,7 @@ let g:wiki_mappings_global = {
     \'n_<Plug>(wiki-journal-next)': '<A-{>',
 \}
 
-augroup MyWikiAutocmds
+augroup wiki
 autocmd!
 autocmd User WikiBufferInitialized
     \ let &l:path = substitute(expand(g:wiki_root), ' ', '\\ ', 'g')

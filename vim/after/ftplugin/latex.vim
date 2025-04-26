@@ -1,1 +1,1 @@
-runtime after/ftplugin/tex.vim
+./tex.vim

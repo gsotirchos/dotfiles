@@ -105,4 +105,3 @@ runtime vimrc.d/foldtext.vim
 runtime vimrc.d/statusline.vim
 runtime vimrc.d/autocommands.vim
 runtime vimrc.d/mappings.vim
-runtime vimrc.d/coc_mappings.vim

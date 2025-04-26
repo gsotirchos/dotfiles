@@ -1,3 +1,7 @@
+if get(g:, "coc_enabled", 0) == 0
+    finish
+endif
+
 " Use tab for trigger completion with characters ahead and navigate
 " NOTE: There's always complete item selected by default, you may want to enable
 " no select by `"suggest.noselect": true` in your configuration file
@@ -23,9 +27,6 @@ nmap <silent> <nowait> gd <Plug>(coc-definition)
 nmap <silent> <nowait> gy <Plug>(coc-type-definition)
 nmap <silent> <nowait> gi <Plug>(coc-implementation)
 nmap <silent> <nowait> gr <Plug>(coc-references)
-
-" Highlight the symbol and its references when holding the cursor
-autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " Symbol renaming
 nmap <Leader>rn <Plug>(coc-rename)
