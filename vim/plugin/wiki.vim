@@ -15,13 +15,15 @@ let g:wiki_mappings_global = {
     \'n_<Plug>(wiki-journal-next)': '<A-{>',
 \}
 
-augroup wiki
-autocmd!
-autocmd User WikiBufferInitialized
-    \ let &l:path = substitute(expand(g:wiki_root), ' ', '\\ ', 'g')
-    \|if getcwd() != g:wiki_root
-    \|    silent! exec 'cd ' . g:wiki_root
-    \|endif
+function! s:SetWikiPath()
+    let &l:path = substitute(expand(g:wiki_root), ' ', '\\ ', 'g')
+    if getcwd() != g:wiki_root
+        exec 'cd ' . g:wiki_root
+    endif
+endfunction
+
+augroup my-wiki
+    autocmd User WikiBufferInitialized call s:SetWikiPath()
 augroup END
 
 " useful list management plugins

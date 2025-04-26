@@ -35,7 +35,7 @@ set sidescroll=1  " enable sidescrolling
 set showmatch  " show matching parentheses
 set showcmd  " show typed command
 let &fillchars = 'vert:│,diff:-,eob: ,lastline:.,fold: ,foldopen:▾,foldsep:│,foldclose:▸'
-set showbreak=…  " show '…' at start of wrapped lines
+set showbreak=…  " show '…' at the start of wrapped lines
 set list  " show non-text characters
 let &g:listchars = 'tab:|->,trail:·,conceal:◌,extends:…,precedes:…,nbsp:_'
 set laststatus=2  " always show statusline

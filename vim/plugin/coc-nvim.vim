@@ -13,5 +13,5 @@ augroup coc-nvim
     autocmd CursorHold * silent call CocActionAsync('highlight')
 
     " Refresh diagnostics only after cursor moved
-    autocmd CursorHold, CursorHoldI call CocAction('diagnosticRefresh')
+    autocmd CursorHold,CursorHoldI * call CocAction('diagnosticRefresh')
 augroup END

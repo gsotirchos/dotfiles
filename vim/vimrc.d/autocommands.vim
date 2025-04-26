@@ -23,7 +23,7 @@ function! s:UpdateBreakindentopt()
 endfunction
 
 function! s:UpdateIndentGuides()
-    let &l:listchars = &g:listchars . ',leadmultispace: ' . repeat(repeat(' ', &sw - 1) . '│', 5)
+    let &l:listchars = &g:listchars . ',leadmultispace: ' . repeat(repeat(' ', &sw - 1) . '│', 8)
 endfunction
 
 augroup vimrc
@@ -60,7 +60,6 @@ augroup vimrc
     autocmd OptionSet shiftwidth
         \ call s:UpdateBreakindentopt()
         \|call s:UpdateIndentGuides()
-
 
     " re-enable colorscheme (and syntax) when gaining back focus
     autocmd FocusGained * nested
