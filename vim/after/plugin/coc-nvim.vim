@@ -67,15 +67,15 @@ omap ic <Plug>(coc-classobj-i)
 xmap ac <Plug>(coc-classobj-a)
 omap ac <Plug>(coc-classobj-a)
 
-" Remap <C-f> and <C-b> to scroll float windows/popups
-if has('nvim-0.4.0') || has('patch-8.2.0750')
-    nnoremap <silent> <nowait> <expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : '<C-f>'
-    nnoremap <silent> <nowait> <expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : '<C-b>'
-    inoremap <silent> <nowait> <expr> <C-f> coc#float#has_scroll() ? '<C-r>=coc#float#scroll(1)<Return>' : '<C-f>'
-    inoremap <silent> <nowait> <expr> <C-b> coc#float#has_scroll() ? '<C-r>=coc#float#scroll(0)<Return>' : '<C-b>'
-    vnoremap <silent> <nowait> <expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : '<C-f>'
-    vnoremap <silent> <nowait> <expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : '<C-b>'
-endif
+"" Remap <C-d> and <C-u> to scroll float windows/popups
+"if has('nvim-0.4.0') || has('patch-8.2.0750')
+"    nnoremap <silent> <nowait> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : '<C-d>'
+"    nnoremap <silent> <nowait> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : '<C-u>'
+"    inoremap <silent> <nowait> <expr> <C-d> coc#float#has_scroll() ? '<C-r>=coc#float#scroll(1)<Return>' : '<C-d>'
+"    inoremap <silent> <nowait> <expr> <C-u> coc#float#has_scroll() ? '<C-r>=coc#float#scroll(0)<Return>' : '<C-u>'
+"    vnoremap <silent> <nowait> <expr> <C-d> coc#float#has_scroll() ? coc#float#scroll(1) : '<C-d>'
+"    vnoremap <silent> <nowait> <expr> <C-u> coc#float#has_scroll() ? coc#float#scroll(0) : '<C-u>'
+"endif
 
 " Use CTRL-S for selections ranges
 " Requires 'textDocument/selectionRange' support of language server

@@ -3,7 +3,7 @@
     // invoke with `call CocAction('diagnosticRefresh')` in autocommand
     //"diagnostic.autoRefresh": false,
     //"diagnostic.enable": false,
-    "pullDiagnostic.onChange": false,
+    //"pullDiagnostic.onChange": false,
     "fileSystemWatch.enable": false,
     "signature.enable": false,
     "inlayHint.enable": false,
