@@ -50,7 +50,7 @@ augroup vimrc
         "\|syntax enable
 
     " for non-text files: load default syntax, show guides, use easytags
-    let s:NonCodeFiletypes = ['netrw', 'vimwiki', 'markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', '']
+    let s:NonCodeFiletypes = ['lisp', 'netrw', 'vimwiki', 'markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', '']
     autocmd Colorscheme,BufWinEnter *
         \ if index(s:NonCodeFiletypes, &filetype) < 0
             \|runtime after/syntax/default.vim
@@ -85,6 +85,11 @@ augroup vimrc
     autocmd BufWinEnter,BufRead,BufWritePre
         \ *.msg,*.srv,*.action
         \ set ft=conf
+
+    " treat certain extensions as Lisp files
+    "autocmd BufWinEnter,BufRead,BufWritePre
+    "    \ *.lisp*.el,*.emacs
+    "    \ set ft=lisp
 
     autocmd BufWinEnter,BufRead,BufWritePre
         \ *.vcg,*.dconf

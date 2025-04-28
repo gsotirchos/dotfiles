@@ -1,8 +1,8 @@
 ${HOME}/.mujoco/mujoco210/bin
 #${HOMEBREW_PREFIX}/lib  #(messes_with_conda/mamba)⚠️
-${HOMEBREW_PREFIX}/opt/libomp/lib
-${HOMEBREW_PREFIX}/opt/curl/lib
-${HOMEBREW_PREFIX}/opt/llvm/lib
+#${HOMEBREW_PREFIX}/opt/libomp/lib
+#${HOMEBREW_PREFIX}/opt/curl/lib
+#${HOMEBREW_PREFIX}/opt/llvm/lib
 #${HOMEBREW_PREFIX}/opt/llvm/lib/c++  #⚠️
 $(xcrun --show-sdk-path)/usr/lib
 /usr/local/lib

@@ -1,8 +1,9 @@
-font-family = Cascadia Code PL
-font-size = 14
+font-family = SF Mono
+font-size = 13
 font-synthetic-style = false
-adjust-cell-width = -5%
-#adjust-cell-height = +5%
+adjust-cell-width = -10%
+adjust-cell-height = -5%
+font-thicken = true
 
 window-padding-x = 21
 window-padding-y = 0
@@ -14,6 +15,7 @@ macos-titlebar-style = tabs
 macos-option-as-alt = true
 shell-integration-features = no-cursor
 quit-after-last-window-closed = false
+window-vsync = true
 
 cursor-style = block
 cursor-style-blink = false
