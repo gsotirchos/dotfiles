@@ -11,12 +11,12 @@ syn match mkdStrike "\(\~\~\)\@<=.*\(\~\~\)\@=" containedin=mkdCode display
 hi! link Title            SpecialComment
 hi! link mkdRule          Dimmed
 hi! link mkdHeading       Dimmed
-hi! link mkdDelimiter     Dimmed
+hi! link mkdDelimiter     MembOperator
+hi! link mkdCodeDelimiter mkdDelimiter
 hi! link mkdCodeStart     Dimmed
-hi! link mkdCodeEnd       Dimmed
+hi! link mkdCodeEnd       mkdCodeStart
 hi! link mkdLink          MyUrl
 hi! link mkdCode          String
-hi! link mkdCodeDelimiter OtherType
 hi! link mkdStrike        MyStrikethrough
 hi! link mkdHighlighted   IncSearch
 hi! link htmlTag          Dimmed
