@@ -1,19 +1,18 @@
 (set-face-attribute 'default nil :family "Menlo" :height 140)
 
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-
 (defun my/apply-theme (appearance)
   "Load theme, taking current system APPEARANCE into consideration."
   (mapc #'disable-theme custom-enabled-themes)
   (pcase appearance
     ('light (load-theme 'modus-operandi)
 	    (ns-appearance . light))
-    ('dark (load-theme 'modus-vivendi-tinted t)
-	    (ns-appearance . dark))))
-
+    ('dark (load-theme 'modus-vivendi-tinted)
+	   (ns-appearance . dark))))
 (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
-(setq modus-themes-common-palette-overrides
-      '((fringe unspecified)))
+
+(setq modus-themes-common-palette-overrides '((fringe unspecified)))
+
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 
 
 (unless (eq system-type 'darwin)
@@ -24,6 +23,15 @@
 (scroll-bar-mode -1)
 (setq inhibit-startup-message t)
 (setq vc-follow-symlinks t)
+(setq indent-tabs-mode nil)
+
+
+; Offload the custom-set-variables to a separate file
+(setq custom-file "~/.emacs.d/custom.el")
+(unless (file-exists-p custom-file)
+  (write-region "" nil custom-file))
+; Load custom file. Don't hide errors. Hide success message
+(load custom-file nil t)
 
 
 (column-number-mode)
@@ -58,19 +66,20 @@
 
 (use-package ivy
   :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
+  ;:bind (("C-s" . swiper)
+  ;       ("C-r" . swiper-backward)
+  ;       :map ivy-minibuffer-map
+  ;       ("TAB" . ivy-alt-done)
+  ;       ("C-l" . ivy-alt-done)
+  ;       ("C-j" . ivy-next-line)
+  ;       ("C-k" . ivy-previous-line)
+  ;       :map ivy-switch-buffer-map
+  ;       ("C-k" . ivy-previous-line)
+  ;       ("C-l" . ivy-done)
+  ;       ("C-d" . ivy-switch-buffer-kill)
+  ;       :map ivy-reverse-i-search-map
+  ;       ("C-k" . ivy-previous-line)
+  ;       ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
 
@@ -128,14 +137,16 @@
 (use-package general
   :after evil
   :config
-  (general-create-definer efs/leader-keys
+  (general-create-definer my/leader-keys
     :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-  (efs/leader-keys
+    :prefix "C-c"
+    :global-prefix "C-c")
+  (my/leader-keys
     "t"  '(:ignore t :which-key "toggles")
-    "tt" '(counsel-load-theme :which-key "choose theme")
-    "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el")))))
+    "tt" '(counsel-load-theme :which-key "choose theme"))
+  (my/leader-keys
+    :infix "f"
+    "i" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el")))))
 
 ;(use-package hydra
 ;  :defer t)
@@ -146,25 +157,31 @@
 ;  ("k" text-scale-decrease "out")
 ;  ("f" nil "finished" :exit t))
 ;
-;(efs/leader-keys
+;(my/leader-keys
 ;  "ts" '(hydra-text-scale/body :which-key "scale text"))
 
 
 (use-package evil
   :init
+  (setq evil-toggle-key "C-<escape>")
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
   (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-i-jump nil)
+  (setq evil-want-C-u-delete t)
+  (setq evil-disable-insert-state-bindings t)
+  (setq evil-cross-lines t)
+  ;; (setq evil-search-module 'evil-search)
   :config
   (evil-mode 1)
+  (define-key evil-normal-state-map (kbd "SPC") 'treesit-fold-toggle)
+  (define-key evil-normal-state-map (kbd "C-s") 'swiper)
+  (define-key evil-normal-state-map (kbd "C-r") 'swiper-backward)
+  (define-key evil-insert-state-map (kbd "C-s") 'swiper)
+  (define-key evil-insert-state-map (kbd "C-r") 'swiper-backward)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
-  ;; Use visual line motions even outside of visual-line-mode buffers
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
 
@@ -183,8 +200,8 @@
   :init (doom-modeline-mode 1))
 
 
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+;; (use-package rainbow-delimiters
+;;   :hook (prog-mode . rainbow-delimiters-mode))
 
 
 (use-package no-littering)
@@ -213,23 +230,34 @@
 
 (use-package magit
   :commands magit-status  ; probably unnecessary
-  ;:custom
-  ;(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  ;; :custom
+  ;; (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
 )
 
 ;; NOTE: Make sure to configure a GitHub token before using this package!
 ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
 ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
-;(use-package forge
-;  :after magit)
+;; (use-package forge
+;;   :after magit)
+
 
 (use-package evil-nerd-commenter
-  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+  :config
+  (my/leader-keys "c" 'evilnc-comment-or-uncomment-lines))
 
 
-;;; Offload the custom-set-variables to a separate file
-(setq custom-file "~/.emacs.d/custom.el")
-(unless (file-exists-p custom-file)
-  (write-region "" nil custom-file))
-;;; Load custom file. Don't hide errors. Hide success message
-(load custom-file nil t)
+;; Langauges
+
+;; TODO: move those in a mode statement?
+(add-hook 'emacs-lisp-mode-hook (lambda ()
+				  (setq-local evil-shift-width 2)
+                                  (my/leader-keys "(" 'check-parens)))
+
+
+(setq major-mode-remap-alist
+ '(;(yaml-mode . yaml-ts-mode)
+   (python-mode . python-ts-mode)
+   (sh-mode . bash-ts-mode)))
+
+(use-package treesit-fold
+  :load-path "packages/treesit-fold")
