@@ -17,6 +17,13 @@ let g:tex_indent_and = 0
 let g:tex_indent_brace = 0
 
 
+function! LatexmkClean()
+    call system('latexmk -cd -c ' . expand('%:p'))
+    call system('latexmk -cd -outdir=build -c ' . expand('%:p'))
+    echo 'Cleaned up build files.'
+endfunction
+
 nnoremap <buffer> <silent> <C-Return> :CocCommand latex.Build<Return>
 nnoremap <buffer> <silent>        :CocCommand latex.Build<Return>
-nnoremap <buffer> <silent> <Leader>v  :CocCommand latex.ForwardSearch<Return>
+nnoremap <buffer> <silent> <Leader>lv :CocCommand latex.ForwardSearch<Return>
+nnoremap <buffer> <expr>   <Leader>lc LatexmkClean()
