@@ -32,5 +32,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# Backup copies
+# Emacs files
 *~
+\#*\#
+*.elc
