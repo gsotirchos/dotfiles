@@ -81,18 +81,19 @@ barrier_client() {
 }
 
 # System
-alias rm=trash                  # trash files instead of deleting
-alias mv="mv -iv"               # confirmatory, verbose move
-alias cp="cp -ivr"              # confirmatory, verbose, recursive
-alias ln="ln -iv"               # confirmatory, verbose
-alias ls="ls -h --color=always" # human-readable, colored
-alias ll="ls -l"                # ll = list ls
-alias la="ls -la"               # la = list all ls
-alias grep="grep --color -E -n" # colored, extended regexp, line no.
-alias tree="\
-    tree -lNC -L 2 \
+alias ec="emacsclient -a '' -c &"  # start emacs daemon and/or client
+alias rm=trash                     # trash files instead of deleting
+alias mv="mv -iv"                  # confirmatory, verbose move
+alias cp="cp -ivr"                 # confirmatory, verbose, recursive cp
+alias ln="ln -iv"                  # confirmatory, verbose ln
+alias ls="ls -h --color=always"    # human-readable, colored ls
+alias ll="ls -l"                   # ll := list ls
+alias la="ls -la"                  # la := list all ls
+alias grep="grep --color -E -n"    # colored, extended regexp, line no. grep
+alias tree="tree \
+    -lNC -L 2 \
     --dirsfirst \
-    -I '.DS_Store|.localized|._*' --matchdirs" # cleaner tree
+    -I '.DS_Store|.localized|._*' --matchdirs"  # cleaner tree
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
 #alias htop="sudo htop"
