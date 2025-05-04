@@ -316,6 +316,10 @@
   (add-hook 'TeX-mode-hook 'turn-on-reftex)
   (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer))
 
+(use-package preview-dvisvgm
+  :after preview-latex
+  (require 'preview-dvisvgm))
+
 (defun my/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode))
