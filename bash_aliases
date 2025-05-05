@@ -117,6 +117,7 @@ if [[ -f ~/.conda/conda_init.sh ]]; then
     conda() {
         # TIME ~500ms
         echo -ne "${White}Initializing conda ... ${Reset}"
+        unset conda
         source ~/.conda/conda_init.sh
         echo -e "${White} done.${Reset}"
         conda "$@"
