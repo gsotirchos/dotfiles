@@ -46,12 +46,15 @@
 ;; (global-display-line-numbers-mode t)
 
 ;; Disable line numbers for some modes
-(dolist (mode '(org-mode-hook
-                term-mode-hook
-                shell-mode-hook
-    eshell-mode-hook
-    treemacs-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+;; (dolist (mode '(org-mode-hook
+;;                 term-mode-hook
+;;                 shell-mode-hook
+;;     eshell-mode-hook
+;;     treemacs-mode-hook))
+;;   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+;; Disable Ctrl-Z
+(global-set-key (kbd "C-z") nil)
 
 
 ;; Initialize package sources
@@ -135,12 +138,6 @@
   (which-key-mode)
   (setq which-key-idle-delay 1))
 
-;; Make ESC quit prompts
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
-;; Disable Ctrl-Z
-(global-set-key (kbd "C-z") nil)
-
 
 (use-package general
   :after evil
@@ -189,6 +186,8 @@
   :config
   (evil-mode 1)
   (evil-set-undo-system 'undo-tree)
+  ;; (define-key evil-normal-state-map (kbd "<escape>") 'keyboard-escape-quit)
+  (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
   ;; (define-key evil-normal-state-map (kbd "C-s") 'swiper)
   ;; (define-key evil-normal-state-map (kbd "C-r") 'swiper-backward)
   (define-key evil-insert-state-map (kbd "C-s") 'swiper)
@@ -260,39 +259,34 @@
 ;;   (my/leader-keys "c" 'evilnc-comment-or-uncomment-lines))
 
 
-;; Treesit
+;; Folding
 
-(setq major-mode-remap-alist
-      '((python-mode . python-ts-mode)
-  (sh-mode . bash-ts-mode)))
+(add-hook 'prog-mode-hook 'hs-minor-mode)
 
 (defun my/treesit-fold-mode ()
   (when (and (fboundp 'treesit-node-at)
-       (treesit-node-at (point)))
+             (treesit-node-at (point)))
     (treesit-fold-mode 1)))
-
 
 (use-package treesit-fold
   :after evil
   :load-path "packages/treesit-fold"
   :config
-  (add-hook 'prog-mode-hook #'my/treesit-fold-mode)
-  (add-hook 'treesit-fold-mode-hook
-      (lambda ()
-        (define-key evil-normal-state-local-map (kbd "<tab>") 'treesit-fold-toggle))))
-
-(add-hook 'prog-mode-hook 'hs-minor-mode)
-(add-hook 'hs-minor-mode-hook
-    (lambda ()
-      (define-key evil-normal-state-local-map (kbd "<tab>") 'hs-toggle-hiding)))
+  (add-hook 'prog-mode-hook #'my/treesit-fold-mode))
 
 
 ;; Languages
 
+(setq major-mode-remap-alist
+      '((python-mode . python-ts-mode)
+        (sh-mode . bash-ts-mode)))
+
+(add-to-list 'auto-mode-alist '("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode))
+
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
             (my/leader-keys "(" 'check-parens)
-      (setq-local evil-shift-width 2)))
+            (setq-local evil-shift-width 2)))
 
 (use-package flyspell
   :ensure nil
@@ -321,13 +315,16 @@
   (require 'preview-dvisvgm))
 
 (defun my/lsp-mode-setup ()
+  (setq lsp-modeline-code-action-icons-enable nil)
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (setq lsp-headerline-breadcrumb-icons-enable nil)
   (lsp-headerline-breadcrumb-mode))
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :hook (lsp-mode . my/lsp-mode-setup)
-  :init (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+  :init
+  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
   :config
   (lsp-enable-which-key-integration t))
 
@@ -346,10 +343,9 @@
   ;; Uncomment the config below if you want all UI panes to be hidden by default!
   ;; :custom
   ;; (lsp-enable-dap-auto-configure nil)
-  ;; :config
-  ;; (dap-ui-mode 1)
   :commands dap-debug
   :config
+  ;; (dap-ui-mode 1)
   (require 'dap-python)
 
   ;; Bind `C-c l d` to `dap-hydra` for easy access
@@ -359,9 +355,10 @@
     "d" '(dap-hydra t :wk "debugger"))):
 
 (use-package python-mode
-  :after dap-mode
   :ensure nil
-  :hook (python-mode . lsp-deferred)
+  :hook
+  (python-mode . lsp-deferred)
+  (python-ts-mode . lsp-deferred)
   :custom
   (dap-python-debugger 'debugpy)
   :config
@@ -373,34 +370,31 @@
 ;;   (pyvenv-mode 1))
 
 (use-package conda
-  :after python-mode
+  :after (:all projectile (:any python-mode python-ts-mode))
   :config
   (require 'conda)
-  ;; (setq conda-anaconda-home "/opt/homebrew/Caskroom/miniforge/base")
-  )
-  ;; interactive shell support, include:
+  (require 'conda-projectile)
+  (conda-mode-line-setup)
+  (conda-projectile-mode-line-setup)
   ;; (conda-env-initialize-interactive-shells)
-  ;; eshell support
-  ;; (conda-env-initialize-eshell)
-  ;; auto-activation (see below for details)
-  ;; (conda-env-autoactivate-mode t)
-  ;; automatically activate a conda environment on the opening of a file
-  ;; (add-hook 'find-file-hook
-  ;;       (lambda ()
-  ;;         (when (bound-and-true-p conda-project-env-path)
-  ;;               (conda-env-activate-for-buffer)))))
+  ;; (conda-env-initialize-Shell)
+  (conda-env-autoactivate-mode t)
+  (add-hook 'find-file-hook
+            (lambda ()
+              (when (bound-and-true-p conda-project-env-path)
+                (conda-env-activate-for-buffer)))))
 
 
-(use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
-  :bind (:map company-active-map
-         ("<tab>" . company-complete-selection))
-        (:map lsp-mode-map
-         ("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
+;; (use-package company
+;;   :after lsp-mode
+;;   :hook (lsp-mode . company-mode)
+;;   :bind (:map company-active-map
+;;          ("<tab>" . company-complete-selection))
+;;         (:map lsp-mode-map
+;;          ("<tab>" . company-indent-or-complete-common))
+;;   :custom
+;;   (company-minimum-prefix-length 1)
+;;   (company-idle-delay 0.0))
 
-(use-package company-box
-  :hook (company-mode . company-box-mode))
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode))
