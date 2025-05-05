@@ -1,3 +1,25 @@
 (setenv "PATH" "/Users/george/.bin:/Users/george/.dotfiles/bin:/Users/george/.macos-dotfiles/bin:/Users/george/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/sbin:/opt/pkg/bin:/opt/X11/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/Ghostty.app/Contents/MacOS")
 (setenv "LIBRARY_PATH" "/opt/homebrew/lib:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib:/usr/local/lib")
 (setq exec-path (split-string (getenv "PATH") path-separator))
+
+(when (eq system-type 'darwin)
+  (add-to-list 'display-mm-dimensions-alist '(t . (286 . 179)))
+  (defun my/display-pixel-width () 2560)
+  (defun my/display-pixel-height () 1600)
+  (defun my/display-monitor-attributes-list (&optional display)
+    '(((geometry . (0 0 2560 1600))
+    (workarea . (0 0 2560 1600))
+    (mm-size . (286 179))
+    (frames . (frames-on-display-list display))
+    (scale-factor . (2.0))
+    (name . ("MacbookAir-display"))
+    (source . ("George")))))
+
+  (eval-after-load "frame"
+    (advice-add 'display-pixel-width :override #'my/display-pixel-width))
+  (eval-after-load "frame"
+    (advice-add 'display-pixel-height :override #'my/display-pixel-height))
+  (eval-after-load "frame"
+    (advice-add 'no-display-monitor-attributes-list :override #'my/display-monitor-attributes-list))
+  (eval-after-load "frame"
+    (advice-add 'display-monitor-attributes-list :override #'my/display-monitor-attributes-list)))

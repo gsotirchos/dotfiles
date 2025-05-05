@@ -219,6 +219,7 @@
   (setq doom-modeline-buffer-encoding nil)
   ;; (setq doom-modeline-env-version nil)
   (setq doom-modeline-buffer-modification-icon nil)
+  (setq doom-modeline-check-icon nil)
   (setq doom-modeline-check-simple-format t))
 
 
@@ -284,69 +285,74 @@
   (add-hook 'prog-mode-hook #'my/treesit-fold-mode))
 
 
+;; LSP
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook (lsp-mode . lsp-headerline-breadcrumb-mode)
+  :init
+  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+  :config
+  (lsp-enable-which-key-integration t)
+  (setq lsp-modeline-code-actions-enable nil)
+  (setq lsp-modeline-diagnostics-enable nil)
+  (setq lsp-headerline-breadcrumb-segments '(symbols))
+  (setq lsp-headerline-breadcrumb-icons-enable nil)
+  ;; (setq lsp-ui-sideline-enable t)
+  ;; (setq lsp-diagnostics-disabled-modes ())
+  )
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+(use-package lsp-treemacs
+  :after lsp
+  :config
+  (setq treemacs-no-png-images t))
+
+(use-package lsp-ivy
+  :after lsp)
+
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind
+  (:map company-active-map
+        ("<tab>" . company-complete-selection))
+  (:map lsp-mode-map
+        ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+;; (use-package company-box
+;;   :hook (company-mode . company-box-mode))
+
+
 ;; Languages
 
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
         (sh-mode . bash-ts-mode)))
 
-(add-to-list 'auto-mode-alist '("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode))
+
+;; Elisp
 
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
             (my/leader-keys "(" 'check-parens)
             (setq-local evil-shift-width 2)))
 
-(use-package flyspell
-  :ensure nil
+
+;; Python
+
+(use-package lsp-pyright
+  :ensure t
+  :custom (lsp-pyright-langserver-command "pyright")
   :config
-  (require 'ispell)
-  (setq ispell-program-name "/opt/homebrew/bin/aspell"
-  ispell-dictionary "american")
-  (add-hook 'TeX-mode-hook 'flyspell-mode)
-  (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode))
-
-(use-package auctex
-  :after flyspell-mode
-  :defer t
-  :config
-  (setq TeX-auto-save t)
-  (setq TeX-parse-self t)
-  (setq-default TeX-master nil)
-  (setq TeX-PDF-mode t)
-  (add-hook 'TeX-mode-hook (lambda () (TeX-fold-mode 1)))
-  (add-hook 'TeX-mode-hook 'LaTeX-math-mode)
-  (add-hook 'TeX-mode-hook 'turn-on-reftex)
-  (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer))
-
-(use-package preview-dvisvgm
-  :after preview-latex
-  (require 'preview-dvisvgm))
-
-(defun my/lsp-mode-setup ()
-  (setq lsp-modeline-code-actions-enable nil)
-  (setq lsp-headerline-breadcrumb-segments '(symbols))
-  (setq lsp-headerline-breadcrumb-icons-enable nil)
-  (lsp-headerline-breadcrumb-mode))
-
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook (lsp-mode . my/lsp-mode-setup)
-  :init
-  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-  :config
-  (lsp-enable-which-key-integration t))
-
-;; (use-package lsp-ui
-;;   :hook (lsp-mode . lsp-ui-mode)
-;;   :custom
-;;   (lsp-ui-doc-position 'bottom))
-
-;; (use-package lsp-treemacs
-;;   :after lsp)
-
-;; (use-package lsp-ivy
-;;   :after lsp)
+  (require 'lsp-pyright))
 
 (use-package dap-mode
   ;; Uncomment the config below if you want all UI panes to be hidden by default!
@@ -389,21 +395,49 @@
             (lambda ()
               (when (bound-and-true-p conda-project-env-path)
                 (conda-env-activate-for-buffer)
-                (conda-mode-line-setup)
+                ;(conda-mode-line-setup)
                 ;(conda-projectile-mode-line-setup)
               )))
   )
 
-;; (use-package company
-;;   :after lsp-mode
-;;   :hook (lsp-mode . company-mode)
-;;   :bind (:map company-active-map
-;;          ("<tab>" . company-complete-selection))
-;;         (:map lsp-mode-map
-;;          ("<tab>" . company-indent-or-complete-common))
-;;   :custom
-;;   (company-minimum-prefix-length 1)
-;;   (company-idle-delay 0.0))
 
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode))
+;; Bash
+
+(add-to-list 'auto-mode-alist '("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode))
+
+
+;; LaTeX
+
+(use-package lsp-latex
+  :hook
+  (TeX-mode . lsp-deferred)
+  (LaTeX-mode . lsp-deferred)
+  :config
+  (require 'lsp-latex)
+  (add-hook 'bibtex-mode-hook 'lsp-deferred))
+
+(use-package flyspell
+  :ensure nil
+  :config
+  (require 'ispell)
+  (setq ispell-program-name "/opt/homebrew/bin/aspell"
+  ispell-dictionary "american")
+  (add-hook 'TeX-mode-hook 'flyspell-mode)
+  (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode))
+
+(use-package auctex
+  :after flyspell-mode
+  :defer t
+  :config
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  (setq-default TeX-master nil)
+  (setq TeX-PDF-mode t)
+  (add-hook 'TeX-mode-hook (lambda () (TeX-fold-mode 1)))
+  (add-hook 'TeX-mode-hook 'LaTeX-math-mode)
+  (add-hook 'TeX-mode-hook 'turn-on-reftex)
+  (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer))
+
+(use-package preview-dvisvgm
+  :after preview-latex
+  (require 'preview-dvisvgm))
