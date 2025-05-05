@@ -210,7 +210,16 @@
 (use-package nerd-icons)
 
 (use-package doom-modeline
-  :init (doom-modeline-mode 1))
+  :init
+  (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-window-width-limit 50)
+  (setq doom-modeline-major-mode-icon nil)
+  (setq doom-modeline-lsp-icon nil)
+  (setq doom-modeline-buffer-encoding nil)
+  ;; (setq doom-modeline-env-version nil)
+  (setq doom-modeline-buffer-modification-icon nil)
+  (setq doom-modeline-check-simple-format t))
 
 
 (use-package rainbow-delimiters
@@ -315,8 +324,8 @@
   (require 'preview-dvisvgm))
 
 (defun my/lsp-mode-setup ()
-  (setq lsp-modeline-code-action-icons-enable nil)
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (setq lsp-modeline-code-actions-enable nil)
+  (setq lsp-headerline-breadcrumb-segments '(symbols))
   (setq lsp-headerline-breadcrumb-icons-enable nil)
   (lsp-headerline-breadcrumb-mode))
 
@@ -370,20 +379,20 @@
 ;;   (pyvenv-mode 1))
 
 (use-package conda
-  :after (:all projectile (:any python-mode python-ts-mode))
   :config
   (require 'conda)
   (require 'conda-projectile)
-  (conda-mode-line-setup)
-  (conda-projectile-mode-line-setup)
   ;; (conda-env-initialize-interactive-shells)
   ;; (conda-env-initialize-Shell)
   (conda-env-autoactivate-mode t)
   (add-hook 'find-file-hook
             (lambda ()
               (when (bound-and-true-p conda-project-env-path)
-                (conda-env-activate-for-buffer)))))
-
+                (conda-env-activate-for-buffer)
+                (conda-mode-line-setup)
+                ;(conda-projectile-mode-line-setup)
+              )))
+  )
 
 ;; (use-package company
 ;;   :after lsp-mode
