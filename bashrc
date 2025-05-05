@@ -145,11 +145,12 @@ main() {
     fi
 
     # fix polluted subshell's environment from parent shell's conda env
-    if [[ -n "${CONDA_PREFIX}" ]]; then
-        env="$(basename "${CONDA_PREFIX}")"
-        conda deactivate
-        conda activate "${env}"
-    fi
+    #if [[ -n "${CONDA_PREFIX}" ]]; then
+    #    env="$(basename "${CONDA_PREFIX}")"
+    #    unset conda
+    #    conda deactivate
+    #    conda activate "${env}"
+    #fi
 
     # ROS
     if [[ -f /opt/ros/noetic/setup.bash ]]; then
