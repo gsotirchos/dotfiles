@@ -1,32 +1,11 @@
 (set-face-attribute 'default nil :family "Menlo" :height 140)
 
-(defun my/apply-theme (appearance)
-  (mapc #'disable-theme custom-enabled-themes)
-  (add-to-list 'default-frame-alist `(ns-appearance . ,appearance))
-   (pcase appearance
-     ('light (load-theme 'modus-operandi))
-     ('dark (load-theme 'modus-vivendi-tinted))))
-
-(use-package modus-themes
-  :ensure t
-  :config
-  (setq modus-themes-bold-constructs t)
-  (setq modus-themes-italic-constructs t)
-  (setq modus-themes-common-palette-overrides
-  '((fringe unspecified)
-   ;; (border-mode-line-active unspecified)
-   ;; (border-mode-line-inactive unspecified)
-   (border-mode-line-active bg-mode-line-active)
-   (border-mode-line-inactive bg-mode-line-inactive)
-   ))
-  (add-hook 'ns-system-appearance-change-functions #'my/apply-theme))
-
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
 (unless (eq system-type 'darwin)
-  (menu-bar-mode -1)
-  (tooltip-mode -1)
-  (setq visible-bell t))
+  ;(tooltip-mode -1)
+  ;(setq visible-bell t)
+  (menu-bar-mode -1))
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (setq inhibit-startup-message t)
@@ -66,7 +45,10 @@
 
 (package-initialize)
 (unless package-archive-contents
-  (package-refresh-content))
+  (setq package-check-signature nil)
+  (package-refresh-contents)
+  (package-install 'gnu-elpa-keyring-update)
+  (package-refresh-contents))
 
 ;; Initialize use-package on non-Linux platforms
 (unless (package-installed-p 'use-package)
@@ -74,6 +56,30 @@
 
 (require 'use-package)
 (setq use-package-always-ensure t)
+
+
+(defun my/apply-theme (appearance)
+  (mapc #'disable-theme custom-enabled-themes)
+  (add-to-list 'default-frame-alist `(ns-appearance . ,appearance))
+   (pcase appearance
+     ('light (load-theme 'modus-operandi))
+     ('dark (load-theme 'modus-vivendi-tinted))))
+
+(use-package modus-themes
+  :ensure t
+  :config
+  (setq modus-themes-bold-constructs t)
+  (setq modus-themes-italic-constructs t)
+  (setq modus-themes-common-palette-overrides
+  '((fringe unspecified)
+   ;; (border-mode-line-active unspecified)
+   ;; (border-mode-line-inactive unspecified)
+   (border-mode-line-active bg-mode-line-active)
+   (border-mode-line-inactive bg-mode-line-inactive)
+   ))
+  (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
+  (load-theme 'modus-operandi))
+
 
 (use-package ivy
   :diminish
@@ -207,10 +213,12 @@
 ;; (use-package doom-themes
 ;;   :init (load-theme 'doom-palenight t))
 
-(use-package nerd-icons)
 
 (use-package doom-modeline
   :init
+  (unless (package-installed-p 'nerd-icons)
+    (package-install 'nerd-icons))
+  (use-package nerd-icons)
   (doom-modeline-mode 1)
   :config
   (setq doom-modeline-window-width-limit 50)
@@ -278,11 +286,12 @@
              (treesit-node-at (point)))
     (treesit-fold-mode 1)))
 
-(use-package treesit-fold
-  :after evil
-  :load-path "packages/treesit-fold"
-  :config
-  (add-hook 'prog-mode-hook #'my/treesit-fold-mode))
+(when (package-installed-p 'treesit-fold)
+  (use-package treesit-fold
+    :after evil
+    :load-path "packages/treesit-fold"
+    :config
+    (add-hook 'prog-mode-hook #'my/treesit-fold-mode)))
 
 
 ;; LSP
