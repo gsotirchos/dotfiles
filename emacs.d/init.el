@@ -224,9 +224,7 @@
 
 (use-package doom-modeline
   :init
-  (unless (package-installed-p 'nerd-icons)
-    (package-install 'nerd-icons))
-  (use-package nerd-icons)
+  ;; needs M-x nerd-icons-install-fonts
   (doom-modeline-mode 1)
   :config
   (setq doom-modeline-window-width-limit 50)
@@ -295,6 +293,7 @@
     (treesit-fold-mode 1)))
 
 (when (package-installed-p 'treesit-fold)
+  ;; needs `git clone https://github.com/emacs-tree-sitter/treesit-fold ~/.emacs.dir/packages/treesit-fold`
   (use-package treesit-fold
     :after evil
     :load-path "packages/treesit-fold"
