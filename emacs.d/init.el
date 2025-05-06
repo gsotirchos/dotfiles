@@ -48,6 +48,7 @@
   (setq package-check-signature nil)
   (package-refresh-contents)
   (package-install 'gnu-elpa-keyring-update)
+  (setq package-check-signature 'allow-unsigned)
   (package-refresh-contents))
 
 ;; Initialize use-package on non-Linux platforms
