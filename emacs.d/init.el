@@ -472,7 +472,6 @@
   (lsp-deferred)
   (flyspell-mode)
   (outline-minor-mode)
-  ;; (TeX-fold-mode 1)
   (LaTeX-math-mode)
   (turn-on-reftex))
 
