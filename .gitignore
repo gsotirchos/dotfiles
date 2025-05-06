@@ -35,4 +35,5 @@ Temporary Items
 # Emacs files
 *~
 \#*\#
+.\#*
 *.elc
