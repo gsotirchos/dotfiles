@@ -462,7 +462,6 @@
   :ensure nil
   :hook
   (prog-mode . flyspell-prog-mode)
-  (tex-mode . flyspell-mode)
   :custom
   (ispell-program-name "/opt/homebrew/bin/aspell")
   (ispell-dictionary "american")
@@ -480,13 +479,14 @@
 (use-package auctex
   :defer t
   :hook
-  (tex-mode . my/tex-mode-hook)
   (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
   (TeX-master nil)
-  (TeX-PDF-mode t))
+  (TeX-PDF-mode t)
+  :init
+  (add-hook 'LaTeX-mode-hook #'my/tex-mode-hook)
 
 (use-package preview-dvisvgm
   :after preview-latex
