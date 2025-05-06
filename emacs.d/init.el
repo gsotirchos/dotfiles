@@ -485,7 +485,7 @@
   (TeX-master nil)
   (TeX-PDF-mode t)
   :init
-  (add-hook 'LaTeX-mode-hook #'my/tex-mode-hook)
+  (add-hook 'LaTeX-mode-hook #'my/tex-mode-hook))
 
 (use-package preview-dvisvgm
   :after preview-latex
