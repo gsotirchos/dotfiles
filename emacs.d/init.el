@@ -14,7 +14,9 @@
 (setq inhibit-startup-message t)
 (setq vc-follow-symlinks t)
 (setq-default indent-tabs-mode nil)
-(setq-default show-trailing-whitespace t)
+(add-hook 'prog-mode-hook
+          (lambda () (setq-local show-trailing-whitespace t)))
+(add-hook 'prog-mode-hook 'hs-minor-mode)
 
 
 ;; Offload the custom-set-variables to a separate file
@@ -283,9 +285,7 @@
 ;;   (my/leader-keys "c" 'evilnc-comment-or-uncomment-lines))
 
 
-;; Folding
-
-(add-hook 'prog-mode-hook 'hs-minor-mode)
+;; Treesitter
 
 (defun my/treesit-fold-mode ()
   (when (and (fboundp 'treesit-node-at)
@@ -299,6 +299,18 @@
     :load-path "packages/treesit-fold"
     :config
     (add-hook 'prog-mode-hook #'my/treesit-fold-mode)))
+
+;; (use-package evil-textobj-tree-sitter
+;;   :config
+;;   ;; bind `function.outer`(entire function block) to `f` for use in things like `vaf`, `yaf`
+;;   (define-key evil-outer-text-objects-map "f"
+;;               (evil-textobj-tree-sitter-get-textobj "function.outer"))
+;;   ;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
+;;   (define-key evil-inner-text-objects-map "f"
+;;               (evil-textobj-tree-sitter-get-textobj "function.inner"))
+;;   ;; You can also bind multiple items and we will match the first one we can find
+;;   (define-key evil-outer-text-objects-map "a"
+;;               (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer"))))
 
 
 ;; LSP
@@ -424,13 +436,15 @@
 
 ;; LaTeX
 
-(use-package lsp-latex
-  :hook
-  (TeX-mode . lsp-deferred)
-  (LaTeX-mode . lsp-deferred)
-  :config
-  (require 'lsp-latex)
-  (add-hook 'bibtex-mode-hook 'lsp-deferred))
+(add-hook 'latex-mode-hook 'outline-minor-mode)
+
+;; (use-package lsp-latex
+;;   :hook
+;;   (TeX-mode . lsp-deferred)
+;;   (LaTeX-mode . lsp-deferred)
+;;   :config
+;;   (require 'lsp-latex)
+;;   (add-hook 'bibtex-mode-hook 'lsp-deferred))
 
 (use-package flyspell
   :ensure nil
@@ -439,7 +453,7 @@
   (setq ispell-program-name "/opt/homebrew/bin/aspell"
   ispell-dictionary "american")
   (add-hook 'TeX-mode-hook 'flyspell-mode)
-  (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode))
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode))
 
 (use-package auctex
   :after flyspell-mode
