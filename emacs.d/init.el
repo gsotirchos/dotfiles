@@ -6,8 +6,8 @@
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
 (unless (eq system-type 'darwin)
-  ;(tooltip-mode -1)
-  ;(setq visible-bell t)
+                                        ;(tooltip-mode -1)
+                                        ;(setq visible-bell t)
   (menu-bar-mode -1))
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -34,8 +34,8 @@
 ;; (dolist (mode '(org-mode-hook
 ;;                 term-mode-hook
 ;;                 shell-mode-hook
-;;     eshell-mode-hook
-;;     treemacs-mode-hook))
+;;                 eshell-mode-hook
+;;                 treemacs-mode-hook))
 ;;   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Disable Ctrl-Z
@@ -68,23 +68,24 @@
 (defun my/apply-theme (appearance)
   (mapc #'disable-theme custom-enabled-themes)
   (add-to-list 'default-frame-alist `(ns-appearance . ,appearance))
-   (pcase appearance
-     ('light (load-theme 'modus-operandi))
-     ('dark (load-theme 'modus-vivendi-tinted))))
+  (pcase appearance
+    ('light (load-theme 'modus-operandi))
+    ('dark (load-theme 'modus-vivendi-tinted))))
 
 (use-package modus-themes
   :ensure t
-  :config
-  (setq modus-themes-bold-constructs t)
-  (setq modus-themes-italic-constructs t)
-  (setq modus-themes-common-palette-overrides
-  '((fringe unspecified)
-   ;; (border-mode-line-active unspecified)
-   ;; (border-mode-line-inactive unspecified)
-   (border-mode-line-active bg-mode-line-active)
-   (border-mode-line-inactive bg-mode-line-inactive)
-   ))
-  (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
+  :hook (ns-system-appearance-change-functions . my/apply-theme)
+  :custom
+  (modus-themes-bold-constructs t)
+  (modus-themes-italic-constructs t)
+  (modus-themes-common-palette-overrides
+   '((fringe unspecified)
+     ;; (border-mode-line-active unspecified)
+     ;; (border-mode-line-inactive unspecified)
+     (border-mode-line-active bg-mode-line-active)
+     (border-mode-line-inactive bg-mode-line-inactive)
+     ))
+  :init
   (load-theme 'modus-operandi))
 
 
@@ -109,17 +110,16 @@
 
 (use-package ivy-rich
   :after (ivy counsel)
-  :init
-  (ivy-rich-mode 1))
+  :init (ivy-rich-mode 1))
 
 (use-package counsel
   ;; :bind (("C-M-j" . 'counsel-switch-buffer)
   ;;        :map minibuffer-local-map
   ;;        ("C-r" . 'counsel-minibuffer-history))
-  ;; :custom
+  :custom
+  (ivy-initial-inputs-alist nil)  ; Don't start searches with ^
   ;; (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
-  (setq ivy-initial-inputs-alist nil)  ; Don't start searches with ^
   (counsel-mode 1))
 
 (use-package ivy-prescient
@@ -130,7 +130,6 @@
   ;; Uncomment the following line to have sorting remembered across sessions!
   ;; (prescient-persist-mode 1)
   (ivy-prescient-mode 1))
-
 
 (use-package helpful
   :commands (helpful-callable helpful-variable helpful-command helpful-key)
@@ -143,16 +142,16 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key)
   :config
-  (when (eq system-type 'darwin)
+  (unless (eq system-type 'darwin)
     (setq warning-minimum-level :error)))
-
 
 (use-package which-key
   :defer 0
   :diminish which-key-mode
-  :config
-  (which-key-mode)
-  (setq which-key-idle-delay 1))
+  :custom
+  (which-key-idle-delay 1))
+:config
+(which-key-mode)
 
 
 (use-package general
@@ -174,19 +173,20 @@
   :defer t
   :config
   (defhydra hydra-text-scale (:timeout 4)
-      "scale text"
-      ("j" text-scale-increase "in")
-      ("k" text-scale-decrease "out")
-      ("f" nil "finished" :exit t))
+    "scale text"
+    ("j" text-scale-increase "in")
+    ("k" text-scale-decrease "out")
+    ("f" nil "finished" :exit t))
   ;; (my/leader-keys
   ;;   "ts" '(hydra-text-scale/body :which-key "scale text"))
   )
 
 (use-package undo-tree
   :ensure t
+  :custom
+  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
   :config
-  (global-undo-tree-mode 1)
-  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+  (global-undo-tree-mode 1))
 
 
 (use-package evil
@@ -220,23 +220,31 @@
   :config
   (evil-collection-init))
 
+;; (use-package all-the-icons
+;;   ;; needs: M-x all-the-icons-install-fonts
+;;   :if (display-graphic-p))
+;;
 ;; (use-package doom-themes
-;;   :init (load-theme 'doom-palenight t))
-
+;;   ;; :init (load-theme 'doom-palenight t))
+;;   :custom
+;;   (doom-themes-treemacs-enable-variable-pitch nil)
+;;   (doom-themes-treemacs-theme "doom-atom")
+;;   :config
+;;   (doom-themes-treemacs-config)
+;;   )
 
 (use-package doom-modeline
-  :init
-  ;; needs M-x nerd-icons-install-fonts
-  (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-window-width-limit 50)
-  (setq doom-modeline-major-mode-icon nil)
-  (setq doom-modeline-lsp-icon nil)
-  (setq doom-modeline-buffer-encoding nil)
-  ;; (setq doom-modeline-env-version nil)
-  (setq doom-modeline-buffer-modification-icon nil)
-  (setq doom-modeline-check-icon nil)
-  (setq doom-modeline-check-simple-format t))
+  ;; needs: M-x nerd-icons-install-fonts
+  :hook (after-init . doom-modeline-mode)
+  :custom
+  (doom-modeline-window-width-limit 50)
+  (doom-modeline-major-mode-icon nil)
+  (doom-modeline-lsp-icon nil)
+  (doom-modeline-buffer-encoding nil)
+  ;; (doom-modeline-env-version nil)
+  (doom-modeline-buffer-modification-icon nil)
+  (doom-modeline-check-icon nil)
+  (doom-modeline-check-simple-format t))
 
 
 (use-package rainbow-delimiters
@@ -253,15 +261,17 @@
 
 (use-package projectile
   :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
+  :hook (projectile-mode . treemacs-project-follow-mode)
   :bind-keymap
   ("C-c p" . projectile-command-map)
+  :custom (projectile-completion-system 'ivy)
   :init
   ;; NOTE: Set this to the folder where you keep your Git repos!
   (when (file-directory-p "~/Projects/Code")
     (setq projectile-project-search-path '("~/Projects/Code")))
-  (setq projectile-switch-project-action #'projectile-dired))
+  (setq projectile-switch-project-action #'projectile-dired)
+  :config
+  (projectile-mode))
 
 (use-package counsel-projectile
   :after projectile
@@ -287,18 +297,16 @@
 
 ;; Treesitter
 
-(defun my/treesit-fold-mode ()
-  (when (and (fboundp 'treesit-node-at)
-             (treesit-node-at (point)))
-    (treesit-fold-mode 1)))
-
-(when (package-installed-p 'treesit-fold)
-  ;; needs `git clone https://github.com/emacs-tree-sitter/treesit-fold ~/.emacs.dir/packages/treesit-fold`
-  (use-package treesit-fold
-    :after evil
-    :load-path "packages/treesit-fold"
-    :config
-    (add-hook 'prog-mode-hook #'my/treesit-fold-mode)))
+;; (defun my/treesit-fold-mode ()
+;;   (when (and (fboundp 'treesit-node-at)
+;;              (treesit-node-at (point)))
+;;     (treesit-fold-mode 1)))
+;;
+;; ;; needs: git clone https://github.com/emacs-tree-sitter/treesit-fold ~/.emacs.dir/packages/treesit-fold
+;; (use-package treesit-fold
+;;   :after treesit
+;;   :load-path "packages/treesit-fold"
+;;   :hook (prog-mode . my/treesit-fold-mode))
 
 ;; (use-package evil-textobj-tree-sitter
 ;;   :config
@@ -318,27 +326,43 @@
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :hook (lsp-mode . lsp-headerline-breadcrumb-mode)
+  :custom
+  (lsp-modeline-code-actions-enable nil)
+  (lsp-modeline-diagnostics-enable nil)
+  (lsp-headerline-breadcrumb-segments '(symbols))
+  (lsp-headerline-breadcrumb-icons-enable nil)
+  ;; (lsp-ui-sideline-enable t)
+  ;; (lsp-diagnostics-disabled-modes ())
   :init
   (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
   :config
-  (lsp-enable-which-key-integration t)
-  (setq lsp-modeline-code-actions-enable nil)
-  (setq lsp-modeline-diagnostics-enable nil)
-  (setq lsp-headerline-breadcrumb-segments '(symbols))
-  (setq lsp-headerline-breadcrumb-icons-enable nil)
-  ;; (setq lsp-ui-sideline-enable t)
-  ;; (setq lsp-diagnostics-disabled-modes ())
-  )
+  (lsp-enable-which-key-integration t))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :custom
   (lsp-ui-doc-position 'bottom))
 
-(use-package lsp-treemacs
-  :after lsp
+(use-package treemacs
   :config
-  (setq treemacs-no-png-images t))
+  (use-package treemacs-nerd-icons
+    :functions treemacs-load-theme
+    :config
+    (treemacs-load-theme "nerd-icons"))
+  )
+
+(use-package lsp-treemacs
+  :after (lsp treemacs)
+  :custom
+  (lsp-treemacs-theme "nerd-icons-ext")
+  (treemacs-no-png-images t))
+
+(use-package lsp-treemacs-nerd-icons
+  :after doom-themes
+  :load-path "packages/lsp-treemacs-nerd-icons"
+  ;; HACK: Load after the `lsp-treemacs' created default themes
+  :init (with-eval-after-load 'lsp-treemacs
+          (require 'lsp-treemacs-nerd-icons)))
 
 (use-package lsp-ivy
   :after lsp)
@@ -393,9 +417,9 @@
 
   ;; Bind `C-c l d` to `dap-hydra` for easy access
   (general-define-key
-    :keymaps 'lsp-mode-map
-    :prefix lsp-keymap-prefix
-    "d" '(dap-hydra t :wk "debugger"))):
+   :keymaps 'lsp-mode-map
+   :prefix lsp-keymap-prefix
+   "d" '(dap-hydra t :wk "debugger"))):
 
 (use-package python-mode
   :ensure nil
@@ -413,20 +437,18 @@
 ;;   (pyvenv-mode 1))
 
 (use-package conda
+  :hook
+  (find-file . (lambda ()
+                 (when (bound-and-true-p conda-project-env-path)
+                   ;; (conda-mode-line-setup)
+                   ;; (conda-projectile-mode-line-setup)
+                   (conda-env-activate-for-buffer))))
   :config
   (require 'conda)
   (require 'conda-projectile)
   ;; (conda-env-initialize-interactive-shells)
   ;; (conda-env-initialize-Shell)
-  (conda-env-autoactivate-mode t)
-  (add-hook 'find-file-hook
-            (lambda ()
-              (when (bound-and-true-p conda-project-env-path)
-                (conda-env-activate-for-buffer)
-                ;(conda-mode-line-setup)
-                ;(conda-projectile-mode-line-setup)
-              )))
-  )
+  (conda-env-autoactivate-mode t))
 
 
 ;; Bash
@@ -436,37 +458,35 @@
 
 ;; LaTeX
 
-(add-hook 'latex-mode-hook 'outline-minor-mode)
-
-;; (use-package lsp-latex
-;;   :hook
-;;   (TeX-mode . lsp-deferred)
-;;   (LaTeX-mode . lsp-deferred)
-;;   :config
-;;   (require 'lsp-latex)
-;;   (add-hook 'bibtex-mode-hook 'lsp-deferred))
-
 (use-package flyspell
   :ensure nil
+  :hook
+  (prog-mode . flyspell-prog-mode)
+  (tex-mode . flyspell-mode)
+  :custom
+  (ispell-program-name "/opt/homebrew/bin/aspell")
+  (ispell-dictionary "american")
   :config
-  (require 'ispell)
-  (setq ispell-program-name "/opt/homebrew/bin/aspell"
-  ispell-dictionary "american")
-  (add-hook 'TeX-mode-hook 'flyspell-mode)
-  (add-hook 'prog-mode-hook 'flyspell-prog-mode))
+  (require 'ispell))
+
+(defun my/tex-mode-hook ()
+  (lsp-deferred)
+  (flyspell-mode)
+  (outline-minor-mode)
+  ;; (TeX-fold-mode 1)
+  (LaTeX-math-mode)
+  (turn-on-reftex))
 
 (use-package auctex
-  :after flyspell-mode
   :defer t
-  :config
-  (setq TeX-auto-save t)
-  (setq TeX-parse-self t)
-  (setq-default TeX-master nil)
-  (setq TeX-PDF-mode t)
-  (add-hook 'TeX-mode-hook (lambda () (TeX-fold-mode 1)))
-  (add-hook 'TeX-mode-hook 'LaTeX-math-mode)
-  (add-hook 'TeX-mode-hook 'turn-on-reftex)
-  (add-hook 'TeX-after-compilation-finished-functions 'TeX-revert-document-buffer))
+  :hook
+  (tex-mode . my/tex-mode-hook)
+  (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
+  :custom
+  (TeX-auto-save t)
+  (TeX-parse-self t)
+  (TeX-master nil)
+  (TeX-PDF-mode t))
 
 (use-package preview-dvisvgm
   :after preview-latex
