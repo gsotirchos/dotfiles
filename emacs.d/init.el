@@ -1,4 +1,7 @@
-(set-face-attribute 'default nil :family "Menlo" :height 140)
+(when (eq system-type 'darwin)
+  (set-face-attribute 'default nil :family "Menlo" :height 140))
+(when (eq system-type 'gnu/linux)
+  (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150))
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
@@ -11,6 +14,7 @@
 (setq inhibit-startup-message t)
 (setq vc-follow-symlinks t)
 (setq-default indent-tabs-mode nil)
+(setq-default show-trailing-whitespace t)
 
 
 ;; Offload the custom-set-variables to a separate file
@@ -135,7 +139,10 @@
   ([remap describe-function] . counsel-describe-function)
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
+  ([remap describe-key] . helpful-key)
+  :config
+  (when (eq system-type 'darwin)
+    (setq warning-minimum-level :error)))
 
 
 (use-package which-key
