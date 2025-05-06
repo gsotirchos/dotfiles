@@ -4,22 +4,26 @@
 
 (when (eq system-type 'darwin)
   (add-to-list 'display-mm-dimensions-alist '(t . (286 . 179)))
+
   (defun my/display-pixel-width () 2560)
   (defun my/display-pixel-height () 1600)
   (defun my/display-monitor-attributes-list (&optional display)
     '(((geometry . (0 0 2560 1600))
-    (workarea . (0 0 2560 1600))
-    (mm-size . (286 179))
-    (frames . (frames-on-display-list display))
-    (scale-factor . (2.0))
-    (name . ("MacbookAir-display"))
-    (source . ("George")))))
+       (workarea . (0 0 2560 1600))
+       (mm-size . (286 179))
+       (frames . (frames-on-display-list display))
+       (scale-factor . (2.0))
+       (name . ("MacbookAir-display"))
+       (source . ("George")))))
+
+  ;; x-display-pixel-width
+  ;; y-display-pixel-width
+  ;; ns-display-monitor-attributes-list
+  ;; frame-geom-value-cons
 
   (eval-after-load "frame"
-    (advice-add 'display-pixel-width :override #'my/display-pixel-width))
-  (eval-after-load "frame"
-    (advice-add 'display-pixel-height :override #'my/display-pixel-height))
-  (eval-after-load "frame"
-    (advice-add 'no-display-monitor-attributes-list :override #'my/display-monitor-attributes-list))
-  (eval-after-load "frame"
-    (advice-add 'display-monitor-attributes-list :override #'my/display-monitor-attributes-list)))
+    '(dolist (fn-override
+              '((display-pixel-width . my/display-pixel-width)
+                (display-pixel-height . my/display-pixel-height)
+                (display-monitor-attributes-list . my/display-monitor-attributes-list) ))
+       (advice-add (car fn-override) :override (cdr fn-override)))))
