@@ -325,25 +325,29 @@
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
-  :hook (lsp-mode . lsp-headerline-breadcrumb-mode)
+  :hook
+  (lsp-mode . lsp-headerline-breadcrumb-mode)
+  ;; (lsp-mode . (lambda () (flycheck-inline-mode 0)))
   :custom
   (lsp-modeline-code-actions-enable nil)
   (lsp-modeline-diagnostics-enable nil)
   (lsp-headerline-breadcrumb-segments '(symbols))
   (lsp-headerline-breadcrumb-icons-enable t)
+  (lsp-ui-doc-position 'bottom)
   (lsp-ui-sideline-show-diagnostics t)
   ;; (lsp-ui-sideline-enable t)
   ;; (lsp-diagnostics-disabled-modes ())
   :init
   (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
   :config
-  (flycheck-inline-mode 0)
   (lsp-enable-which-key-integration t))
 
 (use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-position 'bottom))
+  :after lsp-mode
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  :config
+  (flycheck-inline-mode 0))
 
 (use-package treemacs-nerd-icons
   :config
@@ -381,9 +385,9 @@
   :hook (after-init . global-flycheck-mode))
 
 (use-package flycheck-inline
+  ;; :unless (lsp-ui-mode)
   :after flycheck
-  :hook
-  (flycheck-mode . flycheck-inline-mode))
+  :hook flycheck-mode)
 
 ;; (use-package company-box
 ;;   :hook (company-mode . company-box-mode))
