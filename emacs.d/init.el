@@ -6,8 +6,8 @@
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
 (unless (eq system-type 'darwin)
-                                        ;(tooltip-mode -1)
-                                        ;(setq visible-bell t)
+  ;; (tooltip-mode -1)
+  ;; (setq visible-bell t)
   (menu-bar-mode -1))
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -22,7 +22,7 @@
 ;; Offload the custom-set-variables to a separate file
 (setq custom-file "~/.emacs.d/custom.el")
 (unless (file-exists-p custom-file)
-  (wite-region "" nil custom-file))
+  (write-region "" nil custom-file))
 ;; Load custom file. Don't hide errors. Hide success message
 (load custom-file nil t)
 
@@ -331,11 +331,13 @@
   (lsp-modeline-diagnostics-enable nil)
   (lsp-headerline-breadcrumb-segments '(symbols))
   (lsp-headerline-breadcrumb-icons-enable t)
+  (lsp-ui-sideline-show-diagnostics t)
   ;; (lsp-ui-sideline-enable t)
   ;; (lsp-diagnostics-disabled-modes ())
   :init
   (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
   :config
+  (flycheck-inline-mode 0)
   (lsp-enable-which-key-integration t))
 
 (use-package lsp-ui
@@ -374,6 +376,14 @@
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
+
+(use-package flycheck
+  :hook (after-init . global-flycheck-mode))
+
+(use-package flycheck-inline
+  :after flycheck
+  :hook
+  (flycheck-mode . flycheck-inline-mode))
 
 ;; (use-package company-box
 ;;   :hook (company-mode . company-box-mode))
