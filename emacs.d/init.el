@@ -330,7 +330,7 @@
   (lsp-modeline-code-actions-enable nil)
   (lsp-modeline-diagnostics-enable nil)
   (lsp-headerline-breadcrumb-segments '(symbols))
-  (lsp-headerline-breadcrumb-icons-enable nil)
+  (lsp-headerline-breadcrumb-icons-enable t)
   ;; (lsp-ui-sideline-enable t)
   ;; (lsp-diagnostics-disabled-modes ())
   :init
@@ -343,13 +343,9 @@
   :custom
   (lsp-ui-doc-position 'bottom))
 
-(use-package treemacs
+(use-package treemacs-nerd-icons
   :config
-  (use-package treemacs-nerd-icons
-    :functions treemacs-load-theme
-    :config
-    (treemacs-load-theme "nerd-icons"))
-  )
+  (treemacs-load-theme "nerd-icons"))
 
 (use-package lsp-treemacs
   :after (lsp treemacs)
