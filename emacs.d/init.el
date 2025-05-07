@@ -323,30 +323,30 @@
 
 ;; LSP
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook (lsp-mode . lsp-headerline-breadcrumb-mode)
-  :custom
-  (lsp-modeline-code-actions-enable nil)
-  (lsp-modeline-diagnostics-enable nil)
-  (lsp-headerline-breadcrumb-segments '(symbols))
-  (lsp-headerline-breadcrumb-icons-enable t)
-  (lsp-ui-doc-position 'bottom)
-  (lsp-ui-sideline-show-diagnostics t)
-  ;; (lsp-ui-sideline-enable t)
-  ;; (lsp-diagnostics-disabled-modes ())
-  :init
-  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-  :config
-  (lsp-enable-which-key-integration t))
+;; (use-package lsp-mode
+;;   :commands (lsp lsp-deferred)
+;;   :hook (lsp-mode . lsp-headerline-breadcrumb-mode)
+;;   :custom
+;;   (lsp-modeline-code-actions-enable nil)
+;;   (lsp-modeline-diagnostics-enable nil)
+;;   (lsp-headerline-breadcrumb-segments '(symbols))
+;;   (lsp-headerline-breadcrumb-icons-enable t)
+;;   (lsp-ui-doc-position 'bottom)
+;;   (lsp-ui-sideline-show-diagnostics t)
+;;   ;; (lsp-ui-sideline-enable t)
+;;   ;; (lsp-diagnostics-disabled-modes ())
+;;   :init
+;;   (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+;;   :config
+;;   (lsp-enable-which-key-integration t))
 
-(use-package lsp-ui
-  :after lsp-mode
-  :hook
-  (lsp-mode . lsp-ui-mode)
-  ;; (lsp-ui-mode . (lambda () (flycheck-inline-mode 0)))
-  :config
-  (flycheck-inline-mode 0))
+;; (use-package lsp-ui
+;;   :after lsp-mode
+;;   :hook
+;;   (lsp-mode . lsp-ui-mode)
+;;   ;; (lsp-ui-mode . (lambda () (flycheck-inline-mode 0)))
+;;   :config
+;;   (flycheck-inline-mode 0))
 
 (use-package treemacs-nerd-icons
   :config
@@ -432,9 +432,9 @@
 
 (use-package python-mode
   :ensure nil
-  :hook
-  (python-mode . lsp-deferred)
-  (python-ts-mode . lsp-deferred)
+  ;; :hook
+  ;; (python-mode . lsp-deferred)
+  ;; (python-ts-mode . lsp-deferred)
   :custom
   (dap-python-debugger 'debugpy)
   :config
