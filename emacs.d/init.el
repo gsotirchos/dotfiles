@@ -325,9 +325,7 @@
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
-  :hook
-  (lsp-mode . lsp-headerline-breadcrumb-mode)
-  ;; (lsp-mode . (lambda () (flycheck-inline-mode 0)))
+  :hook (lsp-mode . lsp-headerline-breadcrumb-mode)
   :custom
   (lsp-modeline-code-actions-enable nil)
   (lsp-modeline-diagnostics-enable nil)
@@ -346,6 +344,7 @@
   :after lsp-mode
   :hook
   (lsp-mode . lsp-ui-mode)
+  ;; (lsp-ui-mode . (lambda () (flycheck-inline-mode 0)))
   :config
   (flycheck-inline-mode 0))
 
