@@ -1,3 +1,7 @@
+;;; package --- my config -*- lexical-binding: t -*-
+;;; commentary:
+
+;;; Code:
 (when (eq system-type 'darwin)
   (set-face-attribute 'default nil :family "Menlo" :height 140))
 (when (eq system-type 'gnu/linux)
@@ -14,29 +18,12 @@
 (setq inhibit-startup-message t)
 (setq vc-follow-symlinks t)
 (setq-default indent-tabs-mode nil)
-(add-hook 'prog-mode-hook
-          (lambda () (setq-local show-trailing-whitespace t)))
-(add-hook 'prog-mode-hook 'hs-minor-mode)
-
-
-;; Offload the custom-set-variables to a separate file
-(setq custom-file "~/.emacs.d/custom.el")
-(unless (file-exists-p custom-file)
-  (write-region "" nil custom-file))
-;; Load custom file. Don't hide errors. Hide success message
-(load custom-file nil t)
-
-
 (column-number-mode)
-;; (global-display-line-numbers-mode t)
-
-;; Disable line numbers for some modes
-;; (dolist (mode '(org-mode-hook
-;;                 term-mode-hook
-;;                 shell-mode-hook
-;;                 eshell-mode-hook
-;;                 treemacs-mode-hook))
-;;   (add-hook mode (lambda () (display-line-numbers-mode 0))))
+(add-hook 'prog-mode-hook
+          (lambda ()
+            ;; (global-display-line-numbers-mode t)
+            (setq-local show-trailing-whitespace t)))
+(add-hook 'prog-mode-hook 'hs-minor-mode)
 
 ;; Disable Ctrl-Z
 (global-set-key (kbd "C-z") nil)
@@ -65,15 +52,36 @@
 (setq use-package-always-ensure t)
 
 
-(defun my/apply-theme (appearance)
-  (mapc #'disable-theme custom-enabled-themes)
-  (add-to-list 'default-frame-alist `(ns-appearance . ,appearance))
-  (pcase appearance
-    ('light (load-theme 'modus-operandi))
-    ('dark (load-theme 'modus-vivendi-tinted))))
+(use-package no-littering
+  :ensure nil
+  :no-require t
+  :custom
+  ;; no-littering doesn't set this by default so we must place
+  ;; auto save files in the same path as it uses for sessions
+  (auto-save-file-name-transforms
+   `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+
+;; Offload the custom-set-variables to a separate file
+(use-package custom
+  :ensure nil
+  :no-require t
+  :custom (custom-file "~/.emacs.d/custom.el")
+  :config
+  (unless (file-exists-p custom-file)
+    (write-region "" nil custom-file))
+  ;; Load custom file. Don't hide errors. Hide success message
+  (load custom-file nil t))
+
 
 (use-package modus-themes
   :ensure t
+  :preface
+  (defun my/apply-theme (appearance)
+    (mapc #'disable-theme custom-enabled-themes)
+    (add-to-list 'default-frame-alist `(ns-appearance . ,appearance))
+    (pcase appearance
+      ('light (load-theme 'modus-operandi))
+      ('dark (load-theme 'modus-vivendi-tinted))))
   :hook (ns-system-appearance-change-functions . my/apply-theme)
   :custom
   (modus-themes-bold-constructs t)
@@ -90,7 +98,7 @@
 
 
 (use-package ivy
-  :diminish
+  :hook after-init
   ;; :bind (("C-s" . swiper)
   ;;        ("C-r" . swiper-backward)
   ;;        :map ivy-minibuffer-map
@@ -105,57 +113,48 @@
   ;;        :map ivy-reverse-i-search-map
   ;;        ("C-k" . ivy-previous-line)
   ;;        ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
-
-(use-package ivy-rich
-  :after (ivy counsel)
-  :init (ivy-rich-mode 1))
+  )
 
 (use-package counsel
+  :hook ivy-mode
   ;; :bind (("C-M-j" . 'counsel-switch-buffer)
   ;;        :map minibuffer-local-map
   ;;        ("C-r" . 'counsel-minibuffer-history))
   :custom
   (ivy-initial-inputs-alist nil)  ; Don't start searches with ^
   ;; (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-  :config
-  (counsel-mode 1))
+  )
+
+(use-package ivy-rich
+  :after (ivy counsel)
+  :hook (ivy-mode counsel-mode))
 
 (use-package ivy-prescient
-  :after counsel
+  :hook counsel-mode
   :custom
-  (ivy-prescient-enable-filtering nil)
-  :config
-  ;; Uncomment the following line to have sorting remembered across sessions!
-  ;; (prescient-persist-mode 1)
-  (ivy-prescient-mode 1))
+  (prescient-persist-mode 1)  ;; remember sorting across sessions!
+  (ivy-prescient-enable-filtering nil))
 
 (use-package helpful
   :commands (helpful-callable helpful-variable helpful-command helpful-key)
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
   :bind
   ([remap describe-function] . counsel-describe-function)
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key)
-  :config
-  (unless (eq system-type 'darwin)
-    (setq warning-minimum-level :error)))
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  (warning-minimum-level :error))
 
 (use-package which-key
-  :defer 0
-  :diminish which-key-mode
-  :custom
-  (which-key-idle-delay 1))
-:config
-(which-key-mode)
-
+  :hook after-init
+  :custom (which-key-idle-delay 1))
 
 (use-package general
   :after evil
+  :defines my/leader-keys
+  :functions general-create-definer my/leader-keys
   :config
   (general-create-definer my/leader-keys
     :keymaps '(normal insert visual emacs)
@@ -171,23 +170,23 @@
 (use-package hydra
   :after general
   :defer t
-  :config
-  (defhydra hydra-text-scale (:timeout 4)
-    "scale text"
-    ("j" text-scale-increase "in")
-    ("k" text-scale-decrease "out")
-    ("f" nil "finished" :exit t))
-  ;; (my/leader-keys
+  ;; :defines hydra-text-scale
+  ;; :functions defhydra :timeout
+  ;; :config
+  ;; (defhydra hydra-text-scale (:timeout 4)
+  ;;   "scale text"
+  ;;   ("j" text-scale-increase "in")
+  ;;   ("k" text-scale-decrease "out")
+  ;;   ("f" nil "finished" :exit t))
+  ;; ;; (my/leader-keys
   ;;   "ts" '(hydra-text-scale/body :which-key "scale text"))
   )
 
 (use-package undo-tree
-  :ensure t
+  :hook after-init
   :custom
-  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-  :config
-  (global-undo-tree-mode 1))
-
+  (global-undo-tree-mode t)
+  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
 (use-package evil
   :init
@@ -200,7 +199,7 @@
   (setq evil-cross-lines t)
   ;; (setq evil-search-module 'evil-search)
   :config
-  (evil-mode 1)
+  (evil-mode)
   (evil-set-undo-system 'undo-tree)
   ;; (define-key evil-normal-state-map (kbd "<escape>") 'keyboard-escape-quit)
   (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
@@ -217,8 +216,7 @@
 
 (use-package evil-collection
   :after evil
-  :config
-  (evil-collection-init))
+  :config (evil-collection-init))
 
 ;; (use-package all-the-icons
 ;;   ;; needs: M-x all-the-icons-install-fonts
@@ -251,19 +249,9 @@
   :hook (emacs-lisp-mode . rainbow-delimiters-mode))
 
 
-(use-package no-littering)
-
-;; no-littering doesn't set this by default so we must place
-;; auto save files in the same path as it uses for sessions
-(setq auto-save-file-name-transforms
-      `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-
-
 (use-package projectile
-  :diminish projectile-mode
   :hook (projectile-mode . treemacs-project-follow-mode)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
+  :bind-keymap ("C-c p" . projectile-command-map)
   :custom (projectile-completion-system 'ivy)
   :init
   ;; NOTE: Set this to the folder where you keep your Git repos!
@@ -355,15 +343,16 @@
 (use-package lsp-treemacs
   :after (lsp treemacs)
   :custom
-  (lsp-treemacs-theme "nerd-icons-ext")
+  ;; (lsp-treemacs-theme "nerd-icons-ext")
+  (lsp-treemacs-theme "iconless")
   (treemacs-no-png-images t))
 
-(use-package lsp-treemacs-nerd-icons
-  :after doom-themes
-  :load-path "packages/lsp-treemacs-nerd-icons"
-  ;; HACK: Load after the `lsp-treemacs' created default themes
-  :init (with-eval-after-load 'lsp-treemacs
-          (require 'lsp-treemacs-nerd-icons)))
+;; (use-package lsp-treemacs-nerd-icons
+;;   :after doom-themes
+;;   :load-path "packages/lsp-treemacs-nerd-icons"
+;;   ;; HACK: Load after the `lsp-treemacs' created default themes
+;;   :init (with-eval-after-load 'lsp-treemacs
+;;           (require 'lsp-treemacs-nerd-icons)))
 
 (use-package lsp-ivy
   :after lsp)
@@ -380,14 +369,24 @@
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
 
-(use-package flycheck
-  :hook (after-init . global-flycheck-mode))
+(use-package flymake
+  :ensure nil
+  :unless (lisp-interaction-mode)
+  :hook prog-mode
+  ;; :hook (prog-mode . (lambda ()
+  ;;                      (unless (eq major-mode 'lisp-interaction-mode)
+  ;;                        (flymake-mode))))
+  :custom
+  (flymake-show-diagnostics-at-end-of-line t))
 
-(use-package flycheck-inline
-  ;; :unless (lsp-ui-mode)
-  :after flycheck
-  :hook flycheck-mode)
+;; (use-package flycheck
+;;   :hook (after-init . global-flycheck-mode))
 
+;; (use-package flycheck-inline
+;;   ;; :unless (lsp-ui-mode)
+;;   :after flycheck
+;;   :hook flycheck-mode)
+`
 ;; (use-package company-box
 ;;   :hook (company-mode . company-box-mode))
 
@@ -432,6 +431,7 @@
 
 (use-package python-mode
   :ensure nil
+  :no-require t
   ;; :hook
   ;; (python-mode . lsp-deferred)
   ;; (python-ts-mode . lsp-deferred)
