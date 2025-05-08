@@ -326,11 +326,12 @@
   :config (treemacs-load-theme "nerd-icons"))
 
 (use-package company
+  :after eglot
   :hook prog-mode
   :bind
   (:map company-active-map
         ("<tab>" . company-complete-selection))
-  (:map lsp-mode-map
+  (:map eglot-mode-map
         ("<tab>" . company-indent-or-complete-common))
   :custom
   (company-minimum-prefix-length 1)
@@ -419,20 +420,26 @@
   (ispell-dictionary "American")
   :config (require 'ispell))
 
-(defun my/tex-mode-hook ()
-  (flyspell-mode)
-  (outline-minor-mode)
-  (LaTeX-math-mode)
-  (turn-on-reftex))
 
 (use-package auctex
-  :hook (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
+  :hook
+  ;; (latex-mode . my/tex-mode-hook)
+  (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
+  :preface
+  (defun my/tex-mode-hook ()
+    (eglot-ensure)
+    (company-mode)
+    (flyspell-mode)
+    (outline-minor-mode)
+    (LaTeX-math-mode)
+    (turn-on-reftex))
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
   (TeX-master nil)
   (TeX-PDF-mode t)
-  :init (add-hook 'LaTeX-mode-hook #'my/tex-mode-hook))
+  :init (add-hook 'LaTeX-mode-hook #'my/tex-mode-hook)
+  )
 
 (use-package preview-dvisvgm
   :after preview-latex)
