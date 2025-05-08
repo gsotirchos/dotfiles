@@ -121,13 +121,12 @@
   ;;        :map minibuffer-local-map
   ;;        ("C-r" . 'counsel-minibuffer-history))
   :custom
-  (ivy-initial-inputs-alist nil)  ; Don't start searches with ^
   ;; (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-  )
+  (ivy-initial-inputs-alist nil))  ; Don't start searches with ^
 
 (use-package ivy-rich
   :after (ivy counsel)
-  :hook (ivy-mode counsel-mode))
+  :hook counsel-mode)
 
 (use-package ivy-prescient
   :hook counsel-mode
@@ -153,8 +152,6 @@
 
 (use-package general
   :after evil
-  :defines my/leader-keys
-  :functions general-create-definer my/leader-keys
   :config
   (general-create-definer my/leader-keys
     :keymaps '(normal insert visual emacs)
@@ -170,8 +167,6 @@
 (use-package hydra
   :after general
   :defer t
-  ;; :defines hydra-text-scale
-  ;; :functions defhydra :timeout
   ;; :config
   ;; (defhydra hydra-text-scale (:timeout 4)
   ;;   "scale text"
@@ -189,6 +184,7 @@
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
 (use-package evil
+  :hook after-init
   :init
   (setq evil-toggle-key "C-<escape>")
   (setq evil-want-integration t)
@@ -199,7 +195,6 @@
   (setq evil-cross-lines t)
   ;; (setq evil-search-module 'evil-search)
   :config
-  (evil-mode)
   (evil-set-undo-system 'undo-tree)
   ;; (define-key evil-normal-state-map (kbd "<escape>") 'keyboard-escape-quit)
   (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
@@ -227,8 +222,7 @@
 ;;   :custom
 ;;   (doom-themes-treemacs-enable-variable-pitch nil)
 ;;   (doom-themes-treemacs-theme "doom-atom")
-;;   :config
-;;   (doom-themes-treemacs-config)
+;;   :config (doom-themes-treemacs-config)
 ;;   )
 
 (use-package doom-modeline
@@ -245,25 +239,20 @@
   (doom-modeline-check-simple-format t))
 
 
-(use-package rainbow-delimiters
-  :hook (emacs-lisp-mode . rainbow-delimiters-mode))
-
-
 (use-package projectile
-  :hook (projectile-mode . treemacs-project-follow-mode)
+  :hook
+  (after-init . projectile-mode)
+  (projectile-mode . treemacs-project-follow-mode)
   :bind-keymap ("C-c p" . projectile-command-map)
-  :custom (projectile-completion-system 'ivy)
-  :init
-  ;; NOTE: Set this to the folder where you keep your Git repos!
-  (when (file-directory-p "~/Projects/Code")
-    (setq projectile-project-search-path '("~/Projects/Code")))
-  (setq projectile-switch-project-action #'projectile-dired)
-  :config
-  (projectile-mode))
+  :custom
+  (projectile-completion-system 'ivy)
+  (projectile-project-search-path
+        (when (file-directory-p "~/Projects/Code") '("~/Projects/Code") nil))
+  (projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
-  :after projectile
-  :config (counsel-projectile-mode))
+  :after (ivy projectile)
+  :hook ivy-mode)
 
 (use-package magit
   :commands magit-status  ;; probably unnecessary
@@ -278,23 +267,7 @@
 ;;   :after magit)
 
 
-;; (use-package evil-nerd-commenter
-;;   :config
-;;   (my/leader-keys "c" 'evilnc-comment-or-uncomment-lines))
-
-
 ;; Treesitter
-
-;; (defun my/treesit-fold-mode ()
-;;   (when (and (fboundp 'treesit-node-at)
-;;              (treesit-node-at (point)))
-;;     (treesit-fold-mode 1)))
-;;
-;; ;; needs: git clone https://github.com/emacs-tree-sitter/treesit-fold ~/.emacs.dir/packages/treesit-fold
-;; (use-package treesit-fold
-;;   :after treesit
-;;   :load-path "packages/treesit-fold"
-;;   :hook (prog-mode . my/treesit-fold-mode))
 
 ;; (use-package evil-textobj-tree-sitter
 ;;   :config
@@ -311,55 +284,49 @@
 
 ;; LSP
 
-;; (use-package lsp-mode
-;;   :commands (lsp lsp-deferred)
-;;   :hook (lsp-mode . lsp-headerline-breadcrumb-mode)
-;;   :custom
-;;   (lsp-modeline-code-actions-enable nil)
-;;   (lsp-modeline-diagnostics-enable nil)
-;;   (lsp-headerline-breadcrumb-segments '(symbols))
-;;   (lsp-headerline-breadcrumb-icons-enable t)
-;;   (lsp-ui-doc-position 'bottom)
-;;   (lsp-ui-sideline-show-diagnostics t)
-;;   ;; (lsp-ui-sideline-enable t)
-;;   ;; (lsp-diagnostics-disabled-modes ())
-;;   :init
-;;   (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-;;   :config
-;;   (lsp-enable-which-key-integration t))
-
-;; (use-package lsp-ui
-;;   :after lsp-mode
-;;   :hook
-;;   (lsp-mode . lsp-ui-mode)
-;;   ;; (lsp-ui-mode . (lambda () (flycheck-inline-mode 0)))
-;;   :config
-;;   (flycheck-inline-mode 0))
+(use-package eglot
+  :ensure nil
+  :hook (((python-mode
+           python-ts-mode
+           sh-mode
+           bash-ts-mode
+           LaTeX-mode)
+          . eglot-ensure)
+         ;; ((cider-mode
+         ;;   eglot-managed-mode)
+         ;;  . eglot-disable-in-cider)
+         )
+  ;; :preface
+  ;; (defun eglot-disable-in-cider ()
+  ;;   (when (eglot-managed-p)
+  ;;     (if (bound-and-true-p cider-mode)
+  ;;         (progn
+  ;;           (remove-hook 'completion-at-point-functions 'eglot-completion-at-point t)
+  ;;           (remove-hook 'xref-backend-functions 'eglot-xref-backend t))
+  ;;       (add-hook 'completion-at-point-functions 'eglot-completion-at-point nil t)
+  ;;       (add-hook 'xref-backend-functions 'eglot-xref-backend nil t))))
+  :custom
+  (eglot-autoshutdown t)
+  (eglot-events-buffer-size 0)
+  (eglot-extend-to-xref nil)
+  (eglot-ignored-server-capabilities
+   '(:documentHighlightProvider
+     :codeLensProvider
+     :codeActionProvider
+     :colorProvider
+     :foldingRangeProvider))
+  (eglot-stay-out-of '(company))
+  :config
+  ;; (eglot-inlay-hints-mode)
+  (add-to-list 'eglot-server-programs
+               '(python-ts-mode . ("pyright"))))
 
 (use-package treemacs-nerd-icons
-  :config
-  (treemacs-load-theme "nerd-icons"))
-
-(use-package lsp-treemacs
-  :after (lsp treemacs)
-  :custom
-  ;; (lsp-treemacs-theme "nerd-icons-ext")
-  (lsp-treemacs-theme "iconless")
-  (treemacs-no-png-images t))
-
-;; (use-package lsp-treemacs-nerd-icons
-;;   :after doom-themes
-;;   :load-path "packages/lsp-treemacs-nerd-icons"
-;;   ;; HACK: Load after the `lsp-treemacs' created default themes
-;;   :init (with-eval-after-load 'lsp-treemacs
-;;           (require 'lsp-treemacs-nerd-icons)))
-
-(use-package lsp-ivy
-  :after lsp)
+  :after treemacs
+  :config (treemacs-load-theme "nerd-icons"))
 
 (use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
+  :hook prog-mode
   :bind
   (:map company-active-map
         ("<tab>" . company-complete-selection))
@@ -373,22 +340,7 @@
   :ensure nil
   :unless (lisp-interaction-mode)
   :hook prog-mode
-  ;; :hook (prog-mode . (lambda ()
-  ;;                      (unless (eq major-mode 'lisp-interaction-mode)
-  ;;                        (flymake-mode))))
-  :custom
-  (flymake-show-diagnostics-at-end-of-line t))
-
-;; (use-package flycheck
-;;   :hook (after-init . global-flycheck-mode))
-
-;; (use-package flycheck-inline
-;;   ;; :unless (lsp-ui-mode)
-;;   :after flycheck
-;;   :hook flycheck-mode)
-`
-;; (use-package company-box
-;;   :hook (company-mode . company-box-mode))
+  :custom (flymake-show-diagnostics-at-end-of-line t))
 
 
 ;; Languages
@@ -398,47 +350,37 @@
         (sh-mode . bash-ts-mode)))
 
 
-;; Elisp
+;; Lisp
 
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
             (my/leader-keys "(" 'check-parens)
             (setq-local evil-shift-width 2)))
 
+(use-package rainbow-delimiters
+  :hook (emacs-lisp-mode . rainbow-delimiters-mode))
+
 
 ;; Python
 
-(use-package lsp-pyright
-  :ensure t
-  :custom (lsp-pyright-langserver-command "pyright")
-  :config
-  (require 'lsp-pyright))
-
-(use-package dap-mode
-  ;; Uncomment the config below if you want all UI panes to be hidden by default!
-  ;; :custom
-  ;; (lsp-enable-dap-auto-configure nil)
-  :commands dap-debug
-  :config
-  ;; (dap-ui-mode 1)
-  (require 'dap-python)
-
-  ;; Bind `C-c l d` to `dap-hydra` for easy access
-  (general-define-key
-   :keymaps 'lsp-mode-map
-   :prefix lsp-keymap-prefix
-   "d" '(dap-hydra t :wk "debugger"))):
+;; (use-package dap-mode
+;;   ;; Uncomment the config below if you want all UI panes to be hidden by default!
+;;   ;; :custom
+;;   ;; (lsp-enable-dap-auto-configure nil)
+;;   :commands dap-debug
+;;   :config
+;;   (dap-ui-mode 1)
+;;   ;; Bind `C-c l d` to `dap-hydra` for easy access
+;;   ;; (general-define-key
+;;   ;;  :keymaps 'lsp-mode-map
+;;   ;;  :prefix lsp-keymap-prefix
+;;   ;;  "d" '(dap-hydra t :wk "debugger"))):
 
 (use-package python-mode
   :ensure nil
   :no-require t
-  ;; :hook
-  ;; (python-mode . lsp-deferred)
-  ;; (python-ts-mode . lsp-deferred)
-  :custom
-  (dap-python-debugger 'debugpy)
-  :config
-  (require 'dap-python))
+  :custom (dap-python-debugger 'debugpy)
+  :config (require 'dap-python))
 
 ;; (use-package pyvenv
 ;;   :after python-mode
@@ -446,12 +388,13 @@
 ;;   (pyvenv-mode 1))
 
 (use-package conda
-  :hook
-  (find-file . (lambda ()
-                 (when (bound-and-true-p conda-project-env-path)
-                   ;; (conda-mode-line-setup)
-                   ;; (conda-projectile-mode-line-setup)
-                   (conda-env-activate-for-buffer))))
+  :hook (find-file . my/conda-env-activate-for-buffer)
+  :preface
+  (defun my/conda-env-activate-for-buffer ()
+    (when (bound-and-true-p conda-project-env-path)
+      ;; (conda-mode-line-setup)
+      ;; (conda-projectile-mode-line-setup)
+      (conda-env-activate-for-buffer)))
   :config
   (require 'conda)
   (require 'conda-projectile)
@@ -469,33 +412,33 @@
 
 (use-package flyspell
   :ensure nil
-  :hook
-  (prog-mode . flyspell-prog-mode)
+  :defer t
+  ;; :hook (prog-mode . flyspell-prog-mode)
   :custom
-  (ispell-program-name "/opt/homebrew/bin/aspell")
-  (ispell-dictionary "american")
-  :config
-  (require 'ispell))
+  (ispell-program-name "aspell")  ;; TODO: verify
+  (ispell-dictionary "American")
+  :config (require 'ispell))
 
 (defun my/tex-mode-hook ()
-  (lsp-deferred)
   (flyspell-mode)
   (outline-minor-mode)
   (LaTeX-math-mode)
   (turn-on-reftex))
 
 (use-package auctex
-  :defer t
-  :hook
-  (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
+  :hook (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
   (TeX-master nil)
   (TeX-PDF-mode t)
-  :init
-  (add-hook 'LaTeX-mode-hook #'my/tex-mode-hook))
+  :init (add-hook 'LaTeX-mode-hook #'my/tex-mode-hook))
 
 (use-package preview-dvisvgm
-  :after preview-latex
-  (require 'preview-dvisvgm))
+  :after preview-latex)
+
+(provide 'init)
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars unresolved)
+;; End:
+;;; init.el ends here
