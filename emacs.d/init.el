@@ -247,7 +247,7 @@
   :custom
   (projectile-completion-system 'ivy)
   (projectile-project-search-path
-        (when (file-directory-p "~/Projects/Code") '("~/Projects/Code") nil))
+   (when (file-directory-p "~/Projects/Code") '("~/Projects/Code") nil))
   (projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
@@ -291,20 +291,7 @@
            sh-mode
            bash-ts-mode
            LaTeX-mode)
-          . eglot-ensure)
-         ;; ((cider-mode
-         ;;   eglot-managed-mode)
-         ;;  . eglot-disable-in-cider)
-         )
-  ;; :preface
-  ;; (defun eglot-disable-in-cider ()
-  ;;   (when (eglot-managed-p)
-  ;;     (if (bound-and-true-p cider-mode)
-  ;;         (progn
-  ;;           (remove-hook 'completion-at-point-functions 'eglot-completion-at-point t)
-  ;;           (remove-hook 'xref-backend-functions 'eglot-xref-backend t))
-  ;;       (add-hook 'completion-at-point-functions 'eglot-completion-at-point nil t)
-  ;;       (add-hook 'xref-backend-functions 'eglot-xref-backend nil t))))
+          . eglot-ensure))
   :custom
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
@@ -317,9 +304,10 @@
      :foldingRangeProvider))
   (eglot-stay-out-of '(company))
   :config
-  ;; (eglot-inlay-hints-mode)
-  (add-to-list 'eglot-server-programs
-               '(python-ts-mode . ("pyright"))))
+  (company-mode)
+  ;; (add-to-list 'eglot-server-programs
+  ;;              '(python-ts-mode . ("pyright-langserver")))
+  )
 
 (use-package treemacs-nerd-icons
   :after treemacs
@@ -427,8 +415,6 @@
   (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
   :preface
   (defun my/tex-mode-hook ()
-    (eglot-ensure)
-    (company-mode)
     (flyspell-mode)
     (outline-minor-mode)
     (LaTeX-math-mode)
