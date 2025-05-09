@@ -40,6 +40,7 @@
   ;; (tooltip-mode 0)
   ;; (setq visible-bell t)
   (menu-bar-mode 0))
+(set-fringe-mode 12)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (global-visual-line-mode 0)
@@ -64,11 +65,9 @@
 
 ;; Initialize package sources
 (require 'package)
-
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
-
 (package-initialize)
 (unless package-archive-contents
   (setq package-check-signature nil)
@@ -116,6 +115,41 @@
      ))
   :init (load-theme 'modus-operandi))
 
+(use-package doom-modeline
+  ;; needs: M-x nerd-icons-install-fonts
+  :hook after-init
+  :custom
+  (doom-modeline-window-width-limit 50)
+  (doom-modeline-workspace-name nil)
+  (doom-modeline-major-mode-icon nil)
+  (doom-modeline-lsp-icon nil)
+  (doom-modeline-buffer-encoding nil)
+  (doom-modeline-env-version nil)
+  (doom-modeline-buffer-modification-icon nil)
+  (doom-modeline-check-icon nil)
+  (doom-modeline-check-simple-format t))
+
+;; (use-package doom-themes
+;;   ;; :init (load-theme 'doom-palenight t))
+;;   :custom
+;;   (doom-themes-treemacs-enable-variable-pitch nil)
+;;   (doom-themes-treemacs-theme "doom-atom")
+;;   :config (doom-themes-treemacs-config)
+;;   )
+
+;; (use-package all-the-icons
+;;   ;; needs: M-x all-the-icons-install-fonts
+;;   :if (display-graphic-p))
+
+(use-package treemacs
+  :ensure nil
+  :no-require t
+  :custom
+  ;; (use-package treemacs-nerd-icons
+  ;;   :after treemacs
+  ;;   :init (treemacs-load-theme "nerd-icons"))
+  (treemacs-no-png-images t))
+
 (use-package dired
   :ensure nil
   ;; :bind (:map dired-mode-map
@@ -152,12 +186,11 @@
               (eq (current-local-map) read-passwd-map)))))
   :bind
   (:map corfu-map
-        ("RET" . nil)
-        ("SPC" . corfu-insert-separator)
         ;; ("TAB" . corfu-next)
         ;; ("S-TAB" . corfu-previous)
         ;; ("RET" . corfu-complete)
-        )
+        ("SPC" . corfu-nsert-separator)
+        ("RET" . nil))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)  ;; Popup completion info
@@ -165,16 +198,14 @@
 
 (use-package vertico
   :custom
-  (vertico-count 20)  ;; limit to a fixed size
+  (vertico-count 10)  ;; limit to a fixed size
   (vertico-cycle t)  ;; limit to a fixed size
   :init (vertico-mode))
 
 (use-package vertico-directory
   :after vertico
   :ensure nil  ;; comes with vertico
-  :bind
-  (:map vertico-map
-        ("DEL" . vertico-directory-delete-char)))
+  :bind (:map vertico-map ("DEL" . vertico-directory-delete-char)))
 
 (use-package savehist
   :init (savehist-mode))
@@ -236,15 +267,13 @@
   (defalias 'consult-line-thing-at-point 'consult-line)
   (consult-customize
    consult-line-thing-at-point
-   :initial (thing-at-point 'symbol))
-  )
+   :initial (thing-at-point 'symbol)))
 
 (use-package embark
   :bind
-  (;; ("C-."   . embark-act)       ;; Begin the embark process
-   ;; ("C-;"   . embark-dwim)      ;; good alternative: M-.
-   ("C-h B" . embark-bindings))  ;; alternative for `describe-bindings'
-  )
+  (;; ("C-."   . embark-act) ;; Begin the embark process
+   ;; ("C-;"   . embark-dwim)  ;; good alternative: M-.
+   ("C-h B" . embark-bindings)))  ;; alternative for `describe-bindings'
 
 (use-package embark-consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
@@ -264,8 +293,7 @@
    ([remap describe-key] . helpful-key)
    ("C-h F" . helpful-function)
    ("C-c C-d" . helpful-at-point))
-  :custom
-  (warning-minimum-level :error))
+  :custom (warning-minimum-level :error))
 
 (use-package which-key
   :init (which-key-mode)
@@ -306,10 +334,10 @@
       (apply undo-tree-save-history args)))
   :custom
   (undo-tree-auto-save-history t)
-  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
-:init
-(advice-add 'undo-tree-save-history :around 'my/silent-undo-tree-save-history)
-(global-undo-tree-mode)
+  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+  :init
+  (advice-add 'undo-tree-save-history :around 'my/silent-undo-tree-save-history)
+  (global-undo-tree-mode))
 
 (use-package evil
   :hook after-init
@@ -324,7 +352,6 @@
   :config
   (evil-set-undo-system 'undo-tree)
   (global-set-key [remap evil-quit] 'kill-buffer-and-window)
-  ;; (define-key special-mode-map (kbd "q") 'kill-buffer-and-window)
   (define-key minibuffer-local-map (kbd "ESC") 'keyboard-escape-quit)
   (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
   (define-key evil-insert-state-map (kbd "C-s") 'swiper)
@@ -341,31 +368,6 @@
   :after evil
   :init (evil-collection-init))
 
-;; (use-package all-the-icons
-;;   ;; needs: M-x all-the-icons-install-fonts
-;;   :if (display-graphic-p))
-;;
-;; (use-package doom-themes
-;;   ;; :init (load-theme 'doom-palenight t))
-;;   :custom
-;;   (doom-themes-treemacs-enable-variable-pitch nil)
-;;   (doom-themes-treemacs-theme "doom-atom")
-;;   :config (doom-themes-treemacs-config)
-;;   )
-
-(use-package doom-modeline
-  ;; needs: M-x nerd-icons-install-fonts
-  :hook after-init
-  :custom
-  (doom-modeline-window-width-limit 50)
-  (doom-modeline-major-mode-icon nil)
-  (doom-modeline-lsp-icon nil)
-  (doom-modeline-buffer-encoding nil)
-  ;; (doom-modeline-env-version nil)
-  (doom-modeline-buffer-modification-icon nil)
-  (doom-modeline-check-icon nil)
-  (doom-modeline-check-simple-format t))
-
 (use-package magit
   :commands magit-status  ;; probably unnecessary
   ;; :custom
@@ -380,6 +382,10 @@
 
 
 ;; Treesitter
+
+(setq major-mode-remap-alist
+      '((python-mode . python-ts-mode)
+        (sh-mode . bash-ts-mode)))
 
 ;; (use-package evil-textobj-tree-sitter
 ;;   :config
@@ -420,22 +426,6 @@
   ;;              '(python-ts-mode . ("pyright-langserver")))
   )
 
-(use-package treemacs-nerd-icons
-  :after treemacs
-  :init (treemacs-load-theme "nerd-icons"))
-
-;; (use-package company
-;;   ;; :after eglot
-;;   :hook prog-mode
-;;   :bind
-;;   ;; (:map company-active-map
-;;   ;;       ("<tab>" . company-complete-selection))
-;;   ;; (:map eglot-mode-map
-;;   ;;       ("<tab>" . company-indent-or-complete-common))
-;;   :custom
-;;   (company-minimum-prefix-length 1)
-;;   (company-idle-delay 0.0))
-
 (use-package flymake
   :ensure nil
   :unless (lisp-interaction-mode)
@@ -443,19 +433,12 @@
   :custom (flymake-show-diagnostics-at-end-of-line t))
 
 
-;; Languages
-
-(setq major-mode-remap-alist
-      '((python-mode . python-ts-mode)
-        (sh-mode . bash-ts-mode)))
-
-
 ;; Lisp
 
-;; (add-hook 'emacs-lisp-mode-hook
-;;           (lambda ()
-;;             (my/leader-keys "(" 'check-parens)
-;;             (setq-local evil-shift-width 2)))
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (my/leader-keys "(" 'check-parens)
+            (setq-local evil-shift-width 2)))
 
 (use-package rainbow-delimiters
   :hook (emacs-lisp-mode . rainbow-delimiters-mode))
@@ -479,7 +462,7 @@
 (use-package python-mode
   :ensure nil
   :no-require t
-  :custom (dap-python-debugger 'debugpy)
+  ;; :custom (dap-python-debugger 'debugpy)
   ;; :config (require 'dap-python)
   )
 
@@ -509,6 +492,25 @@
 
 ;; LaTeX
 
+(use-package auctex
+  :hook
+  (LaTeX-mode . my/tex-mode-hook)
+  (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
+  :preface
+  (defun my/tex-mode-hook ()
+    (flyspell-mode)
+    (outline-minor-mode)
+    (LaTeX-math-mode)
+    (turn-on-reftex))
+  :custom
+  (TeX-auto-save t)
+  (TeX-parse-self t)
+  (TeX-master nil)
+  (TeX-PDF-mode t))
+
+(use-package preview-dvisvgm
+  :after preview-latex)
+
 (use-package flyspell
   :ensure nil
   :defer t
@@ -522,29 +524,7 @@
   (ispell-local-dictionary-alist
    '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
   (ispell-dictionary "en_US")
-  (ispell-local-dictionary "en_US")
-  )
-
-(use-package auctex
-  :hook
-  (LaTeX-mode . my/tex-mode-hook)
-  (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
-  :preface
-  (defun my/tex-mode-hook ()
-    ;; (company-mode)
-    (flyspell-mode)
-    (outline-minor-mode)
-    (LaTeX-math-mode)
-    (turn-on-reftex))
-  :custom
-  (TeX-auto-save t)
-  (TeX-parse-self t)
-  (TeX-master nil)
-  (TeX-PDF-mode t)
-  )
-
-(use-package preview-dvisvgm
-  :after preview-latex)
+  (ispell-local-dictionary "en_US"))
 
 (provide 'init)
 ;; Local Variables:
