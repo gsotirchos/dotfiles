@@ -2,31 +2,64 @@
 ;;; commentary:
 
 ;;; Code:
+
 (when (eq system-type 'darwin)
   (set-face-attribute 'default nil :family "Menlo" :height 140))
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150))
 
+;; Essential mappings
+(keymap-global-set "C-z" nil)
+(keymap-global-set "s-t" 'tab-new)
+(defun my/save-and-close ()
+  "Save buffer and close its tab/window/frame."
+  (interactive)
+  (save-buffer)
+  (condition-case nil
+      (tab-close)
+    (error (condition-case nil
+               (delete-frame)
+             (error "Can't delete last frame")))))
+;; (keymap-global-set "s-w" nil)
+(keymap-global-set "s-w" #'my/save-and-close)
+
+(setq inhibit-startup-message t
+      auto-save-default nil
+      make-backup-files nil
+      set-mark-command-repeat-pop t
+      large-file-warning-threshold nil
+      vc-follow-symlinks t
+      ad-redefinition-action 'accept
+      global-auto-revert-non-file-buffers t
+      auto-hscroll-mode nil
+      tab-bar-show 1)
+
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
 (unless (eq system-type 'darwin)
-  ;; (tooltip-mode -1)
+  ;; (tooltip-mode 0)
   ;; (setq visible-bell t)
-  (menu-bar-mode -1))
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(setq inhibit-startup-message t)
-(setq vc-follow-symlinks t)
-(setq-default indent-tabs-mode nil)
-(column-number-mode)
-(add-hook 'prog-mode-hook
-          (lambda ()
-            ;; (global-display-line-numbers-mode t)
-            (setq-local show-trailing-whitespace t)))
-(add-hook 'prog-mode-hook 'hs-minor-mode)
+  (menu-bar-mode 0))
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
+(global-visual-line-mode 0)
+(xterm-mouse-mode 1)
+(savehist-mode 1)
+(global-auto-revert-mode 1)
+(column-number-mode 1)
+(add-hook 'prog-mode-hook #'electric-pair-mode)
+(add-hook 'prog-mode-hook #'hs-minor-mode)
+;; (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 
-;; Disable Ctrl-Z
-(global-set-key (kbd "C-z") nil)
+(setq-default
+ ;; global-display-line-numbers-mode t
+ indent-tabs-mode nil)
+
+;; Move customization settings out of init.el
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(unless (file-exists-p custom-file)
+  (write-region "" nil custom-file))
+(load custom-file nil t)
 
 
 ;; Initialize package sources
@@ -49,8 +82,8 @@
   (package-install 'use-package))
 
 (require 'use-package)
-(setq use-package-always-ensure t)
-
+(setq use-package-always-ensure t
+      use-package-always-defer t)
 
 (use-package no-littering
   :ensure nil
@@ -61,20 +94,9 @@
   (auto-save-file-name-transforms
    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
-;; Offload the custom-set-variables to a separate file
-(use-package custom
-  :ensure nil
-  :no-require t
-  :custom (custom-file "~/.emacs.d/custom.el")
-  :config
-  (unless (file-exists-p custom-file)
-    (write-region "" nil custom-file))
-  ;; Load custom file. Don't hide errors. Hide success message
-  (load custom-file nil t))
-
-
 (use-package modus-themes
   :ensure t
+  :hook (ns-system-appearance-change-functions . my/apply-theme)
   :preface
   (defun my/apply-theme (appearance)
     (mapc #'disable-theme custom-enabled-themes)
@@ -82,7 +104,6 @@
     (pcase appearance
       ('light (load-theme 'modus-operandi))
       ('dark (load-theme 'modus-vivendi-tinted))))
-  :hook (ns-system-appearance-change-functions . my/apply-theme)
   :custom
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
@@ -93,61 +114,161 @@
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
      ))
+  :init (load-theme 'modus-operandi))
+
+(use-package dired
+  :ensure nil
+  ;; :bind (:map dired-mode-map
+  ;;             ("b" . dired-up-directory))
+  :custom
+  (dired-listing-switches "-alv --group-directories-first")
+  (dired-omit-files "^\\.[^.].*")
+  (dired-omit-verbose nil)
+  (dired-dwim-target 'dired-dwim-target-next)
+  (dired-hide-details-hide-symlink-targets nil)
+  (dired-kill-when-opening-new-dired-buffer t)
+  (delete-by-moving-to-trash t)
+  :preface
+  (defun my/dired-mode-hook ()
+    (interactive)
+    (dired-hide-details-mode 1)
+    (hl-line-mode 1))
+  :config (add-hook 'dired-mode-hook #'my/dired-mode-hook))
+
+(use-package corfu
+  :custom
+  (corfu-auto t)  ;; auto-completion
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.1)
+  (corfu-popupinfo-delay '(0.5 . 0.2))
+  (corfu-preselect 'prompt)
+  (corfu-preview-current 'insert)  ;; insert previewed candidate
+  (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
+  (corfu-cycle t)
+  (global-corfu-minibuffer
+   (lambda ()
+     (not (or (bound-and-true-p mct--active)
+              (bound-and-true-p vertico--input)
+              (eq (current-local-map) read-passwd-map)))))
+  :bind
+  (:map corfu-map
+        ("RET" . nil)
+        ("SPC" . corfu-insert-separator)
+        ;; ("TAB" . corfu-next)
+        ;; ("S-TAB" . corfu-previous)
+        ;; ("RET" . corfu-complete)
+        )
   :init
-  (load-theme 'modus-operandi))
+  (global-corfu-mode)
+  (corfu-popupinfo-mode)  ;; Popup completion info
+  (corfu-history-mode))
 
+(use-package vertico
+  :custom
+  (vertico-count 20)  ;; limit to a fixed size
+  (vertico-cycle t)  ;; limit to a fixed size
+  :init (vertico-mode))
 
-(use-package ivy
-  :hook after-init
-  ;; :bind (("C-s" . swiper)
-  ;;        ("C-r" . swiper-backward)
-  ;;        :map ivy-minibuffer-map
-  ;;        ("TAB" . ivy-alt-done)
-  ;;        ("C-l" . ivy-alt-done)
-  ;;        ("C-j" . ivy-next-line)
-  ;;        ("C-k" . ivy-previous-line)
-  ;;        :map ivy-switch-buffer-map
-  ;;        ("C-k" . ivy-previous-line)
-  ;;        ("C-l" . ivy-done)
-  ;;        ("C-d" . ivy-switch-buffer-kill)
-  ;;        :map ivy-reverse-i-search-map
-  ;;        ("C-k" . ivy-previous-line)
-  ;;        ("C-d" . ivy-reverse-i-search-kill))
+(use-package vertico-directory
+  :after vertico
+  :ensure nil  ;; comes with vertico
+  :bind
+  (:map vertico-map
+        ("DEL" . vertico-directory-delete-char)))
+
+(use-package savehist
+  :init (savehist-mode))
+
+(use-package marginalia
+  :after vertico
+  ;; :custom
+  ;; (marginalia-annotators
+  ;;  '(marginalia-annotators-heavy marginalia-annotators-light nil))
+  :init (marginalia-mode))
+
+(use-package orderless
+  :custom
+  ;; Actvate orderless completion
+  (completion-styles '(orderless substring basic))
+  ;; Enable partial completion for file wildcard support
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package consult
+  :after vertico
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+  :init
+  ;; Tweak the register preview for `consult-register-load',
+  ;; `consult-register-store' and the built-in commands.  This improves the
+  ;; register formatting, adds thin separator lines, register sorting and hides
+  ;; the window mode line.
+  (advice-add #'register-preview :override #'consult-register-window)
+  (setq register-preview-delay 0.5)
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+  :bind
+  (("C-x b" . consult-buffer)
+   ("M-G"   . consult-git-grep)
+   ("M-g f" . consult-flymake)
+   ("M-g g" . consult-goto-line)
+   ("M-g M-g" . consult-goto-line)
+   ;; ;; Isearch integration
+   ;; ("M-s e" . consult-isearch-history)
+   ;; :map isearch-mode-map
+   ;; ("M-e" . consult-isearch-history)
+   ;; ("M-s e" . consult-isearch-history)
+   ;; ("M-s l" . consult-line)
+   ;; ("M-s L" . consult-line-multi)
+   ;; :map isearch-mode-map
+   ;; ("M-s l" . consult-line)
+   ;; ("M-s L" . consult-line-multi)
+   ;; :map minibuffer-local-map
+   ;; ("M-s" . consult-history)
+   ;; ("M-r" . consult-history)
+   )
+  :config
+  ;; The configuration values are evaluated at runtime, just before the
+  ;; completion session is started. Therefore you can use for example
+  ;; `thing-at-point' to adjust the initial input or the future history.
+  (consult-customize
+   consult-line
+   :add-history (seq-some #'thing-at-point '(region symbol)))
+  (defalias 'consult-line-thing-at-point 'consult-line)
+  (consult-customize
+   consult-line-thing-at-point
+   :initial (thing-at-point 'symbol))
   )
 
-(use-package counsel
-  :hook ivy-mode
-  ;; :bind (("C-M-j" . 'counsel-switch-buffer)
-  ;;        :map minibuffer-local-map
-  ;;        ("C-r" . 'counsel-minibuffer-history))
-  :custom
-  ;; (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-  (ivy-initial-inputs-alist nil))  ; Don't start searches with ^
+(use-package embark
+  :bind
+  (;; ("C-."   . embark-act)       ;; Begin the embark process
+   ;; ("C-;"   . embark-dwim)      ;; good alternative: M-.
+   ("C-h B" . embark-bindings))  ;; alternative for `describe-bindings'
+  )
 
-(use-package ivy-rich
-  :after (ivy counsel)
-  :hook counsel-mode)
-
-(use-package ivy-prescient
-  :hook counsel-mode
-  :custom
-  (prescient-persist-mode 1)  ;; remember sorting across sessions!
-  (ivy-prescient-enable-filtering nil))
+(use-package embark-consult
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package helpful
-  :commands (helpful-callable helpful-variable helpful-command helpful-key)
+  :commands
+  (helpful-callable
+   helpful-function
+   helpful-command
+   helpful-variable
+   helpful-key
+   helpful-at-point)
   :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key)
+  (([remap describe-function] . helpful-function)
+   ([remap describe-command] . helpful-command)
+   ([remap describe-variable] . helpful-variable)
+   ([remap describe-key] . helpful-key)
+   ("C-h F" . helpful-function)
+   ("C-c C-d" . helpful-at-point))
   :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
   (warning-minimum-level :error))
 
 (use-package which-key
-  :hook after-init
+  :init (which-key-mode)
   :custom (which-key-idle-delay 1))
 
 (use-package general
@@ -158,8 +279,7 @@
     :prefix "C-c"
     :global-prefix "C-c")
   (my/leader-keys
-    "t"  '(:ignore t :which-key "toggles")
-    "tt" '(counsel-load-theme :which-key "choose theme"))
+    "t"  '(:ignore t :which-key "toggles"))
   (my/leader-keys
     :infix "f"
     "i" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el")))))
@@ -179,39 +299,47 @@
 
 (use-package undo-tree
   :hook after-init
+  :preface
+  (defun my/silent-undo-tree-save-history (undo-tree-save-history &rest args)
+    (let ((message-log-max nil)
+          (inhibit-message t))
+      (apply undo-tree-save-history args)))
   :custom
-  (global-undo-tree-mode t)
+  (undo-tree-auto-save-history t)
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+:init
+(advice-add 'undo-tree-save-history :around 'my/silent-undo-tree-save-history)
+(global-undo-tree-mode)
 
 (use-package evil
   :hook after-init
-  :init
-  (setq evil-toggle-key "C-<escape>")
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-u-delete t)
-  (setq evil-disable-insert-state-bindings t)
-  (setq evil-cross-lines t)
-  ;; (setq evil-search-module 'evil-search)
+  :custom
+  (evil-toggle-key "C-<escape>")
+  (evil-want-integration t)
+  (evil-want-keybinding nil)
+  (evil-want-C-u-scroll t)
+  (evil-want-C-u-delete t)
+  (evil-disable-insert-state-bindings t)
+  (evil-cross-lines t)
   :config
   (evil-set-undo-system 'undo-tree)
-  ;; (define-key evil-normal-state-map (kbd "<escape>") 'keyboard-escape-quit)
+  (global-set-key [remap evil-quit] 'kill-buffer-and-window)
+  ;; (define-key special-mode-map (kbd "q") 'kill-buffer-and-window)
+  (define-key minibuffer-local-map (kbd "ESC") 'keyboard-escape-quit)
   (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
-  ;; (define-key evil-normal-state-map (kbd "C-s") 'swiper)
-  ;; (define-key evil-normal-state-map (kbd "C-r") 'swiper-backward)
   (define-key evil-insert-state-map (kbd "C-s") 'swiper)
   (define-key evil-insert-state-map (kbd "C-r") 'swiper-backward)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+  ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
+  ;; (evil-set-initial-state 'dashboard-mode 'normal)
+  )
 
 (use-package evil-collection
   :after evil
-  :config (evil-collection-init))
+  :init (evil-collection-init))
 
 ;; (use-package all-the-icons
 ;;   ;; needs: M-x all-the-icons-install-fonts
@@ -227,7 +355,7 @@
 
 (use-package doom-modeline
   ;; needs: M-x nerd-icons-install-fonts
-  :hook (after-init . doom-modeline-mode)
+  :hook after-init
   :custom
   (doom-modeline-window-width-limit 50)
   (doom-modeline-major-mode-icon nil)
@@ -237,22 +365,6 @@
   (doom-modeline-buffer-modification-icon nil)
   (doom-modeline-check-icon nil)
   (doom-modeline-check-simple-format t))
-
-
-(use-package projectile
-  :hook
-  (after-init . projectile-mode)
-  (projectile-mode . treemacs-project-follow-mode)
-  :bind-keymap ("C-c p" . projectile-command-map)
-  :custom
-  (projectile-completion-system 'ivy)
-  (projectile-project-search-path
-   (when (file-directory-p "~/Projects/Code") '("~/Projects/Code") nil))
-  (projectile-switch-project-action #'projectile-dired))
-
-(use-package counsel-projectile
-  :after (ivy projectile)
-  :hook ivy-mode)
 
 (use-package magit
   :commands magit-status  ;; probably unnecessary
@@ -302,28 +414,27 @@
      :codeActionProvider
      :colorProvider
      :foldingRangeProvider))
-  (eglot-stay-out-of '(company))
-  :config
-  (company-mode)
+  ;; (eglot-stay-out-of '(yas-snippets))
+  ;; :config
   ;; (add-to-list 'eglot-server-programs
   ;;              '(python-ts-mode . ("pyright-langserver")))
   )
 
 (use-package treemacs-nerd-icons
   :after treemacs
-  :config (treemacs-load-theme "nerd-icons"))
+  :init (treemacs-load-theme "nerd-icons"))
 
-(use-package company
-  :after eglot
-  :hook prog-mode
-  :bind
-  (:map company-active-map
-        ("<tab>" . company-complete-selection))
-  (:map eglot-mode-map
-        ("<tab>" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
+;; (use-package company
+;;   ;; :after eglot
+;;   :hook prog-mode
+;;   :bind
+;;   ;; (:map company-active-map
+;;   ;;       ("<tab>" . company-complete-selection))
+;;   ;; (:map eglot-mode-map
+;;   ;;       ("<tab>" . company-indent-or-complete-common))
+;;   :custom
+;;   (company-minimum-prefix-length 1)
+;;   (company-idle-delay 0.0))
 
 (use-package flymake
   :ensure nil
@@ -341,10 +452,10 @@
 
 ;; Lisp
 
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (my/leader-keys "(" 'check-parens)
-            (setq-local evil-shift-width 2)))
+;; (add-hook 'emacs-lisp-mode-hook
+;;           (lambda ()
+;;             (my/leader-keys "(" 'check-parens)
+;;             (setq-local evil-shift-width 2)))
 
 (use-package rainbow-delimiters
   :hook (emacs-lisp-mode . rainbow-delimiters-mode))
@@ -353,11 +464,11 @@
 ;; Python
 
 ;; (use-package dap-mode
-;;   ;; Uncomment the config below if you want all UI panes to be hidden by default!
+;;   ;; All UI panes hidden by default
 ;;   ;; :custom
 ;;   ;; (lsp-enable-dap-auto-configure nil)
 ;;   :commands dap-debug
-;;   :config
+;;   :init
 ;;   (dap-ui-mode 1)
 ;;   ;; Bind `C-c l d` to `dap-hydra` for easy access
 ;;   ;; (general-define-key
@@ -369,7 +480,8 @@
   :ensure nil
   :no-require t
   :custom (dap-python-debugger 'debugpy)
-  :config (require 'dap-python))
+  ;; :config (require 'dap-python)
+  )
 
 ;; (use-package pyvenv
 ;;   :after python-mode
@@ -382,11 +494,9 @@
   (defun my/conda-env-activate-for-buffer ()
     (when (bound-and-true-p conda-project-env-path)
       ;; (conda-mode-line-setup)
-      ;; (conda-projectile-mode-line-setup)
       (conda-env-activate-for-buffer)))
   :config
   (require 'conda)
-  (require 'conda-projectile)
   ;; (conda-env-initialize-interactive-shells)
   ;; (conda-env-initialize-Shell)
   (conda-env-autoactivate-mode t))
@@ -403,18 +513,25 @@
   :ensure nil
   :defer t
   ;; :hook (prog-mode . flyspell-prog-mode)
-  :custom
-  (ispell-program-name "aspell")  ;; TODO: verify
-  (ispell-dictionary "American")
   :config (require 'ispell))
 
+(use-package ispell
+  :ensure nil
+  :custom
+  (ispell-program-name "aspell")
+  (ispell-local-dictionary-alist
+   '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+  (ispell-dictionary "en_US")
+  (ispell-local-dictionary "en_US")
+  )
 
 (use-package auctex
   :hook
-  ;; (latex-mode . my/tex-mode-hook)
+  (LaTeX-mode . my/tex-mode-hook)
   (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
   :preface
   (defun my/tex-mode-hook ()
+    ;; (company-mode)
     (flyspell-mode)
     (outline-minor-mode)
     (LaTeX-math-mode)
@@ -424,7 +541,6 @@
   (TeX-parse-self t)
   (TeX-master nil)
   (TeX-PDF-mode t)
-  :init (add-hook 'LaTeX-mode-hook #'my/tex-mode-hook)
   )
 
 (use-package preview-dvisvgm
