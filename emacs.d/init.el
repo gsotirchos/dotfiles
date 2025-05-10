@@ -108,21 +108,22 @@
      ))
   :init (load-theme 'modus-operandi))
 
-;; (use-package tab-bar-mode
-;;   :ensure nil
-;;   :no-require t
-;;   :hook after-init
-;;   :preface
-  (defun my/surround-in-whitespace (name _ _)
-    (concat " " name " "))
+(use-package tab-bar-mode
+  :ensure nil
+  :no-require t
+  :hook after-init
+  :preface
+  (defun my/surround-in-whitespace (string _ _)
+    "Just apprend and prepend spaces to a STRING."
+    (concat " " string " "))
   (add-to-list 'tab-bar-tab-name-format-functions
-              'my/surround-in-whitespace)
-  ;; :custom
-(setq tab-bar-show 1
-      tab-bar-format '(tab-bar-format-history tab-bar-format-tabs)
-      tab-bar-auto-width-max '((2000) 20)
-      tab-bar-close-button-show nil
-      tab-bar-separator t)
+               'my/surround-in-whitespace)
+  :custom
+  (tab-bar-show 1)
+  (tab-bar-format '(tab-bar-format-history tab-bar-format-tabs))
+  (tab-bar-auto-width-max '((2000) 20))
+  (tab-bar-close-button-show nil)
+  (tab-bar-separator t))
 
 (use-package doom-modeline
   ;; needs: M-x nerd-icons-install-fonts
@@ -252,25 +253,19 @@
   (setq xref-show-xrefs-function 'consult-xref
         xref-show-definitions-function 'consult-xref)
   :bind
-  (("C-x b" . consult-buffer)
-   ("M-G"   . consult-git-grep)
+  (([remap Info-search] . consult-info)
+   ("C-x b" . consult-buffer)
+   ("M-G" . consult-git-grep)
    ("M-g f" . consult-flymake)
    ("M-g g" . consult-goto-line)
    ("M-g M-g" . consult-goto-line)
-   ;; ;; Isearch integration
-   ;; ("M-s e" . consult-isearch-history)
-   ;; :map isearch-mode-map
-   ;; ("M-e" . consult-isearch-history)
-   ;; ("M-s e" . consult-isearch-history)
-   ;; ("M-s l" . consult-line)
-   ;; ("M-s L" . consult-line-multi)
-   ;; :map isearch-mode-map
-   ;; ("M-s l" . consult-line)
-   ;; ("M-s L" . consult-line-multi)
-   ;; :map minibuffer-local-map
-   ;; ("M-s" . consult-history)
-   ;; ("M-r" . consult-history)
-   )
+   ;; Isearch integration
+   ("C-s" . consult-line)
+   ("C-M-s" . consult-line-multi)
+   :map isearch-mode-map
+   ("C-s" . consult-isearch-history)
+   :map minibuffer-local-map
+   ("C-s" . consult-history))
   :config
   ;; The configuration values are evaluated at runtime, just before the
   ;; completion session is started. Therefore you can use for example
@@ -354,14 +349,15 @@
   (global-undo-tree-mode))
 
 (use-package evil
-  :hook after-init
-  :custom
-  (evil-toggle-key "C-<escape>")
-  (evil-want-integration t)
-  (evil-want-keybinding nil)
-  (evil-want-C-u-scroll t)
-  (evil-want-C-u-delete t)
-  (evil-cross-lines t)
+  :demand t
+  :init
+  (setq evil-toggle-key "C-<escape>"
+        evil-want-integration t
+        evil-want-keybinding nil
+        evil-disable-insert-state-bindings t
+        evil-want-C-u-scroll t
+        evil-cross-lines t
+        evil-undo-system 'undo-tree)
   :preface
   (when (eq system-type 'darwin)
     (setq ns-option-modifier 'alt)
@@ -381,25 +377,22 @@
                 (save-buffers-kill-terminal)
               (error nil))))))))
   :config
-  (setq evil-disable-insert-state-bindings nil)
-  (evil-set-undo-system 'undo-tree)
+  (evil-mode 1)
   (global-set-key [remap evil-quit] 'kill-buffer-and-window)
-  (define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
-  (define-key minibuffer-local-map (kbd "C-n") 'next-line-or-history-element)
-  (define-key minibuffer-local-map (kbd "C-p") 'previous-line-or-history-element)
-  (define-key minibuffer-local-map (kbd "ESC") 'keyboard-escape-quit)
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
   (define-key evil-normal-state-map (kbd "M-q") 'save-buffers-kill-emacs)
   (define-key evil-normal-state-map (kbd "M-w") 'my/close-tab-window-frame)
   (define-key evil-normal-state-map (kbd "M-t") 'tab-new)
   (define-key evil-normal-state-map (kbd "M-n") 'make-frame)
-  (define-key evil-normal-state-map (kbd "SPC") 'evil-toggle-fold)
-  (define-key evil-normal-state-map (kbd "TAB") 'prog-fill-reindent-defun)
-  (define-key evil-insert-state-map (kbd "C-s") 'swiper)
-  (define-key evil-insert-state-map (kbd "C-r") 'swiper-backward)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (define-key evil-normal-state-map (kbd "TAB") 'evil-toggle-fold)
+  (define-key evil-insert-state-map (kbd "M-DEL") 'evil-delete-back-to-indentation)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+  ;; (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (define-key minibuffer-local-map (kbd "C-n") 'next-line-or-history-element)
+  (define-key minibuffer-local-map (kbd "C-p") 'previous-line-or-history-element)
+  (define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
+  (define-key minibuffer-local-map (kbd "ESC") 'keyboard-escape-quit)
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; (evil-set-initial-state 'dashboard-mode 'normal)
   )
@@ -459,7 +452,8 @@
      :codeLensProvider
      :codeActionProvider
      :colorProvider
-     :foldingRangeProvider))
+     :foldingRangeProvider
+     :executeCommandProvider))
   ;; (eglot-stay-out-of '(yas-snippets))
   ;; :config
   ;; (add-to-list 'eglot-server-programs
@@ -487,7 +481,7 @@
 ;; Python
 
 ;; (use-package dap-mode
-;;   ;; All UI panes hidden by default
+;;   ;; Hide all UI panes by default
 ;;   ;; :custom
 ;;   ;; (lsp-enable-dap-auto-configure nil)
 ;;   :commands dap-debug
