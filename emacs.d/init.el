@@ -8,20 +8,9 @@
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150))
 
-;; Essential mappings
+;; Global mappings
 (keymap-global-set "C-z" nil)
-(keymap-global-set "s-t" 'tab-new)
-(defun my/save-and-close ()
-  "Save buffer and close its tab/window/frame."
-  (interactive)
-  (save-buffer)
-  (condition-case nil
-      (tab-close)
-    (error (condition-case nil
-               (delete-frame)
-             (error "Can't delete last frame")))))
-;; (keymap-global-set "s-w" nil)
-(keymap-global-set "s-w" #'my/save-and-close)
+(keymap-global-set "C-M-f" 'toggle-frame-fullscreen)
 
 (setq inhibit-startup-message t
       auto-save-default nil
@@ -31,8 +20,7 @@
       vc-follow-symlinks t
       ad-redefinition-action 'accept
       global-auto-revert-non-file-buffers t
-      auto-hscroll-mode nil
-      tab-bar-show 1)
+      auto-hscroll-mode nil)
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
@@ -40,16 +28,17 @@
   ;; (tooltip-mode 0)
   ;; (setq visible-bell t)
   (menu-bar-mode 0))
-(set-fringe-mode 12)
+(set-fringe-mode 17)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (global-visual-line-mode 0)
 (xterm-mouse-mode 1)
 (savehist-mode 1)
+(save-place-mode 1)
 (global-auto-revert-mode 1)
 (column-number-mode 1)
-(add-hook 'prog-mode-hook #'electric-pair-mode)
-(add-hook 'prog-mode-hook #'hs-minor-mode)
+(add-hook 'prog-mode-hook 'electric-pair-mode)
+(add-hook 'prog-mode-hook 'hs-minor-mode)
 ;; (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 
 (setq-default
@@ -93,12 +82,16 @@
   (auto-save-file-name-transforms
    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
+(use-package mac-pseudo-daemon
+  :when (eq system-type 'darwin)
+  :init (mac-pseudo-daemon-mode))
+
 (use-package modus-themes
   :ensure t
   :hook (ns-system-appearance-change-functions . my/apply-theme)
   :preface
   (defun my/apply-theme (appearance)
-    (mapc #'disable-theme custom-enabled-themes)
+    (mapc 'disable-theme custom-enabled-themes)
     (add-to-list 'default-frame-alist `(ns-appearance . ,appearance))
     (pcase appearance
       ('light (load-theme 'modus-operandi))
@@ -114,6 +107,22 @@
      (border-mode-line-inactive bg-mode-line-inactive)
      ))
   :init (load-theme 'modus-operandi))
+
+;; (use-package tab-bar-mode
+;;   :ensure nil
+;;   :no-require t
+;;   :hook after-init
+;;   :preface
+  (defun my/surround-in-whitespace (name _ _)
+    (concat " " name " "))
+  (add-to-list 'tab-bar-tab-name-format-functions
+              'my/surround-in-whitespace)
+  ;; :custom
+(setq tab-bar-show 1
+      tab-bar-format '(tab-bar-format-history tab-bar-format-tabs)
+      tab-bar-auto-width-max '((2000) 20)
+      tab-bar-close-button-show nil
+      tab-bar-separator t)
 
 (use-package doom-modeline
   ;; needs: M-x nerd-icons-install-fonts
@@ -167,7 +176,7 @@
     (interactive)
     (dired-hide-details-mode 1)
     (hl-line-mode 1))
-  :config (add-hook 'dired-mode-hook #'my/dired-mode-hook))
+  :config (add-hook 'dired-mode-hook 'my/dired-mode-hook))
 
 (use-package corfu
   :custom
@@ -175,7 +184,7 @@
   (corfu-auto-prefix 2)
   (corfu-auto-delay 0.1)
   (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-preselect 'prompt)
+  ;; (corfu-preselect 'prompt)
   (corfu-preview-current 'insert)  ;; insert previewed candidate
   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
   (corfu-cycle t)
@@ -189,11 +198,16 @@
         ;; ("TAB" . corfu-next)
         ;; ("S-TAB" . corfu-previous)
         ;; ("RET" . corfu-complete)
-        ("SPC" . corfu-nsert-separator)
-        ("RET" . nil))
+        ("S-SPC" . corfu-insert-separator)
+        ("RET" . nil)
+        ("C-e" . corfu-popupinfo-scroll-up)
+        ("C-y" . corfu-popupinfo-scroll-down)
+        ;; Explicitly set for minibuffer compatibility
+        ("C-n" . corfu-next)
+        ("C-p" . corfu-previous))
   :init
   (global-corfu-mode)
-  (corfu-popupinfo-mode)  ;; Popup completion info
+  (corfu-popupinfo-mode)
   (corfu-history-mode))
 
 (use-package vertico
@@ -232,11 +246,11 @@
   ;; `consult-register-store' and the built-in commands.  This improves the
   ;; register formatting, adds thin separator lines, register sorting and hides
   ;; the window mode line.
-  (advice-add #'register-preview :override #'consult-register-window)
+  (advice-add 'register-preview :override 'consult-register-window)
   (setq register-preview-delay 0.5)
   ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
+  (setq xref-show-xrefs-function 'consult-xref
+        xref-show-definitions-function 'consult-xref)
   :bind
   (("C-x b" . consult-buffer)
    ("M-G"   . consult-git-grep)
@@ -263,7 +277,7 @@
   ;; `thing-at-point' to adjust the initial input or the future history.
   (consult-customize
    consult-line
-   :add-history (seq-some #'thing-at-point '(region symbol)))
+   :add-history (seq-some 'thing-at-point '(region symbol)))
   (defalias 'consult-line-thing-at-point 'consult-line)
   (consult-customize
    consult-line-thing-at-point
@@ -347,13 +361,39 @@
   (evil-want-keybinding nil)
   (evil-want-C-u-scroll t)
   (evil-want-C-u-delete t)
-  (evil-disable-insert-state-bindings t)
   (evil-cross-lines t)
+  :preface
+  (when (eq system-type 'darwin)
+    (setq ns-option-modifier 'alt)
+    (setq ns-command-modifier 'meta)
+    (defun my/close-tab-window-frame ()
+      "Save buffer and close its tab/window/frame."
+      (interactive)
+      ;; (unless (derived-mode-p 'special-mode)
+      ;;   (save-buffer))
+      (condition-case nil
+          (tab-close)
+        (error
+         (condition-case nil
+             (delete-frame)
+           (error
+            (condition-case nil
+                (save-buffers-kill-terminal)
+              (error nil))))))))
   :config
+  (setq evil-disable-insert-state-bindings nil)
   (evil-set-undo-system 'undo-tree)
   (global-set-key [remap evil-quit] 'kill-buffer-and-window)
+  (define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
+  (define-key minibuffer-local-map (kbd "C-n") 'next-line-or-history-element)
+  (define-key minibuffer-local-map (kbd "C-p") 'previous-line-or-history-element)
   (define-key minibuffer-local-map (kbd "ESC") 'keyboard-escape-quit)
-  (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
+  (define-key evil-normal-state-map (kbd "M-q") 'save-buffers-kill-emacs)
+  (define-key evil-normal-state-map (kbd "M-w") 'my/close-tab-window-frame)
+  (define-key evil-normal-state-map (kbd "M-t") 'tab-new)
+  (define-key evil-normal-state-map (kbd "M-n") 'make-frame)
+  (define-key evil-normal-state-map (kbd "SPC") 'evil-toggle-fold)
+  (define-key evil-normal-state-map (kbd "TAB") 'prog-fill-reindent-defun)
   (define-key evil-insert-state-map (kbd "C-s") 'swiper)
   (define-key evil-insert-state-map (kbd "C-r") 'swiper-backward)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
@@ -371,7 +411,7 @@
 (use-package magit
   :commands magit-status  ;; probably unnecessary
   ;; :custom
-  ;; (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  ;; (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   )
 
 ;; NOTE: Make sure to configure a GitHub token before using this package!
