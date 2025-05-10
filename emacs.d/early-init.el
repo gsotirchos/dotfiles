@@ -12,12 +12,12 @@
        (workarea . (0 0 2560 1600))
        (mm-size . (286 179))
        (frames . (frames-on-display-list display))
-       (scale-factor . (2.0))
-       (name . ("MacbookAir-display"))
-       (source . ("George")))))
+       (scale-factor . 2)
+       (name . "Built-in Retina Display")
+       (source . "George"))))
 
   ;; x-display-pixel-width
-  ;; y-display-pixel-width
+  ;; x-display-pixel-height
   ;; ns-display-monitor-attributes-list
   ;; frame-geom-value-cons
 
