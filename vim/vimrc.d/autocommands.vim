@@ -50,7 +50,7 @@ augroup vimrc
         "\|syntax enable
 
     " for non-text files: load default syntax, show guides, use easytags
-    let s:NonCodeFiletypes = ['lisp', 'netrw', 'vimwiki', 'markdown', 'qf', 'conf', 'help', 'tex', 'latex', 'text', '']
+    let s:NonCodeFiletypes = ['lisp', 'netrw', 'vimwiki', 'markdown', 'org', 'qf', 'conf', 'help', 'tex', 'latex', 'text', '']
     autocmd Colorscheme,BufWinEnter *
         \ if index(s:NonCodeFiletypes, &filetype) < 0
             \|runtime after/syntax/default.vim
