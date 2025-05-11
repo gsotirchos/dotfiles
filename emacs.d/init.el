@@ -12,6 +12,19 @@
 (keymap-global-set "C-z" nil)
 (keymap-global-set "C-M-f" 'toggle-frame-fullscreen)
 
+(defvar-keymap my-file-utils-map
+  :doc "My file utilities map."
+  "r" '("recent files" . recentf)
+  "i" '("init.el" . (lambda ()
+                      (interactive)
+                      (find-file (expand-file-name "~/.emacs.d/init.el")))))
+(defvar-keymap my-personal-map
+  :doc "My prefix map."
+  "f" `("prefix files" . ,my-file-utils-map))
+
+(defvar my/prefix "C-c")
+(keymap-set global-map my/prefix my-personal-map)
+
 (setq inhibit-startup-message t
       auto-save-default nil
       make-backup-files nil
@@ -20,7 +33,8 @@
       vc-follow-symlinks t
       ad-redefinition-action 'accept
       global-auto-revert-non-file-buffers t
-      auto-hscroll-mode nil)
+      auto-hscroll-mode nil
+      savehist-autosave-interval 30)
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
@@ -28,18 +42,16 @@
   ;; (tooltip-mode 0)
   ;; (setq visible-bell t)
   (menu-bar-mode 0))
-(set-fringe-mode 17)
+(set-fringe-mode 16)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (global-visual-line-mode 0)
 (xterm-mouse-mode 1)
-(savehist-mode 1)
+(savehist-mode 1)  ;; history-length = 100
 (save-place-mode 1)
+(recentf-mode 1)
 (global-auto-revert-mode 1)
 (column-number-mode 1)
-(add-hook 'prog-mode-hook 'electric-pair-mode)
-(add-hook 'prog-mode-hook 'hs-minor-mode)
-;; (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 
 (setq-default
  ;; global-display-line-numbers-mode t
@@ -81,10 +93,6 @@
   ;; auto save files in the same path as it uses for sessions
   (auto-save-file-name-transforms
    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
-
-(use-package mac-pseudo-daemon
-  :when (eq system-type 'darwin)
-  :init (mac-pseudo-daemon-mode))
 
 (use-package modus-themes
   :ensure t
@@ -162,8 +170,6 @@
 
 (use-package dired
   :ensure nil
-  ;; :bind (:map dired-mode-map
-  ;;             ("b" . dired-up-directory))
   :custom
   (dired-listing-switches "-alv --group-directories-first")
   (dired-omit-files "^\\.[^.].*")
@@ -172,12 +178,10 @@
   (dired-hide-details-hide-symlink-targets nil)
   (dired-kill-when-opening-new-dired-buffer t)
   (delete-by-moving-to-trash t)
-  :preface
-  (defun my/dired-mode-hook ()
-    (interactive)
-    (dired-hide-details-mode 1)
-    (hl-line-mode 1))
-  :config (add-hook 'dired-mode-hook 'my/dired-mode-hook))
+  ;; :bind (:map dired-mode-map ("b" . dired-up-directory))
+  :init
+  (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+  (add-hook 'dired-mode-hook 'hl-line-mode))
 
 (use-package corfu
   :custom
@@ -189,11 +193,11 @@
   (corfu-preview-current 'insert)  ;; insert previewed candidate
   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
   (corfu-cycle t)
-  (global-corfu-minibuffer
-   (lambda ()
-     (not (or (bound-and-true-p mct--active)
-              (bound-and-true-p vertico--input)
-              (eq (current-local-map) read-passwd-map)))))
+  ;; (global-corfu-minibuffer
+  ;;  (lambda ()
+  ;;    (not (or (bound-and-true-p mct--active)
+  ;;             (bound-and-true-p vertico--input)
+  ;;             (eq (current-local-map) read-passwd-map)))))
   :bind
   (:map corfu-map
         ;; ("TAB" . corfu-next)
@@ -201,8 +205,8 @@
         ;; ("RET" . corfu-complete)
         ("S-SPC" . corfu-insert-separator)
         ("RET" . nil)
-        ("C-e" . corfu-popupinfo-scroll-up)
-        ("C-y" . corfu-popupinfo-scroll-down)
+        ;; ("C-e" . corfu-popupinfo-scroll-up)
+        ;; ("C-y" . corfu-popupinfo-scroll-down)
         ;; Explicitly set for minibuffer compatibility
         ("C-n" . corfu-next)
         ("C-p" . corfu-previous))
@@ -265,7 +269,10 @@
    :map isearch-mode-map
    ("C-s" . consult-isearch-history)
    :map minibuffer-local-map
-   ("C-s" . consult-history))
+   ("C-s" . consult-history)
+   ;; :map my-file-utils-map
+   ;; ("r" . consult-recent-file)
+   )
   :config
   ;; The configuration values are evaluated at runtime, just before the
   ;; completion session is started. Therefore you can use for example
@@ -301,38 +308,13 @@
    ([remap describe-variable] . helpful-variable)
    ([remap describe-key] . helpful-key)
    ("C-h F" . helpful-function)
-   ("C-c C-d" . helpful-at-point))
+   :map my-personal-map
+   ("C-d" . helpful-at-point))
   :custom (warning-minimum-level :error))
 
 (use-package which-key
   :init (which-key-mode)
   :custom (which-key-idle-delay 1))
-
-(use-package general
-  :after evil
-  :config
-  (general-create-definer my/leader-keys
-    :keymaps '(normal insert visual emacs)
-    :prefix "C-c"
-    :global-prefix "C-c")
-  (my/leader-keys
-    "t"  '(:ignore t :which-key "toggles"))
-  (my/leader-keys
-    :infix "f"
-    "i" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/init.el")))))
-
-(use-package hydra
-  :after general
-  :defer t
-  ;; :config
-  ;; (defhydra hydra-text-scale (:timeout 4)
-  ;;   "scale text"
-  ;;   ("j" text-scale-increase "in")
-  ;;   ("k" text-scale-decrease "out")
-  ;;   ("f" nil "finished" :exit t))
-  ;; ;; (my/leader-keys
-  ;;   "ts" '(hydra-text-scale/body :which-key "scale text"))
-  )
 
 (use-package undo-tree
   :hook after-init
@@ -386,12 +368,15 @@
   (define-key evil-normal-state-map (kbd "M-t") 'tab-new)
   (define-key evil-normal-state-map (kbd "M-n") 'make-frame)
   (define-key evil-normal-state-map (kbd "TAB") 'evil-toggle-fold)
-  (define-key evil-insert-state-map (kbd "M-DEL") 'evil-delete-back-to-indentation)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  ;; (define-key evil-insert-state-map (kbd "M-DEL") 'evil-delete-back-to-indentation)
+  (define-key evil-insert-state-map (kbd "A-<backspace>") 'backward-kill-word)
   ;; (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key minibuffer-local-map (kbd "C-n") 'next-line-or-history-element)
   (define-key minibuffer-local-map (kbd "C-p") 'previous-line-or-history-element)
   (define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
+  (define-key minibuffer-local-map (kbd "M-DEL") 'evil-delete-back-to-indentation)
+  (define-key minibuffer-local-map (kbd "A-<backspace>") 'backward-kill-word)
   (define-key minibuffer-local-map (kbd "ESC") 'keyboard-escape-quit)
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; (evil-set-initial-state 'dashboard-mode 'normal)
@@ -437,12 +422,12 @@
 
 (use-package eglot
   :ensure nil
-  :hook (((python-mode
-           python-ts-mode
-           sh-mode
-           bash-ts-mode
-           LaTeX-mode)
-          . eglot-ensure))
+  :hook
+  ((python-mode
+    python-ts-mode
+    sh-mode
+    bash-ts-mode
+    LaTeX-mode) . eglot-ensure)
   :custom
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
@@ -467,31 +452,29 @@
   :custom (flymake-show-diagnostics-at-end-of-line t))
 
 
+;; Programming mode
+
+(use-package prog-mode
+  :ensure nil
+  :custom (show-trailing-whitespace t)
+  :init
+  (add-hook 'prog-mode-hook 'electric-pair-mode)
+  (add-hook 'prog-mode-hook 'hs-minor-mode))
+
+
 ;; Lisp
 
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (my/leader-keys "(" 'check-parens)
-            (setq-local evil-shift-width 2)))
+(use-package emacs-lisp-mode
+  :ensure nil
+  :no-require t
+  :bind (:map my-personal-map ("(" . 'check-parens))
+  :custom (evil-shift-width 2))
 
 (use-package rainbow-delimiters
-  :hook (emacs-lisp-mode . rainbow-delimiters-mode))
+  :hook emacs-lisp-mode)
 
 
 ;; Python
-
-;; (use-package dap-mode
-;;   ;; Hide all UI panes by default
-;;   ;; :custom
-;;   ;; (lsp-enable-dap-auto-configure nil)
-;;   :commands dap-debug
-;;   :init
-;;   (dap-ui-mode 1)
-;;   ;; Bind `C-c l d` to `dap-hydra` for easy access
-;;   ;; (general-define-key
-;;   ;;  :keymaps 'lsp-mode-map
-;;   ;;  :prefix lsp-keymap-prefix
-;;   ;;  "d" '(dap-hydra t :wk "debugger"))):
 
 (use-package python-mode
   :ensure nil
@@ -518,6 +501,19 @@
   ;; (conda-env-initialize-Shell)
   (conda-env-autoactivate-mode t))
 
+;; (use-package dap-mode
+;;   ;; Hide all UI panes by default
+;;   ;; :custom
+;;   ;; (lsp-enable-dap-auto-configure nil)
+;;   :commands dap-debug
+;;   :init
+;;   (dap-ui-mode 1)
+;;   ;; Bind `C-c l d` to `dap-hydra` for easy access
+;;   ;; (general-define-key
+;;   ;;  :keymaps 'lsp-mode-map
+;;   ;;  :prefix lsp-keymap-prefix
+;;   ;;  "d" '(dap-hydra t :wk "debugger"))):
+
 
 ;; Bash
 
@@ -527,20 +523,17 @@
 ;; LaTeX
 
 (use-package auctex
-  :hook
-  (LaTeX-mode . my/tex-mode-hook)
-  (TeX-after-compilation-finished-functions . TeX-revert-document-buffer)
-  :preface
-  (defun my/tex-mode-hook ()
-    (flyspell-mode)
-    (outline-minor-mode)
-    (LaTeX-math-mode)
-    (turn-on-reftex))
+  :no-require t
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
   (TeX-master nil)
-  (TeX-PDF-mode t))
+  (TeX-PDF-mode t)
+  :init
+  (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  (add-hook 'TeX-after-compilation-finished-functions-hook 'TeX-revert-document-buffer))
 
 (use-package preview-dvisvgm
   :after preview-latex)
@@ -548,7 +541,9 @@
 (use-package flyspell
   :ensure nil
   :defer t
-  ;; :hook (prog-mode . flyspell-prog-mode)
+  :hook
+  (text-mode . flyspell-mode)
+  ;; (prog-mode . flyspell-prog-mode)
   :config (require 'ispell))
 
 (use-package ispell
