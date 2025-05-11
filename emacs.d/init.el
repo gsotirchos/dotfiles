@@ -35,9 +35,9 @@
     (condition-case nil
         (tab-close)
       (error
-      (condition-case nil
-          (delete-frame)
-        (error nil)))))
+       (condition-case nil
+           (delete-frame)
+         (error nil)))))
   )
 
 (defvar-keymap my-file-utils-map
@@ -48,6 +48,7 @@
                       (find-file (expand-file-name "~/.emacs.d/init.el")))))
 (defvar-keymap my-personal-map
   :doc "My prefix map."
+  "d" 'flymake-show-buffer-diagnostics
   "m" 'magit
   "f" `("prefix files" . ,my-file-utils-map))
 
@@ -78,7 +79,7 @@
 (xterm-mouse-mode 1)
 (savehist-mode 1)  ;; history-length = 100
 (save-place-mode 1)
-(recentf-mode 1)
+;; (recentf-mode 1)
 (global-auto-revert-mode 1)
 (column-number-mode 1)
 
@@ -289,7 +290,7 @@
   (([remap Info-search] . consult-info)
    ("C-x b" . consult-buffer)
    ("M-G" . consult-git-grep)
-   ("M-g f" . consult-flymake)
+   ("M-g d" . consult-flymake)
    ("M-g g" . consult-goto-line)
    ("M-g M-g" . consult-goto-line)
    ;; Isearch integration
@@ -449,10 +450,12 @@
      :colorProvider
      :foldingRangeProvider
      :executeCommandProvider))
-  ;; (eglot-stay-out-of '(yas-snippets))
-  ;; :config
-  ;; (add-to-list 'eglot-server-programs
-  ;;              '(python-ts-mode . ("pyright-langserver")))
+  :config
+  ;; (setq eglot-stay-out-of '(flymake))
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode) .
+                 ;; ("ruff" "server")
+                 ("pyright-langserver" "--stdio")))
   )
 
 (use-package flymake
@@ -507,9 +510,19 @@
 (use-package python-mode
   :ensure nil
   :no-require t
-  ;; :custom (dap-python-debugger 'debugpy)
+  :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
+  ;; (dap-python-debugger 'debugpy)
   ;; :config (require 'dap-python)
   )
+
+(use-package flymake-ruff
+  :hook ((python-mode python-ts-mode) . flymake-ruff-load)
+  :custom (python-flymake-command 'python-check-command)
+  :config
+  (add-hook 'eglot-managed-mode-hook
+            (lambda () (when (derived-mode-p 'python-base-mode)
+              (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)
+              (add-hook 'flymake-diagnostic-functions 'flymake-ruff--run-checker nil t)))))
 
 ;; (use-package pyvenv
 ;;   :after python-mode
@@ -520,7 +533,7 @@
   :hook (find-file . my/conda-env-activate-for-buffer)
   :preface
   (defun my/conda-env-activate-for-buffer ()
-    (when (and (derived-mode-p 'python-mode)
+    (when (and (derived-mode-p 'python-base-mode)
                (bound-and-true-p conda-project-env-path))
       ;; (conda-mode-line-setup)
       (conda-env-activate-for-buffer)))
