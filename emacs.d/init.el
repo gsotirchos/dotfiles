@@ -8,9 +8,37 @@
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150))
 
-;; Global mappings
+;; Global key mappings
 (keymap-global-set "C-z" nil)
-(keymap-global-set "C-M-f" 'toggle-frame-fullscreen)
+
+(when (eq system-type 'darwin)
+  (setq ns-option-modifier 'alt)
+  (setq ns-command-modifier 'meta)
+  (keymap-global-set "M-<backspace>" 'evil-delete-back-to-indentation)
+  (keymap-global-set "A-<backspace>" 'backward-kill-word)
+  (keymap-global-set "M-<delete>" 'kill-line)
+  (keymap-global-set "A-<kp-delete>" 'kill-word)
+  (keymap-global-set "M-<right>" 'end-of-visual-line)
+  (keymap-global-set "A-<right>" 'right-word)
+  (keymap-global-set "M-<left>" 'beginning-of-visual-line)
+  (keymap-global-set "A-<left>" 'left-word)
+  (keymap-global-set "C-M-f" 'toggle-frame-fullscreen)
+  (keymap-global-set "M-n" 'make-frame)
+  (keymap-global-set "M-t" 'tab-new)
+  ;; (keymap-global-set "M-q" 'save-buffers-kill-emacs)
+  (keymap-global-set "M-w" 'my/close-tab-window-frame)
+  (defun my/close-tab-window-frame ()
+    "Close current tab or window or frame."
+    (interactive)
+    ;; (unless (derived-mode-p 'special-mode)
+    ;;   (save-buffer)
+    (condition-case nil
+        (tab-close)
+      (error
+      (condition-case nil
+          (delete-frame)
+        (error nil)))))
+  )
 
 (defvar-keymap my-file-utils-map
   :doc "My file utilities map."
@@ -20,6 +48,7 @@
                       (find-file (expand-file-name "~/.emacs.d/init.el")))))
 (defvar-keymap my-personal-map
   :doc "My prefix map."
+  "m" 'magit
   "f" `("prefix files" . ,my-file-utils-map))
 
 (defvar my/prefix "C-c")
@@ -340,44 +369,19 @@
         evil-want-C-u-scroll t
         evil-cross-lines t
         evil-undo-system 'undo-tree)
-  :preface
-  (when (eq system-type 'darwin)
-    (setq ns-option-modifier 'alt)
-    (setq ns-command-modifier 'meta)
-    (defun my/close-tab-window-frame ()
-      "Save buffer and close its tab/window/frame."
-      (interactive)
-      ;; (unless (derived-mode-p 'special-mode)
-      ;;   (save-buffer))
-      (condition-case nil
-          (tab-close)
-        (error
-         (condition-case nil
-             (delete-frame)
-           (error
-            (condition-case nil
-                (save-buffers-kill-terminal)
-              (error nil))))))))
   :config
   (evil-mode 1)
+  (keymap-global-set "M-q" 'save-buffers-kill-emacs)
   (global-set-key [remap evil-quit] 'kill-buffer-and-window)
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-  (define-key evil-normal-state-map (kbd "M-q") 'save-buffers-kill-emacs)
-  (define-key evil-normal-state-map (kbd "M-w") 'my/close-tab-window-frame)
-  (define-key evil-normal-state-map (kbd "M-t") 'tab-new)
-  (define-key evil-normal-state-map (kbd "M-n") 'make-frame)
-  (define-key evil-normal-state-map (kbd "TAB") 'evil-toggle-fold)
+  (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
+  (define-key evil-normal-state-map (kbd "C-i") 'evil-jump-forward)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-  ;; (define-key evil-insert-state-map (kbd "M-DEL") 'evil-delete-back-to-indentation)
-  (define-key evil-insert-state-map (kbd "A-<backspace>") 'backward-kill-word)
-  ;; (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key minibuffer-local-map (kbd "C-n") 'next-line-or-history-element)
   (define-key minibuffer-local-map (kbd "C-p") 'previous-line-or-history-element)
   (define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
-  (define-key minibuffer-local-map (kbd "M-DEL") 'evil-delete-back-to-indentation)
-  (define-key minibuffer-local-map (kbd "A-<backspace>") 'backward-kill-word)
-  (define-key minibuffer-local-map (kbd "ESC") 'keyboard-escape-quit)
+  (define-key minibuffer-local-map (kbd "<escape>") 'keyboard-escape-quit)
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; (evil-set-initial-state 'dashboard-mode 'normal)
   )
@@ -387,10 +391,8 @@
   :init (evil-collection-init))
 
 (use-package magit
-  :commands magit-status  ;; probably unnecessary
-  ;; :custom
-  ;; (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
-  )
+  :bind (:map magit-status-mode-map ("<tab>" . magit-section-toggle))
+  :custom (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
 
 ;; NOTE: Make sure to configure a GitHub token before using this package!
 ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
@@ -401,9 +403,17 @@
 
 ;; Treesitter
 
+;; (use-package treesit-auto
+;;   :custom
+;;   (treesit-auto-install t)
+;;   :config
+;;   (add-to-list 'global-treesit-auto-modes '(not org-mode))
+;;   (global-treesit-auto-mode))
+
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
-        (sh-mode . bash-ts-mode)))
+        (sh-mode . bash-ts-mode)
+        (yaml-mode . yaml-ts-mode)))
 
 ;; (use-package evil-textobj-tree-sitter
 ;;   :config
@@ -447,12 +457,11 @@
 
 (use-package flymake
   :ensure nil
-  :unless (lisp-interaction-mode)
   :hook prog-mode
   :custom (flymake-show-diagnostics-at-end-of-line t))
 
 
-;; Programming mode
+;; Programming utilities
 
 (use-package prog-mode
   :ensure nil
@@ -461,6 +470,28 @@
   (add-hook 'prog-mode-hook 'electric-pair-mode)
   (add-hook 'prog-mode-hook 'hs-minor-mode))
 
+(use-package rainbow-delimiters
+  :hook emacs-lisp-mode)
+
+(use-package indent-bars
+  :hook (prog-mode yaml-mode yaml-ts-mode)
+  :custom
+  (indent-bars-no-descend-lists t) ; no extra bars in continued func arg lists
+  (indent-bars-treesit-support t)
+  ;; (indent-bars-treesit-scope
+  ;;  '((python function_definition class_definition for_statement
+  ;;            if_statement with_statement while_statement)))
+  (indent-bars-prefer-character t)
+  (indent-bars-color '(highlight :face default :blend 0.2))
+  (indent-bars-pattern ".")
+  (indent-bars-color-by-depth nil)
+  ;; (indent-bars-width-frac 0.1)
+  ;; (indent-bars-pad-frac 0.1)
+  ;; (indent-bars-zigzag nil)
+  ;; (indent-bars-highlight-current-depth nil)
+  ;; (indent-bars-display-on-blank-lines t)
+  ;; :init (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1)))
+  )
 
 ;; Lisp
 
@@ -469,9 +500,6 @@
   :no-require t
   :bind (:map my-personal-map ("(" . 'check-parens))
   :custom (evil-shift-width 2))
-
-(use-package rainbow-delimiters
-  :hook emacs-lisp-mode)
 
 
 ;; Python
@@ -492,7 +520,8 @@
   :hook (find-file . my/conda-env-activate-for-buffer)
   :preface
   (defun my/conda-env-activate-for-buffer ()
-    (when (bound-and-true-p conda-project-env-path)
+    (when (and (derived-mode-p 'python-mode)
+               (bound-and-true-p conda-project-env-path))
       ;; (conda-mode-line-setup)
       (conda-env-activate-for-buffer)))
   :config
@@ -514,6 +543,15 @@
 ;;   ;;  :prefix lsp-keymap-prefix
 ;;   ;;  "d" '(dap-hydra t :wk "debugger"))):
 
+
+;; yaml
+
+(use-package yaml-mode
+  :custom
+  (tab-width 2)
+  (yaml-indent-offset 2))
+
+(add-hook 'yaml-ts-mode-hook (lambda () (setq yaml-indent-offset 2)))
 
 ;; Bash
 
