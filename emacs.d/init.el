@@ -143,6 +143,7 @@
      ;; (border-mode-line-inactive unspecified)
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
+     (comment green)
      ))
   :init (load-theme 'modus-operandi))
 
@@ -230,11 +231,11 @@
   ;;             (eq (current-local-map) read-passwd-map)))))
   :bind
   (:map corfu-map
-        ;; ("TAB" . corfu-next)
-        ;; ("S-TAB" . corfu-previous)
-        ;; ("RET" . corfu-complete)
+        ("<tab>" . corfu-next)
+        ("S-<tab>" . corfu-previous)
+        ("RET" . corfu-insert)
         ("S-SPC" . corfu-insert-separator)
-        ("RET" . nil)
+        ;; ("RET" . nil)
         ;; ("C-e" . corfu-popupinfo-scroll-up)
         ;; ("C-y" . corfu-popupinfo-scroll-down)
         ;; Explicitly set for minibuffer compatibility
@@ -376,6 +377,8 @@
   (global-set-key [remap evil-quit] 'kill-buffer-and-window)
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+  (evil-global-set-key 'motion "<down>" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "<up>" 'evil-previous-visual-line)
   (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
   (define-key evil-normal-state-map (kbd "C-i") 'evil-jump-forward)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
@@ -434,10 +437,8 @@
 (use-package eglot
   :ensure nil
   :hook
-  ((python-mode
-    python-ts-mode
-    sh-mode
-    bash-ts-mode
+  ((python-base-mode
+    sh-base-mode
     LaTeX-mode) . eglot-ensure)
   :custom
   (eglot-autoshutdown t)
@@ -452,16 +453,22 @@
      :executeCommandProvider))
   :config
   ;; (setq eglot-stay-out-of '(flymake))
+  ;; (add-hook 'eglot-managed-mode-hook
+  ;;           (lambda () (add-hook 'flymake-diagnostic-functions
+  ;;                                'eglot-flymake-backend nil t)))
+  ;; (add-hook 'eglot-managed-mode-hook 'flymake-mode)
   (add-to-list 'eglot-server-programs
-               '((python-mode python-ts-mode) .
-                 ;; ("ruff" "server")
+               `((python-mode python-ts-mode) .
                  ("pyright-langserver" "--stdio")))
   )
+
 
 (use-package flymake
   :ensure nil
   :hook prog-mode
-  :custom (flymake-show-diagnostics-at-end-of-line t))
+  :custom
+  ;; (add-hook 'sh-base-mode-hook 'flymake-mode-off)
+  (flymake-show-diagnostics-at-end-of-line t))
 
 
 ;; Programming utilities
@@ -488,12 +495,8 @@
   (indent-bars-color '(highlight :face default :blend 0.2))
   (indent-bars-pattern ".")
   (indent-bars-color-by-depth nil)
-  ;; (indent-bars-width-frac 0.1)
-  ;; (indent-bars-pad-frac 0.1)
-  ;; (indent-bars-zigzag nil)
   ;; (indent-bars-highlight-current-depth nil)
   ;; (indent-bars-display-on-blank-lines t)
-  ;; :init (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1)))
   )
 
 ;; Lisp
@@ -522,7 +525,8 @@
   (add-hook 'eglot-managed-mode-hook
             (lambda () (when (derived-mode-p 'python-base-mode)
               (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)
-              (add-hook 'flymake-diagnostic-functions 'flymake-ruff--run-checker nil t)))))
+              (add-hook 'flymake-diagnostic-functions 'flymake-ruff--run-checker nil t))))
+  )
 
 ;; (use-package pyvenv
 ;;   :after python-mode
