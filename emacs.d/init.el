@@ -76,6 +76,7 @@
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (global-visual-line-mode 0)
+(pixel-scroll-precision-mode 1)
 (xterm-mouse-mode 1)
 (savehist-mode 1)  ;; history-length = 100
 (save-place-mode 1)
@@ -436,16 +437,14 @@
 
 (use-package eglot
   :ensure nil
-  :hook
-  ((python-base-mode
-    sh-base-mode
-    LaTeX-mode) . eglot-ensure)
+  :hook ((python-base-mode sh-base-mode LaTeX-mode) . eglot-ensure)
   :custom
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
   (eglot-extend-to-xref nil)
+  (eglot-send-changes-idle-time 1)
   (eglot-ignored-server-capabilities
-   '(:documentHighlightProvider
+   '(;; :documentHighlightProvider
      :codeLensProvider
      :codeActionProvider
      :colorProvider
@@ -467,6 +466,7 @@
   :ensure nil
   :hook prog-mode
   :custom
+  (flymake-no-changes-timeout 1)
   ;; (add-hook 'sh-base-mode-hook 'flymake-mode-off)
   (flymake-show-diagnostics-at-end-of-line t))
 
@@ -480,13 +480,23 @@
   (add-hook 'prog-mode-hook 'electric-pair-mode)
   (add-hook 'prog-mode-hook 'hs-minor-mode))
 
+(use-package outline-indent
+  :hook ((text-mode conf-mode) . outline-indent-minor-mode)
+  ;; :commands outline-indent-minor-mode
+  :custom
+  (outline-blank-line t)
+  ;; (outline-indent-ellipsis " ▼")
+  )
+
 (use-package rainbow-delimiters
+  :defer t
   :hook emacs-lisp-mode)
 
 (use-package indent-bars
-  :hook (prog-mode yaml-mode yaml-ts-mode)
+  :hook (prog-mode yaml-ts-mode)
   :custom
-  (indent-bars-no-descend-lists t) ; no extra bars in continued func arg lists
+  (indent-bars-display-on-blank-lines nil)
+  ;; (indent-bars-no-descend-lists t) ; no extra bars in continued func arg lists
   (indent-bars-treesit-support t)
   ;; (indent-bars-treesit-scope
   ;;  '((python function_definition class_definition for_statement
@@ -496,8 +506,9 @@
   (indent-bars-pattern ".")
   (indent-bars-color-by-depth nil)
   ;; (indent-bars-highlight-current-depth nil)
-  ;; (indent-bars-display-on-blank-lines t)
-  )
+  :config
+  (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
+
 
 ;; Lisp
 
@@ -513,7 +524,8 @@
 (use-package python-mode
   :ensure nil
   :no-require t
-  :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
+  :custom
+  (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
   ;; (dap-python-debugger 'debugpy)
   ;; :config (require 'dap-python)
   )
@@ -563,12 +575,10 @@
 
 ;; yaml
 
-(use-package yaml-mode
+(use-package yaml-ts-mode
   :custom
   (tab-width 2)
   (yaml-indent-offset 2))
-
-(add-hook 'yaml-ts-mode-hook (lambda () (setq yaml-indent-offset 2)))
 
 ;; Bash
 

@@ -3,10 +3,17 @@
 exclude = ["**/__pycache__"]
 typeCheckingMode = "off"
 
-reportUnusedVariable = "none"
-reportAttributeAccessIssue = "none"
-#reportIncompatibleVariableOverride = "none"
-#reportIncompatibleMethodOverride = "none"
+# reportUnusedVariable = "none"
+# reportUnusedClass = "none"
+# reportUnusedFunction = "none"
+# reportUnusedImport = "none"
+# reportUnusedCallResult = "none"
+# reportUnusedCoroutine = "none"
+# reportUnusedExpression = "none"
+# reportUnusedExcept = "none"
+# reportAttributeAccessIssue = "none"
+# reportIncompatibleVariableOverride = "none"
+# reportIncompatibleMethodOverride = "none"
 
 # https://docs.astral.sh/ruff/configuration
 [tool.ruff]
