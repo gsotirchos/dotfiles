@@ -12,33 +12,27 @@
 (keymap-global-set "C-z" nil)
 
 (when (eq system-type 'darwin)
-  (setq ns-option-modifier 'alt)
   (setq ns-command-modifier 'meta)
-  (keymap-global-set "M-<backspace>" 'evil-delete-back-to-indentation)
-  (keymap-global-set "A-<backspace>" 'backward-kill-word)
-  (keymap-global-set "M-<delete>" 'kill-line)
-  (keymap-global-set "A-<kp-delete>" 'kill-word)
-  (keymap-global-set "M-<right>" 'end-of-visual-line)
-  (keymap-global-set "A-<right>" 'right-word)
-  (keymap-global-set "M-<left>" 'beginning-of-visual-line)
-  (keymap-global-set "A-<left>" 'left-word)
-  (keymap-global-set "C-M-f" 'toggle-frame-fullscreen)
-  (keymap-global-set "M-n" 'make-frame)
-  (keymap-global-set "M-t" 'tab-new)
-  ;; (keymap-global-set "M-q" 'save-buffers-kill-emacs)
-  (keymap-global-set "M-w" 'my/close-tab-window-frame)
-  (defun my/close-tab-window-frame ()
-    "Close current tab or window or frame."
-    (interactive)
-    ;; (unless (derived-mode-p 'special-mode)
-    ;;   (save-buffer)
-    (condition-case nil
-        (tab-close)
-      (error
-       (condition-case nil
-           (delete-frame)
-         (error nil)))))
-  )
+  (setq ns-option-modifier nil))
+(keymap-global-set "M-<backspace>" 'evil-delete-back-to-indentation)
+(keymap-global-set "M-<delete>" 'kill-line)
+(keymap-global-set "M-<right>" 'end-of-visual-line)
+(keymap-global-set "M-<left>" 'beginning-of-visual-line)
+(keymap-global-set "C-M-f" 'toggle-frame-fullscreen)
+(keymap-global-set "M-n" 'make-frame)
+(keymap-global-set "M-t" 'tab-new)
+(keymap-global-set "M-w" 'my/close-tab-window-frame)
+(defun my/close-tab-window-frame ()
+  "Close current tab or window or frame."
+  (interactive)
+  ;; (unless (derived-mode-p 'special-mode)
+  ;;   (save-buffer)
+  (condition-case nil
+      (tab-close)
+    (error
+     (condition-case nil
+         (delete-frame)
+       (error nil)))))
 
 (defvar-keymap my-file-utils-map
   :doc "My file utilities map."
@@ -242,7 +236,7 @@
         ;; Explicitly set for minibuffer compatibility
         ("C-n" . corfu-next)
         ("C-p" . corfu-previous))
-  :init
+  :config
   (global-corfu-mode)
   (corfu-popupinfo-mode)
   (corfu-history-mode))
@@ -251,7 +245,7 @@
   :custom
   (vertico-count 10)  ;; limit to a fixed size
   (vertico-cycle t)  ;; limit to a fixed size
-  :init (vertico-mode))
+  :config (vertico-mode))
 
 (use-package vertico-directory
   :after vertico
@@ -507,7 +501,8 @@
   (indent-bars-color-by-depth nil)
   ;; (indent-bars-highlight-current-depth nil)
   :config
-  (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
+  (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1)))
+  )
 
 
 ;; Lisp
