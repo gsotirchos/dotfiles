@@ -129,6 +129,10 @@
     (pcase appearance
       ('light (load-theme 'modus-operandi))
       ('dark (load-theme 'modus-vivendi-tinted))))
+  (defface my-custom-curly-face
+    '((t (:foreground "gray")))
+    "Face for fringe curly bitmaps."
+    :group 'basic-faces)
   :custom
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
@@ -140,7 +144,10 @@
      (border-mode-line-inactive bg-mode-line-inactive)
      (comment green)
      ))
-  :init (load-theme 'modus-operandi))
+  :init (load-theme 'modus-operandi)
+  :config
+  (set-fringe-bitmap-face 'left-curly-arrow 'my-custom-curly-face)
+  (set-fringe-bitmap-face 'right-curly-arrow 'my-custom-curly-face))
 
 (use-package tab-bar-mode
   :ensure nil
@@ -148,7 +155,7 @@
   :hook after-init
   :preface
   (defun my/surround-in-whitespace (string _ _)
-    "Just apprend and prepend spaces to a STRING."
+    "Just append and prepend spaces to a STRING."
     (concat " " string " "))
   (add-to-list 'tab-bar-tab-name-format-functions
                'my/surround-in-whitespace)
@@ -178,8 +185,7 @@
 ;;   :custom
 ;;   (doom-themes-treemacs-enable-variable-pitch nil)
 ;;   (doom-themes-treemacs-theme "doom-atom")
-;;   :config (doom-themes-treemacs-config)
-;;   )
+;;   :config (doom-themes-treemacs-config))
 
 ;; (use-package all-the-icons
 ;;   ;; needs: M-x all-the-icons-install-fonts
@@ -236,7 +242,7 @@
         ;; Explicitly set for minibuffer compatibility
         ("C-n" . corfu-next)
         ("C-p" . corfu-previous))
-  :config
+  :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
   (corfu-history-mode))
@@ -245,7 +251,7 @@
   :custom
   (vertico-count 10)  ;; limit to a fixed size
   (vertico-cycle t)  ;; limit to a fixed size
-  :config (vertico-mode))
+  :init (vertico-mode))
 
 (use-package vertico-directory
   :after vertico
@@ -313,8 +319,8 @@
 
 (use-package embark
   :bind
-  (;; ("C-."   . embark-act) ;; Begin the embark process
-   ;; ("C-;"   . embark-dwim)  ;; good alternative: M-.
+  (;; ("C-." . embark-act)  ;; Begin the embark process
+   ;; ("C-;" . embark-dwim)  ;; good alternative: M-.
    ("C-h B" . embark-bindings)))  ;; alternative for `describe-bindings'
 
 (use-package embark-consult
@@ -402,13 +408,6 @@
 
 ;; Treesitter
 
-;; (use-package treesit-auto
-;;   :custom
-;;   (treesit-auto-install t)
-;;   :config
-;;   (add-to-list 'global-treesit-auto-modes '(not org-mode))
-;;   (global-treesit-auto-mode))
-
 (setq major-mode-remap-alist
       '((python-mode . python-ts-mode)
         (sh-mode . bash-ts-mode)
@@ -456,15 +455,6 @@
   )
 
 
-(use-package flymake
-  :ensure nil
-  :hook prog-mode
-  :custom
-  (flymake-no-changes-timeout 1)
-  ;; (add-hook 'sh-base-mode-hook 'flymake-mode-off)
-  (flymake-show-diagnostics-at-end-of-line t))
-
-
 ;; Programming utilities
 
 (use-package prog-mode
@@ -476,11 +466,9 @@
 
 (use-package outline-indent
   :hook ((text-mode conf-mode) . outline-indent-minor-mode)
-  ;; :commands outline-indent-minor-mode
   :custom
-  (outline-blank-line t)
   ;; (outline-indent-ellipsis " ▼")
-  )
+  (outline-blank-line t))
 
 (use-package rainbow-delimiters
   :defer t
@@ -490,7 +478,7 @@
   :hook (prog-mode yaml-ts-mode)
   :custom
   (indent-bars-display-on-blank-lines nil)
-  ;; (indent-bars-no-descend-lists t) ; no extra bars in continued func arg lists
+  ;; (indent-bars-no-descend-lists t)  ;; no extra bars in continued func arg lists
   (indent-bars-treesit-support t)
   ;; (indent-bars-treesit-scope
   ;;  '((python function_definition class_definition for_statement
@@ -499,104 +487,16 @@
   (indent-bars-color '(highlight :face default :blend 0.2))
   (indent-bars-pattern ".")
   (indent-bars-color-by-depth nil)
-  ;; (indent-bars-highlight-current-depth nil)
   :config
-  (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1)))
-  )
+  (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
 
-
-;; Lisp
-
-(use-package emacs-lisp-mode
+(use-package flymake
   :ensure nil
-  :no-require t
-  :bind (:map my-personal-map ("(" . 'check-parens))
-  :custom (evil-shift-width 2))
-
-
-;; Python
-
-(use-package python-mode
-  :ensure nil
-  :no-require t
+  :hook prog-mode
   :custom
-  (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
-  ;; (dap-python-debugger 'debugpy)
-  ;; :config (require 'dap-python)
-  )
-
-(use-package flymake-ruff
-  :hook ((python-mode python-ts-mode) . flymake-ruff-load)
-  :custom (python-flymake-command 'python-check-command)
-  :config
-  (add-hook 'eglot-managed-mode-hook
-            (lambda () (when (derived-mode-p 'python-base-mode)
-              (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)
-              (add-hook 'flymake-diagnostic-functions 'flymake-ruff--run-checker nil t))))
-  )
-
-;; (use-package pyvenv
-;;   :after python-mode
-;;   :config
-;;   (pyvenv-mode 1))
-
-(use-package conda
-  :hook (find-file . my/conda-env-activate-for-buffer)
-  :preface
-  (defun my/conda-env-activate-for-buffer ()
-    (when (and (derived-mode-p 'python-base-mode)
-               (bound-and-true-p conda-project-env-path))
-      ;; (conda-mode-line-setup)
-      (conda-env-activate-for-buffer)))
-  :config
-  (require 'conda)
-  ;; (conda-env-initialize-interactive-shells)
-  ;; (conda-env-initialize-Shell)
-  (conda-env-autoactivate-mode t))
-
-;; (use-package dap-mode
-;;   ;; Hide all UI panes by default
-;;   ;; :custom
-;;   ;; (lsp-enable-dap-auto-configure nil)
-;;   :commands dap-debug
-;;   :init
-;;   (dap-ui-mode 1)
-;;   ;; Bind `C-c l d` to `dap-hydra` for easy access
-;;   ;; (general-define-key
-;;   ;;  :keymaps 'lsp-mode-map
-;;   ;;  :prefix lsp-keymap-prefix
-;;   ;;  "d" '(dap-hydra t :wk "debugger"))):
-
-
-;; yaml
-
-(use-package yaml-ts-mode
-  :custom
-  (tab-width 2)
-  (yaml-indent-offset 2))
-
-;; Bash
-
-(add-to-list 'auto-mode-alist '("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode))
-
-
-;; LaTeX
-
-(use-package auctex
-  :no-require t
-  :custom
-  (TeX-auto-save t)
-  (TeX-parse-self t)
-  (TeX-master nil)
-  (TeX-PDF-mode t)
-  :init
-  (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
-  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-  (add-hook 'TeX-after-compilation-finished-functions-hook 'TeX-revert-document-buffer))
-
-(use-package preview-dvisvgm
-  :after preview-latex)
+  (flymake-no-changes-timeout 1)
+  ;; (add-hook 'sh-base-mode-hook 'flymake-mode-off)
+  (flymake-show-diagnostics-at-end-of-line t))
 
 (use-package flyspell
   :ensure nil
@@ -614,6 +514,81 @@
    '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
   (ispell-dictionary "en_US")
   (ispell-local-dictionary "en_US"))
+
+
+;; Lisp
+
+(use-package emacs-lisp-mode
+  :ensure nil
+  :no-require t
+  :bind (:map my-personal-map ("(" . 'check-parens))
+  :custom (evil-shift-width 2))
+
+
+;; Python
+
+(use-package python-mode
+  :ensure nil
+  :no-require t
+  :custom
+  (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")))
+
+(use-package flymake-ruff
+  :hook ((python-mode python-ts-mode) . flymake-ruff-load)
+  :custom (python-flymake-command 'python-check-command)
+  :config
+  (add-hook 'eglot-managed-mode-hook
+            (lambda () (when (derived-mode-p 'python-base-mode)
+              (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)
+              (add-hook 'flymake-diagnostic-functions 'flymake-ruff--run-checker nil t))))
+  )
+
+(use-package conda
+  :hook (find-file . my/conda-env-activate-for-buffer)
+  :preface
+  (defun my/conda-env-activate-for-buffer ()
+    (when (and (derived-mode-p 'python-base-mode)
+               (bound-and-true-p conda-project-env-path))
+      ;; (conda-mode-line-setup)
+      (conda-env-activate-for-buffer)))
+  :config
+  (require 'conda)
+  ;; (conda-env-initialize-interactive-shells)
+  ;; (conda-env-initialize-Shell)
+  (conda-env-autoactivate-mode t))
+
+
+;; yaml
+
+(use-package yaml-ts-mode
+  :custom
+  (tab-width 2)
+  (yaml-indent-offset 2))
+
+
+;; Bash
+
+(add-to-list 'auto-mode-alist '("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode))
+
+
+;; LaTeX
+
+(use-package auctex
+  :no-require t
+  :custom
+  (preview-auto-cache-preamble t)
+  (TeX-auto-save t)
+  (TeX-parse-self t)
+  (TeX-master nil)
+  (TeX-PDF-mode t)
+  :init
+  (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  (add-hook 'TeX-after-compilation-finished-functions-hook 'TeX-revert-document-buffer))
+
+(use-package preview-dvisvgm
+  :after preview-latex)
 
 (provide 'init)
 ;; Local Variables:
