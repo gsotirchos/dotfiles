@@ -12,8 +12,11 @@
 (keymap-global-set "C-z" nil)
 
 (when (eq system-type 'darwin)
-  (setq ns-command-modifier 'meta)
-  (setq ns-option-modifier nil))
+  (setq mac-mouse-wheel-smooth-scroll t
+        ;; mouse-wheel-flip-direction nil
+        ;; mac-mouse-wheel-smooth-scroll t
+        ns-command-modifier 'meta
+        ns-option-modifier nil))
 (keymap-global-set "M-<backspace>" 'evil-delete-back-to-indentation)
 (keymap-global-set "M-<delete>" 'kill-line)
 (keymap-global-set "M-<right>" 'end-of-visual-line)
@@ -57,8 +60,7 @@
       vc-follow-symlinks t
       ad-redefinition-action 'accept
       global-auto-revert-non-file-buffers t
-      auto-hscroll-mode nil
-      savehist-autosave-interval 30)
+      auto-hscroll-mode nil)
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
@@ -72,21 +74,11 @@
 (global-visual-line-mode 0)
 (pixel-scroll-precision-mode 1)
 (xterm-mouse-mode 1)
-(savehist-mode 1)  ;; history-length = 100
-(save-place-mode 1)
-;; (recentf-mode 1)
-(global-auto-revert-mode 1)
 (column-number-mode 1)
 
 (setq-default
  ;; global-display-line-numbers-mode t
  indent-tabs-mode nil)
-
-;; Move customization settings out of init.el
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(unless (file-exists-p custom-file)
-  (write-region "" nil custom-file))
-(load custom-file nil t)
 
 
 ;; Initialize package sources
@@ -111,13 +103,52 @@
       use-package-always-defer t)
 
 (use-package no-littering
-  :ensure nil
-  :no-require t
   :custom
-  ;; no-littering doesn't set this by default so we must place
-  ;; auto save files in the same path as it uses for sessions
-  (auto-save-file-name-transforms
-   `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+  (custom-file (no-littering-expand-var-file-name "custom.el"))
+  :config
+  (let ((dir (no-littering-expand-var-file-name "lock-files/")))
+    (make-directory dir t)
+    (setq lock-file-name-transforms `((".*" ,dir t))))
+  (let ((dir (no-littering-expand-var-file-name "auto-save/")))
+    (make-directory dir t)
+    (setq auto-save-file-name-transforms `((".*" ,dir t))))
+  (when (file-exists-p custom-file)
+    (load custom-file t)))
+
+(use-package autorevert
+  :after no-littering
+  :ensure nil
+  :init (global-auto-revert-mode 1))
+
+(use-package saveplace
+  :after no-littering
+  :ensure nil
+  :init (save-place-mode 1))
+
+(use-package savehist
+  :after no-littering
+  :ensure nil
+  :custom
+  (history-length 100)
+  (savehist-autosave-interval 30)
+  (savehist-save-minibuffer-history t)
+  (history-delete-duplicates t)
+  (savehist-additional-variables
+   '(kill-ring
+     search-ring
+     regexp-search-ring))
+  :init (savehist-mode 1))
+
+(use-package recentf
+  :after no-littering
+  :ensure nil
+  :init (recentf-mode 1)
+  :config
+  (add-to-list 'recentf-exclude
+               (recentf-expand-file-name no-littering-var-directory))
+  (add-to-list 'recentf-exclude
+               (recentf-expand-file-name no-littering-etc-directory)))
+
 
 (use-package modus-themes
   :ensure t
@@ -152,7 +183,6 @@
 (use-package tab-bar-mode
   :ensure nil
   :no-require t
-  :hook after-init
   :preface
   (defun my/surround-in-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
@@ -257,9 +287,6 @@
   :after vertico
   :ensure nil  ;; comes with vertico
   :bind (:map vertico-map ("DEL" . vertico-directory-delete-char)))
-
-(use-package savehist
-  :init (savehist-mode))
 
 (use-package marginalia
   :after vertico
@@ -472,7 +499,7 @@
 
 (use-package rainbow-delimiters
   :defer t
-  :hook emacs-lisp-mode)
+  :hook prog-mode)
 
 (use-package indent-bars
   :hook (prog-mode yaml-ts-mode)
@@ -527,8 +554,7 @@
 
 ;; Python
 
-(use-package python-mode
-  :ensure nil
+(use-package python
   :no-require t
   :custom
   (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")))
@@ -563,7 +589,8 @@
 (use-package yaml-ts-mode
   :custom
   (tab-width 2)
-  (yaml-indent-offset 2))
+  :init
+  (setq yaml-indent-offset 2))
 
 
 ;; Bash
@@ -591,7 +618,8 @@
   :after preview-latex)
 
 (provide 'init)
+;;; init.el ends here
+
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars unresolved)
 ;; End:
-;;; init.el ends here
