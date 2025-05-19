@@ -9,7 +9,8 @@ dependencies:
   - ipython
   - wandb
   - scipy
-  - numpy==1.22.2
+  - seaborn
+  - numpy==1.23.0
   - matplotlib=3.4.2
   - termcolor=1.1.0
   - shimmy=0.2.1
