@@ -27,3 +27,10 @@
                 (display-pixel-height . my/display-pixel-height)
                 (display-monitor-attributes-list . my/display-monitor-attributes-list) ))
        (advice-add (car fn-override) :override (cdr fn-override)))))
+
+(when (and (fboundp 'startup-redirect-eln-cache)
+           (fboundp 'native-comp-available-p)
+           (native-comp-available-p))
+  (startup-redirect-eln-cache
+   (convert-standard-filename
+    (expand-file-name  "var/eln-cache/" user-emacs-directory))))
