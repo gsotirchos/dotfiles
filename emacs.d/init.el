@@ -13,8 +13,8 @@
 
 (when (eq system-type 'darwin)
   (setq mac-mouse-wheel-smooth-scroll t
-        ;; mouse-wheel-flip-direction nil
-        ;; mac-mouse-wheel-smooth-scroll t
+        mouse-wheel-flip-direction t
+        mouse-wheel-tilt-scroll t
         ns-command-modifier 'meta
         ns-option-modifier nil))
 (keymap-global-set "M-<backspace>" 'evil-delete-back-to-indentation)
@@ -60,7 +60,8 @@
       vc-follow-symlinks t
       ad-redefinition-action 'accept
       global-auto-revert-non-file-buffers t
-      auto-hscroll-mode nil)
+      ;; auto-hscroll-mode nil
+      )
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
@@ -574,14 +575,18 @@
   :preface
   (defun my/conda-env-activate-for-buffer ()
     (when (and (derived-mode-p 'python-base-mode)
-               (bound-and-true-p conda-project-env-path))
+               (bound-and-true-p conda-project-env-path)
+               (not (string-equal conda-project-env-path
+                                  (bound-and-true-p conda-env-current-name)))
+               (not (string-equal conda-project-env-path
+                                  (bound-and-true-p conda-env-current-path))))
       ;; (conda-mode-line-setup)
       (conda-env-activate-for-buffer)))
-  :config
-  (require 'conda)
+  ;; :config
   ;; (conda-env-initialize-interactive-shells)
-  ;; (conda-env-initialize-Shell)
-  (conda-env-autoactivate-mode t))
+  ;; (conda-env-initialize-eshell)
+  ;; (conda-env-autoactivate-mode t)
+  )
 
 
 ;; yaml
