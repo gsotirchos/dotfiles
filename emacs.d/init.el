@@ -60,8 +60,10 @@
       vc-follow-symlinks t
       ad-redefinition-action 'accept
       global-auto-revert-non-file-buffers t
-      ;; auto-hscroll-mode nil
-      )
+      scroll-margin 0
+      hscroll-margin 0
+      scroll-step 1
+      hscroll-step 1)
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
@@ -465,8 +467,7 @@
   (eglot-extend-to-xref nil)
   (eglot-send-changes-idle-time 1)
   (eglot-ignored-server-capabilities
-   '(;; :documentHighlightProvider
-     :codeLensProvider
+   '(:codeLensProvider
      :codeActionProvider
      :colorProvider
      :foldingRangeProvider
