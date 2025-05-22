@@ -1,3 +1,7 @@
+if get(g:, "coc_enabled", 0) == 0
+    finish
+endif
+
 let g:coc_global_extensions = [
 \   'coc-marketplace',
 \   'coc-git',

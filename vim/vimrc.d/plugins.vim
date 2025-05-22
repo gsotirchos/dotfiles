@@ -6,7 +6,7 @@ set rtp+=$HOME/.vim/bundle/Vundle.vim
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+"Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 Plugin 'github/copilot.vim'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'lervag/wiki.vim'
