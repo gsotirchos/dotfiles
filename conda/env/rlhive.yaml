@@ -16,12 +16,12 @@ dependencies:
   - shimmy=0.2.1
   - cython=0.29.32
   - mujoco-python=2.2.0
+  - gym=0.21.0
   - gymnasium=0.28.1  # Minigrid and Atari use Gymnasium
   - gymnasium-atari=0.28.1  # for Atari games
   - gymnasium-other=0.28.1  # for Atari games
-  #- ale_py=0.10.1
   - pip:
-    - gym==0.23.1
+    #- gym==0.23.1
     - gymnasium[accept-rom-license]  # Atari ROMs
     #- gymnasium-robotics==1.2.2
     - Minigrid==2.1.0
