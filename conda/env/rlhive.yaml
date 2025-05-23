@@ -20,7 +20,9 @@ dependencies:
   - gymnasium=0.28.1  # Minigrid and Atari use Gymnasium
   - gymnasium-atari=0.28.1  # for Atari games
   - gymnasium-other=0.28.1  # for Atari games
-  - pip:
+  - pip=21.0:
+    - setuptools==65.5.0
+    - wheel==0.38.0
     - gym==0.21.0
     - shimmy[gym-v21]
     - gymnasium[accept-rom-license]  # Atari ROMs
