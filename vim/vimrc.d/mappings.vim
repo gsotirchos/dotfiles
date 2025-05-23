@@ -135,28 +135,29 @@ nnoremap <F10> :echo
 " Re-execute last command with Ctrl+Space
 nnoremap <silent> <C-Space> :@:<Return>
 
-" Shift+Tab is Ctrl+O in normal mode
-nnoremap <silent> <S-Tab> <C-o>
-nnoremap <silent> <C-o>   <Nop>
+"" Shift+Tab is Ctrl+O in normal mode
+"nnoremap <silent> <S-Tab> <C-o>
+"nnoremap <silent> <C-o>   <Nop>
+nnoremap <C-i> <Tab>
+nnoremap <C-]> <Nop>
 
-" Shift selected lines with Tab and Shift+Tab in visual mode
-vnoremap <silent> <Tab>   >gv
-vnoremap <silent> <S-Tab> <gv
-noremap  <silent> >       <Nop>
-noremap  <silent> <       <Nop>
-inoremap <silent> <S-Tab> <C-d>
+"" Shift selected lines with Tab and Shift+Tab in visual mode
+"vnoremap <silent> <Tab>   >gv
+"vnoremap <silent> <S-Tab> <gv
+"noremap  <silent> >       <Nop>
+"noremap  <silent> <       <Nop>
+"inoremap <silent> <S-Tab> <C-d>
 
 " Swap p and P in visual mode (don't replace clipboard)
 vnoremap p P
 vnoremap P p
 
 " Other mappings
-nnoremap <silent> <Space> za
-nnoremap <silent> <S-Space> zA
+nnoremap <silent> <Tab> za
+nnoremap <silent> <S-Tab> zA
 nnoremap <silent> o o<Esc>
 nnoremap <silent> O O<Esc>
 nnoremap Q     <Nop>
 nnoremap <C-z> <Nop>
-nnoremap <C-]> <Nop>
 nnoremap <Leader>Q :close<Return>
 command! -nargs=0 Q :q

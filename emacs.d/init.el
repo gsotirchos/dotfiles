@@ -10,36 +10,38 @@
 
 ;; Global key mappings
 (keymap-global-set "C-z" nil)
-(keymap-global-set "S-<wheel-down>" nil)
-(keymap-global-set "S-<wheel-up>" nil)
-(keymap-global-set "C-<wheel-down>" nil)
-(keymap-global-set "C-<wheel-up>" nil)
-
+(keymap-global-set "S-<wheel-down>" 'ignore)
+(keymap-global-set "S-<wheel-up>" 'ignore)
+(keymap-global-set "C-<wheel-down>" 'ignore)
+(keymap-global-set "C-<wheel-up>" 'ignore)
+(keymap-global-set "M-<wheel-down>" 'ignore)
+(keymap-global-set "M-<wheel-up>" 'ignore)
+(keymap-global-set "C-M-f" 'toggle-frame-fullscreen)
+(keymap-global-set "M-<escape>" 'next-multiframe-window)
+(keymap-global-set "M-~" 'previous-multiframe-window)
+(keymap-global-set "M-<backspace>" (lambda () (interactive)(kill-line 0)(indent-for-tab-command)))
+(keymap-global-set "M-<delete>" 'kill-line)
+(keymap-global-set "M-<right>" 'end-of-visual-line)
+(keymap-global-set "M-<left>" 'beginning-of-visual-line)
+(keymap-global-set "M-n" 'make-frame)
+(keymap-global-set "M-t" 'tab-new)
+(keymap-global-set "M-w" 'my/close-tab-or-frame)
+(defun my/close-tab-or-frame ()
+  "Close current tab or frame."
+  (interactive)
+  ;; (unless (derived-mode-p 'special-mode)
+  ;;   (save-buffer)
+  (condition-case nil
+      (tab-close)
+    (error (condition-case nil
+               (delete-frame)
+             (error nil)))))
 (when (eq system-type 'darwin)
   (setq-default mac-mouse-wheel-smooth-scroll t
                 mouse-wheel-flip-direction t
                 mouse-wheel-tilt-scroll t
                 ns-command-modifier 'meta
                 ns-option-modifier nil))
-(keymap-global-set "M-<backspace>" 'evil-delete-back-to-indentation)
-(keymap-global-set "M-<delete>" 'kill-line)
-(keymap-global-set "M-<right>" 'end-of-visual-line)
-(keymap-global-set "M-<left>" 'beginning-of-visual-line)
-(keymap-global-set "C-M-f" 'toggle-frame-fullscreen)
-(keymap-global-set "M-n" 'make-frame)
-(keymap-global-set "M-t" 'tab-new)
-(keymap-global-set "M-w" 'my/close-tab-window-frame)
-(defun my/close-tab-window-frame ()
-  "Close current tab or window or frame."
-  (interactive)
-  ;; (unless (derived-mode-p 'special-mode)
-  ;;   (save-buffer)
-  (condition-case nil
-      (tab-close)
-    (error
-     (condition-case nil
-         (delete-frame)
-       (error nil)))))
 
 (defvar-keymap my-file-utils-map
   :doc "My file utilities map."
@@ -47,6 +49,7 @@
   "i" '("init.el" . (lambda ()
                       (interactive)
                       (find-file (expand-file-name "~/.emacs.d/init.el")))))
+
 (defvar-keymap my-personal-map
   :doc "My prefix map."
   "d" 'flymake-show-buffer-diagnostics
@@ -67,7 +70,9 @@
               scroll-margin 0
               hscroll-margin 0
               scroll-step 1
-              hscroll-step 1)
+              hscroll-step 1
+              ;; global-display-line-numbers-mode t
+              indent-tabs-mode nil)
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
@@ -82,10 +87,8 @@
 (pixel-scroll-precision-mode 1)
 (xterm-mouse-mode 1)
 (column-number-mode 1)
-
-(setq-default
- ;; global-display-line-numbers-mode t
- indent-tabs-mode nil)
+(modify-syntax-entry ?_ "w")
+(modify-syntax-entry ?- "w")
 
 
 ;; Initialize package sources
@@ -409,7 +412,6 @@
         evil-undo-system 'undo-tree)
   :config
   (evil-mode 1)
-  (keymap-global-set "M-q" 'save-buffers-kill-emacs)
   (global-set-key [remap evil-quit] 'kill-buffer-and-window)
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
@@ -417,7 +419,9 @@
   (evil-global-set-key 'motion "<up>" 'evil-previous-visual-line)
   (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
   (define-key evil-normal-state-map (kbd "C-i") 'evil-jump-forward)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  (define-key evil-visual-state-map (kbd "p") 'evil-paste-before)
+  ;; (define-key evil-visual-state-map (kbd "P")  'evil-visual-paste)
+  ;; (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
   (define-key minibuffer-local-map (kbd "C-n") 'next-line-or-history-element)
   (define-key minibuffer-local-map (kbd "C-p") 'previous-line-or-history-element)
   (define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
