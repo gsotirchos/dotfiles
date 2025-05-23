@@ -10,13 +10,17 @@
 
 ;; Global key mappings
 (keymap-global-set "C-z" nil)
+(keymap-global-set "S-<wheel-down>" nil)
+(keymap-global-set "S-<wheel-up>" nil)
+(keymap-global-set "C-<wheel-down>" nil)
+(keymap-global-set "C-<wheel-up>" nil)
 
 (when (eq system-type 'darwin)
-  (setq mac-mouse-wheel-smooth-scroll t
-        mouse-wheel-flip-direction t
-        mouse-wheel-tilt-scroll t
-        ns-command-modifier 'meta
-        ns-option-modifier nil))
+  (setq-default mac-mouse-wheel-smooth-scroll t
+                mouse-wheel-flip-direction t
+                mouse-wheel-tilt-scroll t
+                ns-command-modifier 'meta
+                ns-option-modifier nil))
 (keymap-global-set "M-<backspace>" 'evil-delete-back-to-indentation)
 (keymap-global-set "M-<delete>" 'kill-line)
 (keymap-global-set "M-<right>" 'end-of-visual-line)
@@ -52,18 +56,18 @@
 (defvar my/prefix "C-c")
 (keymap-set global-map my/prefix my-personal-map)
 
-(setq inhibit-startup-message t
-      auto-save-default nil
-      make-backup-files nil
-      set-mark-command-repeat-pop t
-      large-file-warning-threshold nil
-      vc-follow-symlinks t
-      ad-redefinition-action 'accept
-      global-auto-revert-non-file-buffers t
-      scroll-margin 0
-      hscroll-margin 0
-      scroll-step 1
-      hscroll-step 1)
+(setq-default inhibit-startup-message t
+              auto-save-default nil
+              make-backup-files nil
+              set-mark-command-repeat-pop t
+              large-file-warning-threshold nil
+              vc-follow-symlinks t
+              ad-redefinition-action 'accept
+              global-auto-revert-non-file-buffers t
+              scroll-margin 0
+              hscroll-margin 0
+              scroll-step 1
+              hscroll-step 1)
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
@@ -349,9 +353,10 @@
 
 (use-package embark
   :bind
-  (;; ("C-." . embark-act)  ;; Begin the embark process
-   ;; ("C-;" . embark-dwim)  ;; good alternative: M-.
-   ("C-h B" . embark-bindings)))  ;; alternative for `describe-bindings'
+  (("C-h B" . embark-bindings)  ;; alternative for `describe-bindings'
+   :map minibuffer-local-map
+   ("C-c" . embark-act)  ;; begin the embark process
+   ("C-<return>" . embark-dwim)))  ;; run the default action
 
 (use-package embark-consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
