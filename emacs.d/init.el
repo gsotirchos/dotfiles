@@ -82,6 +82,8 @@
               large-file-warning-threshold nil
               vc-follow-symlinks t
               ad-redefinition-action 'accept
+              use-short-answers t
+              confirm-kill-emacs #'yes-or-no-p
               global-auto-revert-non-file-buffers t
               scroll-margin 0
               hscroll-margin 0
@@ -103,8 +105,6 @@
 (pixel-scroll-precision-mode 1)
 (xterm-mouse-mode 1)
 (column-number-mode 1)
-(modify-syntax-entry ?_ "w")
-(modify-syntax-entry ?- "w")
 
 
 ;; Initialize package sources
@@ -426,6 +426,8 @@
         evil-undo-system 'undo-tree)
   :config
   (evil-mode 1)
+  (modify-syntax-entry ?_ "w")
+  (modify-syntax-entry ?- "w")
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; (evil-set-initial-state 'dashboard-mode 'normal)
   ;; (global-set-key [remap evil-quit] 'kill-buffer-and-window)
@@ -482,6 +484,7 @@
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
   (eglot-extend-to-xref nil)
+  (eglot-prefer-plaintext t)
   (eglot-send-changes-idle-time 1)
   (eglot-ignored-server-capabilities
    '(:codeLensProvider
@@ -497,8 +500,7 @@
   ;; (add-hook 'eglot-managed-mode-hook 'flymake-mode)
   (add-to-list 'eglot-server-programs
                `((python-mode python-ts-mode) .
-                 ("pyright-langserver" "--stdio")))
-  )
+                 ("pyright-langserver" "--stdio"))))
 
 
 ;; Programming utilities
@@ -580,13 +582,12 @@
 
 (use-package flymake-ruff
   :hook ((python-mode python-ts-mode) . flymake-ruff-load)
-  :custom (python-flymake-command 'python-check-command)
+  :custom (python-flymake-command python-check-command)
   :config
   (add-hook 'eglot-managed-mode-hook
             (lambda () (when (derived-mode-p 'python-base-mode)
               (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)
-              (add-hook 'flymake-diagnostic-functions 'flymake-ruff--run-checker nil t))))
-  )
+              (add-hook 'flymake-diagnostic-functions 'flymake-ruff--run-checker nil t)))))
 
 (use-package conda
   :hook (find-file . my/conda-env-activate-for-buffer)
