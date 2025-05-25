@@ -8,34 +8,50 @@
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150))
 
-;; Global key mappings
-(keymap-global-set "C-z" nil)
-(keymap-global-set "S-<wheel-down>" 'ignore)
-(keymap-global-set "S-<wheel-up>" 'ignore)
-(keymap-global-set "C-<wheel-down>" 'ignore)
-(keymap-global-set "C-<wheel-up>" 'ignore)
-(keymap-global-set "M-<wheel-down>" 'ignore)
-(keymap-global-set "M-<wheel-up>" 'ignore)
-(keymap-global-set "C-M-f" 'toggle-frame-fullscreen)
-(keymap-global-set "M-<escape>" 'next-multiframe-window)
-(keymap-global-set "M-~" 'previous-multiframe-window)
-(keymap-global-set "M-<backspace>" (lambda () (interactive)(kill-line 0)(indent-for-tab-command)))
-(keymap-global-set "M-<delete>" 'kill-line)
-(keymap-global-set "M-<right>" 'end-of-visual-line)
-(keymap-global-set "M-<left>" 'beginning-of-visual-line)
-(keymap-global-set "M-n" 'make-frame)
-(keymap-global-set "M-t" 'tab-new)
-(keymap-global-set "M-w" 'my/close-tab-or-frame)
+
 (defun my/close-tab-or-frame ()
   "Close current tab or frame."
   (interactive)
-  ;; (unless (derived-mode-p 'special-mode)
-  ;;   (save-buffer)
   (condition-case nil
       (tab-close)
     (error (condition-case nil
                (delete-frame)
              (error nil)))))
+
+(defun my/kill-back-to-indentation ()
+  "Kill back to the first non-whitespace character."
+  (interactive)
+  (kill-line 0)
+  (indent-for-tab-command))
+
+(dolist (key-binding
+         '(("C-z" . nil)  ;; don't suspend-frame
+           ("S-<wheel-down>" . 'ignore)
+           ("S-<wheel-up>" . 'ignore)
+           ("C-<wheel-down>" . 'ignore)
+           ("C-<wheel-up>" . 'ignore)
+           ("M-<wheel-down>" . 'ignore)
+           ("M-<wheel-up>" . 'ignore)
+           ("C-M-f" . toggle-frame-fullscreen)
+           ("M-<escape>" . next-multiframe-window)
+           ("M-~" . previous-multiframe-window)
+           ("M-<backspace>" . my/kill-back-to-indentation)
+           ("M-<delete>" . kill-line)
+           ("M-<right>" . end-of-visual-line)
+           ("M-<left>" . beginning-of-visual-line)
+           ("M-n" . make-frame)
+           ("M-t" . tab-new)
+           ("M-w" . my/close-tab-or-frame)))
+  (keymap-global-set (car key-binding) (cdr key-binding)))
+
+(dolist (key-binding
+  '(("<escape>" . abort-recursive-edit)  ;; or 'abort-minibuffers
+    ;; ("C-n" . next-line-or-history-element)
+    ;; ("C-p" . previous-line-or-history-element)
+    ))
+  (keymap-set minibuffer-mode-map (car key-binding) (cdr key-binding)))
+
+
 (when (eq system-type 'darwin)
   (setq-default mac-mouse-wheel-smooth-scroll t
                 mouse-wheel-flip-direction t
@@ -279,9 +295,10 @@
         ;; ("RET" . nil)
         ;; ("C-e" . corfu-popupinfo-scroll-up)
         ;; ("C-y" . corfu-popupinfo-scroll-down)
-        ;; Explicitly set for minibuffer compatibility
-        ("C-n" . corfu-next)
-        ("C-p" . corfu-previous))
+        ;; Explicitly set for consistency in the minibuffer
+        ;; ("C-n" . corfu-next)
+        ;; ("C-p" . corfu-previous)
+        )
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
@@ -327,21 +344,18 @@
         xref-show-definitions-function 'consult-xref)
   :bind
   (([remap Info-search] . consult-info)
-   ("C-x b" . consult-buffer)
-   ("M-G" . consult-git-grep)
-   ("M-g d" . consult-flymake)
-   ("M-g g" . consult-goto-line)
-   ("M-g M-g" . consult-goto-line)
-   ;; Isearch integration
+   ([remap switch-to-buffer] . consult-buffer)
+   ([remap recentf] . consult-recent-file)
    ("C-s" . consult-line)
    ("C-M-s" . consult-line-multi)
+   ("M-s l" . consult-goto-line)
+   ("M-s g" . consult-ripgrep)
+   ("M-s M-f" . consult-flymake)
+   ("M-s M-g" . consult-git-grep)
    :map isearch-mode-map
    ("C-s" . consult-isearch-history)
    :map minibuffer-local-map
-   ("C-s" . consult-history)
-   ;; :map my-file-utils-map
-   ;; ("r" . consult-recent-file)
-   )
+   ("C-s" . consult-history))
   :config
   ;; The configuration values are evaluated at runtime, just before the
   ;; completion session is started. Therefore you can use for example
@@ -412,23 +426,17 @@
         evil-undo-system 'undo-tree)
   :config
   (evil-mode 1)
-  (global-set-key [remap evil-quit] 'kill-buffer-and-window)
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-  (evil-global-set-key 'motion "<down>" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "<up>" 'evil-previous-visual-line)
-  (define-key evil-normal-state-map (kbd "<tab>") 'evil-toggle-fold)
-  (define-key evil-normal-state-map (kbd "C-i") 'evil-jump-forward)
-  (define-key evil-visual-state-map (kbd "p") 'evil-paste-before)
-  ;; (define-key evil-visual-state-map (kbd "P")  'evil-visual-paste)
-  ;; (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-  (define-key minibuffer-local-map (kbd "C-n") 'next-line-or-history-element)
-  (define-key minibuffer-local-map (kbd "C-p") 'previous-line-or-history-element)
-  (define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
-  (define-key minibuffer-local-map (kbd "<escape>") 'keyboard-escape-quit)
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; (evil-set-initial-state 'dashboard-mode 'normal)
-  )
+  ;; (global-set-key [remap evil-quit] 'kill-buffer-and-window)
+  (evil-global-set-key 'motion (kbd "j") 'evil-next-visual-line)
+  (evil-global-set-key 'motion (kbd "k") 'evil-previous-visual-line)
+  (evil-global-set-key 'motion (kbd "<down>") 'evil-next-visual-line)
+  (evil-global-set-key 'motion (kbd "<up>") 'evil-previous-visual-line)
+  (evil-global-set-key 'normal (kbd "<tab>") 'evil-toggle-fold)
+  (evil-global-set-key 'normal (kbd "C-i") 'evil-jump-forward)
+  (evil-global-set-key 'visual (kbd "p") 'evil-paste-before)
+  (evil-global-set-key 'visual (kbd "P") 'evil-visual-paste))
 
 (use-package evil-collection
   :after evil
