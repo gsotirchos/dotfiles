@@ -3,9 +3,12 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
-  - pip>=21.0
   - conda>=4.6.7
+  - python=3.9
+  - pip=21.0
+  - setuptools=65.5.0
+  - gcc=12.1.0
+  - gxx=12.1.0
   - ipython
   - wandb
   - scipy
@@ -15,16 +18,15 @@ dependencies:
   - termcolor=1.1.0
   - shimmy=0.2.1
   - cython=0.29.32
+  #- patchelf=0.17.2
   - mujoco-python=2.2.0
-  #- gym=0.21.0
   - gymnasium=0.28.1  # Minigrid and Atari use Gymnasium
   - gymnasium-atari=0.28.1  # for Atari games
   - gymnasium-other=0.28.1  # for Atari games
-  - pip=21.0:
-    - setuptools==65.5.0
+  - pip:
     - wheel==0.38.0
-    - gym==0.21.0
-    - shimmy[gym-v21]
+    #- gym==0.21.0
+    #- shimmy[gym-v21]
     - gymnasium[accept-rom-license]  # Atari ROMs
     #- gymnasium-robotics==1.2.2
     - Minigrid==2.1.0
@@ -34,7 +36,7 @@ dependencies:
     - wandb-osh==1.0.4
     - git+https://github.com/chandar-lab/RLHive.git@de8f0a20a4e4760b532f244a84761e8609e34fea
     - git+https://github.com/dapatil211/earl_benchmark.git@da7b902b64e7347a857f9b66eca0b0367d325e83
-    - git+https://github.com/rlworkgroup/metaworld.git@04be337a12305e393c0caf0cbf5ec7755c7c8feb
+    #- git+https://github.com/rlworkgroup/metaworld.git@04be337a12305e393c0caf0cbf5ec7755c7c8feb
 
 variables:
   MUJOCO_GL: osmesa
