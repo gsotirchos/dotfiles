@@ -9,11 +9,12 @@ dependencies:
   - setuptools=65.5.0
   - gcc=12.1.0
   - gxx=12.1.0
-  - ipython
-  - wandb
-  - scipy
-  - seaborn
-  - numpy==1.23.0
+  - ipython=8.18.1
+  - wandb=0.19.11
+  - scipy=1.11.2
+  - seaborn=0.12.1
+  - pytorch=2.0.0
+  - numpy=1.23.0
   - matplotlib=3.4.2
   - termcolor=1.1.0
   - shimmy=0.2.1
@@ -25,8 +26,6 @@ dependencies:
   - gymnasium-other=0.28.1  # for Atari games
   - pip:
     - wheel==0.38.0
-    #- gym==0.21.0
-    #- shimmy[gym-v21]
     - gymnasium[accept-rom-license]  # Atari ROMs
     #- gymnasium-robotics==1.2.2
     - Minigrid==2.1.0
@@ -41,6 +40,7 @@ dependencies:
 variables:
   MUJOCO_GL: osmesa
 
+# 0. `pip uninstall gym`
 # 1. Download and install MuJoCo.app from:
 # 2. Install according to: https://github.com/openai/mujoco-py/issues/662#issuecomment-996081734
 # 3. `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin`
