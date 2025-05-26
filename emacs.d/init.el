@@ -26,22 +26,22 @@
 
 (dolist (key-binding
          '(("C-z" . nil)  ;; don't suspend-frame
-           ("S-<wheel-down>" . 'ignore)
-           ("S-<wheel-up>" . 'ignore)
-           ("C-<wheel-down>" . 'ignore)
-           ("C-<wheel-up>" . 'ignore)
-           ("M-<wheel-down>" . 'ignore)
-           ("M-<wheel-up>" . 'ignore)
+           ("S-<wheel-down>" . ignore)
+           ("S-<wheel-up>" . ignore)
+           ("C-<wheel-down>" . ignore)
+           ("C-<wheel-up>" . ignore)
+           ("M-<wheel-down>" . ignore)
+           ("M-<wheel-up>" . ignore)
            ("C-M-f" . toggle-frame-fullscreen)
-           ("M-<escape>" . next-multiframe-window)
-           ("M-~" . previous-multiframe-window)
+           ("M-<escape>" . next-window-any-frame)
+           ("M-~" . previous-window-any-frame)
+           ("M-n" . make-frame)
+           ("M-t" . tab-new)
+           ("M-w" . my/close-tab-or-frame)
            ("M-<backspace>" . my/kill-back-to-indentation)
            ("M-<delete>" . kill-line)
            ("M-<right>" . end-of-visual-line)
-           ("M-<left>" . beginning-of-visual-line)
-           ("M-n" . make-frame)
-           ("M-t" . tab-new)
-           ("M-w" . my/close-tab-or-frame)))
+           ("M-<left>" . beginning-of-visual-line)))
   (keymap-global-set (car key-binding) (cdr key-binding)))
 
 (dolist (key-binding
@@ -76,7 +76,9 @@
 (keymap-set global-map my/prefix my-personal-map)
 
 (setq-default inhibit-startup-message t
-              auto-save-default nil
+              ;; auto-save-default nil
+              auto-save-visited-file-name t
+              auto-save-timeout 2
               make-backup-files nil
               set-mark-command-repeat-pop t
               large-file-warning-threshold nil
@@ -426,8 +428,8 @@
         evil-undo-system 'undo-tree)
   :config
   (evil-mode 1)
-  (modify-syntax-entry ?_ "w")
-  (modify-syntax-entry ?- "w")
+  (modify-syntax-entry ?_ "w" (syntax-table))  ;; TODO
+  (modify-syntax-entry ?- "w" (syntax-table))  ;; TODO
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; (evil-set-initial-state 'dashboard-mode 'normal)
   ;; (global-set-key [remap evil-quit] 'kill-buffer-and-window)
