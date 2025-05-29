@@ -216,7 +216,7 @@
     "Just append and prepend spaces to a STRING."
     (concat " " string " "))
   (add-to-list 'tab-bar-tab-name-format-functions
-               'my/surround-in-whitespace)
+               #'my/surround-in-whitespace)
   :custom
   (tab-bar-show 1)
   (tab-bar-format '(tab-bar-format-history tab-bar-format-tabs))
@@ -270,8 +270,8 @@
   (delete-by-moving-to-trash t)
   ;; :bind (:map dired-mode-map ("b" . dired-up-directory))
   :init
-  (add-hook 'dired-mode-hook 'dired-hide-details-mode)
-  (add-hook 'dired-mode-hook 'hl-line-mode))
+  (add-hook 'dired-mode-hook #'dired-hide-details-mode)
+  (add-hook 'dired-mode-hook #'hl-line-mode))
 
 (use-package corfu
   :custom
@@ -339,11 +339,11 @@
   ;; `consult-register-store' and the built-in commands.  This improves the
   ;; register formatting, adds thin separator lines, register sorting and hides
   ;; the window mode line.
-  (advice-add 'register-preview :override 'consult-register-window)
+  (advice-add 'register-preview :override #'consult-register-window)
   (setq register-preview-delay 0.5)
   ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function 'consult-xref
-        xref-show-definitions-function 'consult-xref)
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
   :bind
   (([remap Info-search] . consult-info)
    ([remap switch-to-buffer] . consult-buffer)
@@ -413,7 +413,7 @@
   (undo-tree-auto-save-history t)
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
   :init
-  (advice-add 'undo-tree-save-history :around 'my/silent-undo-tree-save-history)
+  (advice-add 'undo-tree-save-history :around #'my/silent-undo-tree-save-history)
   (global-undo-tree-mode))
 
 (use-package evil
@@ -425,22 +425,21 @@
         evil-disable-insert-state-bindings t
         evil-want-C-u-scroll t
         evil-cross-lines t
+        evil-symbol-word-search t
         evil-undo-system 'undo-tree)
   :config
   (evil-mode 1)
-  (modify-syntax-entry ?_ "w" (syntax-table))  ;; TODO
-  (modify-syntax-entry ?- "w" (syntax-table))  ;; TODO
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; (evil-set-initial-state 'dashboard-mode 'normal)
-  ;; (global-set-key [remap evil-quit] 'kill-buffer-and-window)
-  (evil-global-set-key 'motion (kbd "j") 'evil-next-visual-line)
-  (evil-global-set-key 'motion (kbd "k") 'evil-previous-visual-line)
-  (evil-global-set-key 'motion (kbd "<down>") 'evil-next-visual-line)
-  (evil-global-set-key 'motion (kbd "<up>") 'evil-previous-visual-line)
-  (evil-global-set-key 'normal (kbd "<tab>") 'evil-toggle-fold)
-  (evil-global-set-key 'normal (kbd "C-i") 'evil-jump-forward)
-  (evil-global-set-key 'visual (kbd "p") 'evil-paste-before)
-  (evil-global-set-key 'visual (kbd "P") 'evil-visual-paste))
+  ;; (global-set-key [remap evil-quit] #'kill-buffer-and-window)
+  (evil-global-set-key 'motion (kbd "j") #'evil-next-visual-line)
+  (evil-global-set-key 'motion (kbd "k") #'evil-previous-visual-line)
+  (evil-global-set-key 'motion (kbd "<down>") #'evil-next-visual-line)
+  (evil-global-set-key 'motion (kbd "<up>") #'evil-previous-visual-line)
+  (evil-global-set-key 'normal (kbd "<tab>") #'evil-toggle-fold)
+  (evil-global-set-key 'normal (kbd "C-i") #'evil-jump-forward)
+  (evil-global-set-key 'visual (kbd "p") #'evil-paste-before)
+  (evil-global-set-key 'visual (kbd "P") #'evil-visual-paste))
 
 (use-package evil-collection
   :after evil
@@ -448,7 +447,7 @@
 
 (use-package magit
   :bind (:map magit-status-mode-map ("<tab>" . magit-section-toggle))
-  :custom (magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+  :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 ;; NOTE: Make sure to configure a GitHub token before using this package!
 ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
@@ -498,8 +497,8 @@
   ;; (setq eglot-stay-out-of '(flymake))
   ;; (add-hook 'eglot-managed-mode-hook
   ;;           (lambda () (add-hook 'flymake-diagnostic-functions
-  ;;                                'eglot-flymake-backend nil t)))
-  ;; (add-hook 'eglot-managed-mode-hook 'flymake-mode)
+  ;;                                #'eglot-flymake-backend nil t)))
+  ;; (add-hook 'eglot-managed-mode-hook #'flymake-mode)
   (add-to-list 'eglot-server-programs
                `((python-mode python-ts-mode) .
                  ("pyright-langserver" "--stdio"))))
@@ -511,8 +510,10 @@
   :ensure nil
   :custom (show-trailing-whitespace t)
   :init
-  (add-hook 'prog-mode-hook 'electric-pair-mode)
-  (add-hook 'prog-mode-hook 'hs-minor-mode))
+  (add-hook 'prog-mode-hook #'electric-pair-mode)
+  (add-hook 'prog-mode-hook #'hs-minor-mode)
+  (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?_ "w")))
+  (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?- "w"))))
 
 (use-package outline-indent
   :hook ((text-mode conf-mode) . outline-indent-minor-mode)
@@ -545,7 +546,7 @@
   :hook prog-mode
   :custom
   (flymake-no-changes-timeout 1)
-  ;; (add-hook 'sh-base-mode-hook 'flymake-mode-off)
+  ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
   (flymake-show-diagnostics-at-end-of-line t))
 
 (use-package flyspell
@@ -571,7 +572,7 @@
 (use-package emacs-lisp-mode
   :ensure nil
   :no-require t
-  :bind (:map my-personal-map ("(" . 'check-parens))
+  :bind (:map my-personal-map ("(" . #'check-parens))
   :custom (evil-shift-width 2))
 
 
@@ -588,8 +589,8 @@
   :config
   (add-hook 'eglot-managed-mode-hook
             (lambda () (when (derived-mode-p 'python-base-mode)
-              (add-hook 'flymake-diagnostic-functions 'python-flymake nil t)
-              (add-hook 'flymake-diagnostic-functions 'flymake-ruff--run-checker nil t)))))
+              (add-hook 'flymake-diagnostic-functions #'python-flymake nil t)
+              (add-hook 'flymake-diagnostic-functions #'flymake-ruff--run-checker nil t)))))
 
 (use-package conda
   :hook (find-file . my/conda-env-activate-for-buffer)
@@ -635,10 +636,10 @@
   (TeX-master nil)
   (TeX-PDF-mode t)
   :init
-  (add-hook 'LaTeX-mode-hook 'outline-minor-mode)
-  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-  (add-hook 'TeX-after-compilation-finished-functions-hook 'TeX-revert-document-buffer))
+  (add-hook 'LaTeX-mode-hook #'outline-minor-mode)
+  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook #'turn-on-reftex)
+  (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
 
 (use-package preview-dvisvgm
   :after preview-latex)
