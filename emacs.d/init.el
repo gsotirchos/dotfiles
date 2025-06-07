@@ -96,7 +96,8 @@
 
 (when (eq system-type 'darwin)
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
-(unless (eq system-type 'darwin)
+(unless (and (eq system-type 'darwin)
+             (display-graphic-p))
   ;; (tooltip-mode 0)
   ;; (setq visible-bell t)
   (menu-bar-mode 0))
