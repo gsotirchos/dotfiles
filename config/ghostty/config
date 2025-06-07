@@ -21,7 +21,7 @@ cursor-style = block
 cursor-style-blink = false
 cursor-opacity = 1.0
 
-theme = light:modus-operandi, dark:xcode
+theme = light:modus-operandi, dark:modus-vivendi-tinted
 
 keybind = super+up=jump_to_prompt:-2
 keybind = super+down=jump_to_prompt:+2
