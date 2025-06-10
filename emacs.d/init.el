@@ -619,10 +619,8 @@
 ;; yaml
 
 (use-package yaml-ts-mode
-  :custom
-  (tab-width 2)
-  :init
-  (setq yaml-indent-offset 2))
+  :custom (tab-width 2)
+  :init (setq yaml-indent-offset 2))
 
 
 ;; Bash
