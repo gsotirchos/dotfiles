@@ -320,12 +320,6 @@
 
 (use-package marginalia
   :after vertico
-  ;; :custom
-  ;; (marginalia-annotators
-  ;;  '(marginalia-annotators-heavy marginalia-annotators-light nil))
-  :bind
-  (:map minibuffer-local-map
-        ("M-a" . marginalia-cycle))
   :init (marginalia-mode))
 
 (use-package orderless
