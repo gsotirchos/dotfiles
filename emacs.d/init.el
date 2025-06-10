@@ -323,6 +323,9 @@
   ;; :custom
   ;; (marginalia-annotators
   ;;  '(marginalia-annotators-heavy marginalia-annotators-light nil))
+  :bind
+  (:map minibuffer-local-map
+        ("M-a" . marginalia-cycle))
   :init (marginalia-mode))
 
 (use-package orderless
@@ -522,6 +525,9 @@
   ;; (outline-indent-ellipsis " ▼")
   (outline-blank-line t))
 
+(use-package rainbow-mode
+  :defer t)
+
 (use-package rainbow-delimiters
   :defer t
   :hook prog-mode)
@@ -536,9 +542,13 @@
   ;;  '((python function_definition class_definition for_statement
   ;;            if_statement with_statement while_statement)))
   (indent-bars-prefer-character t)
+  ;; (indent-bars-no-stipple-char ?│)
   (indent-bars-color '(highlight :face default :blend 0.2))
-  (indent-bars-pattern ".")
+  ;; (indent-bars-pattern ".")
+  (indent-bars-zigzag nil)
   (indent-bars-color-by-depth nil)
+  (indent-bars-highlight-current-depth nil)
+  (indent-bars-display-on-blank-lines nil)
   :config
   (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
 
