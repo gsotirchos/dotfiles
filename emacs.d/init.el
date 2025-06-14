@@ -105,9 +105,10 @@
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (global-visual-line-mode 0)
-(pixel-scroll-precision-mode 1)
 (xterm-mouse-mode 1)
 (column-number-mode 1)
+(when (featurep 'ns)
+  (pixel-scroll-precision-mode 1))
 
 
 ;; Initialize package sources
