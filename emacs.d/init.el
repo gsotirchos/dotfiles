@@ -648,6 +648,7 @@
   (TeX-parse-self t)
   (TeX-master nil)
   (TeX-PDF-mode t)
+  (TeX-command-extra-options "-shell-escape")
   :init
   (add-hook 'LaTeX-mode-hook #'outline-minor-mode)
   (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
