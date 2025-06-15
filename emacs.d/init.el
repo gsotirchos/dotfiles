@@ -76,6 +76,7 @@
 (keymap-set global-map my/prefix my-personal-map)
 
 (setq-default inhibit-startup-message t
+              initial-scratch-message nil
               ;; auto-save-default nil
               auto-save-visited-file-name t
               auto-save-timeout 2
@@ -199,12 +200,20 @@
   (modus-themes-italic-constructs t)
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
-     ;; (border-mode-line-active unspecified)
-     ;; (border-mode-line-inactive unspecified)
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
+     (bg-tab-current bg-main)
+     (bg-tab-other bg-inactive)
+     (bg-tab-bar bg-dim)
      (comment green)
-     ))
+     ;; (docstring green-faint)
+     (string red-faint)
+     (constant yellow)
+     (keyword magenta-warmer)
+     (builtin magenta-faint)
+     (type magenta-cooler)
+     (fnname blue-faint)
+     (variable cyan)))
   :init (load-theme 'modus-operandi)
   :config
   (set-fringe-bitmap-face 'left-curly-arrow 'my-custom-curly-face)
@@ -224,7 +233,7 @@
   (tab-bar-format '(tab-bar-format-history tab-bar-format-tabs))
   (tab-bar-auto-width-max '((2000) 20))
   (tab-bar-close-button-show nil)
-  (tab-bar-separator t))
+  (tab-bar-separator nil))
 
 (use-package doom-modeline
   ;; needs: M-x nerd-icons-install-fonts
@@ -489,7 +498,7 @@
   (eglot-ignored-server-capabilities
    '(:codeLensProvider
      :codeActionProvider
-     :colorProvider
+     ;; :colorProvider
      :foldingRangeProvider
      :executeCommandProvider))
   :config
