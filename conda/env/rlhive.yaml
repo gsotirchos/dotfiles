@@ -1,11 +1,13 @@
 name: rlhive
 channels:
+  - nvidia
   - conda-forge
   - defaults
 dependencies:
   - conda>=4.6.7
   - python=3.9
   - pip=21.0
+  #- cuda=11.6
   - setuptools=65.5.0
   - gcc=12.1.0
   - gxx=12.1.0
@@ -17,6 +19,7 @@ dependencies:
   - numpy=1.23.0
   - matplotlib=3.4.2
   - termcolor=1.1.0
+  - moviepy=1.0.3
   - shimmy=0.2.1
   - cython=0.29.32
   #- patchelf=0.17.2
