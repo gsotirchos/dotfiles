@@ -647,13 +647,19 @@
   (TeX-auto-save t)
   (TeX-parse-self t)
   (TeX-master nil)
-  (TeX-PDF-mode t)
   (TeX-command-extra-options "-shell-escape")
+  (preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
+  (preview-preserve-counters t)
+  (preview-scale-function 1.75)
+  (preview-image-type 'dvisvgm)
   :init
   (add-hook 'LaTeX-mode-hook #'outline-minor-mode)
   (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook #'turn-on-reftex)
-  (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
+  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook (lambda () (TeX-PDF-mode -1)))
+  (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer)
+  )
 
 (use-package preview-dvisvgm
   :after preview-latex)
