@@ -3,26 +3,28 @@
 
 ;;; Code:
 
+;; Fonts
 (when (eq system-type 'darwin)
   (set-face-attribute 'default nil :family "Menlo" :height 140))
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150))
 
 
-(defun my/close-tab-or-frame ()
-  "Close current tab or frame."
+;; Basic keybindings
+(defun my/delete-back-to-indentation ()
+  "Kill back to the first non-whitespace character."
+  (interactive)
+  (kill-line 0)
+  (indent-for-tab-command))
+
+(defun my/quit ()
+  "Close the current tab or frame."
   (interactive)
   (condition-case nil
       (tab-close)
     (error (condition-case nil
                (delete-frame)
              (error nil)))))
-
-(defun my/kill-back-to-indentation ()
-  "Kill back to the first non-whitespace character."
-  (interactive)
-  (kill-line 0)
-  (indent-for-tab-command))
 
 (dolist (key-binding
          '(("C-z" . nil)  ;; don't suspend-frame
@@ -32,16 +34,26 @@
            ("C-<wheel-up>" . ignore)
            ("M-<wheel-down>" . ignore)
            ("M-<wheel-up>" . ignore)
+           ("C-<backspace>" . ignore)
+           ("C-<delete>" . ignore)
+           ("C-<right>" . ignore)
+           ("C-<left>" . ignore)
+           ("C-<up>" . ignore)
+           ("C-<down>" . ignore)
+           ("M-<backspace>" . my/delete-back-to-indentation)
+           ("M-<delete>" . kill-line)
+           ("M-<right>" . end-of-visual-line)
+           ("M-<left>" . beginning-of-visual-line)
+           ("A-<backspace>" . backward-kill-word)
+           ("A-<delete>" . kill-word)
+           ("A-<right>" . right-word)
+           ("A-<left>" . left-word)
            ("C-M-f" . toggle-frame-fullscreen)
            ("M-<escape>" . next-window-any-frame)
            ("M-~" . previous-window-any-frame)
            ("M-n" . make-frame)
            ("M-t" . tab-new)
-           ("M-w" . my/close-tab-or-frame)
-           ("M-<backspace>" . my/kill-back-to-indentation)
-           ("M-<delete>" . kill-line)
-           ("M-<right>" . end-of-visual-line)
-           ("M-<left>" . beginning-of-visual-line)))
+           ("M-w" . my/quit)))
   (keymap-global-set (car key-binding) (cdr key-binding)))
 
 (dolist (key-binding
@@ -52,13 +64,7 @@
   (keymap-set minibuffer-mode-map (car key-binding) (cdr key-binding)))
 
 
-(when (eq system-type 'darwin)
-  (setq-default mac-mouse-wheel-smooth-scroll t
-                mouse-wheel-flip-direction t
-                mouse-wheel-tilt-scroll t
-                ns-command-modifier 'meta
-                ns-option-modifier nil))
-
+;; Define keymaps
 (defvar-keymap my-file-utils-map
   :doc "My file utilities map."
   "r" '("recent files" . recentf)
@@ -74,6 +80,15 @@
 
 (defvar my/prefix "C-c")
 (keymap-set global-map my/prefix my-personal-map)
+
+
+;; Set defaults
+(when (eq system-type 'darwin)
+  (setq-default mac-mouse-wheel-smooth-scroll t
+                mouse-wheel-flip-direction t
+                mouse-wheel-tilt-scroll t
+                ns-command-modifier 'meta
+                ns-option-modifier 'alt))
 
 (setq-default inhibit-startup-message t
               initial-scratch-message nil
@@ -95,8 +110,6 @@
               ;; global-display-line-numbers-mode t
               indent-tabs-mode nil)
 
-(when (eq system-type 'darwin)
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
 (unless (and (eq system-type 'darwin)
              (display-graphic-p))
   ;; (tooltip-mode 0)
@@ -187,20 +200,14 @@
   :preface
   (defun my/apply-theme (appearance)
     (mapc 'disable-theme custom-enabled-themes)
-    (add-to-list 'default-frame-alist `(ns-appearance . ,appearance))
     (pcase appearance
       ('light (load-theme 'modus-operandi))
       ('dark (load-theme 'modus-vivendi-tinted))))
-  (defface my-custom-curly-face
-    '((t (:foreground "gray")))
-    "Face for fringe curly bitmaps."
-    :group 'basic-faces)
   :custom
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
   (modus-themes-common-palette-overrides
-   '((fringe unspecified)
-     (border-mode-line-active bg-mode-line-active)
+   '((border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
      (bg-tab-current bg-main)
      (bg-tab-other bg-inactive)
@@ -215,9 +222,11 @@
      (fnname blue-faint)
      (variable cyan)))
   :init (load-theme 'modus-operandi)
-  :config
-  (set-fringe-bitmap-face 'left-curly-arrow 'my-custom-curly-face)
-  (set-fringe-bitmap-face 'right-curly-arrow 'my-custom-curly-face))
+  :config (set-face-attribute 'fringe nil :foreground "gray" :background nil))
+
+(use-package ns-auto-titlebar
+  :if (eq system-type 'darwin)
+  :init (ns-auto-titlebar-mode))
 
 (use-package tab-bar-mode
   :ensure nil
@@ -440,6 +449,9 @@
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; (evil-set-initial-state 'dashboard-mode 'normal)
   ;; (global-set-key [remap evil-quit] #'kill-buffer-and-window)
+  (global-set-key [remap my/quit] #'evil-quit)
+  (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
+  ;; (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)  ;; TODO: is set automatically?
   (evil-global-set-key 'motion (kbd "j") #'evil-next-visual-line)
   (evil-global-set-key 'motion (kbd "k") #'evil-previous-visual-line)
   (evil-global-set-key 'motion (kbd "<down>") #'evil-next-visual-line)
@@ -596,6 +608,8 @@
 (use-package python
   :no-require t
   :custom
+  ;; (python-shell-interpreter "ipython")
+  ;; (python-shell-interpreter-args "--pprint")
   (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")))
 
 (use-package flymake-ruff
