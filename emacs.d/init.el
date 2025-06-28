@@ -53,7 +53,8 @@
            ("M-~" . previous-window-any-frame)
            ("M-n" . make-frame)
            ("M-t" . tab-new)
-           ("M-w" . my/quit)))
+           ("M-w" . my/quit)
+           ("M-h" . ns-do-hide-emacs)))
   (keymap-global-set (car key-binding) (cdr key-binding)))
 
 (dolist (key-binding
@@ -196,18 +197,20 @@
 
 (use-package modus-themes
   :ensure t
-  :hook (ns-system-appearance-change-functions . my/apply-theme)
   :preface
   (defun my/apply-theme (appearance)
     (mapc 'disable-theme custom-enabled-themes)
     (pcase appearance
-      ('light (load-theme 'modus-operandi))
-      ('dark (load-theme 'modus-vivendi-tinted))))
+      ('light (modus-themes-load-theme 'modus-operandi))
+      ('dark (modus-themes-load-theme 'modus-vivendi-tinted))))
+  (defun my/set-gray-fringe-face ()
+    (set-face-attribute 'fringe nil :foreground "gray"))
   :custom
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
   (modus-themes-common-palette-overrides
-   '((border-mode-line-active bg-mode-line-active)
+   '((fringe unspecified)
+     (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
      (bg-tab-current bg-main)
      (bg-tab-other bg-inactive)
@@ -221,8 +224,10 @@
      (type magenta-cooler)
      (fnname blue-faint)
      (variable cyan)))
-  :init (load-theme 'modus-operandi)
-  :config (set-face-attribute 'fringe nil :foreground "gray" :background nil))
+  :init
+  (load-theme 'modus-operandi)
+  (add-hook 'modus-themes-after-load-theme-hook #'my/set-gray-fringe-face)
+  (add-hook 'ns-system-appearance-change-functions #'my/apply-theme))
 
 (use-package ns-auto-titlebar
   :if (eq system-type 'darwin)
@@ -451,7 +456,7 @@
   ;; (global-set-key [remap evil-quit] #'kill-buffer-and-window)
   (global-set-key [remap my/quit] #'evil-quit)
   (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
-  ;; (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)  ;; TODO: is set automatically?
+  (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
   (evil-global-set-key 'motion (kbd "j") #'evil-next-visual-line)
   (evil-global-set-key 'motion (kbd "k") #'evil-previous-visual-line)
   (evil-global-set-key 'motion (kbd "<down>") #'evil-next-visual-line)
@@ -513,12 +518,13 @@
      ;; :colorProvider
      :foldingRangeProvider
      :executeCommandProvider))
-  :config
+  ;; :init
   ;; (setq eglot-stay-out-of '(flymake))
   ;; (add-hook 'eglot-managed-mode-hook
   ;;           (lambda () (add-hook 'flymake-diagnostic-functions
   ;;                                #'eglot-flymake-backend nil t)))
   ;; (add-hook 'eglot-managed-mode-hook #'flymake-mode)
+  :config
   (add-to-list 'eglot-server-programs
                `((python-mode python-ts-mode) .
                  ("pyright-langserver" "--stdio"))))
@@ -565,16 +571,17 @@
   (indent-bars-color-by-depth nil)
   (indent-bars-highlight-current-depth nil)
   (indent-bars-display-on-blank-lines nil)
-  :config
-  (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
+  :init (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
 
 (use-package flymake
   :ensure nil
   :hook prog-mode
   :custom
   (flymake-no-changes-timeout 1)
+  (flymake-show-diagnostics-at-end-of-line t)
+  ;; :init
   ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
-  (flymake-show-diagnostics-at-end-of-line t))
+  )
 
 (use-package flyspell
   :ensure nil
@@ -615,7 +622,7 @@
 (use-package flymake-ruff
   :hook ((python-mode python-ts-mode) . flymake-ruff-load)
   :custom (python-flymake-command python-check-command)
-  :config
+  :init
   (add-hook 'eglot-managed-mode-hook
             (lambda () (when (derived-mode-p 'python-base-mode)
               (add-hook 'flymake-diagnostic-functions #'python-flymake nil t)
@@ -672,8 +679,7 @@
   (add-hook 'LaTeX-mode-hook #'turn-on-reftex)
   (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook (lambda () (TeX-PDF-mode -1)))
-  (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer)
-  )
+  (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
 
 (use-package preview-dvisvgm
   :after preview-latex)
