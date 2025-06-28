@@ -684,6 +684,16 @@
 (use-package preview-dvisvgm
   :after preview-latex)
 
+;; Startup time
+(defun my/display-startup-stats ()
+  "Display startup stats after startup."
+  (message
+   "Emacs loaded in %s with %d garbage collections."
+   (emacs-init-time)
+   gcs-done))
+
+(add-hook 'emacs-startup-hook #'my/display-startup-stats)
+
 (provide 'init)
 ;;; init.el ends here
 
