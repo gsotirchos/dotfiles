@@ -148,6 +148,7 @@
       use-package-always-defer t)
 
 (use-package no-littering
+  :demand t
   :custom
   (custom-file (no-littering-expand-var-file-name "custom.el"))
   :config
@@ -189,14 +190,12 @@
   :ensure nil
   :init (recentf-mode 1)
   :config
-  (add-to-list 'recentf-exclude
-               (recentf-expand-file-name no-littering-var-directory))
-  (add-to-list 'recentf-exclude
-               (recentf-expand-file-name no-littering-etc-directory)))
+  (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-var-directory))
+  (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
 
 
 (use-package modus-themes
-  :ensure t
+  :demand t
   :preface
   (defun my/apply-theme (appearance)
     (mapc 'disable-theme custom-enabled-themes)
@@ -216,7 +215,7 @@
      (bg-tab-other bg-inactive)
      (bg-tab-bar bg-dim)
      (comment green)
-     ;; (docstring green-faint)
+     (docstring green-faint)
      (string red-faint)
      (constant yellow)
      (keyword magenta-warmer)
@@ -225,13 +224,12 @@
      (fnname blue-faint)
      (variable cyan)))
   :init
-  (load-theme 'modus-operandi)
   (add-hook 'modus-themes-after-load-theme-hook #'my/set-gray-fringe-face)
   (add-hook 'ns-system-appearance-change-functions #'my/apply-theme))
 
-(use-package ns-auto-titlebar
-  :if (eq system-type 'darwin)
-  :init (ns-auto-titlebar-mode))
+(when (eq system-type 'darwin)
+  (use-package ns-auto-titlebar
+    :init (ns-auto-titlebar-mode)))
 
 (use-package tab-bar-mode
   :ensure nil
@@ -240,8 +238,7 @@
   (defun my/surround-in-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
     (concat " " string " "))
-  (add-to-list 'tab-bar-tab-name-format-functions
-               #'my/surround-in-whitespace)
+  (add-to-list 'tab-bar-tab-name-format-functions #'my/surround-in-whitespace)
   :custom
   (tab-bar-show 1)
   (tab-bar-format '(tab-bar-format-history tab-bar-format-tabs))
@@ -285,6 +282,7 @@
 
 (use-package dired
   :ensure nil
+  :no-require t
   :custom
   (dired-listing-switches "-alv --group-directories-first")
   (dired-omit-files "^\\.[^.].*")
@@ -421,8 +419,8 @@
   :custom (warning-minimum-level :error))
 
 (use-package which-key
-  :init (which-key-mode)
-  :custom (which-key-idle-delay 1))
+  :custom (which-key-idle-delay 1)
+  :init (which-key-mode))
 
 (use-package undo-tree
   :hook after-init
@@ -439,7 +437,7 @@
   (global-undo-tree-mode))
 
 (use-package evil
-  :demand t
+  :hook after-init
   :init
   (setq evil-toggle-key "C-<escape>"
         evil-want-integration t
@@ -453,6 +451,7 @@
   (evil-mode 1)
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; (evil-set-initial-state 'dashboard-mode 'normal)
+  (evil-set-initial-state 'prog-mode 'normal)
   ;; (global-set-key [remap evil-quit] #'kill-buffer-and-window)
   (global-set-key [remap my/quit] #'evil-quit)
   (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
@@ -505,6 +504,7 @@
 
 (use-package eglot
   :ensure nil
+  :no-require t
   :hook ((python-base-mode sh-base-mode LaTeX-mode) . eglot-ensure)
   :custom
   (eglot-autoshutdown t)
@@ -518,6 +518,7 @@
      ;; :colorProvider
      :foldingRangeProvider
      :executeCommandProvider))
+  :bind (:map my-personal-map ("rn" . eglot-rename))
   ;; :init
   ;; (setq eglot-stay-out-of '(flymake))
   ;; (add-hook 'eglot-managed-mode-hook
@@ -525,6 +526,8 @@
   ;;                                #'eglot-flymake-backend nil t)))
   ;; (add-hook 'eglot-managed-mode-hook #'flymake-mode)
   :config
+  ;; (when (bound-and-true-p evil-mode)
+  ;;   (evil-define-key 'normal eglot-mode-map "rn" 'eglot-rename))
   (add-to-list 'eglot-server-programs
                `((python-mode python-ts-mode) .
                  ("pyright-langserver" "--stdio"))))
@@ -534,6 +537,7 @@
 
 (use-package prog-mode
   :ensure nil
+  :no-require t
   :custom (show-trailing-whitespace t)
   :init
   (add-hook 'prog-mode-hook #'electric-pair-mode)
@@ -551,7 +555,6 @@
   :defer t)
 
 (use-package rainbow-delimiters
-  :defer t
   :hook prog-mode)
 
 (use-package indent-bars
@@ -575,6 +578,7 @@
 
 (use-package flymake
   :ensure nil
+  :no-require t
   :hook prog-mode
   :custom
   (flymake-no-changes-timeout 1)
@@ -585,7 +589,7 @@
 
 (use-package flyspell
   :ensure nil
-  :defer t
+  :no-require t
   :hook
   (text-mode . flyspell-mode)
   ;; (prog-mode . flyspell-prog-mode)
@@ -593,6 +597,7 @@
 
 (use-package ispell
   :ensure nil
+  :no-require t
   :custom
   (ispell-program-name "aspell")
   (ispell-local-dictionary-alist
@@ -650,8 +655,11 @@
 ;; yaml
 
 (use-package yaml-ts-mode
+  :ensure nil
+  :no-require t
+  :mode ("\\.yaml$" "\\.yml$")
   :custom (tab-width 2)
-  :init (setq yaml-indent-offset 2))
+  :config (setq yaml-indent-offset 2))
 
 
 ;; Bash
@@ -662,6 +670,7 @@
 ;; LaTeX
 
 (use-package auctex
+  :ensure nil
   :no-require t
   :custom
   (preview-auto-cache-preamble t)
@@ -686,10 +695,11 @@
 
 ;; Startup time
 (defun my/display-startup-stats ()
-  "Display startup stats after startup."
+  "Display startup stats."
   (message
-   "Emacs loaded in %s with %d garbage collections."
-   (emacs-init-time)
+   "%d packages loaded in %ss with %d garbage collections."
+   (length package-activated-list)
+   (emacs-init-time "%.2f")
    gcs-done))
 
 (add-hook 'emacs-startup-hook #'my/display-startup-stats)
