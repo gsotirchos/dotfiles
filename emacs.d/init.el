@@ -241,7 +241,7 @@
   (add-to-list 'tab-bar-tab-name-format-functions #'my/surround-in-whitespace)
   :custom
   (tab-bar-show 1)
-  (tab-bar-format '(tab-bar-format-history tab-bar-format-tabs))
+  (tab-bar-format '(tab-bar-format-tabs tab-bar-format-align-right tab-bar-format-global))
   (tab-bar-auto-width-max '((2000) 20))
   (tab-bar-close-button-show nil)
   (tab-bar-separator nil))
@@ -367,12 +367,13 @@
   :bind
   (([remap Info-search] . consult-info)
    ([remap switch-to-buffer] . consult-buffer)
+   ([remap project-switch-to-buffer] . consult-project-buffer)
    ([remap recentf] . consult-recent-file)
    ("C-s" . consult-line)
    ("C-M-s" . consult-line-multi)
    ("M-s l" . consult-goto-line)
    ("M-s g" . consult-ripgrep)
-   ("M-s M-f" . consult-flymake)
+   ("M-s f" . consult-flymake)
    ("M-s M-g" . consult-git-grep)
    :map isearch-mode-map
    ("C-s" . consult-isearch-history)
@@ -450,7 +451,6 @@
   :config
   (evil-mode 1)
   ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
-  ;; (evil-set-initial-state 'dashboard-mode 'normal)
   (evil-set-initial-state 'prog-mode 'normal)
   ;; (global-set-key [remap evil-quit] #'kill-buffer-and-window)
   (global-set-key [remap my/quit] #'evil-quit)
@@ -489,10 +489,10 @@
 
 ;; (use-package evil-textobj-tree-sitter
 ;;   :config
-;;   ;; bind `function.outer`(entire function block) to `f` for use in things like `vaf`, `yaf`
+;;   ;; bind `function.outer` (entire function block) to `f` (e.g. `vaf`, `yaf`()
 ;;   (define-key evil-outer-text-objects-map "f"
 ;;               (evil-textobj-tree-sitter-get-textobj "function.outer"))
-;;   ;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
+;;   ;; bind `function.inner` (function block without name and args) to `f` (e.g. `vif`, `yif`)
 ;;   (define-key evil-inner-text-objects-map "f"
 ;;               (evil-textobj-tree-sitter-get-textobj "function.inner"))
 ;;   ;; You can also bind multiple items and we will match the first one we can find
@@ -526,14 +526,12 @@
   ;;                                #'eglot-flymake-backend nil t)))
   ;; (add-hook 'eglot-managed-mode-hook #'flymake-mode)
   :config
-  ;; (when (bound-and-true-p evil-mode)
-  ;;   (evil-define-key 'normal eglot-mode-map "rn" 'eglot-rename))
   (add-to-list 'eglot-server-programs
                `((python-mode python-ts-mode) .
                  ("pyright-langserver" "--stdio"))))
 
 
-;; Programming utilities
+;; Programming
 
 (use-package prog-mode
   :ensure nil
@@ -542,8 +540,8 @@
   :init
   (add-hook 'prog-mode-hook #'electric-pair-mode)
   (add-hook 'prog-mode-hook #'hs-minor-mode)
-  (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?_ "w")))
-  (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?- "w"))))
+  ;; (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?- "w")))
+  (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?_ "w"))))
 
 (use-package outline-indent
   :hook ((text-mode conf-mode) . outline-indent-minor-mode)
@@ -567,9 +565,7 @@
   ;;  '((python function_definition class_definition for_statement
   ;;            if_statement with_statement while_statement)))
   (indent-bars-prefer-character t)
-  ;; (indent-bars-no-stipple-char ?│)
   (indent-bars-color '(highlight :face default :blend 0.2))
-  ;; (indent-bars-pattern ".")
   (indent-bars-zigzag nil)
   (indent-bars-color-by-depth nil)
   (indent-bars-highlight-current-depth nil)
@@ -620,8 +616,6 @@
 (use-package python
   :no-require t
   :custom
-  ;; (python-shell-interpreter "ipython")
-  ;; (python-shell-interpreter-args "--pprint")
   (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")))
 
 (use-package flymake-ruff
