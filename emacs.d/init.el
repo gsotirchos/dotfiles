@@ -58,10 +58,13 @@
   (keymap-global-set (car key-binding) (cdr key-binding)))
 
 (dolist (key-binding
-  '(("<escape>" . abort-recursive-edit)  ;; or 'abort-minibuffers
-    ;; ("C-n" . next-line-or-history-element)
-    ;; ("C-p" . previous-line-or-history-element)
-    ))
+         '(("<escape>" . abort-recursive-edit)  ;; or 'abort-minibuffers
+           ;; ("C-n" . next-line-or-history-element)
+           ;; ("C-p" . previous-line-or-history-element)
+           ("C-u" . scroll-down-command)
+           ("C-d" . scroll-up-command)
+           ("<prior>" . scroll-down-command)
+           ("<next>" . scroll-up-command)))
   (keymap-set minibuffer-mode-map (car key-binding) (cdr key-binding)))
 
 
@@ -368,17 +371,27 @@
   (([remap Info-search] . consult-info)
    ([remap switch-to-buffer] . consult-buffer)
    ([remap project-switch-to-buffer] . consult-project-buffer)
+   ([remap bookmark-jump] . consult-bookmark)
    ([remap recentf] . consult-recent-file)
-   ("C-s" . consult-line)
-   ("C-M-s" . consult-line-multi)
-   ("M-s l" . consult-goto-line)
-   ("M-s g" . consult-ripgrep)
+   ([remap yank-pop] . consult-yank-pop)
+   ([remap goto-line] . consult-goto-line)
+   ([remap imenu] . consult-imenu)
+   ("M-g I" . consult-imenu-multi)
+   ("M-g o" . consult-outline)
+   ("M-g e" . consult-compile-error)
    ("M-s f" . consult-flymake)
+   ("M-s l" . consult-line)
+   ("M-s L" . consult-line-multi)
+   ("M-s g" . consult-ripgrep)
    ("M-s M-g" . consult-git-grep)
+   ("M-s e" . consult-isearch-history)
    :map isearch-mode-map
-   ("C-s" . consult-isearch-history)
+   ([remap isearch-edit-string] . consult-isearch-history)
+   ("M-s l" . consult-line)
+   ("M-s L" . consult-line-multi)
    :map minibuffer-local-map
-   ("C-s" . consult-history))
+   ([remap next-matching-history-element] . consult-history)
+   ([remap previous-matching-history-element] . consult-history))
   :config
   ;; The configuration values are evaluated at runtime, just before the
   ;; completion session is started. Therefore you can use for example
@@ -439,20 +452,19 @@
 
 (use-package evil
   :hook after-init
-  :init
-  (setq evil-toggle-key "C-<escape>"
-        evil-want-integration t
-        evil-want-keybinding nil
-        evil-disable-insert-state-bindings t
-        evil-want-C-u-scroll t
-        evil-cross-lines t
-        evil-symbol-word-search t
-        evil-undo-system 'undo-tree)
+  :custom
+  (evil-toggle-key "C-<escape>")
+  (evil-want-integration t)
+  (evil-want-keybinding nil)
+  (evil-disable-insert-state-bindings t)
+  (evil-want-C-u-scroll t)
+  (evil-cross-lines t)
+  (evil-symbol-word-search t)
+  (evil-undo-system 'undo-tree)
   :config
   (evil-mode 1)
-  ;; (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'prog-mode 'normal)
-  ;; (global-set-key [remap evil-quit] #'kill-buffer-and-window)
+  (global-set-key [remap evil-visual-block] #'scroll-up-command)
   (global-set-key [remap my/quit] #'evil-quit)
   (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
   (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
