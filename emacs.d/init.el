@@ -299,6 +299,51 @@
   (add-hook 'dired-mode-hook #'dired-hide-details-mode)
   (add-hook 'dired-mode-hook #'hl-line-mode))
 
+(use-package undo-tree
+  :hook after-init
+  :preface
+  (defun my/silent-undo-tree-save-history (undo-tree-save-history &rest args)
+    (let ((message-log-max nil)
+          (inhibit-message t))
+      (apply undo-tree-save-history args)))
+  :custom
+  (undo-tree-auto-save-history t)
+  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+  :init
+  (advice-add 'undo-tree-save-history :around #'my/silent-undo-tree-save-history)
+  (global-undo-tree-mode))
+
+(use-package evil
+  :hook after-init
+  :init
+  (setq evil-toggle-key "C-<escape>"
+        evil-want-integration t
+        evil-want-keybinding nil
+        evil-disable-insert-state-bindings t
+        evil-want-C-u-scroll t
+        evil-cross-lines t
+        evil-symbol-word-search t
+        evil-undo-system 'undo-tree)
+  :config
+  (evil-mode 1)
+  (evil-set-initial-state 'prog-mode 'normal)
+  (global-set-key [remap evil-visual-block] #'scroll-up-command)
+  (global-set-key [remap my/quit] #'evil-quit)
+  (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
+  (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
+  (evil-global-set-key 'motion (kbd "j") #'evil-next-visual-line)
+  (evil-global-set-key 'motion (kbd "k") #'evil-previous-visual-line)
+  (evil-global-set-key 'motion (kbd "<down>") #'evil-next-visual-line)
+  (evil-global-set-key 'motion (kbd "<up>") #'evil-previous-visual-line)
+  (evil-global-set-key 'normal (kbd "<tab>") #'evil-toggle-fold)
+  (evil-global-set-key 'normal (kbd "C-i") #'evil-jump-forward)
+  (evil-global-set-key 'visual (kbd "p") #'evil-paste-before)
+  (evil-global-set-key 'visual (kbd "P") #'evil-visual-paste))
+
+(use-package evil-collection
+  :after evil
+  :init (evil-collection-init))
+
 (use-package corfu
   :custom
   (corfu-auto t)  ;; auto-completion
@@ -355,7 +400,7 @@
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package consult
-  :after vertico
+  :after (evil vertico)
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
   ;; Tweak the register preview for `consult-register-load',
@@ -374,6 +419,7 @@
    ([remap bookmark-jump] . consult-bookmark)
    ([remap recentf] . consult-recent-file)
    ([remap yank-pop] . consult-yank-pop)
+   ([remap evil-paste-pop] . consult-yank-pop)
    ([remap goto-line] . consult-goto-line)
    ([remap imenu] . consult-imenu)
    ("M-g I" . consult-imenu-multi)
@@ -385,6 +431,7 @@
    ("M-s g" . consult-ripgrep)
    ("M-s M-g" . consult-git-grep)
    ("M-s e" . consult-isearch-history)
+   ("M-y" . consult-yank-pop)
    :map isearch-mode-map
    ([remap isearch-edit-string] . consult-isearch-history)
    ("M-s l" . consult-line)
@@ -435,51 +482,6 @@
 (use-package which-key
   :custom (which-key-idle-delay 1)
   :init (which-key-mode))
-
-(use-package undo-tree
-  :hook after-init
-  :preface
-  (defun my/silent-undo-tree-save-history (undo-tree-save-history &rest args)
-    (let ((message-log-max nil)
-          (inhibit-message t))
-      (apply undo-tree-save-history args)))
-  :custom
-  (undo-tree-auto-save-history t)
-  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-  :init
-  (advice-add 'undo-tree-save-history :around #'my/silent-undo-tree-save-history)
-  (global-undo-tree-mode))
-
-(use-package evil
-  :hook after-init
-  :custom
-  (evil-toggle-key "C-<escape>")
-  (evil-want-integration t)
-  (evil-want-keybinding nil)
-  (evil-disable-insert-state-bindings t)
-  (evil-want-C-u-scroll t)
-  (evil-cross-lines t)
-  (evil-symbol-word-search t)
-  (evil-undo-system 'undo-tree)
-  :config
-  (evil-mode 1)
-  (evil-set-initial-state 'prog-mode 'normal)
-  (global-set-key [remap evil-visual-block] #'scroll-up-command)
-  (global-set-key [remap my/quit] #'evil-quit)
-  (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
-  (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
-  (evil-global-set-key 'motion (kbd "j") #'evil-next-visual-line)
-  (evil-global-set-key 'motion (kbd "k") #'evil-previous-visual-line)
-  (evil-global-set-key 'motion (kbd "<down>") #'evil-next-visual-line)
-  (evil-global-set-key 'motion (kbd "<up>") #'evil-previous-visual-line)
-  (evil-global-set-key 'normal (kbd "<tab>") #'evil-toggle-fold)
-  (evil-global-set-key 'normal (kbd "C-i") #'evil-jump-forward)
-  (evil-global-set-key 'visual (kbd "p") #'evil-paste-before)
-  (evil-global-set-key 'visual (kbd "P") #'evil-visual-paste))
-
-(use-package evil-collection
-  :after evil
-  :init (evil-collection-init))
 
 (use-package magit
   :bind (:map magit-status-mode-map ("<tab>" . magit-section-toggle))
