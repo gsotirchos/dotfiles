@@ -541,8 +541,7 @@
   ;; (add-hook 'eglot-managed-mode-hook #'flymake-mode)
   :config
   (add-to-list 'eglot-server-programs
-               `((python-mode python-ts-mode) .
-                 ("pyright-langserver" "--stdio"))))
+               `(python-base-mode . ("pyright-langserver" "--stdio"))))
 
 
 ;; Programming
@@ -558,10 +557,10 @@
   (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?_ "w"))))
 
 (use-package outline-indent
-  :hook ((text-mode conf-mode) . outline-indent-minor-mode)
-  :custom
+  :hook ((text-mode conf-mode python-base-mode) . outline-indent-minor-mode)
+  :custom (outline-blank-line t)
   ;; (outline-indent-ellipsis " ▼")
-  (outline-blank-line t))
+  :init (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1))))
 
 (use-package rainbow-mode
   :defer t)
@@ -633,7 +632,7 @@
   (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")))
 
 (use-package flymake-ruff
-  :hook ((python-mode python-ts-mode) . flymake-ruff-load)
+  :hook (python-base-mode . flymake-ruff-load)
   :custom (python-flymake-command python-check-command)
   :init
   (add-hook 'eglot-managed-mode-hook
