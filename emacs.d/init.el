@@ -54,6 +54,7 @@
            ("M-n" . make-frame)
            ("M-t" . tab-new)
            ("M-w" . my/quit)
+           ("M-m" . iconify-frame)
            ("M-h" . ns-do-hide-emacs)))
   (keymap-global-set (car key-binding) (cdr key-binding)))
 
