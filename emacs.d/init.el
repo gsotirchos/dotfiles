@@ -229,7 +229,8 @@
      (variable cyan)))
   :init
   (add-hook 'modus-themes-after-load-theme-hook #'my/set-gray-fringe-face)
-  (add-hook 'ns-system-appearance-change-functions #'my/apply-theme))
+  (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
+  :config (modus-themes-load-theme 'modus-operandi))
 
 (when (eq system-type 'darwin)
   (use-package ns-auto-titlebar
