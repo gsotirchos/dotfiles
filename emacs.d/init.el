@@ -127,8 +127,9 @@
 (global-visual-line-mode 0)
 (xterm-mouse-mode 1)
 (column-number-mode 1)
-(when (featurep 'ns)
-  (pixel-scroll-precision-mode 1))
+;; (when (featurep 'ns)
+(pixel-scroll-precision-mode 1)
+;; )
 
 
 ;; Initialize package sources
