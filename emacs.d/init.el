@@ -88,12 +88,13 @@
 
 
 ;; Set defaults
-(when (eq system-type 'darwin)
+(if (eq system-type 'darwin)
   (setq-default mac-mouse-wheel-smooth-scroll t
                 mouse-wheel-flip-direction t
                 mouse-wheel-tilt-scroll t
                 ns-command-modifier 'meta
-                ns-option-modifier 'alt))
+                ns-option-modifier 'alt)
+  (setq-default x-super-keysym 'alt))
 
 (setq-default inhibit-startup-message t
               initial-scratch-message nil
