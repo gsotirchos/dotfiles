@@ -98,6 +98,7 @@
 
 (setq-default inhibit-startup-message t
               initial-scratch-message nil
+              initial-major-mode 'fundamental-mode
               ;; auto-save-default nil
               auto-save-visited-file-name t
               auto-save-timeout 2
@@ -365,17 +366,13 @@
   ;;             (eq (current-local-map) read-passwd-map)))))
   :bind
   (:map corfu-map
-        ("<tab>" . corfu-next)
-        ("S-<tab>" . corfu-previous)
-        ("RET" . corfu-insert)
-        ("S-SPC" . corfu-insert-separator)
-        ;; ("RET" . nil)
+        ;; ("<tab>" . corfu-next)
+        ;; ("S-<tab>" . corfu-previous)
         ;; ("C-e" . corfu-popupinfo-scroll-up)
         ;; ("C-y" . corfu-popupinfo-scroll-down)
-        ;; Explicitly set for consistency in the minibuffer
-        ;; ("C-n" . corfu-next)
-        ;; ("C-p" . corfu-previous)
-        )
+        ;; ("RET" . corfu-insert)
+        ("RET" . nil)
+        ("S-SPC" . corfu-insert-separator))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
