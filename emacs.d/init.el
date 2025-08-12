@@ -34,7 +34,7 @@
            ("C-<wheel-up>" . ignore)
            ("M-<wheel-down>" . ignore)
            ("M-<wheel-up>" . ignore)
-           ("C-<backspace>" . ignore)
+           ;; ("C-<backspace>" . ignore)
            ("C-<delete>" . ignore)
            ("C-<right>" . ignore)
            ("C-<left>" . ignore)
