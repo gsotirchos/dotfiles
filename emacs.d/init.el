@@ -108,7 +108,7 @@
               desktop-save-mode 1
               ;; auto-save-default nil
               auto-save-visited-file-name t
-              auto-save-timeout 2
+              auto-save-timeout 1
               make-backup-files nil
               set-mark-command-repeat-pop t
               large-file-warning-threshold nil
