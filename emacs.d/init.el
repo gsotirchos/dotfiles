@@ -99,6 +99,7 @@
 (setq-default inhibit-startup-message t
               initial-scratch-message nil
               initial-major-mode 'fundamental-mode
+              desktop-save-mode 1
               ;; auto-save-default nil
               auto-save-visited-file-name t
               auto-save-timeout 2
@@ -252,7 +253,8 @@
   (tab-bar-format '(tab-bar-format-tabs tab-bar-format-align-right tab-bar-format-global))
   (tab-bar-auto-width-max '((2000) 20))
   (tab-bar-close-button-show nil)
-  (tab-bar-separator nil))
+  (tab-bar-separator nil)
+  :init (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package doom-modeline
   ;; needs: M-x nerd-icons-install-fonts
@@ -366,12 +368,12 @@
   ;;             (eq (current-local-map) read-passwd-map)))))
   :bind
   (:map corfu-map
+        ("<tab>" . 'ignore)
         ;; ("<tab>" . corfu-next)
         ;; ("S-<tab>" . corfu-previous)
         ;; ("C-e" . corfu-popupinfo-scroll-up)
         ;; ("C-y" . corfu-popupinfo-scroll-down)
-        ;; ("RET" . corfu-insert)
-        ("RET" . nil)
+        ;; ("RET" . nil)
         ("S-SPC" . corfu-insert-separator))
   :init
   (global-corfu-mode)
