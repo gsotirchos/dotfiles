@@ -69,19 +69,25 @@
   (keymap-set minibuffer-mode-map (car key-binding) (cdr key-binding)))
 
 
-;; Define keymaps
-(defvar-keymap my-file-utils-map
-  :doc "My file utilities map."
+;; Define personal keymaps
+(defvar-keymap my-file-commands-map
+  :doc "My file commands map."
   "r" '("recent files" . recentf)
   "i" '("init.el" . (lambda ()
                       (interactive)
                       (find-file (expand-file-name "~/.emacs.d/init.el")))))
 
+(defvar-keymap my-desktop-commands-map
+  :doc "My desktop commands map."
+  "r" '("read desktop". desktop-read)
+  "s" '("save desktop". desktop-save))
+
 (defvar-keymap my-personal-map
   :doc "My prefix map."
-  "d" 'flymake-show-buffer-diagnostics
+  "C-f" 'flymake-show-buffer-diagnostics
   "m" 'magit
-  "f" `("prefix files" . ,my-file-utils-map))
+  "f" `("prefix files" . ,my-file-commands-map)
+  "d" `("prefix desktop" . ,my-desktop-commands-map))
 
 (defvar my/prefix "C-c")
 (keymap-set global-map my/prefix my-personal-map)
@@ -477,7 +483,6 @@
    ([remap describe-command] . helpful-command)
    ([remap describe-variable] . helpful-variable)
    ([remap describe-key] . helpful-key)
-   ("C-h F" . helpful-function)
    :map my-personal-map
    ("C-d" . helpful-at-point))
   :custom (warning-minimum-level :error))
