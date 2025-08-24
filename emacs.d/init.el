@@ -121,7 +121,6 @@
               hscroll-margin 0
               scroll-step 1
               hscroll-step 1
-              ;; global-display-line-numbers-mode t
               indent-tabs-mode nil)
 
 (unless (and (eq system-type 'darwin)
@@ -134,10 +133,18 @@
 (scroll-bar-mode 0)
 (global-visual-line-mode 0)
 (xterm-mouse-mode 1)
-(column-number-mode 1)
+(column-number-mode 0)
 ;; (when (featurep 'ns)
-(pixel-scroll-precision-mode 1)
-;; )
+(pixel-scroll-precision-mode 1)  ;; )
+
+;; Frame parameters to ignore when saving/loading desktop sessions
+(dolist (filter '(foreground-color
+                  background-color
+                  font
+                  cursor-color
+                  background-mode
+                  ns-appearance))
+  (add-to-list 'frameset-filter-alist (cons filter :never)))
 
 
 ;; Initialize package sources
@@ -557,15 +564,15 @@
 (use-package prog-mode
   :ensure nil
   :no-require t
-  :custom (show-trailing-whitespace t)
   :init
   (add-hook 'prog-mode-hook #'electric-pair-mode)
   (add-hook 'prog-mode-hook #'hs-minor-mode)
+  (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
   ;; (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?- "w")))
   (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?_ "w"))))
 
 (use-package outline-indent
-  :hook ((text-mode conf-mode python-base-mode) . outline-indent-minor-mode)
+  :hook ((conf-mode yaml-ts-mode python-base-mode) . outline-indent-minor-mode)
   :custom (outline-blank-line t)
   ;; (outline-indent-ellipsis " ▼")
   :init (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1))))
