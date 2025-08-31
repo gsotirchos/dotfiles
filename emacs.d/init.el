@@ -744,11 +744,7 @@
     (dolist (hook '(modus-themes-after-load-theme-hook
                     after-save-hook
                     find-file-hook))
-      (add-hook hook #'my/org-latex-preview-buffer nil t))
-    ;; (add-hook 'modus-themes-after-load-theme-hook #'my/org-latex-preview-buffer nil t)
-    ;; (add-hook 'after-save-hook #'my/org-latex-preview-buffer nil t)
-    ;; (add-hook 'find-file-hook #'my/org-latex-preview-buffer nil t)
-    )
+      (add-hook hook #'my/org-latex-preview-buffer nil t)))
   :custom
   (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP")))
   (org-hide-emphasis-markers t)
