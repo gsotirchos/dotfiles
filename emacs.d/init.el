@@ -223,14 +223,6 @@
 
 (use-package modus-themes
   :demand t
-  :preface
-  (defun my/apply-theme (appearance)
-    (mapc 'disable-theme custom-enabled-themes)
-    (pcase appearance
-      ('light (modus-themes-load-theme 'modus-operandi))
-      ('dark (modus-themes-load-theme 'modus-vivendi-tinted))))
-  (defun my/set-gray-fringe-face ()
-    (set-face-attribute 'fringe nil :foreground "gray"))
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
@@ -251,6 +243,14 @@
      (type magenta-cooler)
      (fnname blue-faint)
      (variable cyan)))
+  :preface
+  (defun my/apply-theme (appearance)
+    (mapc 'disable-theme custom-enabled-themes)
+    (pcase appearance
+      ('light (modus-themes-load-theme 'modus-operandi))
+      ('dark (modus-themes-load-theme 'modus-vivendi-tinted))))
+  (defun my/set-gray-fringe-face ()
+    (set-face-attribute 'fringe nil :foreground "gray"))
   :init
   (add-hook 'modus-themes-after-load-theme-hook #'my/set-gray-fringe-face)
   (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
@@ -263,17 +263,17 @@
 (use-package tab-bar-mode
   :ensure nil
   :no-require t
-  :preface
-  (defun my/surround-in-whitespace (string _ _)
-    "Just append and prepend spaces to a STRING."
-    (concat " " string " "))
-  (add-to-list 'tab-bar-tab-name-format-functions #'my/surround-in-whitespace)
   :custom
   (tab-bar-show 1)
   (tab-bar-format '(tab-bar-format-tabs tab-bar-format-align-right tab-bar-format-global))
   (tab-bar-auto-width-max '((2000) 20))
   (tab-bar-close-button-show nil)
   (tab-bar-separator nil)
+  :preface
+  (defun my/surround-in-whitespace (string _ _)
+    "Just append and prepend spaces to a STRING."
+    (concat " " string " "))
+  (add-to-list 'tab-bar-tab-name-format-functions #'my/surround-in-whitespace)
   :init (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package doom-modeline
@@ -290,20 +290,10 @@
   (doom-modeline-check-icon nil)
   (doom-modeline-check-simple-format t))
 
-;; (use-package doom-themes
-;;   ;; :init (load-theme 'doom-palenight t))
-;;   :custom
-;;   (doom-themes-treemacs-enable-variable-pitch nil)
-;;   (doom-themes-treemacs-theme "doom-atom")
-;;   :config (doom-themes-treemacs-config))
-
-;; (use-package all-the-icons
-;;   ;; needs: M-x all-the-icons-install-fonts
-;;   :if (display-graphic-p))
-
 (use-package dired
   :ensure nil
   :no-require t
+  ;; :bind (:map dired-mode-map ("b" . dired-up-directory))
   :custom
   (dired-listing-switches "-alv --group-directories-first")
   (dired-omit-files "^\\.[^.].*")
@@ -312,21 +302,23 @@
   (dired-hide-details-hide-symlink-targets nil)
   (dired-kill-when-opening-new-dired-buffer t)
   (delete-by-moving-to-trash t)
-  ;; :bind (:map dired-mode-map ("b" . dired-up-directory))
+  :preface
+  (defun my/dired-mode-hook ()
+    (dired-hide-details-mode 1)
+    (hl-line-mode 1))
   :init
-  (add-hook 'dired-mode-hook #'dired-hide-details-mode)
-  (add-hook 'dired-mode-hook #'hl-line-mode))
+  (add-hook 'dired-mode-hook #'my/dired-mode-hook))
 
 (use-package undo-tree
   :hook after-init
+  :custom
+  (undo-tree-auto-save-history t)
+  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
   :preface
   (defun my/silent-undo-tree-save-history (undo-tree-save-history &rest args)
     (let ((message-log-max nil)
           (inhibit-message t))
       (apply undo-tree-save-history args)))
-  :custom
-  (undo-tree-auto-save-history t)
-  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
   :init
   (advice-add 'undo-tree-save-history :around #'my/silent-undo-tree-save-history)
   (global-undo-tree-mode))
@@ -364,6 +356,15 @@
   :init (evil-collection-init))
 
 (use-package corfu
+  :bind
+  (:map corfu-map
+        ("<tab>" . 'ignore)
+        ;; ("<tab>" . corfu-next)
+        ;; ("S-<tab>" . corfu-previous)
+        ;; ("C-e" . corfu-popupinfo-scroll-up)
+        ;; ("C-y" . corfu-popupinfo-scroll-down)
+        ;; ("RET" . nil)
+        ("S-SPC" . corfu-insert-separator))
   :custom
   (corfu-auto t)  ;; auto-completion
   (corfu-auto-prefix 2)
@@ -374,19 +375,9 @@
   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
   (corfu-cycle t)
   ;; (global-corfu-minibuffer
-  ;;  (lambda ()
-  ;;    (not (or (bound-and-true-p mct--active)
-  ;;             (bound-and-true-p vertico--input)
-  ;;             (eq (current-local-map) read-passwd-map)))))
-  :bind
-  (:map corfu-map
-        ("<tab>" . 'ignore)
-        ;; ("<tab>" . corfu-next)
-        ;; ("S-<tab>" . corfu-previous)
-        ;; ("C-e" . corfu-popupinfo-scroll-up)
-        ;; ("C-y" . corfu-popupinfo-scroll-down)
-        ;; ("RET" . nil)
-        ("S-SPC" . corfu-insert-separator))
+  ;;  (lambda () (not (or (bound-and-true-p mct--active)
+  ;;                      (bound-and-true-p vertico--input)
+  ;;                      (eq (current-local-map) read-passwd-map)))))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
@@ -419,16 +410,6 @@
 (use-package consult
   :after (evil vertico)
   :hook (completion-list-mode . consult-preview-at-point-mode)
-  :init
-  ;; Tweak the register preview for `consult-register-load',
-  ;; `consult-register-store' and the built-in commands.  This improves the
-  ;; register formatting, adds thin separator lines, register sorting and hides
-  ;; the window mode line.
-  (advice-add 'register-preview :override #'consult-register-window)
-  (setq register-preview-delay 0.5)
-  ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
   :bind
   (([remap Info-search] . consult-info)
    ([remap switch-to-buffer] . consult-buffer)
@@ -456,17 +437,25 @@
    :map minibuffer-local-map
    ([remap next-matching-history-element] . consult-history)
    ([remap previous-matching-history-element] . consult-history))
+  :init
+  ;; Tweak the register preview for `consult-register-load',
+  ;; `consult-register-store' and the built-in commands.  This improves the
+  ;; register formatting, adds thin separator lines, register sorting and hides
+  ;; the window mode line.
+  (advice-add 'register-preview :override #'consult-register-window)
+  (setq register-preview-delay 0.5)
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
   :config
   ;; The configuration values are evaluated at runtime, just before the
   ;; completion session is started. Therefore you can use for example
   ;; `thing-at-point' to adjust the initial input or the future history.
-  (consult-customize
-   consult-line
-   :add-history (seq-some 'thing-at-point '(region symbol)))
+  (consult-customize consult-line
+                     :add-history (seq-some 'thing-at-point '(region symbol)))
   (defalias 'consult-line-thing-at-point 'consult-line)
-  (consult-customize
-   consult-line-thing-at-point
-   :initial (thing-at-point 'symbol)))
+  (consult-customize consult-line-thing-at-point
+                     :initial (thing-at-point 'symbol)))
 
 (use-package embark
   :bind
@@ -514,12 +503,6 @@
   (when (bound-and-true-p evil-mode)
     (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
 
-;; NOTE: Make sure to configure a GitHub token before using this package!
-;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
-;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
-;; (use-package forge
-;;   :after magit)
-
 
 ;; Treesitter
 
@@ -528,18 +511,6 @@
         (sh-mode . bash-ts-mode)
         (yaml-mode . yaml-ts-mode)))
 
-;; (use-package evil-textobj-tree-sitter
-;;   :config
-;;   ;; bind `function.outer` (entire function block) to `f` (e.g. `vaf`, `yaf`()
-;;   (define-key evil-outer-text-objects-map "f"
-;;               (evil-textobj-tree-sitter-get-textobj "function.outer"))
-;;   ;; bind `function.inner` (function block without name and args) to `f` (e.g. `vif`, `yif`)
-;;   (define-key evil-inner-text-objects-map "f"
-;;               (evil-textobj-tree-sitter-get-textobj "function.inner"))
-;;   ;; You can also bind multiple items and we will match the first one we can find
-;;   (define-key evil-outer-text-objects-map "a"
-;;               (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer"))))
-
 
 ;; LSP
 
@@ -547,6 +518,7 @@
   :ensure nil
   :no-require t
   :hook ((python-base-mode sh-base-mode LaTeX-mode) . eglot-ensure)
+  :bind (:map my-personal-map ("rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
@@ -559,12 +531,13 @@
      ;; :colorProvider
      :foldingRangeProvider
      :executeCommandProvider))
-  :bind (:map my-personal-map ("rn" . eglot-rename))
+  ;; :preface
+  ;; (defun my/eglot-mode-hook ()
+  ;;   (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
+  ;;   (flymake-mode 1))
   ;; :init
   ;; (setq eglot-stay-out-of '(flymake))
-  ;; (add-hook 'eglot-managed-mode-hook
-  ;;           (lambda () (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)))
-  ;; (add-hook 'eglot-managed-mode-hook #'flymake-mode)
+  ;; (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
   :config
   (add-to-list 'eglot-server-programs
                `(python-base-mode . ("pyright-langserver" "--stdio"))))
@@ -575,12 +548,15 @@
 (use-package prog-mode
   :ensure nil
   :no-require t
+  :preface
+  (defun my/prog-mode-hook ()
+    (electric-pair-mode 1)
+    (hs-minor-mode 1)
+    (setq show-trailing-whitespace t)
+    ;; (modify-syntax-entry ?- "w")
+    (modify-syntax-entry ?_ "w"))
   :init
-  (add-hook 'prog-mode-hook #'electric-pair-mode)
-  (add-hook 'prog-mode-hook #'hs-minor-mode)
-  (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
-  ;; (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?- "w")))
-  (add-hook 'prog-mode-hook (lambda () (modify-syntax-entry ?_ "w"))))
+  (add-hook 'prog-mode-hook #'my/prog-mode-hook))
 
 (use-package outline-indent
   :hook ((conf-mode yaml-ts-mode python-base-mode) . outline-indent-minor-mode)
@@ -601,8 +577,9 @@
   ;; (indent-bars-no-descend-lists t)  ;; no extra bars in continued func arg lists
   (indent-bars-treesit-support t)
   ;; (indent-bars-treesit-scope
-  ;;  '((python function_definition class_definition for_statement
-  ;;            if_statement with_statement while_statement)))
+  ;;  '((python
+  ;;     function_definition class_definition
+  ;;     for_statement if_statement with_statement while_statement)))
   (indent-bars-prefer-character t)
   (indent-bars-color '(highlight :face default :blend 0.2))
   (indent-bars-zigzag nil)
@@ -625,8 +602,7 @@
 (use-package flyspell
   :ensure nil
   :no-require t
-  :hook
-  (text-mode . flyspell-mode)
+  :hook (text-mode . flyspell-mode)
   ;; (prog-mode . flyspell-prog-mode)
   :config (require 'ispell))
 
@@ -660,14 +636,14 @@
 (use-package flymake-ruff
   :hook (python-base-mode . flymake-ruff-load)
   :custom (python-flymake-command python-check-command)
-  :init
-  (add-hook 'eglot-managed-mode-hook
-            (lambda () (when (derived-mode-p 'python-base-mode)
-              (add-hook 'flymake-diagnostic-functions #'python-flymake nil t)
-              (add-hook 'flymake-diagnostic-functions #'flymake-ruff--run-checker nil t)))))
+  :preface
+  (defun my/eglot-python-flymake-hook ()
+    (when (derived-mode-p 'python-base-mode)
+      (add-hook 'flymake-diagnostic-functions #'python-flymake nil t)
+      (add-hook 'flymake-diagnostic-functions #'flymake-ruff--run-checker nil t)))
+  :init (add-hook 'eglot-managed-mode-hook #'my/eglot-python-flymake-hook))
 
 (use-package conda
-  :hook (find-file . my/conda-env-activate-for-buffer)
   :preface
   (defun my/conda-env-activate-for-buffer ()
     (when (and (derived-mode-p 'python-base-mode)
@@ -678,6 +654,7 @@
                                   (bound-and-true-p conda-env-current-path))))
       ;; (conda-mode-line-setup)
       (conda-env-activate-for-buffer)))
+  :init (add-hook 'find-file-hook #'my/conda-env-activate-for-buffer)
   ;; :config
   ;; (conda-env-initialize-interactive-shells)
   ;; (conda-env-initialize-eshell)
@@ -715,12 +692,14 @@
   (preview-preserve-counters t)
   (preview-scale-function 1.75)
   (preview-image-type 'dvisvgm)
+  :preface
+  (defun my/LaTeX-mode-hook ()
+    (outline-minor-mode 1)
+    (LaTeX-math-mode 1)
+    (turn-on-reftex)
+    (TeX-PDF-mode -1))
   :init
-  (add-hook 'LaTeX-mode-hook #'outline-minor-mode)
-  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook #'turn-on-reftex)
-  (add-hook 'LaTeX-mode-hook #'LaTeX-math-mode)
-  (add-hook 'LaTeX-mode-hook (lambda () (TeX-PDF-mode -1)))
+  (add-hook 'LaTeX-mode-hook #'my/LaTeX-mode-hook)
   (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
 
 (use-package preview-dvisvgm
@@ -732,8 +711,10 @@
 (use-package org
   :ensure preview-dvisvgm
   :no-require t
-  ;; :mode "\\.org$"
-  ;; :mode (("\\.org$" . org-mode))
+  :bind
+  (:map my-personal-map
+        ("C-x m" . #'my/org-toggle-emphasis-marker-display)
+        ("C-x l" . #'org-toggle-link-display))
   :preface
   (defun my/org-toggle-emphasis-marker-display ()
     "Toggle emphasis marker visibility"
@@ -741,32 +722,41 @@
     (setq org-hide-emphasis-markers (not org-hide-emphasis-markers))
     (font-lock-update))
   (defun my/org-latex-preview-buffer ()
-    (org-latex-preview '(16)))
-  :bind
-  (:map my-personal-map
-        ("C-x m" . #'my/org-toggle-emphasis-marker-display)
-        ("C-x l" . #'org-toggle-link-display))
+    (when (derived-mode-p 'org-mode)
+      (org-latex-preview '(16))))
+  (defun my/org-apply-tweaks ()
+    (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.7))
+    (set-face-attribute 'org-headline-done nil
+                        :strike-through t
+                        :family (face-attribute 'variable-pitch :family))
+    (set-face-attribute 'org-checkbox nil :bold t)
+    (dolist (face '(org-table
+                    org-todo
+                    org-done
+                    org-checkbox))
+      (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family))))
+  (defun my/org-mode-hook ()
+    (variable-pitch-mode 1)
+    (auto-fill-mode 1)
+    (org-indent-mode 1)
+    (my/org-apply-tweaks)
+    (add-hook 'modus-themes-after-load-theme-hook #'my/org-apply-tweaks nil t)
+    (dolist (hook '(modus-themes-after-load-theme-hook
+                    after-save-hook
+                    find-file-hook))
+      (add-hook hook #'my/org-latex-preview-buffer nil t))
+    ;; (add-hook 'modus-themes-after-load-theme-hook #'my/org-latex-preview-buffer nil t)
+    ;; (add-hook 'after-save-hook #'my/org-latex-preview-buffer nil t)
+    ;; (add-hook 'find-file-hook #'my/org-latex-preview-buffer nil t)
+    )
   :custom
+  (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP")))
   (org-hide-emphasis-markers t)
   (org-latex-create-formula-image-program 'dvisvgm)
-  (org-startup-with-latex-preview t)
+  ;; (org-startup-with-latex-preview t)
   :init
-  (add-hook 'org-mode-hook #'variable-pitch-mode)
-  (add-hook 'org-mode-hook #'auto-fill-mode)
-  (add-hook 'org-mode-hook
-            (lambda () (add-hook 'after-save-hook #'my/org-latex-preview-buffer
-                                 nil t)))
-  :config
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.7))
-  (set-face-attribute 'org-headline-done nil
-                      :strike-through t
-                      :family (face-attribute 'variable-pitch :family))
-  (set-face-attribute 'org-checkbox nil :bold t)
-  (dolist (face '(org-table
-                  org-todo
-                  org-done
-                  org-checkbox))
-    (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family))))
+  ;; (with-eval-after-load 'org (org-latex-preview '(16)))
+  (add-hook 'org-mode-hook #'my/org-mode-hook))
 
 
 ;; Startup time
