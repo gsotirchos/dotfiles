@@ -256,13 +256,12 @@
   (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
   :config (modus-themes-load-theme 'modus-operandi))
 
-(when (eq system-type 'darwin)
-  (use-package ns-auto-titlebar
-    :init (ns-auto-titlebar-mode)))
+(use-package ns-auto-titlebar
+  :if (eq system-type 'darwin)
+  :init (ns-auto-titlebar-mode))
 
 (use-package tab-bar-mode
   :ensure nil
-  :no-require t
   :custom
   (tab-bar-show 1)
   (tab-bar-format '(tab-bar-format-tabs tab-bar-format-align-right tab-bar-format-global))
@@ -292,7 +291,6 @@
 
 (use-package dired
   :ensure nil
-  :no-require t
   ;; :bind (:map dired-mode-map ("b" . dired-up-directory))
   :custom
   (dired-listing-switches "-alv --group-directories-first")
@@ -306,8 +304,7 @@
   (defun my/dired-mode-hook ()
     (dired-hide-details-mode 1)
     (hl-line-mode 1))
-  :init
-  (add-hook 'dired-mode-hook #'my/dired-mode-hook))
+  :init (add-hook 'dired-mode-hook #'my/dired-mode-hook))
 
 (use-package undo-tree
   :hook after-init
@@ -538,16 +535,14 @@
   ;; :init
   ;; (setq eglot-stay-out-of '(flymake))
   ;; (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
-  :config
-  (add-to-list 'eglot-server-programs
-               `(python-base-mode . ("pyright-langserver" "--stdio"))))
+  :config (add-to-list 'eglot-server-programs
+                       `(python-base-mode . ("pyright-langserver" "--stdio"))))
 
 
 ;; Programming
 
 (use-package prog-mode
   :ensure nil
-  :no-require t
   :preface
   (defun my/prog-mode-hook ()
     (electric-pair-mode 1)
@@ -555,8 +550,7 @@
     (setq show-trailing-whitespace t)
     ;; (modify-syntax-entry ?- "w")
     (modify-syntax-entry ?_ "w"))
-  :init
-  (add-hook 'prog-mode-hook #'my/prog-mode-hook))
+  :init (add-hook 'prog-mode-hook #'my/prog-mode-hook))
 
 (use-package outline-indent
   :hook ((conf-mode yaml-ts-mode python-base-mode) . outline-indent-minor-mode)
@@ -590,7 +584,6 @@
 
 (use-package flymake
   :ensure nil
-  :no-require t
   :hook prog-mode
   :bind (:map my-personal-map ("M-f" . flymake-show-buffer-diagnostics))
   :custom
@@ -608,7 +601,6 @@
 
 (use-package ispell
   :ensure nil
-  :no-require t
   :custom
   (ispell-program-name "aspell")
   (ispell-local-dictionary-alist
@@ -621,7 +613,6 @@
 
 (use-package emacs-lisp-mode
   :ensure nil
-  :no-require t
   :bind (:map my-personal-map ("(" . #'check-parens))
   :custom (evil-shift-width 2))
 
@@ -629,9 +620,7 @@
 ;; Python
 
 (use-package python
-  :no-require t
-  :custom
-  (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")))
+  :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")))
 
 (use-package flymake-ruff
   :hook (python-base-mode . flymake-ruff-load)
@@ -681,7 +670,6 @@
 
 (use-package auctex
   :ensure nil
-  :no-require t
   :custom
   (preview-auto-cache-preamble t)
   (TeX-auto-save t)
@@ -710,7 +698,6 @@
 
 (use-package org
   :ensure preview-dvisvgm
-  :no-require t
   :bind
   (:map my-personal-map
         ("C-x m" . #'my/org-toggle-emphasis-marker-display)
