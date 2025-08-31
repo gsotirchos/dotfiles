@@ -5,9 +5,12 @@
 
 ;; Fonts
 (when (eq system-type 'darwin)
-  (set-face-attribute 'default nil :family "Menlo" :height 140))
+  (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 140)
+  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 160))
 (when (eq system-type 'gnu/linux)
-  (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150))
+  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 150)
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 160))
+(copy-face 'fixed-pitch 'default)
 
 
 ;; Basic keybindings
@@ -49,6 +52,8 @@
            ("A-<right>" . right-word)
            ("A-<left>" . left-word)
            ("C-M-f" . toggle-frame-fullscreen)
+           ("M-u" . universal-argument)
+           ("M-c" . kill-ring-save)
            ("M-<escape>" . next-window-any-frame)
            ("M-~" . previous-window-any-frame)
            ("M-n" . make-frame)
@@ -84,13 +89,12 @@
 
 (defvar-keymap my-personal-map
   :doc "My prefix map."
-  "C-f" 'flymake-show-buffer-diagnostics
-  "m" 'magit
   "f" `("prefix files" . ,my-file-commands-map)
   "d" `("prefix desktop" . ,my-desktop-commands-map))
 
 (defvar my/prefix "C-c")
 (keymap-set global-map my/prefix my-personal-map)
+(keymap-set help-map "=" 'describe-char)
 
 
 ;; Set defaults
@@ -121,7 +125,8 @@
               hscroll-margin 0
               scroll-step 1
               hscroll-step 1
-              indent-tabs-mode nil)
+              indent-tabs-mode nil
+              treemacs-no-png-images t)
 
 (unless (and (eq system-type 'darwin)
              (display-graphic-p))
@@ -129,6 +134,7 @@
   ;; (setq visible-bell t)
   (menu-bar-mode 0))
 (set-fringe-mode 16)
+(set-fill-column 79)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
 (global-visual-line-mode 0)
@@ -226,6 +232,7 @@
   (defun my/set-gray-fringe-face ()
     (set-face-attribute 'fringe nil :foreground "gray"))
   :custom
+  (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
   (modus-themes-common-palette-overrides
@@ -294,15 +301,6 @@
 ;;   ;; needs: M-x all-the-icons-install-fonts
 ;;   :if (display-graphic-p))
 
-(use-package treemacs
-  :ensure nil
-  :no-require t
-  :custom
-  ;; (use-package treemacs-nerd-icons
-  ;;   :after treemacs
-  ;;   :init (treemacs-load-theme "nerd-icons"))
-  (treemacs-no-png-images t))
-
 (use-package dired
   :ensure nil
   :no-require t
@@ -348,6 +346,7 @@
   (evil-mode 1)
   (evil-set-initial-state 'prog-mode 'normal)
   (global-set-key [remap evil-visual-block] #'scroll-up-command)
+  (global-set-key [remap kill-ring-save] #'evil-yank)
   (global-set-key [remap my/quit] #'evil-quit)
   (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
   (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
@@ -395,8 +394,10 @@
 
 (use-package vertico
   :custom
-  (vertico-count 10)  ;; limit to a fixed size
-  (vertico-cycle t)  ;; limit to a fixed size
+  (vertico-scroll-margin 1)
+  (vertico-count 10)  ;; Limit to a fixed size
+  (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
+  (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
   :init (vertico-mode))
 
 (use-package vertico-directory
@@ -499,8 +500,19 @@
   :init (which-key-mode))
 
 (use-package magit
-  :bind (:map magit-status-mode-map ("<tab>" . magit-section-toggle))
-  :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+  :bind
+  (:map my-personal-map
+   ("m" . magit)
+   :map magit-mode-map
+   ("M-n" . nil)
+   ("M-w" . nil)
+   :map magit-section-mode-map
+   ("<tab>" . magit-section-toggle)
+   ("C-<tab>" . nil))
+  :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  :config
+  (when (bound-and-true-p evil-mode)
+    (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
 
 ;; NOTE: Make sure to configure a GitHub token before using this package!
 ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
@@ -551,8 +563,7 @@
   ;; :init
   ;; (setq eglot-stay-out-of '(flymake))
   ;; (add-hook 'eglot-managed-mode-hook
-  ;;           (lambda () (add-hook 'flymake-diagnostic-functions
-  ;;                                #'eglot-flymake-backend nil t)))
+  ;;           (lambda () (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)))
   ;; (add-hook 'eglot-managed-mode-hook #'flymake-mode)
   :config
   (add-to-list 'eglot-server-programs
@@ -604,11 +615,11 @@
   :ensure nil
   :no-require t
   :hook prog-mode
+  :bind (:map my-personal-map ("M-f" . flymake-show-buffer-diagnostics))
   :custom
   (flymake-no-changes-timeout 1)
   (flymake-show-diagnostics-at-end-of-line t)
-  ;; :init
-  ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
+  ;; :init (add-hook 'sh-base-mode-hook #'flymake-mode-off)
   )
 
 (use-package flyspell
@@ -714,6 +725,49 @@
 
 (use-package preview-dvisvgm
   :after preview-latex)
+
+
+;; Org
+
+(use-package org
+  :ensure preview-dvisvgm
+  :no-require t
+  ;; :mode "\\.org$"
+  ;; :mode (("\\.org$" . org-mode))
+  :preface
+  (defun my/org-toggle-emphasis-marker-display ()
+    "Toggle emphasis marker visibility"
+    (interactive)
+    (setq org-hide-emphasis-markers (not org-hide-emphasis-markers))
+    (font-lock-update))
+  (defun my/org-latex-preview-buffer ()
+    (org-latex-preview '(16)))
+  :bind
+  (:map my-personal-map
+        ("C-x m" . #'my/org-toggle-emphasis-marker-display)
+        ("C-x l" . #'org-toggle-link-display))
+  :custom
+  (org-hide-emphasis-markers t)
+  (org-latex-create-formula-image-program 'dvisvgm)
+  (org-startup-with-latex-preview t)
+  :init
+  (add-hook 'org-mode-hook #'variable-pitch-mode)
+  (add-hook 'org-mode-hook #'auto-fill-mode)
+  (add-hook 'org-mode-hook
+            (lambda () (add-hook 'after-save-hook #'my/org-latex-preview-buffer
+                                 nil t)))
+  :config
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.7))
+  (set-face-attribute 'org-headline-done nil
+                      :strike-through t
+                      :family (face-attribute 'variable-pitch :family))
+  (set-face-attribute 'org-checkbox nil :bold t)
+  (dolist (face '(org-table
+                  org-todo
+                  org-done
+                  org-checkbox))
+    (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family))))
+
 
 ;; Startup time
 (defun my/display-startup-stats ()
