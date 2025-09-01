@@ -738,7 +738,8 @@
     "Toggle emphasis marker visibility"
     (interactive)
     (setq org-hide-emphasis-markers (not org-hide-emphasis-markers))
-    (font-lock-update))
+    (font-lock-update)
+    (message "Emphasis markers are now %s." (if org-hide-emphasis-markers "hidden" "visible")))
   (defun my/org-latex-preview-buffer ()
     (when (derived-mode-p 'org-mode)
       (org-latex-preview '(16))))
