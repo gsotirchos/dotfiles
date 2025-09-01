@@ -720,6 +720,7 @@
   :ensure nil
   :bind
   (:map my-personal-map
+        ("a" . org-agenda)
         ("C-x m" . #'my/org-toggle-emphasis-marker-display)
         ("C-x l" . #'org-toggle-link-display))
   :custom
