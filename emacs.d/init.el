@@ -6,10 +6,10 @@
 ;; Fonts
 (when (eq system-type 'darwin)
   (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 160))
+  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150))
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 150)
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 160))
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 150))
 (copy-face 'fixed-pitch 'default)
 
 
@@ -144,12 +144,13 @@
 (pixel-scroll-precision-mode 1)  ;; )
 
 ;; Frame parameters to ignore when saving/loading desktop sessions
-(dolist (filter '(foreground-color
-                  background-color
-                  font
-                  cursor-color
-                  background-mode
-                  ns-appearance))
+(dolist (filter
+         '(foreground-color
+           background-color
+           font
+           cursor-color
+           background-mode
+           ns-appearance))
   (add-to-list 'frameset-filter-alist (cons filter :never)))
 
 
@@ -234,6 +235,16 @@
      (bg-tab-current bg-main)
      (bg-tab-other bg-inactive)
      (bg-tab-bar bg-dim)
+     (fg-heading-1 fg-main)
+     (fg-heading-2 fg-main)
+     (fg-heading-3 fg-main)
+     (fg-heading-4 fg-main)
+     (fg-heading-5 fg-main)
+     (fg-heading-6 fg-main)
+     (fg-heading-7 fg-main)
+     (fg-heading-8 fg-main)
+     (prose-done fg-dim)
+     (prose-todo yellow-warmer)
      (comment green)
      (docstring green-faint)
      (string red-faint)
@@ -243,6 +254,15 @@
      (type magenta-cooler)
      (fnname blue-faint)
      (variable cyan)))
+  (modus-themes-headings
+   '((1 . (1.35))
+     (2 . (1.30))
+     (3 . (1.25))
+     (4 . (1.20))
+     (5 . (1.15))
+     (6 . (1.10))
+     (7 . (1.05))
+     (8 . (1.0))))
   :preface
   (defun my/apply-theme (appearance)
     (mapc 'disable-theme custom-enabled-themes)
@@ -697,7 +717,7 @@
 ;; Org
 
 (use-package org
-  :ensure preview-dvisvgm
+  :ensure nil
   :bind
   (:map my-personal-map
         ("C-x m" . #'my/org-toggle-emphasis-marker-display)
@@ -712,33 +732,33 @@
     (when (derived-mode-p 'org-mode)
       (org-latex-preview '(16))))
   (defun my/org-apply-tweaks ()
-    (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.7))
-    (set-face-attribute 'org-headline-done nil
-                        :strike-through t
-                        :family (face-attribute 'variable-pitch :family))
-    (set-face-attribute 'org-checkbox nil :bold t)
-    (dolist (face '(org-table
-                    org-todo
-                    org-done
-                    org-checkbox))
+    (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.65))
+    (set-face-attribute 'org-headline-done nil :strike-through t)
+    (set-face-attribute 'org-checkbox nil :bold t :foreground (modus-themes-get-color-value 'cyan-faint))
+    (dolist (face
+             '(org-table
+               org-todo
+               org-done
+               org-checkbox))
       (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family))))
   (defun my/org-mode-hook ()
     (variable-pitch-mode 1)
-    (auto-fill-mode 1)
+    ;; (auto-fill-mode 1)
     (org-indent-mode 1)
     (my/org-apply-tweaks)
-    (add-hook 'modus-themes-after-load-theme-hook #'my/org-apply-tweaks nil t)
-    (dolist (hook '(modus-themes-after-load-theme-hook
-                    after-save-hook
-                    find-file-hook))
+    (add-hook 'modus-themes-after-load-theme-hook #'my/org-apply-tweaks)
+    (dolist (hook
+             '(modus-themes-after-load-theme-hook
+               after-save-hook
+               find-file-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   :custom
   (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP")))
   (org-hide-emphasis-markers t)
   (org-latex-create-formula-image-program 'dvisvgm)
   ;; (org-startup-with-latex-preview t)
+  (org-startup-with-inline-images t)
   :init
-  ;; (with-eval-after-load 'org (org-latex-preview '(16)))
   (add-hook 'org-mode-hook #'my/org-mode-hook))
 
 
