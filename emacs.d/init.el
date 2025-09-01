@@ -724,6 +724,7 @@
         ("C-x m" . #'my/org-toggle-emphasis-marker-display)
         ("C-x l" . #'org-toggle-link-display))
   :custom
+  (truncate-lines nil)
   ;; (org-element-use-cache nil)
   (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
   (org-agenda-files '("~/Documents/org" "~/Desktop"))
