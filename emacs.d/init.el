@@ -722,6 +722,15 @@
   (:map my-personal-map
         ("C-x m" . #'my/org-toggle-emphasis-marker-display)
         ("C-x l" . #'org-toggle-link-display))
+  :custom
+  ;; (org-element-use-cache nil)
+  (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
+  (org-agenda-files '("~/Documents/org" "~/Desktop"))
+  (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP")))
+  (org-hide-emphasis-markers t)
+  (org-latex-create-formula-image-program 'dvisvgm)
+  ;; (org-startup-with-latex-preview t)
+  (org-startup-with-inline-images t)
   :preface
   (defun my/org-toggle-emphasis-marker-display ()
     "Toggle emphasis marker visibility"
@@ -734,7 +743,8 @@
   (defun my/org-apply-tweaks ()
     (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.65))
     (set-face-attribute 'org-headline-done nil :strike-through t)
-    (set-face-attribute 'org-checkbox nil :bold t :foreground (modus-themes-get-color-value 'cyan-faint))
+    (let ((fg-color (modus-themes-get-color-value 'cyan-faint)))
+      (set-face-attribute 'org-checkbox nil :bold t :foreground fg-color))
     (dolist (face
              '(org-table
                org-todo
@@ -752,12 +762,6 @@
                after-save-hook
                find-file-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
-  :custom
-  (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP")))
-  (org-hide-emphasis-markers t)
-  (org-latex-create-formula-image-program 'dvisvgm)
-  ;; (org-startup-with-latex-preview t)
-  (org-startup-with-inline-images t)
   :init
   (add-hook 'org-mode-hook #'my/org-mode-hook))
 
