@@ -5,13 +5,12 @@
 
 ;; Fonts
 (when (eq system-type 'darwin)
-  (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 140)
+  (set-face-attribute 'default nil :family "Menlo" :height 140)
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150))
 (when (eq system-type 'gnu/linux)
-  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 150)
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 150))
-(copy-face 'fixed-pitch 'default)
-
+  (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150)
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140))
+(copy-face 'default 'fixed-pitch)
 
 ;; Basic keybindings
 (defun my/delete-back-to-indentation ()
@@ -759,6 +758,7 @@
                org-checkbox))
       (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family))))
   (defun my/org-mode-hook ()
+    (setq-local line-spacing 2)
     (variable-pitch-mode 1)
     ;; (auto-fill-mode 1)
     (my/org-apply-tweaks)
