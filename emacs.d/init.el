@@ -9,7 +9,7 @@
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150))
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150)
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140))
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 130))
 (copy-face 'default 'fixed-pitch)
 
 ;; Basic keybindings
@@ -726,8 +726,8 @@
   ;; (org-element-use-cache nil)
   ;; (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
-  (org-startup-folded 'content)
   (org-startup-truncated nil)
+  (org-startup-folded 'content)
   (org-startup-indented t)
   ;; (org-indent-mode-turns-on-hiding-stars nil)
   (org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
@@ -769,8 +769,7 @@
                after-save-hook
                find-file-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
-  :init
-  (add-hook 'org-mode-hook #'my/org-mode-hook))
+  :init (add-hook 'org-mode-hook #'my/org-mode-hook))
 
 
 ;; Startup time
