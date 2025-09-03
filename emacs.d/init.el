@@ -9,7 +9,7 @@
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150))
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150)
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 130))
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140))
 (copy-face 'default 'fixed-pitch)
 
 ;; Basic keybindings
