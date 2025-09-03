@@ -6,10 +6,16 @@
 ;; Fonts
 (when (eq system-type 'darwin)
   (set-face-attribute 'default nil :family "Menlo" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150))
+  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150)
+  (defconst variable-pitch-line-spacing 2))
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150)
+<<<<<<< HEAD
   (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140))
+=======
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 130)
+  (defconst variable-pitch-line-spacing 4))
+>>>>>>> refs/remotes/origin/master
 (copy-face 'default 'fixed-pitch)
 
 ;; Basic keybindings
@@ -723,7 +729,6 @@
         ("C-x m" . #'my/org-toggle-emphasis-marker-display)
         ("C-x l" . #'org-toggle-link-display))
   :custom
-  ;; (org-element-use-cache nil)
   ;; (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
   (org-startup-truncated nil)
@@ -759,7 +764,8 @@
                org-checkbox))
       (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family))))
   (defun my/org-mode-hook ()
-    (setq-local line-spacing 4)
+    (when (boundp 'variable-pitch-line-spacing)
+      (setq-local line-spacing variable-pitch-line-spacing))
     (variable-pitch-mode 1)
     ;; (auto-fill-mode 1)
     (my/org-apply-tweaks)
