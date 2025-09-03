@@ -10,12 +10,8 @@
   (defconst variable-pitch-line-spacing 2))
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 150)
-<<<<<<< HEAD
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140))
-=======
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 130)
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140)
   (defconst variable-pitch-line-spacing 4))
->>>>>>> refs/remotes/origin/master
 (copy-face 'default 'fixed-pitch)
 
 ;; Basic keybindings
