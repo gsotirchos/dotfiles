@@ -473,7 +473,8 @@
                      :add-history (seq-some 'thing-at-point '(region symbol)))
   (defalias 'consult-line-thing-at-point 'consult-line)
   (consult-customize consult-line-thing-at-point
-                     :initial (thing-at-point 'symbol)))
+                     :initial (thing-at-point 'symbol))
+  (add-to-list 'consult-preview-allowed-hooks #'my/org-mode-hook))
 
 (use-package embark
   :bind
@@ -740,36 +741,41 @@
   (org-latex-create-formula-image-program 'dvisvgm)
   :preface
   (defun my/org-toggle-emphasis-marker-display ()
-    "Toggle emphasis marker visibility"
+    "Toggle emphasis marker visibility."
     (interactive)
     (setq org-hide-emphasis-markers (not org-hide-emphasis-markers))
     (font-lock-update)
     (message "Emphasis markers are now %s." (if org-hide-emphasis-markers "hidden" "visible")))
   (defun my/org-latex-preview-buffer ()
-    (when (derived-mode-p 'org-mode)
-      (org-latex-preview '(16))))
-  (defun my/org-apply-tweaks ()
-    (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.65))
+    "Prevew all LaTeX fragments in buffer."
+    (interactive)
+    (org-latex-preview '(16)))
+  (defun my/org-apply-theme-tweaks ()
+    "Apply my tweaks to theme-controlled settings."
+    (interactive)
     (set-face-attribute 'org-headline-done nil :strike-through t)
-    (let ((fg-color (modus-themes-get-color-value 'cyan-faint)))
-      (set-face-attribute 'org-checkbox nil :bold t :foreground fg-color))
+    (set-face-attribute 'org-checkbox nil :bold t)
+    (let ((bg-color (modus-themes-get-color-value 'bg-yellow-subtle)))
+      (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
     (dolist (face
              '(org-table
                org-todo
                org-done
                org-checkbox))
-      (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family))))
+      (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family)))
+    (font-lock-update))
   (defun my/org-mode-hook ()
+    ;; (auto-fill-mode 1)
+    (variable-pitch-mode 1)
     (when (boundp 'variable-pitch-line-spacing)
       (setq-local line-spacing variable-pitch-line-spacing))
-    (variable-pitch-mode 1)
-    ;; (auto-fill-mode 1)
-    (my/org-apply-tweaks)
-    (add-hook 'modus-themes-after-load-theme-hook #'my/org-apply-tweaks)
+    (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.65))
+    (my/org-apply-theme-tweaks)
+    (add-hook 'modus-themes-after-load-theme-hook #'my/org-apply-theme-tweaks nil t)
     (dolist (hook
              '(modus-themes-after-load-theme-hook
-               after-save-hook
-               find-file-hook))
+               find-file-hook
+               after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   :init (add-hook 'org-mode-hook #'my/org-mode-hook))
 
