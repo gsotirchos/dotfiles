@@ -582,11 +582,37 @@
   ;; (outline-indent-ellipsis " ▼")
   :init (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1))))
 
-(use-package rainbow-mode
-  :defer t)
+(use-package rainbow-mode)
 
 (use-package rainbow-delimiters
-  :hook prog-mode)
+  :hook prog-mode
+  :preface
+  (defun my/customize-rainbow-delimiters ()
+    (seq-mapn
+     (lambda (face color)
+       (set-face-attribute face nil :foreground (modus-themes-get-color-value color)))
+     '(rainbow-delimiters-depth-1-face
+       rainbow-delimiters-depth-2-face
+       rainbow-delimiters-depth-3-face
+       rainbow-delimiters-depth-4-face
+       rainbow-delimiters-depth-5-face
+       rainbow-delimiters-depth-6-face
+       rainbow-delimiters-depth-7-face
+       rainbow-delimiters-depth-8-face
+       rainbow-delimiters-depth-9-face
+       )
+     '(fg-dim
+       magenta-faint
+       cyan-faint
+       red-faint
+       yellow-faint
+       blue-faint
+       green-faint
+       fg-main
+       fg-main
+       )))
+  :init (add-hook 'modus-themes-after-load-theme-hook #'my/customize-rainbow-delimiters)
+  :config (my/customize-rainbow-delimiters))
 
 (use-package indent-bars
   :hook (prog-mode yaml-ts-mode)
