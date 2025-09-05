@@ -272,7 +272,8 @@
       ('light (modus-themes-load-theme 'modus-operandi))
       ('dark (modus-themes-load-theme 'modus-vivendi-tinted))))
   (defun my/set-gray-fringe-face ()
-    (set-face-attribute 'fringe nil :foreground "gray"))
+    (let ((fg-color (modus-themes-get-color-value 'fg-dim)))
+      (set-face-attribute 'fringe nil :foreground fg-color)))
   :init
   (add-hook 'modus-themes-after-load-theme-hook #'my/set-gray-fringe-face)
   (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
