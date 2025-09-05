@@ -91,7 +91,8 @@
 (defvar-keymap my-personal-map
   :doc "My prefix map."
   "f" `("prefix files" . ,my-file-commands-map)
-  "d" `("prefix desktop" . ,my-desktop-commands-map))
+  "d" `("prefix desktop" . ,my-desktop-commands-map)
+  "w" '("show whitespace" . whitespace-mode))
 
 (defvar my/prefix "C-c")
 (keymap-set global-map my/prefix my-personal-map)
@@ -312,7 +313,7 @@
 
 (use-package dired
   :ensure nil
-  ;; :bind (:map dired-mode-map ("b" . dired-up-directory))
+  :bind (:map dired-mode-map ("b" . dired-up-directory))
   :custom
   (dired-listing-switches "-alv --group-directories-first")
   (dired-omit-files "^\\.[^.].*")
@@ -537,7 +538,7 @@
   :ensure nil
   :no-require t
   :hook ((python-base-mode sh-base-mode LaTeX-mode) . eglot-ensure)
-  :bind (:map my-personal-map ("rn" . eglot-rename))
+  :bind (:map eglot-mode-map ("C-c rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
@@ -607,7 +608,7 @@
 (use-package flymake
   :ensure nil
   :hook prog-mode
-  :bind (:map my-personal-map ("M-f" . flymake-show-buffer-diagnostics))
+  :bind (:map flymake-mode-map ("C-c M-f" . flymake-show-buffer-diagnostics))
   :custom
   (flymake-no-changes-timeout 1)
   (flymake-show-diagnostics-at-end-of-line t)
@@ -721,10 +722,10 @@
 (use-package org
   :ensure nil
   :bind
-  (:map my-personal-map
-        ("a" . org-agenda)
-        ("C-x m" . #'my/org-toggle-emphasis-marker-display)
-        ("C-x l" . #'org-toggle-link-display))
+  (:map org-mode-map
+        ("C-c a" . org-agenda)
+        ("C-c C-x m" . #'my/org-toggle-emphasis-marker-display)
+        ("C-c C-x l" . #'org-toggle-link-display))
   :custom
   ;; (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
