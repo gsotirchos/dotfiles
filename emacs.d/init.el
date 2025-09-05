@@ -606,10 +606,10 @@
        cyan-faint
        red-faint
        yellow-faint
-       blue-faint
+       indigo
        green-faint
-       fg-main
-       fg-main
+       blue-faint
+       rust
        )))
   :init (add-hook 'modus-themes-after-load-theme-hook #'my/customize-rainbow-delimiters)
   :config (my/customize-rainbow-delimiters))
