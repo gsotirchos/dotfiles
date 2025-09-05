@@ -797,7 +797,6 @@
     (variable-pitch-mode 1)
     (when (boundp 'variable-pitch-line-spacing)
       (setq-local line-spacing variable-pitch-line-spacing))
-    (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.65))
     (my/org-apply-theme-tweaks)
     (add-hook 'modus-themes-after-load-theme-hook #'my/org-apply-theme-tweaks nil t)
     (dolist (hook
@@ -805,7 +804,8 @@
                find-file-hook
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
-  :init (add-hook 'org-mode-hook #'my/org-mode-hook))
+  :init (add-hook 'org-mode-hook #'my/org-mode-hook)
+  :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.65)))
 
 
 ;; Startup time
