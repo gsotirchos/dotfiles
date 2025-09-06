@@ -226,6 +226,7 @@
 
 
 (use-package modus-themes
+  :demand t
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
@@ -267,7 +268,7 @@
      (6 . (1.0))
      (7 . (1.0))
      (8 . (1.0))))
-  (org-todo-keyword-faces '(("WIP" . (:inherit (modus-themes-fg-magenta-warmer)))))
+  (org-todo-keyword-faces '(("WIP" . (:inherit (modus-themes-fg-red)))))
   :preface
   (defun my/apply-theme (appearance)
     (mapc 'disable-theme custom-enabled-themes)
@@ -285,7 +286,10 @@
         (set-face-attribute face nil :family family :box box))))
   :init
   (add-hook 'modus-themes-after-load-theme-hook #'my/customize-modus-themes)
-  (load-theme 'modus-operandi)
+  (let ((theme 'modus-operandi))
+    (if (fboundp 'modus-themes-load-theme)
+        (modus-themes-load-theme theme)
+      (load-theme theme)))
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
 
@@ -696,8 +700,8 @@
                         :background (modus-themes-get-color-value 'bg-red-nuanced)
                         :inherit 'flymake-end-of-line-diagnostics-face))
   (defun my/flymake-hook ()
-    (my/customize-flymake)
     (when (fboundp 'modus-themes-load-theme)
+      (my/customize-flymake)
       (add-hook 'modus-themes-after-load-theme-hook #'my/customize-flymake nil t)))
   :init
   ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
@@ -841,6 +845,8 @@
   (org-agenda-files '("~/Documents/org" "~/Desktop"))
   (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP")))
   (org-hide-emphasis-markers t)
+  (org-fontify-todo-headline nil)
+  (org-fontify-done-headline t)
   (org-latex-create-formula-image-program 'dvisvgm)
   :preface
   (defun my/org-toggle-emphasis-marker-display ()
@@ -856,7 +862,9 @@
   (defun my/customize-org-mode ()
     "Apply my tweaks to theme-controlled settings."
     (interactive)
-    (set-face-attribute 'org-headline-done nil :strike-through t)
+    (set-face-attribute 'org-headline-done nil
+                        :strike-through t
+                        :family (face-attribute 'variable-pitch :family))
     (set-face-bold 'org-checkbox t)
     (let ((bg-color (face-background 'modus-themes-subtle-yellow)))
       (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
