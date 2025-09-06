@@ -233,7 +233,7 @@
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
      (bg-mode-line-active bg-dim)
-     (bg-mode-line-inactive bg-dim)
+     (bg-mode-line-inactive bg-main)
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
      (bg-tab-current bg-main)
@@ -327,9 +327,10 @@
   (doom-modeline-spc-face-overrides (list :family (face-attribute 'fixed-pitch :family)))
   :preface
   (defun my/customize-doom-modeline ()
-    (set-face-background 'doom-modeline-bar (face-background 'mode-line))
-    (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive))
-    (font-lock-update))
+    (when (bound-and-true-p doom-modeline-mode)
+      (set-face-background 'doom-modeline-bar (face-background 'mode-line))
+      (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive))
+      (doom-modeline-mode 1)))
   :init
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'modus-themes-after-load-theme-hook #'my/customize-doom-modeline))
@@ -649,7 +650,7 @@
   :hook (prog-mode yaml-ts-mode)
   :custom
   (indent-bars-display-on-blank-lines nil)
-  ;; (indent-bars-no-descend-lists t)  ;; no extra bars in continued func arg lists
+  ;; (indent-bars-no-descend-lists t)  ;; no extra bars in contd. func. args
   (indent-bars-treesit-support t)
   ;; (indent-bars-treesit-scope
   ;;  '((python
@@ -688,6 +689,19 @@
    '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
   (ispell-dictionary "en_US")
   (ispell-local-dictionary "en_US"))
+
+(use-package diff-hl
+  :custom
+  (diff-hl-draw-borders nil)
+  :preface
+  (defun my/customize-diff-hl ()
+    (copy-face 'diff-changed 'diff-hl-change)
+    (copy-face 'diff-removed 'diff-hl-delete)
+    (copy-face 'diff-added 'diff-hl-insert))
+  :init
+  (when (fboundp 'modus-themes-load-theme)
+    (add-hook 'modus-themes-after-load-theme-hook #'my/customize-diff-hl))
+  (global-diff-hl-mode 1))
 
 
 ;; Lisp
