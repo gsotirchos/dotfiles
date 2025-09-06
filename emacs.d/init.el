@@ -3,7 +3,7 @@
 
 ;;; Code:
 
-;; Fonts
+;; Basic fonts
 (when (eq system-type 'darwin)
   (set-face-attribute 'default nil :family "Menlo" :height 140)
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150)
@@ -74,8 +74,7 @@
            ("<next>" . scroll-up-command)))
   (keymap-set minibuffer-mode-map (car key-binding) (cdr key-binding)))
 
-
-;; Define personal keymaps
+;; Personal keymaps
 (defvar-keymap my-file-commands-map
   :doc "My file commands map."
   "r" '("recent files" . recentf)
@@ -98,8 +97,7 @@
 (keymap-set global-map my/prefix my-personal-map)
 (keymap-set help-map "=" 'describe-char)
 
-
-;; Set defaults
+;; Defaults
 (if (eq system-type 'darwin)
   (setq-default mac-mouse-wheel-smooth-scroll t
                 mouse-wheel-flip-direction t
@@ -157,6 +155,7 @@
 
 
 ;; Initialize package sources
+
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
@@ -169,7 +168,9 @@
   (setq package-check-signature 'allow-unsigned)
   (package-refresh-contents))
 
-;; Initialize use-package on non-Linux platforms
+
+;; Packages
+
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
@@ -231,6 +232,8 @@
   (modus-themes-italic-constructs t)
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
+     (bg-mode-line-active bg-dim)
+     (bg-mode-line-inactive bg-dim)
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
      (bg-tab-current bg-main)
@@ -271,12 +274,18 @@
     (pcase appearance
       ('light (modus-themes-load-theme 'modus-operandi))
       ('dark (modus-themes-load-theme 'modus-vivendi-tinted))))
-  (defun my/set-gray-fringe-fg ()
-    (let ((fg-color (modus-themes-get-color-value 'border)))
-      (set-face-attribute 'fringe nil :foreground fg-color)))
+  (defun my/customize-modus-themes ()
+    (set-face-foreground 'fringe (modus-themes-get-color-value 'border))
+    (dolist (face
+             '(mode-line
+               mode-line-active
+               mode-line-inactive))
+      (let ((family (face-attribute 'variable-pitch :family))
+            (box '(:line-width -1 :style released-button)))
+        (set-face-attribute face nil :family family :box box))))
   :init
-  (add-hook 'modus-themes-after-load-theme-hook #'my/set-gray-fringe-fg)
-  ;; (load-theme 'modus-operandi)
+  (add-hook 'modus-themes-after-load-theme-hook #'my/customize-modus-themes)
+  (load-theme 'modus-operandi)
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
 
@@ -306,6 +315,7 @@
   (doom-modeline-height 21)
   (doom-modeline-window-width-limit 50)
   (doom-modeline-icon t)
+  (doom-modeline-modal-icon nil)
   (doom-modeline-workspace-name nil)
   (doom-modeline-major-mode-icon nil)
   (doom-modeline-buffer-modification-icon nil)
@@ -314,13 +324,12 @@
   (doom-modeline-lsp-icon nil)
   (doom-modeline-check-icon nil)
   (doom-modeline-check-simple-format t)
+  (doom-modeline-spc-face-overrides (list :family (face-attribute 'fixed-pitch :family)))
   :preface
   (defun my/customize-doom-modeline ()
-    (setq doom-modeline-spc-face-overrides (list :family (face-attribute 'fixed-pitch :family)))
-    (set-face-attribute 'mode-line nil :family (face-attribute 'variable-pitch :family))
-    (set-face-attribute 'mode-line-active nil :family (face-attribute 'variable-pitch :family))
-    (set-face-attribute 'mode-line-inactive nil :family (face-attribute 'variable-pitch :family))
-    (set-face-attribute 'doom-modeline-bar nil :background (face-background 'mode-line)))
+    (set-face-background 'doom-modeline-bar (face-background 'mode-line))
+    (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive))
+    (font-lock-update))
   :init
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'modus-themes-after-load-theme-hook #'my/customize-doom-modeline))
@@ -611,7 +620,7 @@
     (seq-mapn
      (lambda (face color)
        (when (fboundp 'modus-themes-get-color-value)
-         (set-face-attribute face nil :foreground (modus-themes-get-color-value color))))
+         (set-face-foreground face (modus-themes-get-color-value color))))
      '(rainbow-delimiters-depth-1-face
        rainbow-delimiters-depth-2-face
        rainbow-delimiters-depth-3-face
@@ -723,7 +732,7 @@
   )
 
 
-;; yaml
+;; YAML
 
 (use-package yaml-ts-mode
   :ensure nil
@@ -800,12 +809,11 @@
     "Prevew all LaTeX fragments in buffer."
     (interactive)
     (org-latex-preview '(16)))
-  (defun my/org-apply-theme-tweaks ()
+  (defun my/customize-org-mode ()
     "Apply my tweaks to theme-controlled settings."
     (interactive)
     (set-face-attribute 'org-headline-done nil :strike-through t)
-    (set-face-attribute 'org-checkbox nil :bold t)
-    ;; (let ((bg-color (modus-themes-get-color-value 'bg-yellow-subtle)))
+    (set-face-bold 'org-checkbox t)
     (let ((bg-color (face-attribute 'pulse-highlight-face :background)))
       (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
     (dolist (face
@@ -820,9 +828,9 @@
     (variable-pitch-mode 1)
     (when (boundp 'variable-pitch-line-spacing)
       (setq-local line-spacing variable-pitch-line-spacing))
-    (my/org-apply-theme-tweaks)
+    (my/customize-org-mode)
     (when (fboundp 'modus-themes-load-theme)
-      (add-hook 'modus-themes-after-load-theme-hook #'my/org-apply-theme-tweaks nil t)
+      (add-hook 'modus-themes-after-load-theme-hook #'my/customize-org-mode nil t)
       (add-hook 'modus-themes-after-load-theme-hook #'my/org-latex-preview-buffer nil t))
     (dolist (hook
              '(find-file-hook
