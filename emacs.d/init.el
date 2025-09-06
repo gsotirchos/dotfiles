@@ -728,14 +728,15 @@
   (diff-hl-draw-borders nil)
   :preface
   (defun my/customize-diff-hl ()
-    (copy-face 'diff-changed 'diff-hl-change)
-    (copy-face 'diff-removed 'diff-hl-delete)
-    (copy-face 'diff-added 'diff-hl-insert))
+    (set-face-background 'diff-hl-change (face-foreground 'modus-themes-fg-yellow))
+    (set-face-background 'diff-hl-delete (face-foreground 'modus-themes-fg-red))
+    (set-face-background 'diff-hl-insert (face-foreground 'modus-themes-fg-green)))
   :init
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (global-diff-hl-mode 1)
   (when (fboundp 'modus-themes-load-theme)
-    (add-hook 'modus-themes-after-load-theme-hook #'my/customize-diff-hl))
-  (global-diff-hl-mode 1))
+    (my/customize-diff-hl)
+    (add-hook 'modus-themes-after-load-theme-hook #'my/customize-diff-hl)))
 
 
 ;; Lisp
