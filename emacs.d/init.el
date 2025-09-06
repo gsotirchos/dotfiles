@@ -399,10 +399,11 @@
   (corfu-preview-current 'insert)  ;; insert previewed candidate
   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
   (corfu-cycle t)
-  ;; (global-corfu-minibuffer
-  ;;  (lambda () (not (or (bound-and-true-p mct--active)
-  ;;                      (bound-and-true-p vertico--input)
-  ;;                      (eq (current-local-map) read-passwd-map)))))
+  ;; Enable Corfu in all minibuffers, as long as no completion UI is active
+  (global-corfu-minibuffer
+   (lambda () (not (or (bound-and-true-p mct--active)
+                       (bound-and-true-p vertico--input)
+                       (eq (current-local-map) read-passwd-map)))))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
@@ -412,8 +413,8 @@
   :custom
   (vertico-scroll-margin 1)
   (vertico-count 10)  ;; Limit to a fixed size
-  (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
-  (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
+  (vertico-cycle t)  ;; Enable cycling for `vertico-next/previous'
+  (vertico-resize t)  ;; Grow and shrink the Vertico minibuffer
   :init (vertico-mode))
 
 (use-package vertico-directory
