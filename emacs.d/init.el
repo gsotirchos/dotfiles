@@ -265,6 +265,7 @@
      (6 . (1.0))
      (7 . (1.0))
      (8 . (1.0))))
+  (org-todo-keyword-faces '(("WIP" . (:inherit (modus-themes-fg-magenta-warmer)))))
   :preface
   (defun my/apply-theme (appearance)
     (mapc 'disable-theme custom-enabled-themes)
@@ -381,9 +382,13 @@
         ("<tab>" . 'ignore)
         ;; ("<tab>" . corfu-next)
         ;; ("S-<tab>" . corfu-previous)
-        ;; ("C-e" . corfu-popupinfo-scroll-up)
-        ;; ("C-y" . corfu-popupinfo-scroll-down)
         ;; ("RET" . nil)
+        ("C-e" . corfu-popupinfo-scroll-up)
+        ("C-y" . corfu-popupinfo-scroll-down)
+        ("C-d" . corfu-scroll-up)
+        ("C-u" . corfu-scroll-down)
+        ("<next>" . corfu-scroll-up)
+        ("<prior>" . corfu-scroll-down)
         ("S-SPC" . corfu-insert-separator))
   :custom
   (corfu-auto t)  ;; auto-completion
