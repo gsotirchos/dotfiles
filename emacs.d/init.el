@@ -225,7 +225,6 @@
 
 
 (use-package modus-themes
-  :demand t
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
@@ -272,13 +271,14 @@
     (pcase appearance
       ('light (modus-themes-load-theme 'modus-operandi))
       ('dark (modus-themes-load-theme 'modus-vivendi-tinted))))
-  (defun my/set-gray-fringe-face ()
-    (let ((fg-color (modus-themes-get-color-value 'fg-dim)))
+  (defun my/set-gray-fringe-fg ()
+    (let ((fg-color (modus-themes-get-color-value 'border)))
       (set-face-attribute 'fringe nil :foreground fg-color)))
   :init
-  (add-hook 'modus-themes-after-load-theme-hook #'my/set-gray-fringe-face)
-  (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
-  :config (modus-themes-load-theme 'modus-operandi))
+  (add-hook 'modus-themes-after-load-theme-hook #'my/set-gray-fringe-fg)
+  ;; (load-theme 'modus-operandi)
+  (when (fboundp 'modus-themes-load-theme)
+    (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
 
 (use-package ns-auto-titlebar
   :if (eq system-type 'darwin)
@@ -300,18 +300,31 @@
   :init (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package doom-modeline
-  ;; needs: M-x nerd-icons-install-fonts
-  :hook after-init
+  ;; NEEDS: M-x nerd-icons-install-fonts
   :custom
+  (doom-modeline-bar-width 0)
+  (doom-modeline-height 21)
   (doom-modeline-window-width-limit 50)
+  (doom-modeline-icon t)
   (doom-modeline-workspace-name nil)
   (doom-modeline-major-mode-icon nil)
-  (doom-modeline-lsp-icon nil)
+  (doom-modeline-buffer-modification-icon nil)
   (doom-modeline-buffer-encoding nil)
   (doom-modeline-env-version nil)
-  (doom-modeline-buffer-modification-icon nil)
+  (doom-modeline-lsp-icon nil)
   (doom-modeline-check-icon nil)
-  (doom-modeline-check-simple-format t))
+  (doom-modeline-check-simple-format t)
+  :preface
+  (defun my/customize-doom-modeline ()
+    (setq doom-modeline-spc-face-overrides (list :family (face-attribute 'fixed-pitch :family)))
+    (set-face-attribute 'mode-line nil :family (face-attribute 'variable-pitch :family))
+    (set-face-attribute 'mode-line-active nil :family (face-attribute 'variable-pitch :family))
+    (set-face-attribute 'mode-line-inactive nil :family (face-attribute 'variable-pitch :family))
+    (set-face-attribute 'doom-modeline-bar nil :background (face-background 'mode-line)))
+  :init
+  (when (fboundp 'modus-themes-load-theme)
+    (add-hook 'modus-themes-after-load-theme-hook #'my/customize-doom-modeline))
+  (doom-modeline-mode 1))
 
 (use-package dired
   :ensure nil
@@ -331,7 +344,7 @@
   :init (add-hook 'dired-mode-hook #'my/dired-mode-hook))
 
 (use-package undo-tree
-  :hook after-init
+  :demand t
   :custom
   (undo-tree-auto-save-history t)
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
@@ -345,7 +358,7 @@
   (global-undo-tree-mode))
 
 (use-package evil
-  :hook after-init
+  :demand t
   :init
   (setq evil-toggle-key "C-<escape>"
         evil-want-integration t
@@ -461,6 +474,7 @@
    ("M-s l" . consult-line)
    ("M-s L" . consult-line-multi)
    :map minibuffer-local-map
+   ([remap isearch-forward] . consult-history)
    ([remap next-matching-history-element] . consult-history)
    ([remap previous-matching-history-element] . consult-history))
   :init
@@ -596,7 +610,8 @@
   (defun my/customize-rainbow-delimiters ()
     (seq-mapn
      (lambda (face color)
-       (set-face-attribute face nil :foreground (modus-themes-get-color-value color)))
+       (when (fboundp 'modus-themes-get-color-value)
+         (set-face-attribute face nil :foreground (modus-themes-get-color-value color))))
      '(rainbow-delimiters-depth-1-face
        rainbow-delimiters-depth-2-face
        rainbow-delimiters-depth-3-face
@@ -605,8 +620,7 @@
        rainbow-delimiters-depth-6-face
        rainbow-delimiters-depth-7-face
        rainbow-delimiters-depth-8-face
-       rainbow-delimiters-depth-9-face
-       )
+       rainbow-delimiters-depth-9-face)
      '(fg-dim
        magenta-faint
        cyan-faint
@@ -615,10 +629,12 @@
        indigo
        green-faint
        blue-faint
-       rust
-       )))
-  :init (add-hook 'modus-themes-after-load-theme-hook #'my/customize-rainbow-delimiters)
-  :config (my/customize-rainbow-delimiters))
+       rust)))
+  (defun my/rainbow-delimiters-hook ()
+    (my/customize-rainbow-delimiters)
+    (when (fboundp 'modus-themes-load-theme)
+      (add-hook 'modus-themes-after-load-theme-hook #'my/customize-rainbow-delimiters nil t)))
+  :init (add-hook 'rainbow-delimiters-mode-hook #'my/rainbow-delimiters-hook))
 
 (use-package indent-bars
   :hook (prog-mode yaml-ts-mode)
@@ -789,7 +805,8 @@
     (interactive)
     (set-face-attribute 'org-headline-done nil :strike-through t)
     (set-face-attribute 'org-checkbox nil :bold t)
-    (let ((bg-color (modus-themes-get-color-value 'bg-yellow-subtle)))
+    ;; (let ((bg-color (modus-themes-get-color-value 'bg-yellow-subtle)))
+    (let ((bg-color (face-attribute 'pulse-highlight-face :background)))
       (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
     (dolist (face
              '(org-table
@@ -804,10 +821,11 @@
     (when (boundp 'variable-pitch-line-spacing)
       (setq-local line-spacing variable-pitch-line-spacing))
     (my/org-apply-theme-tweaks)
-    (add-hook 'modus-themes-after-load-theme-hook #'my/org-apply-theme-tweaks nil t)
+    (when (fboundp 'modus-themes-load-theme)
+      (add-hook 'modus-themes-after-load-theme-hook #'my/org-apply-theme-tweaks nil t)
+      (add-hook 'modus-themes-after-load-theme-hook #'my/org-latex-preview-buffer nil t))
     (dolist (hook
-             '(modus-themes-after-load-theme-hook
-               find-file-hook
+             '(find-file-hook
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   :init (add-hook 'org-mode-hook #'my/org-mode-hook)
