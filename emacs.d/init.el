@@ -728,6 +728,7 @@
     (copy-face 'diff-removed 'diff-hl-delete)
     (copy-face 'diff-added 'diff-hl-insert))
   :init
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'modus-themes-after-load-theme-hook #'my/customize-diff-hl))
   (global-diff-hl-mode 1))
