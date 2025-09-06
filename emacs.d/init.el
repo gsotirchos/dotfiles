@@ -671,8 +671,37 @@
   :custom
   (flymake-no-changes-timeout 1)
   (flymake-show-diagnostics-at-end-of-line t)
-  ;; :init (add-hook 'sh-base-mode-hook #'flymake-mode-off)
-  )
+  :preface
+  (defun my/customize-flymake ()
+    (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
+                        :foreground (modus-themes-get-color-value 'fg-dim)
+                        :background (modus-themes-get-color-value 'bg-main)
+                        :italic nil
+                        :bold nil
+                        :box nil)
+    (set-face-attribute 'flymake-eol-information-face nil
+                        :foreground (modus-themes-get-color-value 'blue-faint)
+                        :background (modus-themes-get-color-value 'bg-blue-nuanced)
+                        :inherit 'flymake-end-of-line-diagnostics-face)
+    (set-face-attribute 'flymake-note-echo-at-eol nil
+                        :foreground (modus-themes-get-color-value 'cyan-faint)
+                        :background (modus-themes-get-color-value 'bg-cyan-nuanced)
+                        :inherit 'flymake-end-of-line-diagnostics-face)
+    (set-face-attribute 'flymake-warning-echo-at-eol nil
+                        :foreground (modus-themes-get-color-value 'yellow-faint)
+                        :background (modus-themes-get-color-value 'bg-yellow-nuanced)
+                        :inherit 'flymake-end-of-line-diagnostics-face)
+    (set-face-attribute 'flymake-error-echo-at-eol nil
+                        :foreground (modus-themes-get-color-value 'red-faint)
+                        :background (modus-themes-get-color-value 'bg-red-nuanced)
+                        :inherit 'flymake-end-of-line-diagnostics-face))
+  (defun my/flymake-hook ()
+    (my/customize-flymake)
+    (when (fboundp 'modus-themes-load-theme)
+      (add-hook 'modus-themes-after-load-theme-hook #'my/customize-flymake nil t)))
+  :init
+  ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
+  (add-hook 'flymake-mode-hook #'my/flymake-hook))
 
 (use-package flyspell
   :ensure nil
@@ -828,7 +857,7 @@
     (interactive)
     (set-face-attribute 'org-headline-done nil :strike-through t)
     (set-face-bold 'org-checkbox t)
-    (let ((bg-color (face-attribute 'pulse-highlight-face :background)))
+    (let ((bg-color (face-background 'modus-themes-subtle-yellow)))
       (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
     (dolist (face
              '(org-table
