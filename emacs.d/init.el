@@ -268,7 +268,7 @@
      (6 . (1.0))
      (7 . (1.0))
      (8 . (1.0))))
-  (org-todo-keyword-faces '(("WIP" . (:inherit (modus-themes-fg-red)))))
+  (org-todo-keyword-faces `(("WIP" . ,(modus-themes-get-color-value 'blue))))
   :preface
   (defun my/apply-theme (appearance)
     (mapc 'disable-theme custom-enabled-themes)
