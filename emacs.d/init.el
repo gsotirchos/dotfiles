@@ -777,8 +777,8 @@
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
     (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
   :init
-  (diff-hl-margin-mode 1)
   (global-diff-hl-mode 1)
+  (diff-hl-margin-mode 1)
   (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook))
 
 
