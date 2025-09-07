@@ -774,6 +774,7 @@
     (face-remap-add-relative 'diff-hl-delete 'diff-removed))
   (defun my/diff-hl-hook ()
     (my/customize-diff-hl)
+    (add-hook 'auto-save-hook 'diff-hl-update nil t)
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
     (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
   :init
@@ -929,6 +930,7 @@
     (dolist (hook
              '(after-load-theme-hook
                find-file-hook
+               auto-save-hook
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   :init (add-hook 'org-mode-hook #'my/org-mode-hook)
