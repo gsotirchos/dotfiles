@@ -38,7 +38,6 @@
            ("C-<wheel-up>" . ignore)
            ("M-<wheel-down>" . ignore)
            ("M-<wheel-up>" . ignore)
-           ;; ("C-<backspace>" . ignore)
            ("C-<delete>" . ignore)
            ("C-<right>" . ignore)
            ("C-<left>" . ignore)
@@ -125,6 +124,10 @@
               hscroll-margin 0
               scroll-step 1
               hscroll-step 1
+              truncate-lines nil
+              wrap-prefix "…"
+              left-margin-width 1
+              right-margin-width 0
               indent-tabs-mode nil
               treemacs-no-png-images t)
 
@@ -133,7 +136,7 @@
   ;; (tooltip-mode 0)
   ;; (setq visible-bell t)
   (menu-bar-mode 0))
-(set-fringe-mode 16)
+(set-fringe-mode 0)
 (set-fill-column 79)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
@@ -142,6 +145,8 @@
 (column-number-mode 1)
 ;; (when (featurep 'ns)
 (pixel-scroll-precision-mode 1)  ;; )
+(set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
+(set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
 
 ;; Frame parameters to ignore when saving/loading desktop sessions
 (dolist (filter
@@ -276,7 +281,7 @@
       ('light (modus-themes-load-theme 'modus-operandi))
       ('dark (modus-themes-load-theme 'modus-vivendi-tinted))))
   (defun my/customize-modus-themes ()
-    (set-face-foreground 'fringe (modus-themes-get-color-value 'border))
+    ;; (set-face-foreground 'fringe (modus-themes-get-color-value 'border))
     (dolist (face
              '(mode-line
                mode-line-active
@@ -309,8 +314,9 @@
   (defun my/surround-in-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
     (concat " " string " "))
+  :init
   (add-to-list 'tab-bar-tab-name-format-functions #'my/surround-in-whitespace)
-  :init (add-hook 'desktop-after-read-hook #'tab-bar-mode))
+  (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package doom-modeline
   ;; NEEDS: M-x nerd-icons-install-fonts
@@ -410,8 +416,8 @@
         ;; ("<tab>" . corfu-next)
         ;; ("S-<tab>" . corfu-previous)
         ;; ("RET" . nil)
-        ("C-e" . corfu-popupinfo-scroll-up)
-        ("C-y" . corfu-popupinfo-scroll-down)
+        ;; ("C-e" . corfu-popupinfo-scroll-up)
+        ;; ("C-y" . corfu-popupinfo-scroll-down)
         ("C-d" . corfu-scroll-up)
         ("C-u" . corfu-scroll-down)
         ("<next>" . corfu-scroll-up)
@@ -426,11 +432,12 @@
   (corfu-preview-current 'insert)  ;; insert previewed candidate
   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
   (corfu-cycle t)
+  (global-corfu-minibuffer t)
   ;; Enable Corfu in all minibuffers, as long as no completion UI is active
-  (global-corfu-minibuffer
-   (lambda () (not (or (bound-and-true-p mct--active)
-                       (bound-and-true-p vertico--input)
-                       (eq (current-local-map) read-passwd-map)))))
+  ;; (global-corfu-minibuffer
+  ;;  (lambda () (not (or (bound-and-true-p mct--active)
+  ;;                      (bound-and-true-p vertico--input)
+  ;;                      (eq (current-local-map) read-passwd-map)))))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
@@ -675,6 +682,11 @@
   :custom
   (flymake-no-changes-timeout 1)
   (flymake-show-diagnostics-at-end-of-line t)
+  (flymake-indicator-type 'margins)
+  (flymake-margin-indicators-string
+   '((note "i" flymake-note-echo-at-eol)
+     (warning "!" flymake-warning-echo-at-eol)
+     (error "X" flymake-error-echo-at-eol)))
   :preface
   (defun my/customize-flymake ()
     (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
@@ -728,15 +740,18 @@
   (diff-hl-draw-borders nil)
   :preface
   (defun my/customize-diff-hl ()
-    (set-face-background 'diff-hl-change (face-foreground 'modus-themes-fg-yellow))
-    (set-face-background 'diff-hl-delete (face-foreground 'modus-themes-fg-red))
-    (set-face-background 'diff-hl-insert (face-foreground 'modus-themes-fg-green)))
-  :init
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-  (global-diff-hl-mode 1)
-  (when (fboundp 'modus-themes-load-theme)
+    (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
+    (put 'diff-hl-change 'face-alias 'diff-changed)
+    (put 'diff-hl-insert 'face-alias 'diff-added)
+    (put 'diff-hl-delete 'face-alias 'diff-removed))
+  (defun my/diff-hl-hook ()
     (my/customize-diff-hl)
-    (add-hook 'modus-themes-after-load-theme-hook #'my/customize-diff-hl)))
+    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
+    (when (fboundp 'modus-themes-load-theme)
+      (add-hook 'modus-themes-after-load-theme-hook #'my/customize-diff-hl nil t)))
+  :init
+  (diff-hl-margin-mode 1)
+  (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook))
 
 
 ;; Lisp
