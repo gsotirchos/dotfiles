@@ -174,6 +174,18 @@
       (when (functionp func)
         (funcall func)))))
 
+(defvar after-load-theme-hook nil
+  "Hook that runs after a color theme is loaded using `load-theme'.")
+
+(defun my/run-after-load-theme-hook (&rest _)
+  "Run `after-load-theme-hook`."
+  (run-hooks 'after-load-theme-hook))
+
+(add-hook 'after-load-theme-hook (lambda () (my/run-other-buffers-local-hooks 'after-load-theme-hook)))
+
+
+(advice-add 'load-theme :after #'my/run-after-load-theme-hook)
+
 ;; Initialize package sources
 
 (require 'package)
@@ -306,11 +318,8 @@
       (let ((family (face-attribute 'variable-pitch :family))
             (box '(:line-width -1 :style released-button)))
         (set-face-attribute face nil :family family :box box))))
-  (defun my/run-other-local-load-theme-hooks ()
-    (my/run-other-buffers-local-hooks 'modus-themes-after-load-theme-hook))
   :init
-  (add-hook 'modus-themes-after-load-theme-hook #'my/run-other-local-load-theme-hooks)
-  (add-hook 'modus-themes-after-load-theme-hook #'my/customize-modus-themes)
+  (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   (let ((theme 'modus-operandi))
     (if (fboundp 'modus-themes-load-theme)
         (modus-themes-load-theme theme)
@@ -362,8 +371,7 @@
       (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive))
       (doom-modeline-mode 1)))
   :init
-  (when (fboundp 'modus-themes-load-theme)
-    (add-hook 'modus-themes-after-load-theme-hook #'my/customize-doom-modeline))
+  (add-hook 'after-load-theme-hook #'my/customize-doom-modeline)
   (doom-modeline-mode 1))
 
 (use-package dired
@@ -651,8 +659,7 @@
   (defun my/customize-rainbow-delimiters ()
     (seq-mapn
      (lambda (face color)
-       (when (fboundp 'modus-themes-get-color-value)
-         (set-face-foreground face (modus-themes-get-color-value color))))
+       (set-face-foreground face (modus-themes-get-color-value color)))
      '(rainbow-delimiters-depth-1-face
        rainbow-delimiters-depth-2-face
        rainbow-delimiters-depth-3-face
@@ -673,8 +680,8 @@
        rust)))
   (defun my/rainbow-delimiters-hook ()
     (my/customize-rainbow-delimiters)
-    (when (fboundp 'modus-themes-load-theme)
-      (add-hook 'modus-themes-after-load-theme-hook #'my/customize-rainbow-delimiters nil t)))
+    (when (fboundp 'modus-themes-get-color-value)
+      (add-hook 'after-load-theme-hook #'my/customize-rainbow-delimiters nil t)))
   :init (add-hook 'rainbow-delimiters-mode-hook #'my/rainbow-delimiters-hook))
 
 (use-package indent-bars
@@ -732,9 +739,9 @@
                         :background (modus-themes-get-color-value 'bg-red-nuanced)
                         :inherit 'flymake-end-of-line-diagnostics-face))
   (defun my/flymake-hook ()
-    (when (fboundp 'modus-themes-load-theme)
+    (when (fboundp 'modus-themes-get-color-value)
       (my/customize-flymake)
-      (add-hook 'modus-themes-after-load-theme-hook #'my/customize-flymake nil t)))
+      (add-hook 'after-load-theme-hook #'my/customize-flymake nil t)))
   :init
   ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
   (add-hook 'flymake-mode-hook #'my/flymake-hook))
@@ -742,8 +749,9 @@
 (use-package flyspell
   :ensure nil
   :no-require t
-  :hook (text-mode . flyspell-mode)
-  ;; (prog-mode . flyspell-prog-mode)
+  :hook
+  (text-mode . flyspell-mode)
+  (prog-mode . flyspell-prog-mode)
   :config (require 'ispell))
 
 (use-package ispell
@@ -761,16 +769,16 @@
   :preface
   (defun my/customize-diff-hl ()
     (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
-    (put 'diff-hl-change 'face-alias 'diff-changed)
-    (put 'diff-hl-insert 'face-alias 'diff-added)
-    (put 'diff-hl-delete 'face-alias 'diff-removed))
+    (face-remap-add-relative 'diff-hl-change 'diff-changed)
+    (face-remap-add-relative 'diff-hl-insert 'diff-added)
+    (face-remap-add-relative 'diff-hl-delete 'diff-removed))
   (defun my/diff-hl-hook ()
     (my/customize-diff-hl)
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
-    (when (fboundp 'modus-themes-load-theme)
-      (add-hook 'modus-themes-after-load-theme-hook #'my/customize-diff-hl nil t)))
+    (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
   :init
   (diff-hl-margin-mode 1)
+  (global-diff-hl-mode 1)
   (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook))
 
 
@@ -902,7 +910,7 @@
                         :strike-through t
                         :family (face-attribute 'variable-pitch :family))
     (set-face-bold 'org-checkbox t)
-    (let ((bg-color (face-background 'modus-themes-subtle-yellow)))
+    (let ((bg-color (face-background 'custom-changed)))
       (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
     (dolist (face
              '(org-table
@@ -917,11 +925,10 @@
     (when (boundp 'variable-pitch-line-spacing)
       (setq-local line-spacing variable-pitch-line-spacing))
     (my/customize-org-mode)
-    (when (fboundp 'modus-themes-load-theme)
-      (add-hook 'modus-themes-after-load-theme-hook #'my/customize-org-mode nil t)
-      (add-hook 'modus-themes-after-load-theme-hook #'my/org-latex-preview-buffer nil t))
+    (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
     (dolist (hook
-             '(find-file-hook
+             '(after-load-theme-hook
+               find-file-hook
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   :init (add-hook 'org-mode-hook #'my/org-mode-hook)
