@@ -911,7 +911,7 @@
                         :strike-through t
                         :family (face-attribute 'variable-pitch :family))
     (set-face-bold 'org-checkbox t)
-    (let ((bg-color (face-background 'custom-changed)))
+    (let ((bg-color (face-background 'org-agenda-clocking)))
       (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
     (dolist (face
              '(org-table
