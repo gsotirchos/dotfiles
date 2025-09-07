@@ -133,8 +133,6 @@
 
 (unless (and (eq system-type 'darwin)
              (display-graphic-p))
-  ;; (tooltip-mode 0)
-  ;; (setq visible-bell t)
   (menu-bar-mode 0))
 (set-fringe-mode 0)
 (set-fill-column 79)
@@ -158,6 +156,23 @@
            ns-appearance))
   (add-to-list 'frameset-filter-alist (cons filter :never)))
 
+;; Hook management utilities
+
+(defun my/run-other-buffers-local-hooks (hook)
+  "Run local HOOK in all buffers except the current one."
+  (interactive "aHook: ")
+  (dolist (buffer (buffer-list))
+    (unless (eq buffer (current-buffer))
+      (with-current-buffer buffer
+        (my/run-local-hooks hook)))))
+
+(defun my/run-local-hooks (hook)
+  "Run only the buffer-local functions of HOOK."
+  (interactive "aHook: ")
+  (when (local-variable-p hook)
+    (dolist (func (symbol-value hook))
+      (when (functionp func)
+        (funcall func)))))
 
 ;; Initialize package sources
 
@@ -230,6 +245,8 @@
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
 
 
+;; Basic packages
+
 (use-package modus-themes
   :demand t
   :custom
@@ -289,7 +306,10 @@
       (let ((family (face-attribute 'variable-pitch :family))
             (box '(:line-width -1 :style released-button)))
         (set-face-attribute face nil :family family :box box))))
+  (defun my/run-other-local-load-theme-hooks ()
+    (my/run-other-buffers-local-hooks 'modus-themes-after-load-theme-hook))
   :init
+  (add-hook 'modus-themes-after-load-theme-hook #'my/run-other-local-load-theme-hooks)
   (add-hook 'modus-themes-after-load-theme-hook #'my/customize-modus-themes)
   (let ((theme 'modus-operandi))
     (if (fboundp 'modus-themes-load-theme)
