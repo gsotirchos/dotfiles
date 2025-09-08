@@ -262,6 +262,7 @@
 (use-package modus-themes
   :demand t
   :custom
+  (modus-themes-to-toggle '(modus-operandi modus-vivendi-tinted))
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
@@ -307,8 +308,8 @@
   (defun my/apply-theme (appearance)
     (mapc 'disable-theme custom-enabled-themes)
     (pcase appearance
-      ('light (modus-themes-load-theme 'modus-operandi))
-      ('dark (modus-themes-load-theme 'modus-vivendi-tinted))))
+      ('light (modus-themes-load-theme (nth 0 modus-themes-to-toggle)))
+      ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
   (defun my/customize-modus-themes ()
     ;; (set-face-foreground 'fringe (modus-themes-get-color-value 'border))
     (dolist (face
@@ -320,7 +321,7 @@
         (set-face-attribute face nil :family family :box box))))
   :init
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
-  (let ((theme 'modus-operandi))
+  (let ((theme (nth 0 modus-themes-to-toggle)))
     (if (fboundp 'modus-themes-load-theme)
         (modus-themes-load-theme theme)
       (load-theme theme)))
