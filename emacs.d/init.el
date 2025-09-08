@@ -750,9 +750,9 @@
 (use-package flyspell
   :ensure nil
   :no-require t
-  :hook
-  (text-mode . flyspell-mode)
-  ;; (prog-mode . flyspell-prog-mode)
+  :init
+  (add-hook 'text-mode flyspell-mode nil t)
+  ;; (add-hook 'prog-mode flyspell-prog-mode nil t)
   :config (require 'ispell))
 
 (use-package ispell
