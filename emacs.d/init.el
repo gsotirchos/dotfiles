@@ -752,7 +752,7 @@
   :no-require t
   :hook
   (text-mode . flyspell-mode)
-  (prog-mode . flyspell-prog-mode)
+  ;; (prog-mode . flyspell-prog-mode)
   :config (require 'ispell))
 
 (use-package ispell
@@ -833,7 +833,11 @@
   :no-require t
   :mode ("\\.yaml$" "\\.yml$")
   :custom (tab-width 2)
-  :config (setq yaml-indent-offset 2))
+  :preface
+  (defun my/yaml-mode-hook ()
+    (setq yaml-indent-offset 2)
+    (flyspell-mode -1))
+  :init (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook))
 
 
 ;; Bash
@@ -935,7 +939,7 @@
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   :init (add-hook 'org-mode-hook #'my/org-mode-hook)
-  :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.65)))
+  :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.7)))
 
 
 ;; Startup time
