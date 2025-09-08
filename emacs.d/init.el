@@ -5,7 +5,7 @@
 
 ;; Basic fonts
 (when (eq system-type 'darwin)
-  (set-face-attribute 'default nil :family "Menlo" :height 140)
+  (set-face-attribute 'default nil :family "Menlo" :height 130)
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150)
   (defconst variable-pitch-line-spacing 2))
 (when (eq system-type 'gnu/linux)
@@ -262,7 +262,6 @@
 (use-package modus-themes
   :demand t
   :custom
-  (modus-themes-to-toggle '(modus-operandi modus-vivendi-tinted))
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
@@ -305,6 +304,7 @@
      (8 . (1.0))))
   (org-todo-keyword-faces `(("WIP" . ,(modus-themes-get-color-value 'blue))))
   :preface
+  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi-tinted))
   (defun my/apply-theme (appearance)
     (mapc 'disable-theme custom-enabled-themes)
     (pcase appearance
