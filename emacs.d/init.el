@@ -131,6 +131,9 @@
               indent-tabs-mode nil
               treemacs-no-png-images t)
 
+(set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
+(set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
+
 (unless (and (eq system-type 'darwin)
              (display-graphic-p))
   (menu-bar-mode 0))
@@ -141,10 +144,7 @@
 (global-visual-line-mode 0)
 (xterm-mouse-mode 1)
 (column-number-mode 1)
-;; (when (featurep 'ns)
-(pixel-scroll-precision-mode 1)  ;; )
-(set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
-(set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
+(pixel-scroll-precision-mode 1)
 
 ;; Frame parameters to ignore when saving/loading desktop sessions
 (dolist (filter
@@ -370,9 +370,10 @@
     (when (bound-and-true-p doom-modeline-mode)
       (set-face-background 'doom-modeline-bar (face-background 'mode-line))
       (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive))
-      (doom-modeline-mode 1)))
+      (force-mode-line-update)))
   :init
   (add-hook 'after-load-theme-hook #'my/customize-doom-modeline)
+  (add-hook 'doom-modeline-mode-hook #'my/customize-doom-modeline)
   (doom-modeline-mode 1))
 
 (use-package dired
