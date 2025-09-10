@@ -109,7 +109,6 @@
               initial-scratch-message nil
               initial-major-mode 'fundamental-mode
               desktop-save-mode 1
-              ;; auto-save-default nil
               auto-save-visited-file-name t
               auto-save-timeout 1
               make-backup-files nil
