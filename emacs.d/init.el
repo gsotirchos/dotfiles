@@ -102,8 +102,8 @@
                 mouse-wheel-flip-direction t
                 mouse-wheel-tilt-scroll t
                 ns-command-modifier 'meta
-                ns-option-modifier 'alt)
-  (setq-default x-super-keysym 'alt))
+                ns-option-modifier 'alt
+                x-super-keysym 'alt))
 
 (setq-default inhibit-startup-message t
               initial-scratch-message nil
