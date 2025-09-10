@@ -30,6 +30,11 @@
                (delete-frame)
              (error nil)))))
 
+(defun my/edit-emacs-init ()
+  "Edit `~/emacs.d/init.el'."
+  (interactive)
+  (find-file-other-frame (expand-file-name "~/.emacs.d/init.el")))
+
 (dolist (key-binding
          '(("C-z" . nil)  ;; don't suspend-frame
            ("S-<wheel-down>" . ignore)
@@ -60,7 +65,8 @@
            ("M-t" . tab-new)
            ("M-w" . my/quit)
            ("M-m" . iconify-frame)
-           ("M-h" . ns-do-hide-emacs)))
+           ("M-h" . ns-do-hide-emacs)
+           ("M-," . my/edit-emacs-init)))
   (keymap-global-set (car key-binding) (cdr key-binding)))
 
 (dolist (key-binding
@@ -76,10 +82,7 @@
 ;; Personal keymaps
 (defvar-keymap my-file-commands-map
   :doc "My file commands map."
-  "r" '("recent files" . recentf)
-  "i" '("init.el" . (lambda ()
-                      (interactive)
-                      (find-file (expand-file-name "~/.emacs.d/init.el")))))
+  "r" '("recent files" . recentf))
 
 (defvar-keymap my-desktop-commands-map
   :doc "My desktop commands map."
