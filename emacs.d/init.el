@@ -9,7 +9,7 @@
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150)
   (defconst variable-pitch-line-spacing 2))
 (when (eq system-type 'gnu/linux)
-  (set-face-attribute 'default nil :family "Ubuntu Mono" :height 130)
+  (set-face-attribute 'default nil :family "Ubuntu Mono" :height 140)
   (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140)
   (defconst variable-pitch-line-spacing 4))
 (copy-face 'default 'fixed-pitch)
