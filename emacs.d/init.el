@@ -130,7 +130,7 @@
               wrap-prefix "…"
               left-margin-width 1
               right-margin-width 0
-              fringe-mode 0
+              fringe-mode 'no-fringes
               indent-tabs-mode nil
               treemacs-no-png-images t)
 
@@ -140,7 +140,6 @@
 (unless (and (eq system-type 'darwin)
              (display-graphic-p))
   (menu-bar-mode 0))
-;; (set-fringe-mode 0)
 (set-fill-column 79)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
