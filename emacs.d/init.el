@@ -130,7 +130,7 @@
               wrap-prefix "…"
               left-margin-width 1
               right-margin-width 0
-              fringe-mode 'no-fringes
+              fringe-mode 0
               indent-tabs-mode nil
               treemacs-no-png-images t)
 
@@ -372,7 +372,8 @@
     (when (bound-and-true-p doom-modeline-mode)
       (set-face-background 'doom-modeline-bar (face-background 'mode-line))
       (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive))
-      (force-mode-line-update t)))
+      ;; (force-mode-line-update t)
+      ))
   :init
   (add-hook 'after-load-theme-hook #'my/customize-doom-modeline)
   (add-hook 'doom-modeline-mode-hook #'my/customize-doom-modeline)
