@@ -155,8 +155,8 @@ vnoremap P p
 " Other mappings
 nnoremap <silent> <Tab> za
 nnoremap <silent> <S-Tab> zA
-nnoremap <silent> o o<Esc>
-nnoremap <silent> O O<Esc>
+"nnoremap <silent> o o<Esc>
+"nnoremap <silent> O O<Esc>
 nnoremap Q     <Nop>
 nnoremap <C-z> <Nop>
 nnoremap <Leader>Q :close<Return>
