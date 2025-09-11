@@ -373,7 +373,7 @@
     (when (bound-and-true-p doom-modeline-mode)
       (set-face-background 'doom-modeline-bar (face-background 'mode-line))
       (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive))
-      (force-mode-line-update)))
+      (force-mode-line-update t)))
   :init
   (add-hook 'after-load-theme-hook #'my/customize-doom-modeline)
   (add-hook 'doom-modeline-mode-hook #'my/customize-doom-modeline)
