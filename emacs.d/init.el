@@ -269,7 +269,7 @@
   (modus-themes-italic-constructs t)
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
-     (bg-mode-line-active bg-dim)
+     (bg-mode-line-active bg-main)
      (bg-mode-line-inactive bg-main)
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
@@ -314,13 +314,15 @@
       ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
   (defun my/customize-modus-themes ()
     ;; (set-face-foreground 'fringe (modus-themes-get-color-value 'border))
+    (set-face-attribute 'mode-line nil :family (face-attribute 'variable-pitch :family))
     (dolist (face
              '(mode-line
                mode-line-active
                mode-line-inactive))
-      (let ((family (face-attribute 'variable-pitch :family))
-            (box '(:line-width -1 :style released-button)))
-        (set-face-attribute face nil :family family :box box))))
+      (let ((box '(:line-width -2 :style released-button)))
+        (set-face-attribute face nil :box box)))
+      (let ((box '(:line-width (-1 . -2) :style released-button)))
+        (set-face-attribute 'mode-line-highlight nil :box box)))
   :init
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   (let ((theme (nth 0 modus-themes-to-toggle)))
