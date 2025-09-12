@@ -314,15 +314,17 @@
       ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
   (defun my/customize-modus-themes ()
     ;; (set-face-foreground 'fringe (modus-themes-get-color-value 'border))
-    (set-face-attribute 'mode-line nil :family (face-attribute 'variable-pitch :family))
+    (let ((family (face-attribute 'variable-pitch :family)))
+      (set-face-attribute 'mode-line nil :family family))
     (dolist (face
              '(mode-line
                mode-line-active
-               mode-line-inactive))
+               mode-line-inactive
+               modus-themes-button))
       (let ((box '(:line-width -2 :style released-button)))
         (set-face-attribute face nil :box box)))
-      (let ((box '(:line-width (-1 . -2) :style released-button)))
-        (set-face-attribute 'mode-line-highlight nil :box box)))
+    (let ((box '(:line-width (-1 . -2) :style released-button)))
+      (set-face-attribute 'mode-line-highlight nil :box box)))
   :init
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   (let ((theme (nth 0 modus-themes-to-toggle)))
