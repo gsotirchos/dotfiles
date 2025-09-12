@@ -21,7 +21,7 @@
   (kill-line 0)
   (indent-for-tab-command))
 
-(defun my/quit ()
+(defun my/quit-dwim ()
   "Close the current tab or frame."
   (interactive)
   (condition-case nil
@@ -63,7 +63,7 @@
            ("M-~" . previous-window-any-frame)
            ("M-n" . make-frame)
            ("M-t" . tab-new)
-           ("M-w" . my/quit)
+           ("M-w" . my/quit-dwim)
            ("M-m" . iconify-frame)
            ("M-h" . ns-do-hide-emacs)
            ("M-," . my/edit-emacs-init)))
@@ -432,7 +432,7 @@
   (evil-set-initial-state 'prog-mode 'normal)
   (global-set-key [remap evil-visual-block] #'scroll-up-command)
   (global-set-key [remap kill-ring-save] #'evil-yank)
-  (global-set-key [remap my/quit] #'evil-quit)
+  (global-set-key [remap my/quit-dwim] #'evil-quit)
   (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
   (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
   (evil-global-set-key 'motion (kbd "j") #'evil-next-visual-line)
@@ -891,7 +891,8 @@
   (:map org-mode-map
         ("C-c a" . org-agenda)
         ("C-c C-x m" . #'my/org-toggle-emphasis-marker-display)
-        ("C-c C-x l" . #'org-toggle-link-display))
+        ("C-c C-x l" . #'org-toggle-link-display)
+        ([remap org-emphasize] . my/org-emphasize-dwim))
   :custom
   ;; (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
@@ -909,6 +910,21 @@
   (org-fontify-done-headline t)
   (org-latex-create-formula-image-program 'dvisvgm)
   :preface
+  (defun my/org-emphasize-dwim (&optional char)
+    "DWIM (Do What I Mean) wrapper for `org-emphasize'.
+If there's an active region, apply emphasis to it.
+Otherwise, apply emphasis to the word at point.
+CHAR is the emphasis character to use."
+    (interactive)
+    (if (use-region-p)
+        (org-emphasize char)
+      (save-excursion
+        (let ((bounds (bounds-of-thing-at-point 'word)))
+          (when bounds
+            (goto-char (car bounds))
+            (set-mark (cdr bounds))
+            (org-emphasize char)
+            (deactivate-mark))))))
   (defun my/org-toggle-emphasis-marker-display ()
     "Toggle emphasis marker visibility."
     (interactive)
