@@ -325,6 +325,9 @@
         (set-face-attribute face nil :family family :box box)))
     (let ((box '(:line-width (1 . 2) :style released-button)))
       (set-face-attribute 'mode-line-highlight nil :box box))
+    (let ((bold-p nil))
+      (set-face-bold 'tab-bar-tab t)
+      (set-face-bold 'tab-bar-tab-inactive bold-p))
     (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim)))
   :init
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
@@ -348,11 +351,11 @@
   (tab-bar-close-button-show nil)
   (tab-bar-separator " ")
   :preface
-  (defun my/surround-in-whitespace (string _ _)
+  (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
-    (concat " " string " "))
+    (concat " " string))
   :init
-  (add-to-list 'tab-bar-tab-name-format-functions #'my/surround-in-whitespace)
+  (add-to-list 'tab-bar-tab-name-format-functions #'my/prepend-whitespace)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package doom-modeline
