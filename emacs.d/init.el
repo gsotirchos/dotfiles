@@ -269,13 +269,13 @@
   (modus-themes-italic-constructs t)
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
-     (bg-mode-line-active bg-main)
+     (bg-mode-line-active bg-dim)
      (bg-mode-line-inactive bg-main)
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
-     (bg-tab-current bg-main)
-     (bg-tab-other bg-inactive)
-     (bg-tab-bar bg-dim)
+     (bg-tab-bar bg-main)
+     (bg-tab-current bg-dim)
+     (bg-tab-other bg-main)
      (fg-heading-1 fg-main)
      (fg-heading-2 fg-main)
      (fg-heading-3 fg-main)
@@ -313,18 +313,19 @@
       ('light (modus-themes-load-theme (nth 0 modus-themes-to-toggle)))
       ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
   (defun my/customize-modus-themes ()
-    ;; (set-face-foreground 'fringe (modus-themes-get-color-value 'border))
-    (let ((family (face-attribute 'variable-pitch :family)))
-      (set-face-attribute 'mode-line nil :family family))
     (dolist (face
-             '(mode-line
+             '(tab-bar-tab
+               tab-bar-tab-inactive
+               mode-line
                mode-line-active
                mode-line-inactive
                modus-themes-button))
-      (let ((box '(:line-width -2 :style released-button)))
-        (set-face-attribute face nil :box box)))
-    (let ((box '(:line-width (-1 . -2) :style released-button)))
-      (set-face-attribute 'mode-line-highlight nil :box box)))
+      (let ((family (face-attribute 'variable-pitch :family))
+            (box '(:line-width 2 :style released-button)))
+        (set-face-attribute face nil :family family :box box)))
+    (let ((box '(:line-width (1 . 2) :style released-button)))
+      (set-face-attribute 'mode-line-highlight nil :box box))
+    (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim)))
   :init
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   (let ((theme (nth 0 modus-themes-to-toggle)))
@@ -343,9 +344,9 @@
   :custom
   (tab-bar-show 1)
   (tab-bar-format '(tab-bar-format-tabs tab-bar-format-align-right tab-bar-format-global))
-  (tab-bar-auto-width-max '((2000) 20))
+  (tab-bar-auto-width-max '((4000) 200))
   (tab-bar-close-button-show nil)
-  (tab-bar-separator nil)
+  (tab-bar-separator " ")
   :preface
   (defun my/surround-in-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
@@ -358,7 +359,7 @@
   ;; NEEDS: M-x nerd-icons-install-fonts
   :custom
   (doom-modeline-bar-width 0)
-  (doom-modeline-height 21)
+  (doom-modeline-height 18)
   (doom-modeline-window-width-limit 50)
   (doom-modeline-icon t)
   (doom-modeline-modal-icon nil)
@@ -375,13 +376,11 @@
   (defun my/customize-doom-modeline ()
     (when (bound-and-true-p doom-modeline-mode)
       (set-face-background 'doom-modeline-bar (face-background 'mode-line))
-      (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive))
-      ;; (force-mode-line-update t)
-      ))
+      (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive)))
+    (doom-modeline-mode t))
   :init
   (add-hook 'after-load-theme-hook #'my/customize-doom-modeline)
-  (add-hook 'doom-modeline-mode-hook #'my/customize-doom-modeline)
-  (doom-modeline-mode 1))
+  (my/customize-doom-modeline))
 
 (use-package dired
   :ensure nil
