@@ -503,7 +503,7 @@
 
 (use-package marginalia
   :after vertico
-  :custom (marginalia-field-width 80)
+  :custom (marginalia-field-width 180)
   :init (marginalia-mode))
 
 (use-package orderless
