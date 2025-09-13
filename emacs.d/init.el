@@ -189,8 +189,8 @@
 
 (add-hook 'after-load-theme-hook (lambda () (my/run-other-buffers-local-hooks 'after-load-theme-hook)))
 
-
 (advice-add 'load-theme :after #'my/run-after-load-theme-hook)
+
 
 ;; Initialize package sources
 
@@ -503,6 +503,7 @@
 
 (use-package marginalia
   :after vertico
+  :custom (marginalia-field-width 80)
   :init (marginalia-mode))
 
 (use-package orderless
