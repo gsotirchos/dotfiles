@@ -7,7 +7,7 @@
 (when (eq system-type 'darwin)
   (set-face-attribute 'default nil :family "Menlo" :height 130)
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150)
-  (defconst variable-pitch-line-spacing 2))
+  (defconst variable-pitch-line-spacing 4))
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 140)
   (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140)
@@ -33,7 +33,9 @@
 (defun my/edit-emacs-init ()
   "Edit `~/emacs.d/init.el'."
   (interactive)
-  (find-file-other-frame (expand-file-name "~/.emacs.d/init.el")))
+  (let ((init-file-path "/Users/george/.dotfiles/emacs.d/init.el"))
+    (unless (string-equal buffer-file-name init-file-path)
+      (find-file-other-frame (expand-file-name "~/.emacs.d/init.el")))))
 
 (dolist (key-binding
          '(("C-z" . nil)  ;; don't suspend-frame
@@ -126,11 +128,12 @@
               hscroll-margin 0
               scroll-step 1
               hscroll-step 1
+              line-spacing 2
               truncate-lines nil
               wrap-prefix "…"
               left-margin-width 1
               right-margin-width 0
-              fringe-mode 0
+              ;; fringe-mode 0
               indent-tabs-mode nil
               treemacs-no-png-images t)
 
@@ -140,6 +143,7 @@
 (unless (and (eq system-type 'darwin)
              (display-graphic-p))
   (menu-bar-mode 0))
+(fringe-mode 0)
 (set-fill-column 79)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
@@ -329,8 +333,8 @@
       (set-face-bold 'tab-bar-tab t)
       (set-face-bold 'tab-bar-tab-inactive bold-p))
     (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim)))
-  :init
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
+  :init
   (let ((theme (nth 0 modus-themes-to-toggle)))
     (if (fboundp 'modus-themes-load-theme)
         (modus-themes-load-theme theme)
@@ -354,7 +358,6 @@
   (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
     (concat " " string))
-  :init
   (add-to-list 'tab-bar-tab-name-format-functions #'my/prepend-whitespace)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
@@ -381,8 +384,8 @@
       (set-face-background 'doom-modeline-bar (face-background 'mode-line))
       (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive)))
     (doom-modeline-mode t))
-  :init
   (add-hook 'after-load-theme-hook #'my/customize-doom-modeline)
+  :init
   (my/customize-doom-modeline))
 
 (use-package dired
@@ -400,7 +403,7 @@
   (defun my/dired-mode-hook ()
     (dired-hide-details-mode 1)
     (hl-line-mode 1))
-  :init (add-hook 'dired-mode-hook #'my/dired-mode-hook))
+  (add-hook 'dired-mode-hook #'my/dired-mode-hook))
 
 (use-package undo-tree
   :demand t
@@ -447,6 +450,9 @@
 (use-package evil-collection
   :after evil
   :init (evil-collection-init))
+
+(use-package evil-surround
+  :init (global-evil-surround-mode 1))
 
 (use-package corfu
   :bind
@@ -654,13 +660,13 @@
     (setq show-trailing-whitespace t)
     ;; (modify-syntax-entry ?- "w")
     (modify-syntax-entry ?_ "w"))
-  :init (add-hook 'prog-mode-hook #'my/prog-mode-hook))
+  (add-hook 'prog-mode-hook #'my/prog-mode-hook))
 
 (use-package outline-indent
   :hook ((conf-mode yaml-ts-mode python-base-mode) . outline-indent-minor-mode)
   :custom (outline-blank-line t)
   ;; (outline-indent-ellipsis " ▼")
-  :init (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1))))
+  )
 
 (use-package rainbow-mode)
 
@@ -693,7 +699,7 @@
     (my/customize-rainbow-delimiters)
     (when (fboundp 'modus-themes-get-color-value)
       (add-hook 'after-load-theme-hook #'my/customize-rainbow-delimiters nil t)))
-  :init (add-hook 'rainbow-delimiters-mode-hook #'my/rainbow-delimiters-hook))
+  (add-hook 'rainbow-delimiters-mode-hook #'my/rainbow-delimiters-hook))
 
 (use-package indent-bars
   :hook (prog-mode yaml-ts-mode)
@@ -710,8 +716,7 @@
   (indent-bars-zigzag nil)
   (indent-bars-color-by-depth nil)
   (indent-bars-highlight-current-depth nil)
-  (indent-bars-display-on-blank-lines nil)
-  :init (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
+  (indent-bars-display-on-blank-lines nil))
 
 (use-package flymake
   :ensure nil
@@ -753,7 +758,6 @@
     (when (fboundp 'modus-themes-get-color-value)
       (my/customize-flymake)
       (add-hook 'after-load-theme-hook #'my/customize-flymake nil t)))
-  :init
   ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
   (add-hook 'flymake-mode-hook #'my/flymake-hook))
 
@@ -788,10 +792,10 @@
     (add-hook 'auto-save-hook 'diff-hl-update nil t)
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
     (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
+  (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
   :init
   (global-diff-hl-mode 1)
-  (diff-hl-margin-mode 1)
-  (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook))
+  (diff-hl-margin-mode 1))
 
 
 ;; Lisp
@@ -799,13 +803,15 @@
 (use-package emacs-lisp-mode
   :ensure nil
   :bind (:map my-personal-map ("(" . #'check-parens))
-  :custom (evil-shift-width 2))
+  :custom (evil-shift-width 2)
+  :preface (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
 
 
 ;; Python
 
 (use-package python
-  :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-")))
+  :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
+  :init (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1))))
 
 (use-package flymake-ruff
   :hook (python-base-mode . flymake-ruff-load)
@@ -815,7 +821,7 @@
     (when (derived-mode-p 'python-base-mode)
       (add-hook 'flymake-diagnostic-functions #'python-flymake nil t)
       (add-hook 'flymake-diagnostic-functions #'flymake-ruff--run-checker nil t)))
-  :init (add-hook 'eglot-managed-mode-hook #'my/eglot-python-flymake-hook))
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-python-flymake-hook))
 
 (use-package conda
   :preface
@@ -828,7 +834,7 @@
                                   (bound-and-true-p conda-env-current-path))))
       ;; (conda-mode-line-setup)
       (conda-env-activate-for-buffer)))
-  :init (add-hook 'find-file-hook #'my/conda-env-activate-for-buffer)
+  (add-hook 'find-file-hook #'my/conda-env-activate-for-buffer)
   ;; :config
   ;; (conda-env-initialize-interactive-shells)
   ;; (conda-env-initialize-eshell)
@@ -847,7 +853,7 @@
   (defun my/yaml-mode-hook ()
     (setq yaml-indent-offset 2)
     (flyspell-mode -1))
-  :init (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook))
+  (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook))
 
 
 ;; Bash
@@ -875,7 +881,6 @@
     (LaTeX-math-mode 1)
     (turn-on-reftex)
     (TeX-PDF-mode -1))
-  :init
   (add-hook 'LaTeX-mode-hook #'my/LaTeX-mode-hook)
   (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
 
@@ -964,7 +969,7 @@ CHAR is the emphasis character to use."
                auto-save-hook
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
-  :init (add-hook 'org-mode-hook #'my/org-mode-hook)
+  (add-hook 'org-mode-hook #'my/org-mode-hook)
   :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.7)))
 
 
