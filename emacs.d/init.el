@@ -5,14 +5,13 @@
 
 ;; Basic fonts
 (when (eq system-type 'darwin)
-  (set-face-attribute 'default nil :family "Menlo" :height 130)
-  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 130)
-  (defconst variable-pitch-line-spacing 4))
+  (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 130)
+  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 130))
 (when (eq system-type 'gnu/linux)
-  (set-face-attribute 'default nil :family "Ubuntu Mono" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140)
-  (defconst variable-pitch-line-spacing 4))
-(copy-face 'default 'fixed-pitch)
+  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 140)
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140))
+(defconst variable-pitch-line-spacing 4)
+(copy-face 'fixed-pitch 'default)
 
 ;; Basic keybindings
 (defun my/delete-back-to-indentation ()
@@ -192,7 +191,7 @@
 (advice-add 'load-theme :after #'my/run-after-load-theme-hook)
 
 
-;; Initialize package sources
+;; Initialize package sources and set up `use-package'
 
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
@@ -206,15 +205,15 @@
   (setq package-check-signature 'allow-unsigned)
   (package-refresh-contents))
 
-
-;; Packages
-
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-always-ensure t
       use-package-always-defer t)
+
+
+;; Basic packages
 
 (use-package no-littering
   :demand t
@@ -262,15 +261,13 @@
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-var-directory))
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
 
-
-;; Basic packages
-
 (use-package modus-themes
   :demand t
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
+  (modus-themes-variable-pitch-ui nil)
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
      (bg-mode-line-active bg-dim)
@@ -308,7 +305,9 @@
      (6 . (1.0))
      (7 . (1.0))
      (8 . (1.0))))
-  (org-todo-keyword-faces `(("WIP" . ,(modus-themes-get-color-value 'blue))))
+  (org-todo-keyword-faces
+   `(("WIP" . ,(modus-themes-get-color-value 'blue))
+     ("FAIL" . ,(modus-themes-get-color-value 'red))))
   :preface
   (setq modus-themes-to-toggle '(modus-operandi modus-vivendi-tinted))
   (defun my/apply-theme (appearance)
@@ -318,18 +317,21 @@
       ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
   (defun my/customize-modus-themes ()
     (dolist (face
-             '(tab-bar-tab
+             '(modus-themes-button
+               tab-bar-tab
                tab-bar-tab-inactive
                mode-line
                mode-line-active
-               mode-line-inactive
-               modus-themes-button))
-      (let ((family (face-attribute 'variable-pitch :family))
-            (box '(:line-width 2 :style released-button)))
-        (set-face-attribute face nil :family family :box box)))
-    (let ((box '(:line-width (1 . 2) :style released-button)))
-      (set-face-attribute 'mode-line-highlight nil :box box))
+               mode-line-inactive))
+      (set-face-attribute face nil
+                          :family (face-attribute 'variable-pitch :family)
+                          :box '(:line-width 2 :style released-button)))
+    (set-face-attribute 'mode-line-highlight nil
+                        :box '(:line-width (1 . 2) :style released-button))
+    (set-face-attribute 'tab-bar nil
+                        :family (face-attribute 'variable-pitch :family))
     (let ((bold-p nil))
+      (set-face-bold 'tab-bar bold-p)
       (set-face-bold 'tab-bar-tab t)
       (set-face-bold 'tab-bar-tab-inactive bold-p))
     (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim)))
@@ -341,6 +343,30 @@
       (load-theme theme)))
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
+
+(use-package mixed-pitch
+  :hook (Custom-mode
+         ;; read-extended-command-mode
+         ;; help-mode
+         helpful-mode
+         Info-mode)
+  :config
+  (dolist (face
+           '(font-lock-comment-face
+             rainbow-delimiters-base-face
+             rainbow-delimiters-base-error-face
+             rainbow-delimiters-mismatched-face
+             rainbow-delimiters-unmatched-face
+             rainbow-delimiters-depth-1-face
+             rainbow-delimiters-depth-2-face
+             rainbow-delimiters-depth-3-face
+             rainbow-delimiters-depth-4-face
+             rainbow-delimiters-depth-5-face
+             rainbow-delimiters-depth-6-face
+             rainbow-delimiters-depth-7-face
+             rainbow-delimiters-depth-8-face
+             rainbow-delimiters-depth-9-face))
+    (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
 
 (use-package ns-auto-titlebar
   :if (eq system-type 'darwin)
@@ -930,7 +956,7 @@
   (org-cycle-separator-lines 1)
   (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
   (org-agenda-files '("~/Documents/org" "~/Desktop"))
-  (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP")))
+  (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP" "FAIL")))
   (org-hide-emphasis-markers t)
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
