@@ -3,6 +3,16 @@
 
 ;;; Code:
 
+;; Less aggressive garmage collection during startup
+(setq gc-cons-threshold (* 100 1024 1024)) ;; 100 MB
+(add-hook 'emacs-startup-hook
+          (lambda () (setq gc-cons-threshold (* 800 1024)))) ;; 800 KB (default)
+
+;; Make native compilation quieter and asynchronous
+(when (fboundp 'native-comp-available-p)
+  (setq native-comp-async-report-warnings-errors nil)
+  (setq native-comp-deferred-compilation-deny-list '()))
+
 ;; Basic fonts
 (when (eq system-type 'darwin)
   (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 130)
@@ -197,15 +207,15 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
-(package-initialize)
-(unless package-archive-contents
-  (setq package-check-signature nil)
-  (package-refresh-contents)
-  (package-install 'gnu-elpa-keyring-update)
-  (setq package-check-signature 'allow-unsigned)
-  (package-refresh-contents))
 
 (unless (package-installed-p 'use-package)
+  (package-initialize)
+  (unless package-archive-contents
+    (setq package-check-signature nil)
+    (package-refresh-contents)
+    (package-install 'gnu-elpa-keyring-update)
+    (setq package-check-signature 'allow-unsigned)
+    (package-refresh-contents))
   (package-install 'use-package))
 
 (require 'use-package)
@@ -440,7 +450,6 @@
   (add-hook 'dired-mode-hook #'my/dired-mode-hook))
 
 (use-package undo-tree
-  :demand t
   :custom
   (undo-tree-auto-save-history t)
   (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
@@ -454,7 +463,6 @@
   (global-undo-tree-mode))
 
 (use-package evil
-  :demand t
   :init
   (setq evil-toggle-key "C-<escape>"
         evil-want-integration t
@@ -525,9 +533,10 @@
 (use-package vertico
   :custom
   (vertico-scroll-margin 1)
+  (vertico-mouse-mode t)
   (vertico-count 10)  ;; Limit to a fixed size
   (vertico-cycle t)  ;; Enable cycling for `vertico-next/previous'
-  (vertico-resize t)  ;; Grow and shrink the Vertico minibuffer
+  (vertico-resize 'grow-only)  ;; Grow and shrink the Vertico minibuffer
   :init (vertico-mode))
 
 (use-package vertico-directory
@@ -638,16 +647,35 @@
   :custom (which-key-idle-delay 1)
   :init (which-key-mode))
 
+(use-package diff-hl
+  :custom
+  (diff-hl-draw-borders nil)
+  :preface
+  (defun my/customize-diff-hl ()
+    (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
+    (face-remap-add-relative 'diff-hl-change 'diff-changed)
+    (face-remap-add-relative 'diff-hl-insert 'diff-added)
+    (face-remap-add-relative 'diff-hl-delete 'diff-removed))
+  (defun my/diff-hl-hook ()
+    (my/customize-diff-hl)
+    (add-hook 'auto-save-hook 'diff-hl-update nil t)
+    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
+    (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
+  (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
+  :init
+  (global-diff-hl-mode 1)
+  (diff-hl-margin-mode 1))
+
 (use-package magit
   :bind
   (:map my-personal-map
-   ("m" . magit)
-   :map magit-mode-map
-   ("M-n" . nil)
-   ("M-w" . nil)
-   :map magit-section-mode-map
-   ("<tab>" . magit-section-toggle)
-   ("C-<tab>" . nil))
+        ("m" . magit)
+        :map magit-mode-map
+        ("M-n" . nil)
+        ("M-w" . nil)
+        :map magit-section-mode-map
+        ("<tab>" . magit-section-toggle)
+        ("C-<tab>" . nil))
   :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :config
   (when (bound-and-true-p evil-mode)
@@ -834,25 +862,6 @@
   (ispell-dictionary "en_US")
   (ispell-local-dictionary "en_US"))
 
-(use-package diff-hl
-  :custom
-  (diff-hl-draw-borders nil)
-  :preface
-  (defun my/customize-diff-hl ()
-    (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
-    (face-remap-add-relative 'diff-hl-change 'diff-changed)
-    (face-remap-add-relative 'diff-hl-insert 'diff-added)
-    (face-remap-add-relative 'diff-hl-delete 'diff-removed))
-  (defun my/diff-hl-hook ()
-    (my/customize-diff-hl)
-    (add-hook 'auto-save-hook 'diff-hl-update nil t)
-    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
-    (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
-  (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
-  :init
-  (global-diff-hl-mode 1)
-  (diff-hl-margin-mode 1))
-
 
 ;; Lisp
 
@@ -914,7 +923,9 @@
 
 ;; Bash
 
-(add-to-list 'auto-mode-alist '("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode))
+(use-package sh-mode
+  :ensure nil
+  :mode ("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode))
 
 
 ;; LaTeX
