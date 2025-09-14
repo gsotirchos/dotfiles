@@ -536,24 +536,17 @@
   :bind (:map vertico-map ("DEL" . vertico-directory-delete-char)))
 
 (use-package marginalia
-  :after vertico
+  :bind (:map minibuffer-local-map
+              ("M-a" . marginalia-cycle))
   :custom (marginalia-field-width 180)
-  :init (marginalia-mode)
-  :config
-  (defun marginalia--affixate (_ annotator cands)
-    (marginalia--align
-     (with-selected-window (or (minibuffer-selected-window) (selected-window))
-       (cl-loop for cand in cands collect
-                (let ((ann (or (marginalia--cached
-                                marginalia--cache
-                                annotator
-                                cand)
-                               "")))
-                  (cons cand (if (string-blank-p ann)
-                                 ""
-                               ann)))))))
-  (set-face-attribute 'marginalia-documentation nil
-                      :family (face-attribute 'variable-pitch :family)))
+  :preface
+  (defun my/marginalia-mode-hook ()
+    (set-face-attribute 'marginalia-documentation nil
+                        :family (face-attribute 'variable-pitch :family)))
+  (add-hook 'after-load-theme-hook #'my/marginalia-mode-hook)
+  :init
+  (marginalia-mode)
+  (my/marginalia-mode-hook))
 
 (use-package orderless
   :custom
