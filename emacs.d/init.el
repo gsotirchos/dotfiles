@@ -6,7 +6,7 @@
 ;; Basic fonts
 (when (eq system-type 'darwin)
   (set-face-attribute 'default nil :family "Menlo" :height 130)
-  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 150)
+  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 130)
   (defconst variable-pitch-line-spacing 4))
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 140)
@@ -350,14 +350,21 @@
   :ensure nil
   :custom
   (tab-bar-show 1)
-  (tab-bar-format '(tab-bar-format-tabs tab-bar-format-align-right tab-bar-format-global))
-  (tab-bar-auto-width-max '((4000) 200))
+  (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
   (tab-bar-separator " ")
+  (tab-bar-auto-width t)
+  (tab-bar-auto-width-max nil)
+  (tab-bar-format-list
+   '(tab-bar-format-tabs
+     ;; tab-bar-format-align-right
+     tab-bar-format-global))
+  ;; (tab-bar-tab-name-truncated-max 200)
   :preface
   (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
     (concat " " string))
+  ;; (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated)
   (add-to-list 'tab-bar-tab-name-format-functions #'my/prepend-whitespace)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
@@ -728,33 +735,46 @@
   (flymake-show-diagnostics-at-end-of-line t)
   (flymake-indicator-type 'margins)
   (flymake-margin-indicators-string
-   '((note "i" flymake-note-echo-at-eol)
-     (warning "!" flymake-warning-echo-at-eol)
-     (error "X" flymake-error-echo-at-eol)))
+   '((note "i" flymake-note-echo)
+     (warning "!" flymake-warning-echo)
+     (error "!" flymake-error-echo)))
   :preface
   (defun my/customize-flymake ()
     (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
                         :foreground (modus-themes-get-color-value 'fg-dim)
-                        :background (modus-themes-get-color-value 'bg-main)
-                        :italic nil
-                        :bold nil
-                        :box nil)
+                        :box '(:line-width (5 . -1) :style flat-button)
+                        :height 120
+                        :italic t
+                        :inherit 'variable-pitch)
+    (dolist (face
+             '(flymake-eol-information-face
+               flymake-note-echo-at-eol
+               flymake-warning-echo-at-eol
+               flymake-error-echo-at-eol))
+      (set-face-attribute face nil :inherit 'flymake-end-of-line-diagnostics-face))
     (set-face-attribute 'flymake-eol-information-face nil
                         :foreground (modus-themes-get-color-value 'blue-faint)
-                        :background (modus-themes-get-color-value 'bg-blue-nuanced)
-                        :inherit 'flymake-end-of-line-diagnostics-face)
+                        :background (modus-themes-get-color-value 'bg-blue-nuanced))
     (set-face-attribute 'flymake-note-echo-at-eol nil
                         :foreground (modus-themes-get-color-value 'cyan-faint)
-                        :background (modus-themes-get-color-value 'bg-cyan-nuanced)
-                        :inherit 'flymake-end-of-line-diagnostics-face)
+                        :background (modus-themes-get-color-value 'bg-cyan-nuanced))
     (set-face-attribute 'flymake-warning-echo-at-eol nil
                         :foreground (modus-themes-get-color-value 'yellow-faint)
-                        :background (modus-themes-get-color-value 'bg-yellow-nuanced)
-                        :inherit 'flymake-end-of-line-diagnostics-face)
+                        :background (modus-themes-get-color-value 'bg-yellow-nuanced))
     (set-face-attribute 'flymake-error-echo-at-eol nil
                         :foreground (modus-themes-get-color-value 'red-faint)
-                        :background (modus-themes-get-color-value 'bg-red-nuanced)
-                        :inherit 'flymake-end-of-line-diagnostics-face))
+                        :background (modus-themes-get-color-value 'bg-red-nuanced))
+    (set-face-attribute 'flymake-note-echo nil :inherit 'flymake-note-echo-at-eol)
+    (set-face-attribute 'flymake-warning-echo nil :inherit 'flymake-warning-echo-at-eol)
+    (set-face-attribute 'flymake-error-echo nil :inherit 'flymake-error-echo-at-eol)
+    (dolist (face
+             '(flymake-note-echo
+               flymake-warning-echo
+               flymake-error-echo))
+      (set-face-attribute face nil
+                          :italic nil :bold t
+                          :box '(:line-width (1 . -1) :style flat-button)))
+    )
   (defun my/flymake-hook ()
     (when (fboundp 'modus-themes-get-color-value)
       (my/customize-flymake)
@@ -971,7 +991,7 @@ CHAR is the emphasis character to use."
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
-  :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.7)))
+  :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
 
 
 ;; Startup time
