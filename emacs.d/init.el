@@ -344,29 +344,30 @@
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
 
-(use-package mixed-pitch
-  :hook (Custom-mode
-         ;; read-extended-command-mode
-         ;; help-mode
-         helpful-mode
-         Info-mode)
-  :config
-  (dolist (face
-           '(font-lock-comment-face
-             rainbow-delimiters-base-face
-             rainbow-delimiters-base-error-face
-             rainbow-delimiters-mismatched-face
-             rainbow-delimiters-unmatched-face
-             rainbow-delimiters-depth-1-face
-             rainbow-delimiters-depth-2-face
-             rainbow-delimiters-depth-3-face
-             rainbow-delimiters-depth-4-face
-             rainbow-delimiters-depth-5-face
-             rainbow-delimiters-depth-6-face
-             rainbow-delimiters-depth-7-face
-             rainbow-delimiters-depth-8-face
-             rainbow-delimiters-depth-9-face))
-    (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
+;; TODO: use variable-pitch face in Info-mode and Custom-mode
+;; (use-package mixed-pitch
+;;   :hook (Custom-mode
+;;          ;; read-extended-command-mode
+;;          ;; help-mode
+;;          ;; helpful-mode
+;;          Info-mode)
+;;   :config
+;;   (dolist (face
+;;            '(font-lock-comment-face
+;;              rainbow-delimiters-base-face
+;;              rainbow-delimiters-base-error-face
+;;              rainbow-delimiters-mismatched-face
+;;              rainbow-delimiters-unmatched-face
+;;              rainbow-delimiters-depth-1-face
+;;              rainbow-delimiters-depth-2-face
+;;              rainbow-delimiters-depth-3-face
+;;              rainbow-delimiters-depth-4-face
+;;              rainbow-delimiters-depth-5-face
+;;              rainbow-delimiters-depth-6-face
+;;              rainbow-delimiters-depth-7-face
+;;              rainbow-delimiters-depth-8-face
+;;              rainbow-delimiters-depth-9-face))
+;;     (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
 
 (use-package ns-auto-titlebar
   :if (eq system-type 'darwin)
@@ -537,7 +538,22 @@
 (use-package marginalia
   :after vertico
   :custom (marginalia-field-width 180)
-  :init (marginalia-mode))
+  :init (marginalia-mode)
+  :config
+  (defun marginalia--affixate (_ annotator cands)
+    (marginalia--align
+     (with-selected-window (or (minibuffer-selected-window) (selected-window))
+       (cl-loop for cand in cands collect
+                (let ((ann (or (marginalia--cached
+                                marginalia--cache
+                                annotator
+                                cand)
+                               "")))
+                  (cons cand (if (string-blank-p ann)
+                                 ""
+                               ann)))))))
+  (set-face-attribute 'marginalia-documentation nil
+                      :family (face-attribute 'variable-pitch :family)))
 
 (use-package orderless
   :custom
