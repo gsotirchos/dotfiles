@@ -3,224 +3,247 @@
 
 ;;; Code:
 
-;; Less aggressive garmage collection during startup
-(setq gc-cons-threshold (* 100 1024 1024)) ;; 100 MB
-(add-hook 'emacs-startup-hook
-          (lambda () (setq gc-cons-threshold (* 800 1024)))) ;; 800 KB (default)
 
-;; Make native compilation quieter and asynchronous
-(when (fboundp 'native-comp-available-p)
-  (setq native-comp-async-report-warnings-errors nil)
-  (setq native-comp-deferred-compilation-deny-list '()))
+(use-package emacs
+  :ensure nil
+  :bind
+  (("C-z" . nil) ;; don't suspend-frame
+   ("S-<wheel-down>" . ignore)
+   ("S-<wheel-up>" . ignore)
+   ("C-<wheel-down>" . ignore)
+   ("C-<wheel-up>" . ignore)
+   ("M-<wheel-down>" . ignore)
+   ("M-<wheel-up>" . ignore)
+   ("C-<delete>" . ignore)
+   ("C-<right>" . ignore)
+   ("C-<left>" . ignore)
+   ("C-<up>" . ignore)
+   ("C-<down>" . ignore)
+   ("M-<backspace>" . my/delete-back-to-indentation)
+   ("M-<delete>" . kill-line)
+   ("M-<right>" . end-of-visual-line)
+   ("M-<left>" . beginning-of-visual-line)
+   ("A-<backspace>" . backward-kill-word)
+   ("A-<delete>" . kill-word)
+   ("A-<right>" . right-word)
+   ("A-<left>" . left-word)
+   ("C-M-f" . toggle-frame-fullscreen)
+   ("M-u" . universal-argument)
+   ("M-c" . kill-ring-save)
+   ("M-<escape>" . next-window-any-frame)
+   ("M-~" . previous-window-any-frame)
+   ("M-n" . make-frame)
+   ("M-t" . tab-new)
+   ("M-w" . my/quit-dwim)
+   ("M-m" . iconify-frame)
+   ("M-h" . ns-do-hide-emacs)
+   ("M-," . my/edit-emacs-init)
+   :map help-map
+   ("=" . describe-char)
+   :map minibuffer-mode-map
+   ("<escape>" . abort-recursive-edit)
+   ("C-u" . scroll-down-command)
+   ("C-d" . scroll-up-command)
+   ("<prior>" . scroll-down-command)
+   ("<next>" . scroll-up-command))
 
-;; Basic fonts
-(when (eq system-type 'darwin)
-  (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 130)
-  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 130))
-(when (eq system-type 'gnu/linux)
-  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140))
-(defconst variable-pitch-line-spacing 4)
-(copy-face 'fixed-pitch 'default)
+  :preface
+  ;; Custom definitions
+  (defun my/delete-back-to-indentation ()
+    "Kill back to the first non-whitespace character."
+    (interactive)
+    (kill-line 0)
+    (indent-for-tab-command))
 
-;; Basic keybindings
-(defun my/delete-back-to-indentation ()
-  "Kill back to the first non-whitespace character."
-  (interactive)
-  (kill-line 0)
-  (indent-for-tab-command))
+  (defun my/quit-dwim ()
+    "Close the current tab or frame."
+    (interactive)
+    (condition-case nil
+        (tab-close)
+      (error (condition-case nil
+                 (delete-frame)
+               (error nil)))))
 
-(defun my/quit-dwim ()
-  "Close the current tab or frame."
-  (interactive)
-  (condition-case nil
-      (tab-close)
-    (error (condition-case nil
-               (delete-frame)
-             (error nil)))))
+  (defun my/edit-emacs-init ()
+    "Edit `~/emacs.d/init.el'."
+    (interactive)
+    (let ((init-file-path "/Users/george/.dotfiles/emacs.d/init.el"))
+      (unless (string-equal buffer-file-name init-file-path)
+        (find-file-other-frame (expand-file-name "~/.emacs.d/init.el")))))
 
-(defun my/edit-emacs-init ()
-  "Edit `~/emacs.d/init.el'."
-  (interactive)
-  (let ((init-file-path "/Users/george/.dotfiles/emacs.d/init.el"))
-    (unless (string-equal buffer-file-name init-file-path)
-      (find-file-other-frame (expand-file-name "~/.emacs.d/init.el")))))
+  ;; Hook management utilities
+  (defun my/run-other-buffers-local-hooks (hook)
+    "Run local HOOK in all buffers except the current one."
+    (interactive "aHook: ")
+    (dolist (buffer (buffer-list))
+      (unless (eq buffer (current-buffer))
+        (with-current-buffer buffer
+          (my/run-local-hooks hook)))))
 
-(dolist (key-binding
-         '(("C-z" . nil)  ;; don't suspend-frame
-           ("S-<wheel-down>" . ignore)
-           ("S-<wheel-up>" . ignore)
-           ("C-<wheel-down>" . ignore)
-           ("C-<wheel-up>" . ignore)
-           ("M-<wheel-down>" . ignore)
-           ("M-<wheel-up>" . ignore)
-           ("C-<delete>" . ignore)
-           ("C-<right>" . ignore)
-           ("C-<left>" . ignore)
-           ("C-<up>" . ignore)
-           ("C-<down>" . ignore)
-           ("M-<backspace>" . my/delete-back-to-indentation)
-           ("M-<delete>" . kill-line)
-           ("M-<right>" . end-of-visual-line)
-           ("M-<left>" . beginning-of-visual-line)
-           ("A-<backspace>" . backward-kill-word)
-           ("A-<delete>" . kill-word)
-           ("A-<right>" . right-word)
-           ("A-<left>" . left-word)
-           ("C-M-f" . toggle-frame-fullscreen)
-           ("M-u" . universal-argument)
-           ("M-c" . kill-ring-save)
-           ("M-<escape>" . next-window-any-frame)
-           ("M-~" . previous-window-any-frame)
-           ("M-n" . make-frame)
-           ("M-t" . tab-new)
-           ("M-w" . my/quit-dwim)
-           ("M-m" . iconify-frame)
-           ("M-h" . ns-do-hide-emacs)
-           ("M-," . my/edit-emacs-init)))
-  (keymap-global-set (car key-binding) (cdr key-binding)))
+  (defun my/run-local-hooks (hook)
+    "Run only the buffer-local functions of HOOK."
+    (interactive "aHook: ")
+    (when (local-variable-p hook)
+      (dolist (func (symbol-value hook))
+        (when (functionp func)
+          (funcall func)))))
 
-(dolist (key-binding
-         '(("<escape>" . abort-recursive-edit)  ;; or 'abort-minibuffers
-           ;; ("C-n" . next-line-or-history-element)
-           ;; ("C-p" . previous-line-or-history-element)
-           ("C-u" . scroll-down-command)
-           ("C-d" . scroll-up-command)
-           ("<prior>" . scroll-down-command)
-           ("<next>" . scroll-up-command)))
-  (keymap-set minibuffer-mode-map (car key-binding) (cdr key-binding)))
+  (defvar after-load-theme-hook nil
+    "Hook that runs after a color theme is loaded using `load-theme'.")
 
-;; Personal keymaps
-(defvar-keymap my-file-commands-map
-  :doc "My file commands map."
-  "r" '("recent files" . recentf))
+  (defun my/run-after-load-theme-hook (&rest _)
+    "Run `after-load-theme-hook`."
+    (run-hooks 'after-load-theme-hook))
 
-(defvar-keymap my-desktop-commands-map
-  :doc "My desktop commands map."
-  "r" '("read desktop". desktop-read)
-  "s" '("save desktop". desktop-save))
+  (add-hook 'after-load-theme-hook
+            (lambda () (my/run-other-buffers-local-hooks 'after-load-theme-hook)))
 
-(defvar-keymap my-personal-map
-  :doc "My prefix map."
-  "f" `("prefix files" . ,my-file-commands-map)
-  "d" `("prefix desktop" . ,my-desktop-commands-map)
-  "w" '("show whitespace" . whitespace-mode))
+  (advice-add 'load-theme :after #'my/run-after-load-theme-hook)
 
-(defvar my/prefix "C-c")
-(keymap-set global-map my/prefix my-personal-map)
-(keymap-set help-map "=" 'describe-char)
+  ;; Personal keymaps
+  (defvar-keymap my/file-commands-map
+    :doc "My file commands map."
+    "r" '("recent files" . recentf))
 
-;; Defaults
-(if (eq system-type 'darwin)
-  (setq-default mac-mouse-wheel-smooth-scroll t
-                mouse-wheel-flip-direction t
-                mouse-wheel-tilt-scroll t
-                ns-command-modifier 'meta
-                ns-option-modifier 'alt
-                x-super-keysym 'alt))
+  (defvar-keymap my/desktop-commands-map
+    :doc "My desktop commands map."
+    "r" '("read desktop". desktop-read)
+    "s" '("save desktop". desktop-save))
 
-(setq-default inhibit-startup-message t
-              initial-scratch-message nil
-              initial-major-mode 'fundamental-mode
-              desktop-save-mode 1
-              auto-save-visited-file-name t
-              auto-save-timeout 1
-              make-backup-files nil
-              set-mark-command-repeat-pop t
-              large-file-warning-threshold nil
-              vc-follow-symlinks t
-              ad-redefinition-action 'accept
-              use-short-answers t
-              confirm-kill-emacs #'yes-or-no-p
-              global-auto-revert-non-file-buffers t
-              scroll-margin 0
-              hscroll-margin 0
-              scroll-step 1
-              hscroll-step 1
-              line-spacing 2
-              truncate-lines nil
-              wrap-prefix "…"
-              left-margin-width 1
-              right-margin-width 0
-              ;; fringe-mode 0
-              indent-tabs-mode nil
-              treemacs-no-png-images t)
+  (defvar-keymap my/personal-map
+    :doc "My prefix map."
+    "f" `("prefix files" . ,my/file-commands-map)
+    "d" `("prefix desktop" . ,my/desktop-commands-map)
+    "w" '("show whitespace" . whitespace-mode))
 
-(set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
-(set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
+  (keymap-set global-map "C-c" my/personal-map)
 
-(unless (and (eq system-type 'darwin)
-             (display-graphic-p))
-  (menu-bar-mode 0))
-(fringe-mode 0)
-(set-fill-column 79)
-(tool-bar-mode 0)
-(scroll-bar-mode 0)
-(global-visual-line-mode 0)
-(xterm-mouse-mode 1)
-(column-number-mode 1)
-(pixel-scroll-precision-mode 1)
+  ;; Other Hooks
+  (add-hook 'Custom-mode-hook #'variable-pitch-mode)
+  (add-hook 'Info-mode-hook #'variable-pitch-mode)
 
-;; Frame parameters to ignore when saving/loading desktop sessions
-(dolist (filter
-         '(foreground-color
-           background-color
-           font
-           cursor-color
-           background-mode
-           ns-appearance))
-  (add-to-list 'frameset-filter-alist (cons filter :never)))
+  ;; Startup time
+  (defun my/display-startup-stats ()
+    "Display startup stats."
+    (message
+     "%d packages loaded in %ss with %d garbage collections."
+     (length package-activated-list)
+     (emacs-init-time "%.2f")
+     gcs-done))
 
-;; Hook management utilities
+  (add-hook 'emacs-startup-hook #'my/display-startup-stats)
 
-(defun my/run-other-buffers-local-hooks (hook)
-  "Run local HOOK in all buffers except the current one."
-  (interactive "aHook: ")
-  (dolist (buffer (buffer-list))
-    (unless (eq buffer (current-buffer))
-      (with-current-buffer buffer
-        (my/run-local-hooks hook)))))
+  :init ;; These settings are applied before emacs loads.
+  ;; Less aggressive garbage collection during startup
+  (setq gc-cons-threshold (* 100 1024 1024)) ;; 100 MB
 
-(defun my/run-local-hooks (hook)
-  "Run only the buffer-local functions of HOOK."
-  (interactive "aHook: ")
-  (when (local-variable-p hook)
-    (dolist (func (symbol-value hook))
-      (when (functionp func)
-        (funcall func)))))
+  ;; Make native compilation quieter and asynchronous
+  (when (fboundp 'native-comp-available-p)
+    (setq native-comp-async-report-warnings-errors nil)
+    (setq native-comp-deferred-compilation-deny-list '()))
 
-(defvar after-load-theme-hook nil
-  "Hook that runs after a color theme is loaded using `load-theme'.")
+  ;; Set default values for variables
+  (if (eq system-type 'darwin)
+      (setq-default mac-mouse-wheel-smooth-scroll t
+                    mouse-wheel-flip-direction t
+                    mouse-wheel-tilt-scroll t
+                    ns-command-modifier 'meta
+                    ns-option-modifier 'alt
+                    x-super-keysym 'alt))
 
-(defun my/run-after-load-theme-hook (&rest _)
-  "Run `after-load-theme-hook`."
-  (run-hooks 'after-load-theme-hook))
+  (setq-default inhibit-startup-message t
+                initial-scratch-message nil
+                initial-major-mode 'fundamental-mode
+                desktop-save-mode 1
+                auto-save-visited-file-name t
+                auto-save-timeout 1
+                make-backup-files nil
+                set-mark-command-repeat-pop t
+                large-file-warning-threshold nil
+                vc-follow-symlinks t
+                ad-redefinition-action 'accept
+                use-short-answers t
+                confirm-kill-emacs #'yes-or-no-p
+                global-auto-revert-non-file-buffers t
+                scroll-margin 0
+                hscroll-margin 0
+                scroll-step 1
+                hscroll-step 1
+                line-spacing 2
+                truncate-lines nil
+                wrap-prefix "…"
+                left-margin-width 1
+                right-margin-width 0
+                indent-tabs-mode nil
+                treemacs-no-png-images t)
 
-(add-hook 'after-load-theme-hook (lambda () (my/run-other-buffers-local-hooks 'after-load-theme-hook)))
+  ;; Remap major modes for treesitter
+  (setq major-mode-remap-alist
+        '((python-mode . python-ts-mode)
+          (sh-mode . bash-ts-mode)
+          (yaml-mode . yaml-ts-mode)))
 
-(advice-add 'load-theme :after #'my/run-after-load-theme-hook)
+  ;; UI Tweaks
+  (unless (and (eq system-type 'darwin)
+               (display-graphic-p))
+    (menu-bar-mode 0))
+  (tool-bar-mode 0)
+  (scroll-bar-mode 0)
+  (fringe-mode 0)
+  (set-fill-column 79)
+  (global-visual-line-mode 0)
+  (xterm-mouse-mode 1)
+  (column-number-mode 1)
+  (pixel-scroll-precision-mode 1)
 
+  ;; Display table for wrap prefix
+  (set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
+  (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
 
-;; Initialize package sources and set up `use-package'
+  ;; Frame parameters to ignore when saving/loading desktop sessions
+  (dolist (filter
+           '(foreground-color
+             background-color
+             font
+             cursor-color
+             background-mode
+             ns-appearance))
+    (add-to-list 'frameset-filter-alist (cons filter :never)))
 
-(require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
+  :config ;; These settings are applied after emacs loads.
+  ;; Garbage collection reset
+  (add-hook 'emacs-startup-hook
+            (lambda () (setq gc-cons-threshold (* 800 1024))))
 
-(unless (package-installed-p 'use-package)
-  (package-initialize)
-  (unless package-archive-contents
-    (setq package-check-signature nil)
-    (package-refresh-contents)
-    (package-install 'gnu-elpa-keyring-update)
-    (setq package-check-signature 'allow-unsigned)
-    (package-refresh-contents))
-  (package-install 'use-package))
+  ;; Basic fonts
+  (when (eq system-type 'darwin)
+    (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 130)
+    (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 130))
+  (when (eq system-type 'gnu/linux)
+    (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 140)
+    (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140))
+  (defconst variable-pitch-line-spacing 4)
+  (copy-face 'fixed-pitch 'default)
 
-(require 'use-package)
-(setq use-package-always-ensure t
-      use-package-always-defer t)
+  ;; Initialize package sources and set up `use-package'
+  (require 'package)
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
+
+  (unless (package-installed-p 'use-package)
+    (package-initialize)
+    (unless package-archive-contents
+      (setq package-check-signature nil)
+      (package-refresh-contents)
+      (package-install 'gnu-elpa-keyring-update)
+      (setq package-check-signature 'allow-unsigned)
+      (package-refresh-contents))
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t
+        use-package-always-defer t))
 
 
 ;; Basic packages
@@ -610,7 +633,8 @@
   (("C-h B" . embark-bindings)  ;; alternative for `describe-bindings'
    :map minibuffer-local-map
    ("C-c" . embark-act)  ;; begin the embark process
-   ("C-<return>" . embark-dwim)))  ;; run the default action
+   ("C-<return>" . embark-dwim))  ;; run the default action
+  )
 
 (use-package embark-consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
@@ -628,7 +652,7 @@
    ([remap describe-command] . helpful-command)
    ([remap describe-variable] . helpful-variable)
    ([remap describe-key] . helpful-key)
-   :map my-personal-map
+   :map my/personal-map
    ("C-d" . helpful-at-point))
   :custom (warning-minimum-level :error))
 
@@ -657,7 +681,7 @@
 
 (use-package magit
   :bind
-  (:map my-personal-map
+  (:map my/personal-map
         ("m" . magit)
         :map magit-mode-map
         ("M-n" . nil)
@@ -671,15 +695,7 @@
     (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
 
 
-;; Treesitter
-
-(setq major-mode-remap-alist
-      '((python-mode . python-ts-mode)
-        (sh-mode . bash-ts-mode)
-        (yaml-mode . yaml-ts-mode)))
-
-
-;; LSP
+;; Programming
 
 (use-package eglot
   :ensure nil
@@ -707,9 +723,6 @@
   ;; (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
   :config (add-to-list 'eglot-server-programs
                        `(python-base-mode . ("pyright-langserver" "--stdio"))))
-
-
-;; Programming
 
 (use-package prog-mode
   :ensure nil
@@ -856,7 +869,7 @@
 
 (use-package emacs-lisp-mode
   :ensure nil
-  :bind (:map my-personal-map ("(" . #'check-parens))
+  :bind (:map my/personal-map ("(" . #'check-parens))
   :custom (evil-shift-width 2)
   :preface (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
 
@@ -1028,21 +1041,6 @@ CHAR is the emphasis character to use."
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
 
-
-(add-hook 'Custom-mode-hook #'variable-pitch-mode)
-(add-hook 'Info-mode-hook #'variable-pitch-mode)
-
-
-;; Startup time
-(defun my/display-startup-stats ()
-  "Display startup stats."
-  (message
-   "%d packages loaded in %ss with %d garbage collections."
-   (length package-activated-list)
-   (emacs-init-time "%.2f")
-   gcs-done))
-
-(add-hook 'emacs-startup-hook #'my/display-startup-stats)
 
 (provide 'init)
 ;;; init.el ends here
