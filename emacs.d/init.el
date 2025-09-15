@@ -272,21 +272,22 @@
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
 
 (use-package modus-themes
-  :demand t
+  ;; :demand t
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
-  (modus-themes-variable-pitch-ui nil)
+  (modus-themes-variable-pitch-ui t)
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
      (bg-mode-line-active bg-dim)
      (bg-mode-line-inactive bg-main)
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
+     (header-line bg-dim)
      (bg-tab-bar bg-main)
      (bg-tab-current bg-dim)
-     (bg-tab-other bg-main)
+     (bg-tab-other bg-dim)
      (fg-heading-1 fg-main)
      (fg-heading-2 fg-main)
      (fg-heading-3 fg-main)
@@ -326,25 +327,38 @@
       ('light (modus-themes-load-theme (nth 0 modus-themes-to-toggle)))
       ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
   (defun my/customize-modus-themes ()
-    (dolist (face
-             '(modus-themes-button
-               tab-bar-tab
-               tab-bar-tab-inactive
-               mode-line
-               mode-line-active
-               mode-line-inactive))
-      (set-face-attribute face nil
-                          :family (face-attribute 'variable-pitch :family)
-                          :box '(:line-width 2 :style released-button)))
-    (set-face-attribute 'mode-line-highlight nil
-                        :box '(:line-width (1 . 2) :style released-button))
-    (set-face-attribute 'tab-bar nil
-                        :family (face-attribute 'variable-pitch :family))
+    (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim))
     (let ((bold-p nil))
       (set-face-bold 'tab-bar bold-p)
       (set-face-bold 'tab-bar-tab t)
       (set-face-bold 'tab-bar-tab-inactive bold-p))
-    (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim)))
+    (let ((family (face-attribute 'variable-pitch :family)))
+      (dolist (face
+               '(modus-themes-button
+                 tab-bar
+                 tab-bar-tab
+                 tab-bar-tab-inactive
+                 header-line
+                 header-line-highlight
+                 mode-line
+                 mode-line-highlight
+                 mode-line-active
+                 mode-line-inactive))
+        (set-face-attribute face nil :family family)))
+    (let ((box-released '(:line-width 2 :style released-button))
+          (box-pressed '(:line-width 2 :style pressed-button))
+          (box-thinner '(:line-width (1 . 2) :style released-button)))
+      (dolist (face
+               '(modus-themes-button
+                 tab-bar-tab-inactive
+                 header-line
+                 mode-line
+                 mode-line-active
+                 mode-line-inactive))
+        (set-face-attribute face nil :box box-released))
+      (set-face-attribute 'tab-bar-tab nil :box box-pressed)
+      (set-face-attribute 'mode-line-highlight nil :box box-thinner)
+      (set-face-attribute 'header-line-highlight nil :box box-thinner)))
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   :init
   (let ((theme (nth 0 modus-themes-to-toggle)))
@@ -353,31 +367,6 @@
       (load-theme theme)))
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
-
-;; TODO: use variable-pitch face in Info-mode and Custom-mode
-;; (use-package mixed-pitch
-;;   :hook (Custom-mode
-;;          ;; read-extended-command-mode
-;;          ;; help-mode
-;;          ;; helpful-mode
-;;          Info-mode)
-;;   :config
-;;   (dolist (face
-;;            '(font-lock-comment-face
-;;              rainbow-delimiters-base-face
-;;              rainbow-delimiters-base-error-face
-;;              rainbow-delimiters-mismatched-face
-;;              rainbow-delimiters-unmatched-face
-;;              rainbow-delimiters-depth-1-face
-;;              rainbow-delimiters-depth-2-face
-;;              rainbow-delimiters-depth-3-face
-;;              rainbow-delimiters-depth-4-face
-;;              rainbow-delimiters-depth-5-face
-;;              rainbow-delimiters-depth-6-face
-;;              rainbow-delimiters-depth-7-face
-;;              rainbow-delimiters-depth-8-face
-;;              rainbow-delimiters-depth-9-face))
-;;     (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
 
 (use-package ns-auto-titlebar
   :if (eq system-type 'darwin)
@@ -394,7 +383,7 @@
   (tab-bar-auto-width-max nil)
   (tab-bar-format-list
    '(tab-bar-format-tabs
-     ;; tab-bar-format-align-right
+     tab-bar-format-align-right
      tab-bar-format-global))
   ;; (tab-bar-tab-name-truncated-max 200)
   :preface
@@ -409,9 +398,9 @@
   ;; NEEDS: M-x nerd-icons-install-fonts
   :custom
   (doom-modeline-bar-width 0)
-  (doom-modeline-height 18)
+  (doom-modeline-height 0)
   (doom-modeline-window-width-limit 50)
-  (doom-modeline-icon t)
+  (doom-modeline-icon nil)
   (doom-modeline-modal-icon nil)
   (doom-modeline-workspace-name nil)
   (doom-modeline-major-mode-icon nil)
@@ -1038,6 +1027,10 @@ CHAR is the emphasis character to use."
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
+
+
+(add-hook 'Custom-mode-hook #'variable-pitch-mode)
+(add-hook 'Info-mode-hook #'variable-pitch-mode)
 
 
 ;; Startup time
