@@ -344,7 +344,7 @@
      (8 . (1.0))))
   (org-todo-keyword-faces
    `(("WIP" . ,(modus-themes-get-color-value 'blue))
-     ("FAIL" . ,(modus-themes-get-color-value 'red))))
+     ("FAIL" . ,(modus-themes-get-color-value 'red-intense))))
   :preface
   (setq modus-themes-to-toggle '(modus-operandi modus-vivendi-tinted))
   (defun my/apply-theme (appearance)
