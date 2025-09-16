@@ -70,9 +70,20 @@
 
   (add-hook 'emacs-startup-hook #'my/display-startup-stats)
 
+  (defun my/variable-pitch-line-spacing-advice (&rest _)
+    "Set `line-spacing' when `variable-pitch-mode' is toggled."
+    (if variable-pitch-mode
+        (when (boundp 'variable-pitch-line-spacing)
+          (setq-local line-spacing variable-pitch-line-spacing))
+      (setq line-spacing nil)))
+
+  (advice-add 'variable-pitch-mode :after #'my/variable-pitch-line-spacing-advice)
+
   ;; Other Hooks
   (add-hook 'Custom-mode-hook #'variable-pitch-mode)
   (add-hook 'Info-mode-hook #'variable-pitch-mode)
+  (add-hook 'text-mode-hook #'variable-pitch-mode)
+  (add-hook 'org-mode-hook #'variable-pitch-mode)
 
   ;; Personal keymaps
   (defvar-keymap my/file-commands-map
@@ -88,7 +99,8 @@
     :doc "My prefix map."
     "f" `("prefix files" . ,my/file-commands-map)
     "d" `("prefix desktop" . ,my/desktop-commands-map)
-    "w" '("show whitespace" . whitespace-mode))
+    "w" 'whitespace-mode
+    "C-d" 'help-follow-symbol)
 
   :bind-keymap ("C-c" . my/personal-map)
 
@@ -666,8 +678,7 @@
    ([remap describe-command] . helpful-command)
    ([remap describe-variable] . helpful-variable)
    ([remap describe-key] . helpful-key)
-   :map my/personal-map
-   ("C-d" . helpful-at-point))
+   ([remap help-follow-symbol] . helpful-at-point))
   :custom (warning-minimum-level :error))
 
 (use-package which-key
@@ -883,7 +894,7 @@
 
 (use-package emacs-lisp-mode
   :ensure nil
-  :bind (:map my/personal-map ("(" . #'check-parens))
+  :bind (:map my/personal-map ("(" . 'check-parens))
   :custom (evil-shift-width 2)
   :preface (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
 
@@ -1042,9 +1053,6 @@ CHAR is the emphasis character to use."
     (font-lock-update))
   (defun my/org-mode-hook ()
     ;; (auto-fill-mode 1)
-    (variable-pitch-mode 1)
-    (when (boundp 'variable-pitch-line-spacing)
-      (setq-local line-spacing variable-pitch-line-spacing))
     (my/customize-org-mode)
     (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
     (dolist (hook
