@@ -6,50 +6,6 @@
 
 (use-package emacs
   :ensure nil
-  :bind
-  (("C-z" . nil) ;; don't suspend-frame
-   ("S-<wheel-down>" . ignore)
-   ("S-<wheel-up>" . ignore)
-   ("C-<wheel-down>" . ignore)
-   ("C-<wheel-up>" . ignore)
-   ("M-<wheel-down>" . ignore)
-   ("M-<wheel-up>" . ignore)
-   ("C-<delete>" . ignore)
-   ("C-<right>" . ignore)
-   ("C-<left>" . ignore)
-   ("C-<up>" . ignore)
-   ("C-<down>" . ignore)
-   ("M-<backspace>" . my/delete-back-to-indentation)
-   ("M-<delete>" . kill-line)
-   ("M-<right>" . end-of-visual-line)
-   ("M-<left>" . beginning-of-visual-line)
-   ("A-<backspace>" . backward-kill-word)
-   ("A-<delete>" . kill-word)
-   ("A-<kp-delete>" . kill-word)
-   ("A-<right>" . right-word)
-   ("A-<left>" . left-word)
-   ("A-<escape>" . ns-next-frame)
-   ("A-~" . ns-prev-frame)
-   ("C-M-f" . toggle-frame-fullscreen)
-   ("M-u" . universal-argument)
-   ("M-c" . kill-ring-save)
-   ("M-<escape>" . next-window-any-frame)
-   ("M-~" . previous-window-any-frame)
-   ("M-n" . make-frame)
-   ("M-t" . tab-new)
-   ("M-w" . my/quit-dwim)
-   ("M-m" . iconify-frame)
-   ("M-h" . ns-do-hide-emacs)
-   ("M-," . my/edit-emacs-init)
-   :map help-map
-   ("=" . describe-char)
-   :map minibuffer-mode-map
-   ("<escape>" . abort-recursive-edit)
-   ("C-u" . scroll-down-command)
-   ("C-d" . scroll-up-command)
-   ("<prior>" . scroll-down-command)
-   ("<next>" . scroll-up-command))
-
   :preface
   ;; Custom definitions
   (defun my/delete-back-to-indentation ()
@@ -103,6 +59,21 @@
 
   (advice-add 'load-theme :after #'my/run-after-load-theme-hook)
 
+  ;; Startup time
+  (defun my/display-startup-stats ()
+    "Display startup stats."
+    (message
+     "%d packages loaded in %ss with %d garbage collections."
+     (length package-activated-list)
+     (emacs-init-time "%.2f")
+     gcs-done))
+
+  (add-hook 'emacs-startup-hook #'my/display-startup-stats)
+
+  ;; Other Hooks
+  (add-hook 'Custom-mode-hook #'variable-pitch-mode)
+  (add-hook 'Info-mode-hook #'variable-pitch-mode)
+
   ;; Personal keymaps
   (defvar-keymap my/file-commands-map
     :doc "My file commands map."
@@ -119,32 +90,89 @@
     "d" `("prefix desktop" . ,my/desktop-commands-map)
     "w" '("show whitespace" . whitespace-mode))
 
-  (keymap-set global-map "C-c" my/personal-map)
+  :bind-keymap ("C-c" . my/personal-map)
 
-  ;; Other Hooks
-  (add-hook 'Custom-mode-hook #'variable-pitch-mode)
-  (add-hook 'Info-mode-hook #'variable-pitch-mode)
+  :bind
+  (("C-z" . nil) ;; don't suspend-frame
+   ("S-<wheel-down>" . ignore)
+   ("S-<wheel-up>" . ignore)
+   ("C-<wheel-down>" . ignore)
+   ("C-<wheel-up>" . ignore)
+   ("M-<wheel-down>" . ignore)
+   ("M-<wheel-up>" . ignore)
+   ("C-<delete>" . ignore)
+   ("C-<right>" . ignore)
+   ("C-<left>" . ignore)
+   ("C-<up>" . ignore)
+   ("C-<down>" . ignore)
+   ("M-<backspace>" . my/delete-back-to-indentation)
+   ("M-<delete>" . kill-line)
+   ("M-<right>" . end-of-visual-line)
+   ("M-<left>" . beginning-of-visual-line)
+   ("A-<backspace>" . backward-kill-word)
+   ("A-<delete>" . kill-word)
+   ("A-<kp-delete>" . kill-word)
+   ("A-<right>" . right-word)
+   ("A-<left>" . left-word)
+   ("A-<escape>" . ns-next-frame)
+   ("A-~" . ns-prev-frame)
+   ("C-M-f" . toggle-frame-fullscreen)
+   ("M-u" . universal-argument)
+   ("M-c" . kill-ring-save)
+   ("M-<escape>" . next-window-any-frame)
+   ("M-~" . previous-window-any-frame)
+   ("M-n" . make-frame)
+   ("M-t" . tab-new)
+   ("M-w" . my/quit-dwim)
+   ("M-m" . iconify-frame)
+   ("M-h" . ns-do-hide-emacs)
+   ("M-," . my/edit-emacs-init)
+   :map help-map
+   ("=" . describe-char)
+   :map minibuffer-mode-map
+   ("<escape>" . abort-recursive-edit)
+   ("C-u" . scroll-down-command)
+   ("C-d" . scroll-up-command)
+   ("<prior>" . scroll-down-command)
+   ("<next>" . scroll-up-command))
 
-  ;; Startup time
-  (defun my/display-startup-stats ()
-    "Display startup stats."
-    (message
-     "%d packages loaded in %ss with %d garbage collections."
-     (length package-activated-list)
-     (emacs-init-time "%.2f")
-     gcs-done))
+  :custom
+  ;; Less aggressive garbage collection on startup
+  (gc-cons-threshold (* 100 1024 1024)) ;; 100 MB
+  ;; Make native compilation quieter and asynchronous
+  (native-comp-async-report-warnings-errors nil)
+  (native-comp-deferred-compilation-deny-list '())
+  (inhibit-startup-message t)
+  (initial-scratch-message nil)
+  (initial-major-mode 'fundamental-mode)
+  (auto-save-visited-file-name t)
+  (auto-save-timeout 1)
+  (make-backup-files nil)
+  (set-mark-command-repeat-pop t)
+  (large-file-warning-threshold nil)
+  (vc-follow-symlinks t)
+  (ad-redefinition-action 'accept)
+  (use-short-answers t)
+  (confirm-kill-emacs #'yes-or-no-p)
+  (global-auto-revert-non-file-buffers t)
+  (scroll-margin 0)
+  (hscroll-margin 0)
+  (scroll-step 1)
+  (hscroll-step 1)
+  (line-spacing 2)
+  (truncate-lines nil)
+  (wrap-prefix "…")
+  (left-margin-width 1)
+  (right-margin-width 0)
+  (indent-tabs-mode nil)
+  (treemacs-no-png-images t)
+  (major-mode-remap-alist
+   '((python-mode . python-ts-mode)
+     (sh-mode . bash-ts-mode)
+     (yaml-mode . yaml-ts-mode)))
 
-  (add-hook 'emacs-startup-hook #'my/display-startup-stats)
 
   :init ;; These settings are applied before emacs loads.
-  ;; Less aggressive garbage collection during startup
-  (setq gc-cons-threshold (* 100 1024 1024)) ;; 100 MB
-
-  ;; Make native compilation quieter and asynchronous
-  (when (fboundp 'native-comp-available-p)
-    (setq native-comp-async-report-warnings-errors nil)
-    (setq native-comp-deferred-compilation-deny-list '()))
-
   ;; Set default values for variables
   (if (eq system-type 'darwin)
       (setq-default mac-mouse-wheel-smooth-scroll t
@@ -153,38 +181,6 @@
                     ns-command-modifier 'meta
                     ns-option-modifier 'alt
                     x-super-keysym 'alt))
-
-  (setq-default inhibit-startup-message t
-                initial-scratch-message nil
-                initial-major-mode 'fundamental-mode
-                desktop-save-mode 1
-                auto-save-visited-file-name t
-                auto-save-timeout 1
-                make-backup-files nil
-                set-mark-command-repeat-pop t
-                large-file-warning-threshold nil
-                vc-follow-symlinks t
-                ad-redefinition-action 'accept
-                use-short-answers t
-                confirm-kill-emacs #'yes-or-no-p
-                global-auto-revert-non-file-buffers t
-                scroll-margin 0
-                hscroll-margin 0
-                scroll-step 1
-                hscroll-step 1
-                line-spacing 2
-                truncate-lines nil
-                wrap-prefix "…"
-                left-margin-width 1
-                right-margin-width 0
-                indent-tabs-mode nil
-                treemacs-no-png-images t)
-
-  ;; Remap major modes for treesitter
-  (setq major-mode-remap-alist
-        '((python-mode . python-ts-mode)
-          (sh-mode . bash-ts-mode)
-          (yaml-mode . yaml-ts-mode)))
 
   ;; UI Tweaks
   (unless (and (eq system-type 'darwin)
@@ -203,20 +199,9 @@
   (set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
   (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
 
-  ;; Frame parameters to ignore when saving/loading desktop sessions
-  (dolist (filter
-           '(foreground-color
-             background-color
-             font
-             cursor-color
-             background-mode
-             ns-appearance))
-    (add-to-list 'frameset-filter-alist (cons filter :never)))
-
   :config ;; These settings are applied after emacs loads.
   ;; Garbage collection reset
-  (add-hook 'emacs-startup-hook
-            (lambda () (setq gc-cons-threshold (* 800 1024))))
+  (add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 800 1024))))
 
   ;; Basic fonts
   (when (eq system-type 'darwin)
@@ -246,7 +231,7 @@
 
   (require 'use-package)
   (setq use-package-always-ensure t
-        use-package-always-defer t))
+        use-package-always-defer t))  ;; emacs
 
 
 ;; Basic packages
@@ -296,6 +281,21 @@
   :config
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-var-directory))
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
+
+(use-package desktop
+  :ensure nil
+  :commands (desktop-save desktop-revert)
+  :init
+  ;; Frame parameters to ignore when saving/loading desktop sessions
+  (dolist (filter
+           '(foreground-color
+             background-color
+             font
+             cursor-color
+             background-mode
+             ns-appearance))
+    (add-to-list 'frameset-filter-alist (cons filter :never)))
+  :config (desktop-save-mode 1))
 
 (use-package modus-themes
   :custom
@@ -396,6 +396,18 @@
 (use-package ns-auto-titlebar
   :if (eq system-type 'darwin)
   :init (ns-auto-titlebar-mode))
+
+(use-package stripes
+  :hook (dired-mode)  ;; minibuffer-mode vertico-mode corfu-popupinfo-mode
+  :bind (:map my/personal-map ("s" . stripes-mode))
+  :custom
+  (stripes-unit 1)
+  (stripes-overlay-priority -100)
+ :preface
+  (defun my/customize-stripes ()
+    (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim)))
+  (when (fboundp 'modus-themes-get-color-value)
+    (add-hook 'stripes-mode-hook #'my/customize-stripes)))
 
 (use-package tab-bar-mode
   :ensure nil
