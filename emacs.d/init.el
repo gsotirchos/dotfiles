@@ -47,6 +47,7 @@
         (when (functionp func)
           (funcall func)))))
 
+  ;; Custom after theme load hook
   (defvar after-load-theme-hook nil
     "Hook that runs after a color theme is loaded using `load-theme'.")
 
@@ -59,6 +60,21 @@
 
   (advice-add 'load-theme :after #'my/run-after-load-theme-hook)
 
+  ;; Variable pitch
+  (defun my/variable-pitch-line-spacing-advice (&rest _)
+    "Set `line-spacing' when `variable-pitch-mode' is toggled."
+    (if variable-pitch-mode
+        (when (boundp 'variable-pitch-line-spacing)
+          (setq-local line-spacing variable-pitch-line-spacing))
+      (setq line-spacing nil)))
+
+  (advice-add 'variable-pitch-mode :after #'my/variable-pitch-line-spacing-advice)
+
+  (add-hook 'Custom-mode-hook #'variable-pitch-mode)
+  (add-hook 'Info-mode-hook #'variable-pitch-mode)
+  (add-hook 'text-mode-hook #'variable-pitch-mode)
+  (add-hook 'org-mode-hook #'variable-pitch-mode)
+
   ;; Startup time
   (defun my/display-startup-stats ()
     "Display startup stats."
@@ -69,21 +85,6 @@
      gcs-done))
 
   (add-hook 'emacs-startup-hook #'my/display-startup-stats)
-
-  (defun my/variable-pitch-line-spacing-advice (&rest _)
-    "Set `line-spacing' when `variable-pitch-mode' is toggled."
-    (if variable-pitch-mode
-        (when (boundp 'variable-pitch-line-spacing)
-          (setq-local line-spacing variable-pitch-line-spacing))
-      (setq line-spacing nil)))
-
-  (advice-add 'variable-pitch-mode :after #'my/variable-pitch-line-spacing-advice)
-
-  ;; Other Hooks
-  (add-hook 'Custom-mode-hook #'variable-pitch-mode)
-  (add-hook 'Info-mode-hook #'variable-pitch-mode)
-  (add-hook 'text-mode-hook #'variable-pitch-mode)
-  (add-hook 'org-mode-hook #'variable-pitch-mode)
 
   ;; Personal keymaps
   (defvar-keymap my/file-commands-map
