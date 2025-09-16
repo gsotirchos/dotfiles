@@ -298,7 +298,6 @@
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
 
 (use-package modus-themes
-  ;; :demand t
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
@@ -388,9 +387,9 @@
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   :init
   (let ((theme (nth 0 modus-themes-to-toggle)))
-    (if (fboundp 'modus-themes-load-theme)
-        (modus-themes-load-theme theme)
-      (load-theme theme)))
+    (when (not (fboundp 'modus-themes-load-theme))
+      (load-theme theme))
+    (modus-themes-load-theme theme))
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
 
@@ -423,7 +422,7 @@
 (use-package doom-modeline
   ;; NEEDS: M-x nerd-icons-install-fonts
   :custom
-  (doom-modeline-bar-width 0)
+  (doom-modeline-bar-width 0.1)
   (doom-modeline-height 0)
   (doom-modeline-window-width-limit 50)
   (doom-modeline-icon nil)
