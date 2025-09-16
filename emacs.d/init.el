@@ -63,7 +63,8 @@
   ;; Variable pitch
   (defun my/variable-pitch-line-spacing-advice (&rest _)
     "Set `line-spacing' when `variable-pitch-mode' is toggled."
-    (if variable-pitch-mode
+    (if (and (bound-and-true-p buffer-face-mode)
+             (equal buffer-face-mode-face 'variable-pitch))
         (when (boundp 'variable-pitch-line-spacing)
           (setq-local line-spacing variable-pitch-line-spacing))
       (setq line-spacing nil)))
