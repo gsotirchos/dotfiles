@@ -224,7 +224,7 @@
     (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 130))
   (when (eq system-type 'gnu/linux)
     (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 140)
-    (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 140))
+    (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 130))
   (defconst variable-pitch-line-spacing 4)
   (copy-face 'fixed-pitch 'default)
 
@@ -406,11 +406,11 @@
   (tab-bar-separator " ")
   (tab-bar-auto-width t)
   (tab-bar-auto-width-max nil)
-  (tab-bar-format-list
+  ;; (tab-bar-tab-name-truncated-max 200)
+  (tab-bar-format
    '(tab-bar-format-tabs
      tab-bar-format-align-right
      tab-bar-format-global))
-  ;; (tab-bar-tab-name-truncated-max 200)
   :preface
   (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
@@ -981,6 +981,7 @@
   (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
   (org-agenda-files '("~/Documents/org" "~/Desktop"))
   (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP" "FAIL")))
+  (org-log-done t)
   (org-hide-emphasis-markers t)
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
