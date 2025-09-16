@@ -312,7 +312,7 @@
      (header-line bg-dim)
      (bg-tab-bar bg-main)
      (bg-tab-current bg-dim)
-     (bg-tab-other bg-dim)
+     (bg-tab-other bg-main)
      (fg-heading-1 fg-main)
      (fg-heading-2 fg-main)
      (fg-heading-3 fg-main)
@@ -355,7 +355,7 @@
     (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim))
     (let ((bold-p nil))
       (set-face-bold 'tab-bar bold-p)
-      (set-face-bold 'tab-bar-tab t)
+      (set-face-bold 'tab-bar-tab bold-p)
       (set-face-bold 'tab-bar-tab-inactive bold-p))
     (let ((family (face-attribute 'variable-pitch :family)))
       (dolist (face
@@ -381,7 +381,7 @@
                  mode-line-active
                  mode-line-inactive))
         (set-face-attribute face nil :box box-released))
-      (set-face-attribute 'tab-bar-tab nil :box box-pressed)
+      (set-face-attribute 'tab-bar-tab nil :box box-released)
       (set-face-attribute 'mode-line-highlight nil :box box-thinner)
       (set-face-attribute 'header-line-highlight nil :box box-thinner)))
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
