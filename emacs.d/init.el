@@ -385,7 +385,7 @@
                  mode-line-inactive))
         (set-face-attribute face nil :family family)))
     (let ((box-released '(:line-width 2 :style released-button))
-          (box-pressed '(:line-width 2 :style pressed-button))
+          ;; (box-pressed '(:line-width 2 :style pressed-button))
           (box-thinner '(:line-width (1 . 2) :style released-button)))
       (dolist (face
                '(modus-themes-button
@@ -401,9 +401,9 @@
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   :init
   (let ((theme (nth 0 modus-themes-to-toggle)))
-    (when (not (fboundp 'modus-themes-load-theme))
-      (load-theme theme))
-    (modus-themes-load-theme theme))
+    (if (not (fboundp 'modus-themes-load-theme))
+        (load-theme theme)
+      (modus-themes-load-theme theme)))
   (when (fboundp 'modus-themes-load-theme)
     (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
 
