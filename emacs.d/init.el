@@ -946,6 +946,7 @@
   :preface
   (defun my/yaml-mode-hook ()
     (setq yaml-indent-offset 2)
+    (variable-pitch-mode -1)
     (flyspell-mode -1))
   (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook))
 
