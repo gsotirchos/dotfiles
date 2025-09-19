@@ -324,9 +324,9 @@
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
      (header-line bg-dim)
-     (bg-tab-bar bg-main)
-     (bg-tab-current bg-dim)
-     (bg-tab-other bg-main)
+     (bg-tab-bar bg-dim)
+     (bg-tab-current bg-main)
+     (bg-tab-other bg-dim)
      (fg-heading-1 fg-main)
      (fg-heading-2 fg-main)
      (fg-heading-3 fg-main)
@@ -389,15 +389,18 @@
           (box-thinner '(:line-width (1 . 2) :style released-button)))
       (dolist (face
                '(modus-themes-button
+                 tab-bar
+                 tab-bar-tab
                  tab-bar-tab-inactive
                  header-line
                  mode-line
                  mode-line-active
                  mode-line-inactive))
         (set-face-attribute face nil :box box-released))
-      (set-face-attribute 'tab-bar-tab nil :box box-released)
-      (set-face-attribute 'mode-line-highlight nil :box box-thinner)
-      (set-face-attribute 'header-line-highlight nil :box box-thinner)))
+      (dolist (face
+               '(mode-line-highlight
+                 header-line-highlight))
+        (set-face-attribute face nil :box box-thinner))))
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   :init
   (let ((theme (nth 0 modus-themes-to-toggle)))
@@ -429,7 +432,7 @@
   (tab-bar-show 1)
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
-  (tab-bar-separator " ")
+  (tab-bar-separator "")
   (tab-bar-auto-width t)
   (tab-bar-auto-width-max nil)
   ;; (tab-bar-tab-name-truncated-max 200)
