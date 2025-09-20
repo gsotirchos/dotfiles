@@ -26,7 +26,10 @@
     (interactive)
     (let ((init-file-path "/Users/george/.dotfiles/emacs.d/init.el"))
       (unless (string-equal buffer-file-name init-file-path)
-        (find-file-other-frame (expand-file-name "~/.emacs.d/init.el")))))
+        (let ((file-name (expand-file-name "~/.emacs.d/init.el")))
+          (if (cdr (assoc 'fullscreen (frame-parameters)))
+              (find-file-other-tab file-name)
+            (find-file-other-frame file-name))))))
 
   ;; Hook management utilities
   (defun my/run-other-buffers-local-hooks (hook)
@@ -400,7 +403,7 @@
   (tab-bar-show 1)
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
-  (tab-bar-separator "")
+  (tab-bar-separator " ")
   (tab-bar-auto-width t)
   (tab-bar-auto-width-max nil)
   ;; (tab-bar-tab-name-truncated-max 200)
