@@ -633,7 +633,7 @@
    :map minibuffer-local-map
    ("C-c" . embark-act)  ;; begin the embark process
    ("C-<return>" . embark-dwim))  ;; run the default action
-  )
+  :custom (embark-quit-after-action nil))
 
 (use-package embark-consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
@@ -900,6 +900,12 @@
       ;; (conda-mode-line-setup)
       (conda-env-activate-for-buffer)))
   (add-hook 'find-file-hook #'my/conda-env-activate-for-buffer)
+  (defun my/conda-eglot-hook ()
+    (defun my/eglot-conda-reconnect ()
+      (eglot-reconnect (eglot--current-server-or-lose)))
+    (add-hook 'conda-postactivate-hook #'my/eglot-conda-reconnect nil t)
+    (add-hook 'conda-postdeactivate-hook #'my/eglot-conda-reconnect nil t))
+  (add-hook 'eglot-managed-mode-hook #'my/conda-eglot-hook)
   ;; :config
   ;; (conda-env-initialize-interactive-shells)
   ;; (conda-env-initialize-eshell)
