@@ -178,12 +178,12 @@
      (sh-mode . bash-ts-mode)
      (yaml-mode . yaml-ts-mode)))
 
-  :init ;; These settings are applied before emacs loads.
+  :init
   ;; Display table for wrap prefix
   (set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
   (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
 
-  :config ;; These settings are applied after emacs loads.
+  :config
   ;; Basic fonts
   (when (eq system-type 'darwin)
     (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 130)
@@ -1039,6 +1039,7 @@ CHAR is the emphasis character to use."
 
 
 (provide 'init)
+
 ;;; init.el ends here
 
 ;; Local Variables:
