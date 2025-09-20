@@ -1,8 +1,6 @@
-;;; package --- my config -*- lexical-binding: t -*-
-;;; commentary:
-
+;;; package --- init -*- lexical-binding: t -*-
+;;; Commentary:
 ;;; Code:
-
 
 (use-package emacs
   :ensure nil
@@ -151,11 +149,6 @@
    ("<next>" . scroll-up-command))
 
   :custom
-  ;; Less aggressive garbage collection on startup
-  (gc-cons-threshold (* 100 1024 1024)) ;; 100 MB
-  ;; Make native compilation quieter and asynchronous
-  (native-comp-async-report-warnings-errors nil)
-  (native-comp-deferred-compilation-deny-list '())
   (inhibit-startup-message t)
   (initial-scratch-message nil)
   (initial-major-mode 'fundamental-mode)
@@ -185,38 +178,12 @@
      (sh-mode . bash-ts-mode)
      (yaml-mode . yaml-ts-mode)))
 
-
   :init ;; These settings are applied before emacs loads.
-  ;; Set default values for variables
-  (if (eq system-type 'darwin)
-      (setq-default mac-mouse-wheel-smooth-scroll t
-                    mouse-wheel-flip-direction t
-                    mouse-wheel-tilt-scroll t
-                    ns-command-modifier 'meta
-                    ns-option-modifier 'alt
-                    x-super-keysym 'alt))
-
-  ;; UI Tweaks
-  (unless (and (eq system-type 'darwin)
-               (display-graphic-p))
-    (menu-bar-mode 0))
-  (tool-bar-mode 0)
-  (scroll-bar-mode 0)
-  (fringe-mode 0)
-  (set-fill-column 79)
-  (global-visual-line-mode 0)
-  (xterm-mouse-mode 1)
-  (column-number-mode 1)
-  (pixel-scroll-precision-mode 1)
-
   ;; Display table for wrap prefix
   (set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
   (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
 
   :config ;; These settings are applied after emacs loads.
-  ;; Garbage collection reset
-  (add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 800 1024))))
-
   ;; Basic fonts
   (when (eq system-type 'darwin)
     (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 130)
