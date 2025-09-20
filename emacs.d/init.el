@@ -102,7 +102,8 @@
     "w" 'whitespace-mode
     "C-d" 'help-follow-symbol)
 
-  :bind-keymap ("C-c" . my/personal-map)
+  (keymap-set global-map "C-c" my/personal-map)
+  ;; :bind-keymap ("C-c" . my/personal-map)
 
   :bind
   (("C-z" . nil) ;; don't suspend-frame
