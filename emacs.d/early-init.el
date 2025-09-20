@@ -28,10 +28,10 @@
 
   (let ((mm-width 286)
         (mm-height 179)
-        (width-px 2560)
-        (height-px 1600)
+        (pixel-width 2560)
+        (pixel-height 1600)
         (scale 2))
-    (add-to-list 'display-mm-dimensions-alist '(t . (mm-width . mm-height)))
+    (add-to-list 'display-mm-dimensions-alist `(t . (,mm-width . ,mm-height)))
 
     ;; x-display-pixel-width
     ;; x-display-pixel-height
@@ -39,17 +39,18 @@
     ;; frame-geom-value-cons
 
     (eval-after-load "frame"
-      '(dolist (fn-override
-                '((display-pixel-width . (lambda () width-px))
-                  (display-pixel-height . (lambda () height-px))
+      `(dolist (fn-override
+                `((display-pixel-width . (lambda () ,pixel-width))
+                  (display-pixel-height . (lambda () ,pixel-height))
                   (display-monitor-attributes-list
-                   . (lambda () '(((geometry . (0 0 width-px height-px))
-                                   (workarea . (0 0 width-px height-px))
-                                   (mm-size . (mm-width mm-height))
-                                   (frames . (frames-on-display-list display))
-                                   (scale-factor . scale)
-                                   (name . "Built-in Retina Display")
-                                   (source . "George")))))))
+                   . (lambda  (&optional display)
+                       `(((geometry . (0 0 ,,pixel-width ,,pixel-height))
+                          (workarea . (0 0 ,,pixel-width ,,pixel-height))
+                          (mm-size . (,,mm-width ,,mm-height))
+                          (frames . ,(frames-on-display-list display))
+                          (scale-factor . ,,scale)
+                          (name . "Built-in Retina Display")
+                          (source . "User")))))))
          (advice-add (car fn-override) :override (cdr fn-override))))))
 
 ;; UI Tweaks
