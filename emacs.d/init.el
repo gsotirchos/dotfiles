@@ -403,48 +403,50 @@
   (tab-bar-show 1)
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
-  (tab-bar-separator " ")
-  (tab-bar-auto-width t)
-  (tab-bar-auto-width-max nil)
+  (tab-bar-separator "  ")
+  (tab-bar-auto-width nil)
   ;; (tab-bar-tab-name-truncated-max 200)
   (tab-bar-format
-   '(tab-bar-format-tabs
-     tab-bar-format-align-right
-     tab-bar-format-global))
+   '(
+     tab-bar-format-tabs
+     tab-bar-separator
+     ;; tab-bar-format-align-right
+     tab-bar-format-global
+     ))
   :preface
   (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
-    (concat " " string))
+    (concat "  " string "  "))
   ;; (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated)
   (add-to-list 'tab-bar-tab-name-format-functions #'my/prepend-whitespace)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
-(use-package doom-modeline
-  ;; NEEDS: M-x nerd-icons-install-fonts
-  :custom
-  (doom-modeline-bar-width 0.1)
-  (doom-modeline-height 0)
-  (doom-modeline-window-width-limit 50)
-  (doom-modeline-icon nil)
-  (doom-modeline-modal-icon nil)
-  (doom-modeline-workspace-name nil)
-  (doom-modeline-major-mode-icon nil)
-  (doom-modeline-buffer-modification-icon nil)
-  (doom-modeline-buffer-encoding nil)
-  (doom-modeline-env-version nil)
-  (doom-modeline-lsp-icon nil)
-  (doom-modeline-check-icon nil)
-  (doom-modeline-check-simple-format t)
-  (doom-modeline-spc-face-overrides (list :family (face-attribute 'fixed-pitch :family)))
-  :preface
-  (defun my/customize-doom-modeline ()
-    (when (bound-and-true-p doom-modeline-mode)
-      (set-face-background 'doom-modeline-bar (face-background 'mode-line))
-      (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive)))
-    (doom-modeline-mode t))
-  (add-hook 'after-load-theme-hook #'my/customize-doom-modeline)
-  :init
-  (my/customize-doom-modeline))
+;; (use-package doom-modeline
+;;   ;; NEEDS: M-x nerd-icons-install-fonts
+;;   :custom
+;;   (doom-modeline-bar-width 0.1)
+;;   (doom-modeline-height 0)
+;;   (doom-modeline-window-width-limit 50)
+;;   (doom-modeline-icon nil)
+;;   (doom-modeline-modal-icon nil)
+;;   (doom-modeline-workspace-name nil)
+;;   (doom-modeline-major-mode-icon nil)
+;;   (doom-modeline-buffer-modification-icon nil)
+;;   (doom-modeline-buffer-encoding nil)
+;;   (doom-modeline-env-version nil)
+;;   (doom-modeline-lsp-icon nil)
+;;   (doom-modeline-check-icon nil)
+;;   (doom-modeline-check-simple-format t)
+;;   (doom-modeline-spc-face-overrides (list :family (face-attribute 'fixed-pitch :family)))
+;;   :preface
+;;   (defun my/customize-doom-modeline ()
+;;     (when (bound-and-true-p doom-modeline-mode)
+;;       (set-face-background 'doom-modeline-bar (face-background 'mode-line))
+;;       (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive)))
+;;     (doom-modeline-mode t))
+;;   (add-hook 'after-load-theme-hook #'my/customize-doom-modeline)
+;;   :init
+;;   (my/customize-doom-modeline))
 
 (use-package dired
   :ensure nil
@@ -705,10 +707,10 @@
   :bind (:map eglot-mode-map ("C-c rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
-  (eglot-events-buffer-size 0)
   (eglot-extend-to-xref nil)
   (eglot-prefer-plaintext t)
   (eglot-send-changes-idle-time 1)
+  (eglot-events-buffer-config '(:size 0 :format full))
   (eglot-ignored-server-capabilities
    '(:codeLensProvider
      :codeActionProvider
