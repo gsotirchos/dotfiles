@@ -168,6 +168,7 @@ mouse-3: Toggle minor modes"
    ("C-<left>" . ignore)
    ("C-<up>" . ignore)
    ("C-<down>" . ignore)
+   ("M-<escape>" . ignore)
    ("M-<backspace>" . my/delete-back-to-indentation)
    ("M-<delete>" . kill-line)
    ("M-<right>" . end-of-visual-line)
@@ -180,10 +181,9 @@ mouse-3: Toggle minor modes"
    ("A-<escape>" . ns-next-frame)
    ("A-~" . ns-prev-frame)
    ("C-M-f" . toggle-frame-fullscreen)
+   ("C-M-e" . ns-do-show-character-palette)
    ("M-u" . universal-argument)
    ("M-c" . kill-ring-save)
-   ("M-<escape>" . next-window-any-frame)
-   ("M-~" . previous-window-any-frame)
    ("M-n" . make-frame)
    ("M-t" . tab-new)
    ("M-w" . my/quit-dwim)
@@ -340,6 +340,11 @@ mouse-3: Toggle minor modes"
   :config
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-var-directory))
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
+
+(use-package comint
+  :ensure nil
+  :custom (comint-buffer-maximum-size (* 1 1024))
+  :init (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))
 
 (use-package desktop
   :ensure nil
@@ -956,7 +961,10 @@ mouse-3: Toggle minor modes"
 
 (use-package python
   :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
-  :init (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1))))
+  :init
+  (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1)))
+  (add-hook 'inferior-python-mode-hook
+            (lambda () (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))))
 
 (use-package flymake-ruff
   :hook (python-base-mode . flymake-ruff-load)
