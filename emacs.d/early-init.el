@@ -4,7 +4,7 @@
 
 ;; Less aggressive garbage collection on startup
 (setq gc-cons-threshold (* 100 1024 1024)) ;; 100 MB
-(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 800 1024))))
+(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 2 1024 1024))))
 
 (when (and (fboundp 'native-comp-available-p)
            (native-comp-available-p))
