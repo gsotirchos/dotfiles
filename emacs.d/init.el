@@ -77,6 +77,44 @@
   (add-hook 'text-mode-hook #'variable-pitch-mode)
   (add-hook 'org-mode-hook #'variable-pitch-mode)
 
+  ;; Modeline
+  (defvar mode-line-major-modes
+    (let ((recursive-edit-help-echo
+           "Recursive edit, type C-M-c to get out"))
+      (list (propertize "%[" 'help-echo recursive-edit-help-echo)
+	          `(:propertize ("" mode-name)
+			                    help-echo "Major mode\n\
+mouse-1: Display major mode menu\n\
+mouse-2: Show help for major mode\n\
+mouse-3: Toggle minor modes"
+			                    mouse-face mode-line-highlight
+			                    local-map ,mode-line-major-mode-keymap)
+	          '("" mode-line-process)
+	          (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
+		                    'mouse-face 'mode-line-highlight
+		                    'local-map (make-mode-line-mouse-map
+				                            'mouse-2 #'mode-line-widen))
+	          (propertize "%]" 'help-echo recursive-edit-help-echo)
+	          " ")))
+  (put 'mode-line-major-modes 'risky-local-variable t)
+
+  (defvar mode-line-minor-modes
+    (let ((recursive-edit-help-echo
+           "Recursive edit, type C-M-c to get out"))
+      (list (propertize "%[" 'help-echo recursive-edit-help-echo)
+            "("
+            `(:propertize ("" minor-mode-alist)
+            			        mouse-face mode-line-highlight
+            			        help-echo "Minor mode\n\
+mouse-1: Display minor mode menu\n\
+mouse-2: Show help for minor mode\n\
+mouse-3: Toggle minor modes"
+            			        local-map ,mode-line-minor-mode-keymap)
+            ")"
+	          (propertize "%]" 'help-echo recursive-edit-help-echo)
+	          " ")))
+  (put 'mode-line-minor-modes 'risky-local-variable t)
+
   ;; Startup time
   (defun my/display-startup-stats ()
     "Display startup stats."
@@ -181,6 +219,30 @@
    '((python-mode . python-ts-mode)
      (sh-mode . bash-ts-mode)
      (yaml-mode . yaml-ts-mode)))
+  (mode-line-format
+   '("%e"
+     mode-line-front-space
+     (:propertize evil-mode-line-tag
+                  display (min-width (5.0)))
+     (:propertize (""
+                   mode-line-mule-info
+                   mode-line-client
+                   mode-line-modified
+                   mode-line-remote
+                   mode-line-window-dedicated)
+                  display (min-width (6.0)))
+     mode-line-frame-identification
+     mode-line-buffer-identification
+     (project-mode-line project-mode-line-format)
+     (vc-mode vc-mode)
+     (:propertize (" ") display (min-width (2.0)))
+     mode-line-major-modes
+     ;; mode-line-minor-modes
+     flymake-mode-line-counters
+     (:propertize (" ") display (min-width (2.0)))
+     mode-line-position
+     mode-line-misc-info
+     mode-line-end-spaces))
 
   :init
   ;; Display table for wrap prefix
@@ -403,7 +465,7 @@
   (tab-bar-show 1)
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
-  (tab-bar-separator "  ")
+  (tab-bar-separator " ")
   (tab-bar-auto-width nil)
   ;; (tab-bar-tab-name-truncated-max 200)
   (tab-bar-format
@@ -480,14 +542,15 @@
 
 (use-package evil
   :init
-  (setq evil-toggle-key "C-<escape>"
-        evil-want-integration t
+  (setq evil-want-integration t
         evil-want-keybinding nil
         evil-disable-insert-state-bindings t
         evil-want-C-u-scroll t
+        evil-toggle-key "C-<escape>"
         evil-cross-lines t
         evil-symbol-word-search t
-        evil-undo-system 'undo-tree)
+        evil-undo-system 'undo-tree
+        evil-mode-line-format nil)
   :config
   (evil-mode 1)
   (evil-set-initial-state 'prog-mode 'normal)
