@@ -21,15 +21,24 @@
                  (delete-frame)
                (error nil)))))
 
-  (defun my/edit-emacs-init ()
-    "Edit `~/emacs.d/init.el'."
+  (defun my/find-file (file)
+    "Open buffer with FILE in new frame or tab."
     (interactive)
-    (let ((init-file-path "/Users/george/.dotfiles/emacs.d/init.el"))
-      (unless (string-equal buffer-file-name init-file-path)
-        (let ((file-name (expand-file-name "~/.emacs.d/init.el")))
-          (if (cdr (assoc 'fullscreen (frame-parameters)))
-              (find-file-other-tab file-name)
-            (find-file-other-frame file-name))))))
+    (let ((file-name (expand-file-name file)))
+      (unless (string-equal buffer-file-name file-name)
+        (if (cdr (assoc 'fullscreen (frame-parameters)))
+            (find-file-other-tab file-name)
+          (find-file-other-frame file-name)))))
+
+  (defun my/edit-emacs-init ()
+    "Edit `~/.emacs.d/init.el'"
+    (interactive)
+    (my/find-file  "~/.emacs.d/init.el"))
+
+  (defun my/edit-emacs-early-init ()
+    "Edit `~/.emacs.d/init.el'"
+    (interactive)
+    (my/find-file  "~/.emacs.d/early-init.el"))
 
   ;; Hook management utilities
   (defun my/run-other-buffers-local-hooks (hook)
@@ -181,6 +190,7 @@ mouse-3: Toggle minor modes"
    ("M-m" . iconify-frame)
    ("M-h" . ns-do-hide-emacs)
    ("M-," . my/edit-emacs-init)
+   ("C-M-," . my/edit-emacs-early-init)
    :map help-map
    ("=" . describe-char)
    :map minibuffer-mode-map
@@ -233,10 +243,12 @@ mouse-3: Toggle minor modes"
                   display (min-width (6.0)))
      mode-line-frame-identification
      mode-line-buffer-identification
+     (:propertize (" ") display (min-width (2.0)))
      (project-mode-line project-mode-line-format)
      (vc-mode vc-mode)
      (:propertize (" ") display (min-width (2.0)))
      mode-line-major-modes
+     (:propertize (" ") display (min-width (2.0)))
      ;; mode-line-minor-modes
      flymake-mode-line-counters
      (:propertize (" ") display (min-width (2.0)))
@@ -357,8 +369,8 @@ mouse-3: Toggle minor modes"
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
      (header-line bg-dim)
-     (bg-tab-bar bg-dim)
-     (bg-tab-current bg-main)
+     (bg-tab-bar bg-main)
+     (bg-tab-current bg-inactive)
      (bg-tab-other bg-dim)
      (fg-heading-1 fg-main)
      (fg-heading-2 fg-main)
@@ -418,18 +430,19 @@ mouse-3: Toggle minor modes"
                  mode-line-inactive))
         (set-face-attribute face nil :family family)))
     (let ((box-released '(:line-width 2 :style released-button))
-          ;; (box-pressed '(:line-width 2 :style pressed-button))
+          (box-pressed '(:line-width 2 :style pressed-button))
           (box-thinner '(:line-width (1 . 2) :style released-button)))
       (dolist (face
                '(modus-themes-button
-                 tab-bar
-                 tab-bar-tab
+                 ;; tab-bar
+                 ;; tab-bar-tab
                  tab-bar-tab-inactive
                  header-line
                  mode-line
                  mode-line-active
                  mode-line-inactive))
         (set-face-attribute face nil :box box-released))
+      (set-face-attribute 'tab-bar-tab nil :box box-pressed)
       (dolist (face
                '(mode-line-highlight
                  header-line-highlight))
@@ -467,10 +480,9 @@ mouse-3: Toggle minor modes"
   (tab-bar-close-button-show nil)
   (tab-bar-separator " ")
   (tab-bar-auto-width nil)
-  ;; (tab-bar-tab-name-truncated-max 200)
+  (tab-bar-tab-name-truncated-max 35)
   (tab-bar-format
-   '(
-     tab-bar-format-tabs
+   '(tab-bar-format-tabs
      tab-bar-separator
      ;; tab-bar-format-align-right
      tab-bar-format-global
@@ -478,9 +490,9 @@ mouse-3: Toggle minor modes"
   :preface
   (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
-    (concat "  " string "  "))
-  ;; (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated)
+    (concat " " string " "))
   (add-to-list 'tab-bar-tab-name-format-functions #'my/prepend-whitespace)
+  (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 ;; (use-package doom-modeline
@@ -865,6 +877,7 @@ mouse-3: Toggle minor modes"
   (flymake-no-changes-timeout 1)
   (flymake-show-diagnostics-at-end-of-line t)
   (flymake-indicator-type 'margins)
+  (flymake-autoresize-margins nil)
   (flymake-margin-indicators-string
    '((note "i" flymake-note-echo)
      (warning "!" flymake-warning-echo)
@@ -882,7 +895,7 @@ mouse-3: Toggle minor modes"
                flymake-note-echo-at-eol
                flymake-warning-echo-at-eol
                flymake-error-echo-at-eol))
-      (set-face-attribute face nil :inherit 'flymake-end-of-line-diagnostics-face))
+      (set-face-attribute face nil :extend t :inherit 'flymake-end-of-line-diagnostics-face))
     (set-face-attribute 'flymake-eol-information-face nil
                         :foreground (modus-themes-get-color-value 'blue-faint)
                         :background (modus-themes-get-color-value 'bg-blue-nuanced))
@@ -904,8 +917,7 @@ mouse-3: Toggle minor modes"
                flymake-error-echo))
       (set-face-attribute face nil
                           :italic nil :bold t
-                          :box '(:line-width (1 . -1) :style flat-button)))
-    )
+                          :box '(:line-width (1 . -1) :style flat-button))))
   (defun my/flymake-hook ()
     (when (fboundp 'modus-themes-get-color-value)
       (my/customize-flymake)
