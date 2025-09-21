@@ -54,7 +54,8 @@ select = [
     "C90",  # McCabe complexity
 ]
 ignore = [  # ignored rules for linting:
-    #"B905"  # zip-without-explicit-strict
+    "F841",  # unused-variable
+    #"B905",  # zip-without-explicit-strict
 ]
 unfixable = [  # ignored rules for fixing:
     "F401",  # unused-import
