@@ -435,19 +435,19 @@ mouse-3: Toggle minor modes"
                  mode-line-inactive))
         (set-face-attribute face nil :family family)))
     (let ((box-released '(:line-width 2 :style released-button))
-          (box-pressed '(:line-width 2 :style pressed-button))
+          ;; (box-pressed '(:line-width 2 :style pressed-button))
           (box-thinner '(:line-width (1 . 2) :style released-button)))
       (dolist (face
                '(modus-themes-button
                  ;; tab-bar
-                 ;; tab-bar-tab
+                 tab-bar-tab
                  tab-bar-tab-inactive
                  header-line
                  mode-line
                  mode-line-active
                  mode-line-inactive))
         (set-face-attribute face nil :box box-released))
-      (set-face-attribute 'tab-bar-tab nil :box box-pressed)
+      ;; (set-face-attribute 'tab-bar-tab nil :box box-pressed)
       (dolist (face
                '(mode-line-highlight
                  header-line-highlight))
