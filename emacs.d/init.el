@@ -490,8 +490,7 @@ mouse-3: Toggle minor modes"
    '(tab-bar-format-tabs
      tab-bar-separator
      ;; tab-bar-format-align-right
-     tab-bar-format-global
-     ))
+     tab-bar-format-global))
   :preface
   (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
@@ -595,12 +594,9 @@ mouse-3: Toggle minor modes"
 (use-package corfu
   :bind
   (:map corfu-map
-        ("<tab>" . 'ignore)
-        ;; ("<tab>" . corfu-next)
-        ;; ("S-<tab>" . corfu-previous)
-        ;; ("RET" . nil)
-        ;; ("C-e" . corfu-popupinfo-scroll-up)
-        ;; ("C-y" . corfu-popupinfo-scroll-down)
+        ("<tab>" . corfu-next)
+        ("S-<tab>" . corfu-previous)
+        ("<escape>" . corfu-reset)
         ("C-d" . corfu-scroll-up)
         ("C-u" . corfu-scroll-down)
         ("<next>" . corfu-scroll-up)
@@ -611,7 +607,7 @@ mouse-3: Toggle minor modes"
   (corfu-auto-prefix 2)
   (corfu-auto-delay 0.1)
   (corfu-popupinfo-delay '(0.5 . 0.2))
-  ;; (corfu-preselect 'prompt)
+  (corfu-preselect 'prompt)
   (corfu-preview-current 'insert)  ;; insert previewed candidate
   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
   (corfu-cycle t)
@@ -624,7 +620,13 @@ mouse-3: Toggle minor modes"
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
-  (corfu-history-mode))
+  (corfu-history-mode)
+  :config
+  ;; Use RET only in shell modes
+  (keymap-set corfu-map "RET" `( menu-item "" nil :filter
+                                 ,(lambda (&optional _)
+                                    (and (derived-mode-p 'eshell-mode 'comint-mode)
+                                         #'corfu-send)))))
 
 (use-package vertico
   :custom
