@@ -240,7 +240,7 @@ mouse-3: Toggle minor modes"
                    mode-line-modified
                    mode-line-remote
                    mode-line-window-dedicated)
-                  display (min-width (6.0)))
+                  display (min-width (5.0)))
      mode-line-frame-identification
      mode-line-buffer-identification
      (:propertize (" ") display (min-width (2.0)))
@@ -712,7 +712,8 @@ mouse-3: Toggle minor modes"
   (defalias 'consult-line-thing-at-point 'consult-line)
   (consult-customize consult-line-thing-at-point
                      :initial (thing-at-point 'symbol))
-  (add-to-list 'consult-preview-allowed-hooks #'my/org-mode-hook))
+  (add-to-list 'consult-preview-allowed-hooks #'my/org-mode-hook)
+  (add-to-list 'consult-preview-allowed-hooks #'variable-pitch-mode))
 
 (use-package embark
   :bind
