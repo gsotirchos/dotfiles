@@ -589,32 +589,36 @@ mouse-3: Toggle minor modes"
         ("C-u" . corfu-scroll-down)
         ("<next>" . corfu-scroll-up)
         ("<prior>" . corfu-scroll-down)
-        ("S-SPC" . corfu-insert-separator))
+        ("S-SPC" . corfu-insert-separator)
+        ("RET" . my/corfu-send-in-shell))
+  :preface
+  (defun my/corfu-send-in-shell ()
+    "Send Corfu candidate in shell modes, else do nothing."
+    (interactive)
+    (when (derived-mode-p 'eshell-mode 'comint-mode)
+      (corfu-send)))
+  (defun my/corfu-minibuffer-filter ()
+    "Do not show Corfu in minibuffer for MCT, Vertico, or password prompts."
+    (interactive)
+    (not (or (bound-and-true-p mct--active)
+             (bound-and-true-p vertico--input)
+             (eq (current-local-map) read-passwd-map))))
   :custom
   (corfu-auto t)  ;; auto-completion
+  (corfu-quit-no-match 'separator)  ;; test
   (corfu-auto-prefix 2)
   (corfu-auto-delay 0.1)
   (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-preselect 'prompt)
+  (corfu-preselect 'prompt)  ;; don't pre-select first candidate
   (corfu-preview-current 'insert)  ;; insert previewed candidate
   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
   (corfu-cycle t)
-  (global-corfu-minibuffer t)
-  ;; Enable Corfu in all minibuffers, as long as no completion UI is active
-  ;; (global-corfu-minibuffer
-  ;;  (lambda () (not (or (bound-and-true-p mct--active)
-  ;;                      (bound-and-true-p vertico--input)
-  ;;                      (eq (current-local-map) read-passwd-map)))))
+  ;; (global-corfu-minibuffer t)
+  (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode)
-  (corfu-history-mode)
-  :config
-  ;; Use RET only in shell modes
-  (keymap-set corfu-map "RET" `( menu-item "" nil :filter
-                                 ,(lambda (&optional _)
-                                    (and (derived-mode-p 'eshell-mode 'comint-mode)
-                                         #'corfu-send)))))
+  (corfu-history-mode))
 
 (use-package vertico
   :custom
