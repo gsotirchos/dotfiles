@@ -244,7 +244,9 @@ mouse-3: Toggle minor modes"
      mode-line-frame-identification
      mode-line-buffer-identification
      (:propertize (" ") display (min-width (2.0)))
-     (project-mode-line project-mode-line-format)
+     mode-line-position
+     ;; (:propertize (" ") display (min-width (2.0)))
+     ;; (project-mode-line project-mode-line-format)
      (vc-mode vc-mode)
      (:propertize (" ") display (min-width (2.0)))
      mode-line-major-modes
@@ -252,7 +254,6 @@ mouse-3: Toggle minor modes"
      ;; mode-line-minor-modes
      flymake-mode-line-counters
      (:propertize (" ") display (min-width (2.0)))
-     mode-line-position
      mode-line-misc-info
      mode-line-end-spaces))
 
@@ -489,7 +490,7 @@ mouse-3: Toggle minor modes"
   (tab-bar-format
    '(tab-bar-format-tabs
      tab-bar-separator
-     ;; tab-bar-format-align-right
+     tab-bar-format-align-right
      tab-bar-format-global))
   :preface
   (defun my/prepend-whitespace (string _ _)
@@ -543,19 +544,6 @@ mouse-3: Toggle minor modes"
     (hl-line-mode 1))
   (add-hook 'dired-mode-hook #'my/dired-mode-hook))
 
-(use-package undo-tree
-  :custom
-  (undo-tree-auto-save-history t)
-  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-  :preface
-  (defun my/silent-undo-tree-save-history (undo-tree-save-history &rest args)
-    (let ((message-log-max nil)
-          (inhibit-message t))
-      (apply undo-tree-save-history args)))
-  :init
-  (advice-add 'undo-tree-save-history :around #'my/silent-undo-tree-save-history)
-  (global-undo-tree-mode))
-
 (use-package evil
   :init
   (setq evil-want-integration t
@@ -565,7 +553,7 @@ mouse-3: Toggle minor modes"
         evil-toggle-key "C-<escape>"
         evil-cross-lines t
         evil-symbol-word-search t
-        evil-undo-system 'undo-tree
+        evil-undo-system 'undo-redo
         evil-mode-line-format nil)
   :config
   (evil-mode 1)
@@ -752,9 +740,16 @@ mouse-3: Toggle minor modes"
   :preface
   (defun my/customize-diff-hl ()
     (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
-    (face-remap-add-relative 'diff-hl-change 'diff-changed)
-    (face-remap-add-relative 'diff-hl-insert 'diff-added)
-    (face-remap-add-relative 'diff-hl-delete 'diff-removed))
+    (seq-mapn
+     (lambda (diff-hl-face diff-face)
+       (face-remap-add-relative diff-hl-face diff-face)
+       (set-face-attribute diff-hl-face nil :italic nil :bold nil))
+     '(diff-hl-change
+       diff-hl-insert
+       diff-hl-delete)
+     '(diff-changed
+       diff-added
+       diff-removed)))
   (defun my/diff-hl-hook ()
     (my/customize-diff-hl)
     (add-hook 'auto-save-hook 'diff-hl-update nil t)
@@ -1124,6 +1119,7 @@ CHAR is the emphasis character to use."
     (font-lock-update))
   (defun my/org-mode-hook ()
     ;; (auto-fill-mode 1)
+    (visual-line-mode 1)
     (my/customize-org-mode)
     (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
     (dolist (hook
