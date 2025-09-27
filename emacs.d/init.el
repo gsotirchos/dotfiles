@@ -150,6 +150,7 @@ mouse-3: Toggle minor modes"
     "f" `("prefix files" . ,my/file-commands-map)
     "d" `("prefix desktop" . ,my/desktop-commands-map)
     "w" 'whitespace-mode
+    "M-m" 'memory-report
     "C-d" 'help-follow-symbol)
 
   (keymap-set global-map "C-c" my/personal-map)
@@ -667,6 +668,7 @@ mouse-3: Toggle minor modes"
    ([remap evil-paste-pop] . consult-yank-pop)
    ([remap goto-line] . consult-goto-line)
    ([remap imenu] . consult-imenu)
+   ("C-x M-b" . consult-buffer-other-frame)
    ("M-g I" . consult-imenu-multi)
    ("M-g o" . consult-outline)
    ("M-g e" . consult-compile-error)
@@ -799,11 +801,19 @@ mouse-3: Toggle minor modes"
      ;; :colorProvider
      :foldingRangeProvider
      :executeCommandProvider))
-  ;; :preface
+  :preface
+  (defun my/prevent-in-home-dir-advice (fn &rest args)
+    "Pre-advice to prevent FN with ARGS from running in the home directory."
+    (let* ((current-dir (file-truename default-directory))
+           (home-dir (file-truename (expand-file-name "~/"))))
+      (if (equal current-dir home-dir)
+          (message "%s was prevented from running in the home directory." fn)
+        (apply fn args))))
   ;; (defun my/eglot-mode-hook ()
   ;;   (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
   ;;   (flymake-mode 1))
-  ;; :init
+  :init
+  (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
   ;; (setq eglot-stay-out-of '(flymake))
   ;; (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
   :config (add-to-list 'eglot-server-programs
