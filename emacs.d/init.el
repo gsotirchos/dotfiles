@@ -40,6 +40,20 @@
     (interactive)
     (my/find-file  "~/.emacs.d/early-init.el"))
 
+  (defun my/prevent-in-home-dir-advice (fn &rest args)
+    "Pre-advice to prevent running FN (with ARGS) in the home directory."
+    (let* ((current-dir (file-truename default-directory))
+           (home-dir (file-truename (expand-file-name "~/"))))
+      (if (equal current-dir home-dir)
+          (message "%s was prevented from running in the home directory." fn)
+        (apply fn args))))
+
+  (defun my/silence (fn &rest args)
+    "Pre-advice to silence FN (with ARGS) execution."
+    (let ((message-log-max nil)
+          (inhibit-message t))
+      (apply fn args)))
+
   ;; Hook management utilities
   (defun my/run-other-buffers-local-hooks (hook)
     "Run local HOOK in all buffers except the current one."
@@ -801,14 +815,6 @@ mouse-3: Toggle minor modes"
      ;; :colorProvider
      :foldingRangeProvider
      :executeCommandProvider))
-  :preface
-  (defun my/prevent-in-home-dir-advice (fn &rest args)
-    "Pre-advice to prevent FN with ARGS from running in the home directory."
-    (let* ((current-dir (file-truename default-directory))
-           (home-dir (file-truename (expand-file-name "~/"))))
-      (if (equal current-dir home-dir)
-          (message "%s was prevented from running in the home directory." fn)
-        (apply fn args))))
   ;; (defun my/eglot-mode-hook ()
   ;;   (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
   ;;   (flymake-mode 1))
@@ -1143,6 +1149,7 @@ CHAR is the emphasis character to use."
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
+  (advice-add 'my/org-latex-preview-buffer :around #'my/silence)
   :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
 
 
