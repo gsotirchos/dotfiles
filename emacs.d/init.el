@@ -164,7 +164,7 @@ mouse-3: Toggle minor modes"
     "f" `("prefix files" . ,my/file-commands-map)
     "d" `("prefix desktop" . ,my/desktop-commands-map)
     "w" 'whitespace-mode
-    "M-m" 'memory-report
+    "m" 'memory-report
     "C-d" 'help-follow-symbol)
 
   (keymap-set global-map "C-c" my/personal-map)
@@ -555,6 +555,7 @@ mouse-3: Toggle minor modes"
   (delete-by-moving-to-trash t)
   :preface
   (defun my/dired-mode-hook ()
+    (setq-local left-margin-width 0)
     (dired-hide-details-mode 1)
     (hl-line-mode 1))
   (add-hook 'dired-mode-hook #'my/dired-mode-hook))
@@ -591,6 +592,14 @@ mouse-3: Toggle minor modes"
   :after evil
   :init (evil-collection-init))
 
+(use-package evil-goggles
+  :custom
+  (evil-goggles-pulse t)
+  (evil-goggles-duration 0.100)
+  :init
+  (evil-goggles-mode)
+  (evil-goggles-use-diff-faces))
+
 (use-package evil-surround
   :init (global-evil-surround-mode 1))
 
@@ -605,13 +614,15 @@ mouse-3: Toggle minor modes"
         ("<next>" . corfu-scroll-up)
         ("<prior>" . corfu-scroll-down)
         ("S-SPC" . corfu-insert-separator)
-        ("RET" . my/corfu-send-in-shell))
+        ;; ("<return>" . my/corfu-send-in-shell)
+        ("RET" . nil))
   :preface
   (defun my/corfu-send-in-shell ()
     "Send Corfu candidate in shell modes, else do nothing."
     (interactive)
-    (when (derived-mode-p 'eshell-mode 'comint-mode)
-      (corfu-send)))
+    (if (derived-mode-p 'eshell-mode 'comint-mode)
+        (corfu-send)
+      (call-interactively (key-binding (kbd "RET")))))
   (defun my/corfu-minibuffer-filter ()
     "Do not show Corfu in minibuffer for MCT, Vertico, or password prompts."
     (interactive)
@@ -783,7 +794,7 @@ mouse-3: Toggle minor modes"
 (use-package magit
   :bind
   (:map my/personal-map
-        ("m" . magit)
+        ("g" . magit)
         :map magit-mode-map
         ("M-n" . nil)
         ("M-w" . nil)
@@ -1150,7 +1161,9 @@ CHAR is the emphasis character to use."
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   (advice-add 'my/org-latex-preview-buffer :around #'my/silence)
-  :config (setq org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
+  :config
+  (setq-local fill-column nil)
+  (setq-local org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
 
 
 (provide 'init)
