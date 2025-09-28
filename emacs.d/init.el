@@ -878,7 +878,7 @@ mouse-3: Toggle minor modes"
   (flymake-indicator-type 'margins)
   (flymake-autoresize-margins nil)
   (flymake-margin-indicators-string
-   '((note "i" flymake-note-echo)
+   '((note "●" flymake-note-echo)
      (warning "▲" flymake-warning-echo)
      (error "◼" flymake-error-echo)))
   :preface
