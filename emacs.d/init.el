@@ -592,14 +592,6 @@ mouse-3: Toggle minor modes"
   :after evil
   :init (evil-collection-init))
 
-(use-package evil-goggles
-  :custom
-  (evil-goggles-pulse t)
-  (evil-goggles-duration 0.100)
-  :init
-  (evil-goggles-mode)
-  (evil-goggles-use-diff-faces))
-
 (use-package evil-surround
   :init (global-evil-surround-mode 1))
 
@@ -793,9 +785,7 @@ mouse-3: Toggle minor modes"
 
 (use-package magit
   :bind
-  (:map my/personal-map
-        ("g" . magit)
-        :map magit-mode-map
+  (:map magit-mode-map
         ("M-n" . nil)
         ("M-w" . nil)
         :map magit-section-mode-map
@@ -1090,12 +1080,11 @@ mouse-3: Toggle minor modes"
         ("C-c C-x l" . #'org-toggle-link-display)
         ([remap org-emphasize] . my/org-emphasize-dwim))
   :custom
-  ;; (org-startup-with-latex-preview t)
+  (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
   (org-startup-truncated nil)
   (org-startup-folded 'content)
   (org-startup-indented t)
-  ;; (org-indent-mode-turns-on-hiding-stars nil)
   (org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
   (org-cycle-separator-lines 1)
   (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
@@ -1149,21 +1138,19 @@ CHAR is the emphasis character to use."
       (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family)))
     (font-lock-update))
   (defun my/org-mode-hook ()
-    ;; (auto-fill-mode 1)
+    (setq-local fill-column nil)
+    (auto-fill-mode 1)
     (visual-line-mode 1)
     (my/customize-org-mode)
     (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
     (dolist (hook
              '(after-load-theme-hook
-               find-file-hook
                auto-save-hook
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   (advice-add 'my/org-latex-preview-buffer :around #'my/silence)
-  :config
-  (setq-local fill-column nil)
-  (setq-local org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
+  :config (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
 
 
 (provide 'init)
