@@ -515,33 +515,6 @@ mouse-3: Toggle minor modes"
   (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
-;; (use-package doom-modeline
-;;   ;; NEEDS: M-x nerd-icons-install-fonts
-;;   :custom
-;;   (doom-modeline-bar-width 0.1)
-;;   (doom-modeline-height 0)
-;;   (doom-modeline-window-width-limit 50)
-;;   (doom-modeline-icon nil)
-;;   (doom-modeline-modal-icon nil)
-;;   (doom-modeline-workspace-name nil)
-;;   (doom-modeline-major-mode-icon nil)
-;;   (doom-modeline-buffer-modification-icon nil)
-;;   (doom-modeline-buffer-encoding nil)
-;;   (doom-modeline-env-version nil)
-;;   (doom-modeline-lsp-icon nil)
-;;   (doom-modeline-check-icon nil)
-;;   (doom-modeline-check-simple-format t)
-;;   (doom-modeline-spc-face-overrides (list :family (face-attribute 'fixed-pitch :family)))
-;;   :preface
-;;   (defun my/customize-doom-modeline ()
-;;     (when (bound-and-true-p doom-modeline-mode)
-;;       (set-face-background 'doom-modeline-bar (face-background 'mode-line))
-;;       (set-face-background 'doom-modeline-bar-inactive (face-background 'mode-line-inactive)))
-;;     (doom-modeline-mode t))
-;;   (add-hook 'after-load-theme-hook #'my/customize-doom-modeline)
-;;   :init
-;;   (my/customize-doom-modeline))
-
 (use-package dired
   :ensure nil
   :bind (:map dired-mode-map ("b" . dired-up-directory))
@@ -766,7 +739,9 @@ mouse-3: Toggle minor modes"
     (seq-mapn
      (lambda (diff-hl-face diff-face)
        (face-remap-add-relative diff-hl-face diff-face)
-       (set-face-attribute diff-hl-face nil :italic nil :bold nil))
+       (set-face-attribute diff-hl-face nil
+                           :italic nil :bold nil
+                           :height (truncate (* 0.93 (face-attribute 'default :height)))))
      '(diff-hl-change
        diff-hl-insert
        diff-hl-delete)
@@ -904,44 +879,38 @@ mouse-3: Toggle minor modes"
   (flymake-autoresize-margins nil)
   (flymake-margin-indicators-string
    '((note "i" flymake-note-echo)
-     (warning "!" flymake-warning-echo)
-     (error "!" flymake-error-echo)))
+     (warning "▲" flymake-warning-echo)
+     (error "◼" flymake-error-echo)))
   :preface
   (defun my/customize-flymake ()
     (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
                         :foreground (modus-themes-get-color-value 'fg-dim)
                         :box '(:line-width (5 . -1) :style flat-button)
-                        :height 120
+                        :height (truncate (* 0.93 (face-attribute 'default :height)))
                         :italic t
                         :inherit 'variable-pitch)
-    (dolist (face
-             '(flymake-eol-information-face
-               flymake-note-echo-at-eol
-               flymake-warning-echo-at-eol
-               flymake-error-echo-at-eol))
-      (set-face-attribute face nil :extend t :inherit 'flymake-end-of-line-diagnostics-face))
-    (set-face-attribute 'flymake-eol-information-face nil
-                        :foreground (modus-themes-get-color-value 'blue-faint)
-                        :background (modus-themes-get-color-value 'bg-blue-nuanced))
-    (set-face-attribute 'flymake-note-echo-at-eol nil
-                        :foreground (modus-themes-get-color-value 'cyan-faint)
-                        :background (modus-themes-get-color-value 'bg-cyan-nuanced))
-    (set-face-attribute 'flymake-warning-echo-at-eol nil
-                        :foreground (modus-themes-get-color-value 'yellow-faint)
-                        :background (modus-themes-get-color-value 'bg-yellow-nuanced))
-    (set-face-attribute 'flymake-error-echo-at-eol nil
-                        :foreground (modus-themes-get-color-value 'red-faint)
-                        :background (modus-themes-get-color-value 'bg-red-nuanced))
-    (set-face-attribute 'flymake-note-echo nil :inherit 'flymake-note-echo-at-eol)
-    (set-face-attribute 'flymake-warning-echo nil :inherit 'flymake-warning-echo-at-eol)
-    (set-face-attribute 'flymake-error-echo nil :inherit 'flymake-error-echo-at-eol)
-    (dolist (face
-             '(flymake-note-echo
-               flymake-warning-echo
-               flymake-error-echo))
-      (set-face-attribute face nil
-                          :italic nil :bold t
-                          :box '(:line-width (1 . -1) :style flat-button))))
+    (let ((faces
+            '(flymake-eol-information-face
+              flymake-note-echo-at-eol
+              flymake-warning-echo-at-eol
+              flymake-error-echo-at-eol))
+           (fg-colors
+            '(blue-faint
+              cyan-faint
+              yellow-faint
+              red-faint))
+           (bg-colors
+            '(bg-blue-nuanced
+              bg-cyan-nuanced
+              bg-yellow-nuanced
+              bg-red-nuanced)))
+      (seq-mapn
+       (lambda (face fg-color bg-color)
+         (set-face-attribute face nil
+                             :extend t :inherit 'flymake-end-of-line-diagnostics-face
+                             :foreground (modus-themes-get-color-value fg-color)
+                             :background (modus-themes-get-color-value bg-color)))
+       faces fg-colors bg-colors)))
   (defun my/flymake-hook ()
     (when (fboundp 'modus-themes-get-color-value)
       (my/customize-flymake)
