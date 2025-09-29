@@ -3,8 +3,14 @@
 ;;; Code:
 
 ;; Less aggressive garbage collection on startup
-(setq gc-cons-threshold (* 100 1024 1024)) ;; 100 MB
-(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 800 1024))))
+(setq gc-cons-threshold (* 1024 1024 100)) ;; 100 MB
+(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 1024 800))))
+
+;; Make things a little quieter
+(setq byte-compile-warnings '(not obsolete)
+      warning-suppress-log-types '((comp) (bytecomp))
+      native-comp-async-report-warnings-errors 'silent
+      inhibit-startup-echo-area-message (user-login-name))
 
 (when (and (fboundp 'native-comp-available-p)
            (native-comp-available-p))
@@ -12,7 +18,7 @@
   (setq native-comp-async-report-warnings-errors nil)
   (setq native-comp-deferred-compilation-deny-list '())
 
-  ;; Put *.eln files to the non-default directory `var/eln-cache'
+  ;; Put *.eln files to the non-default directory `var/eln-cache/'
   (when (fboundp 'startup-redirect-eln-cache)
     (startup-redirect-eln-cache
      (convert-standard-filename (expand-file-name  "var/eln-cache/" user-emacs-directory)))))
@@ -55,16 +61,20 @@
 
 ;; UI Tweaks
 (unless (and (eq system-type 'darwin)
-              (display-graphic-p))
-  (menu-bar-mode 0))
-(tool-bar-mode 0)
-(scroll-bar-mode 0)
-(fringe-mode 0)
+             (display-graphic-p))
+  (menu-bar-mode -1))
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(fringe-mode -1)
 (set-fill-column 79)
-(global-visual-line-mode 0)
+(global-visual-line-mode -1)
 (xterm-mouse-mode 1)
 (column-number-mode 1)
 (pixel-scroll-precision-mode 1)
+
+(setq frame-inhibit-implied-resize t
+      frame-resize-pixelwise t
+      use-dialog-box nil)
 
 ;; Set PATH
 (setenv "PATH" "/Users/george/.bin:/Users/george/.dotfiles/bin:/Users/george/.macos-dotfiles/bin:/Users/george/.local/bin:/snap/bin:/opt/miniforge/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/opt/findutils/libexec/gnubin:/opt/homebrew/opt/gnu-sed/libexec/gnubin:/opt/homebrew/opt/gnu-tar/libexec/gnubin:/opt/homebrew/opt/gnu-which/libexec/gnubin:/opt/homebrew/opt/grep/libexec/gnubin:/opt/homebrew/opt/gsed/libexec/gnubin:/opt/homebrew/opt/libtool/libexec/gnubin:/opt/homebrew/opt/make/libexec/gnubin:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/sbin:/opt/pkg/bin:/opt/X11/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/Ghostty.app/Contents/MacOS")

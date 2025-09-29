@@ -267,7 +267,7 @@ mouse-3: Toggle minor modes"
      mode-line-major-modes
      (:propertize (" ") display (min-width (2.0)))
      ;; mode-line-minor-modes
-     flymake-mode-line-counters
+     (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-counters))
      (:propertize (" ") display (min-width (2.0)))
      mode-line-misc-info
      mode-line-end-spaces))
@@ -730,6 +730,9 @@ mouse-3: Toggle minor modes"
   :custom (which-key-idle-delay 1)
   :init (which-key-mode))
 
+(use-package eldoc-box
+  :hook (prog-mode . eldoc-box-hover-at-point-mode))
+
 (use-package diff-hl
   :custom
   (diff-hl-draw-borders nil)
@@ -821,7 +824,7 @@ mouse-3: Toggle minor modes"
 (use-package rainbow-mode)
 
 (use-package rainbow-delimiters
-  :hook prog-mode
+  :hook (prog-mode minibuffer-setup)
   :preface
   (defun my/customize-rainbow-delimiters ()
     (seq-mapn
