@@ -741,7 +741,7 @@ mouse-3: Toggle minor modes"
        (face-remap-add-relative diff-hl-face diff-face)
        (set-face-attribute diff-hl-face nil
                            :italic nil :bold nil
-                           :height (truncate (* 0.93 (face-attribute 'default :height)))))
+                           :height (round (* 0.92 (face-attribute 'default :height)))))
      '(diff-hl-change
        diff-hl-insert
        diff-hl-delete)
@@ -878,7 +878,7 @@ mouse-3: Toggle minor modes"
   (flymake-indicator-type 'margins)
   (flymake-autoresize-margins nil)
   (flymake-margin-indicators-string
-   '((note "●" flymake-note-echo)
+   '((note "•" flymake-note-echo)  ;; ●
      (warning "▲" flymake-warning-echo)
      (error "◼" flymake-error-echo)))
   :preface
@@ -886,7 +886,7 @@ mouse-3: Toggle minor modes"
     (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
                         :foreground (modus-themes-get-color-value 'fg-dim)
                         :box '(:line-width (5 . -1) :style flat-button)
-                        :height (truncate (* 0.93 (face-attribute 'default :height)))
+                        :height (round (* 0.92 (face-attribute 'default :height)))
                         :italic t
                         :inherit 'variable-pitch)
     (let ((faces
