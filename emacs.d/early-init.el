@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 
+;; Hide modeline on startup
+(setq mode-line-format nil)
+
 ;; Less aggressive garbage collection on startup
 (setq gc-cons-threshold (* 1024 1024 100)) ;; 100 MB
 (add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 1024 800))))
@@ -23,7 +26,7 @@
     (startup-redirect-eln-cache
      (convert-standard-filename (expand-file-name  "var/eln-cache/" user-emacs-directory)))))
 
-;; Configure screen properties for my MacbookAir
+;; Configure properties for my MacbookAir
 (when (eq system-type 'darwin)
   (setq-default mac-mouse-wheel-smooth-scroll t
                 mouse-wheel-flip-direction t
@@ -71,10 +74,39 @@
 (xterm-mouse-mode 1)
 (column-number-mode 1)
 (pixel-scroll-precision-mode 1)
-
-(setq frame-inhibit-implied-resize t
-      frame-resize-pixelwise t
+(setq frame-resize-pixelwise t
+      ;; frame-inhibit-implied-resize t
       use-dialog-box nil)
+
+  ;; Basic fonts
+(when (eq system-type 'darwin)
+  (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 130)
+  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 130))
+(when (eq system-type 'gnu/linux)
+  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 140)
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 130))
+(defconst variable-pitch-line-spacing 4)
+(copy-face 'fixed-pitch 'default)
+
+;; Initialize package sources and set up `use-package'
+(require 'package)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                          ("org" . "https://orgmode.org/elpa/")
+                          ("elpa" . "https://elpa.gnu.org/packages/")))
+
+(unless (package-installed-p 'use-package)
+  (package-initialize)
+  (unless package-archive-contents
+    (setq package-check-signature nil)
+    (package-refresh-contents)
+    (package-install 'gnu-elpa-keyring-update)
+    (setq package-check-signature 'allow-unsigned)
+    (package-refresh-contents))
+  (package-install 'use-package))
+
+(require 'use-package)
+(setq use-package-always-ensure t
+      use-package-always-defer t)
 
 ;; Set PATH
 (setenv "PATH" "/Users/george/.bin:/Users/george/.dotfiles/bin:/Users/george/.macos-dotfiles/bin:/Users/george/.local/bin:/snap/bin:/opt/miniforge/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/opt/findutils/libexec/gnubin:/opt/homebrew/opt/gnu-sed/libexec/gnubin:/opt/homebrew/opt/gnu-tar/libexec/gnubin:/opt/homebrew/opt/gnu-which/libexec/gnubin:/opt/homebrew/opt/grep/libexec/gnubin:/opt/homebrew/opt/gsed/libexec/gnubin:/opt/homebrew/opt/libtool/libexec/gnubin:/opt/homebrew/opt/make/libexec/gnubin:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/sbin:/opt/pkg/bin:/opt/X11/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/Ghostty.app/Contents/MacOS")

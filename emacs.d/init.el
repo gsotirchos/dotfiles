@@ -138,6 +138,36 @@ mouse-3: Toggle minor modes"
 	          " ")))
   (put 'mode-line-minor-modes 'risky-local-variable t)
 
+  (defvar my/mode-line-format
+   '("%e"
+     mode-line-front-space
+     (:propertize evil-mode-line-tag
+                  display (min-width (5.0)))
+     (:propertize (""
+                   mode-line-mule-info
+                   mode-line-client
+                   mode-line-modified
+                   mode-line-remote
+                   mode-line-window-dedicated)
+                  display (min-width (5.0)))
+     mode-line-frame-identification
+     mode-line-buffer-identification
+     (:propertize (" ") display (min-width (2.0)))
+     mode-line-position
+     ;; (:propertize (" ") display (min-width (2.0)))
+     ;; (project-mode-line project-mode-line-format)
+     (vc-mode vc-mode)
+     (:propertize (" ") display (min-width (2.0)))
+     mode-line-major-modes
+     (:propertize (" ") display (min-width (2.0)))
+     ;; mode-line-minor-modes
+     (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-counters))
+     (:propertize (" ") display (min-width (2.0)))
+     mode-line-misc-info
+     mode-line-end-spaces))
+
+  (add-hook 'after-load-theme-hook (lambda () (setq-default mode-line-format my/mode-line-format)))
+
   ;; Startup time
   (defun my/display-startup-stats ()
     "Display startup stats."
@@ -244,69 +274,11 @@ mouse-3: Toggle minor modes"
    '((python-mode . python-ts-mode)
      (sh-mode . bash-ts-mode)
      (yaml-mode . yaml-ts-mode)))
-  (mode-line-format
-   '("%e"
-     mode-line-front-space
-     (:propertize evil-mode-line-tag
-                  display (min-width (5.0)))
-     (:propertize (""
-                   mode-line-mule-info
-                   mode-line-client
-                   mode-line-modified
-                   mode-line-remote
-                   mode-line-window-dedicated)
-                  display (min-width (5.0)))
-     mode-line-frame-identification
-     mode-line-buffer-identification
-     (:propertize (" ") display (min-width (2.0)))
-     mode-line-position
-     ;; (:propertize (" ") display (min-width (2.0)))
-     ;; (project-mode-line project-mode-line-format)
-     (vc-mode vc-mode)
-     (:propertize (" ") display (min-width (2.0)))
-     mode-line-major-modes
-     (:propertize (" ") display (min-width (2.0)))
-     ;; mode-line-minor-modes
-     (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-counters))
-     (:propertize (" ") display (min-width (2.0)))
-     mode-line-misc-info
-     mode-line-end-spaces))
 
   :init
   ;; Display table for wrap prefix
   (set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
-  (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
-
-  :config
-  ;; Basic fonts
-  (when (eq system-type 'darwin)
-    (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 130)
-    (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 130))
-  (when (eq system-type 'gnu/linux)
-    (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 140)
-    (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 130))
-  (defconst variable-pitch-line-spacing 4)
-  (copy-face 'fixed-pitch 'default)
-
-  ;; Initialize package sources and set up `use-package'
-  (require 'package)
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("org" . "https://orgmode.org/elpa/")
-                           ("elpa" . "https://elpa.gnu.org/packages/")))
-
-  (unless (package-installed-p 'use-package)
-    (package-initialize)
-    (unless package-archive-contents
-      (setq package-check-signature nil)
-      (package-refresh-contents)
-      (package-install 'gnu-elpa-keyring-update)
-      (setq package-check-signature 'allow-unsigned)
-      (package-refresh-contents))
-    (package-install 'use-package))
-
-  (require 'use-package)
-  (setq use-package-always-ensure t
-        use-package-always-defer t))  ;; emacs
+  (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix)))
 
 
 ;; Basic packages
