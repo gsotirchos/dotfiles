@@ -28,6 +28,7 @@
 
 ;; Configure properties for my MacbookAir
 (when (eq system-type 'darwin)
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (setq-default mac-mouse-wheel-smooth-scroll t
                 mouse-wheel-flip-direction t
                 mouse-wheel-tilt-scroll t
