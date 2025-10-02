@@ -1106,6 +1106,9 @@ CHAR is the emphasis character to use."
   (advice-add 'my/org-latex-preview-buffer :around #'my/silence)
   :config (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
 
+;; org-fragtog
+;; org-appear
+
 
 (provide 'init)
 
