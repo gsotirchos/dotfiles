@@ -780,7 +780,6 @@ mouse-3: Toggle minor modes"
   :ensure nil
   :preface
   (defun my/prog-mode-hook ()
-    (electric-pair-mode 1)
     (hs-minor-mode 1)
     (setq show-trailing-whitespace t)
     ;; (modify-syntax-entry ?- "w")
@@ -792,6 +791,11 @@ mouse-3: Toggle minor modes"
   :custom (outline-blank-line t)
   ;; (outline-indent-ellipsis " ▼")
   )
+
+(use-package electric-pair
+  :ensure nil
+  :hook (prog-mode text-mode)
+  :custom (electric-pair-preserve-balance nil))
 
 (use-package rainbow-mode)
 
@@ -1040,13 +1044,11 @@ mouse-3: Toggle minor modes"
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
   (org-latex-create-formula-image-program 'dvisvgm)
-  ;; (org-tags-column 0)
-  ;; (org-special-ctrl-a t)
-  ;; (org-special-ctrl-e t)
-  ;; (org-special-ctrl-k t)
-  ;; (org-special-ctrl-o t)
-  ;; (org-insert-heading-respect-content t)
+  (org-special-ctrl-a/e t)
+  (org-special-ctrl-k t)
+  (org-special-ctrl-o t)
   ;; (org-pretty-entities t)
+  ;; (org-tags-column 0)
   :preface
   (defun my/org-emphasize-dwim (&optional char)
     "DWIM (Do What I Mean) wrapper for `org-emphasize'.
