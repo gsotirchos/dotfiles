@@ -31,12 +31,12 @@
           (find-file-other-frame file-name)))))
 
   (defun my/edit-emacs-init ()
-    "Edit `~/.emacs.d/init.el'"
+    "Edit `~/.emacs.d/init.el'."
     (interactive)
     (my/find-file  "~/.emacs.d/init.el"))
 
   (defun my/edit-emacs-early-init ()
-    "Edit `~/.emacs.d/init.el'"
+    "Edit `~/.emacs.d/early-init.el'."
     (interactive)
     (my/find-file  "~/.emacs.d/early-init.el"))
 
@@ -411,7 +411,7 @@ mouse-3: Toggle minor modes"
       (set-face-bold 'tab-bar-tab bold-p)
       (set-face-bold 'tab-bar-tab-inactive bold-p))
     (let ((box-released '(:line-width 2 :style released-button))
-          (box-pressed '(:line-width 2 :style pressed-button))
+          ;; (box-pressed '(:line-width 2 :style pressed-button))
           (box-thinner '(:line-width (1 . 2) :style released-button)))
       (dolist (face
                '(modus-themes-button
@@ -421,7 +421,7 @@ mouse-3: Toggle minor modes"
                  mode-line
                  mode-line-inactive))
         (set-face-attribute face nil :box box-released))
-      ;; (add-hook 'Custom-mode-hook
+      ;; (add-hook 'Custom-mode-hook  ;; TODO
       ;;           (lambda ()
       ;;             (set-face-attribute 'custom-button nil :box box-released)
       ;;             (set-face-attribute 'custom-button-mouse nil :box box-released)
