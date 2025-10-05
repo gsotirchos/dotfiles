@@ -91,7 +91,7 @@
              (equal buffer-face-mode-face 'variable-pitch))
         (when (boundp 'variable-pitch-line-spacing)
           (setq-local line-spacing variable-pitch-line-spacing))
-      (setq line-spacing nil)))
+      (setq line-spacing fixed-pitch-line-spacing)))
 
   (advice-add 'variable-pitch-mode :after #'my/variable-pitch-line-spacing-advice)
 
@@ -263,7 +263,7 @@ mouse-3: Toggle minor modes"
   (hscroll-margin 0)
   (scroll-step 1)
   (hscroll-step 1)
-  (line-spacing 2)
+  (line-spacing fixed-pitch-line-spacing)
   (truncate-lines nil)
   (wrap-prefix "…")
   (left-margin-width 1)
@@ -354,11 +354,11 @@ mouse-3: Toggle minor modes"
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
-  (modus-themes-variable-pitch-ui t)
+  ;; (modus-themes-variable-pitch-ui t)
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
-     (bg-mode-line-active bg-dim)
-     (bg-mode-line-inactive bg-main)
+     (bg-mode-line-active bg-inactive)
+     (bg-mode-line-inactive bg-dim)
      (border-mode-line-active bg-mode-line-active)
      (border-mode-line-inactive bg-mode-line-inactive)
      (header-line bg-dim)
@@ -409,25 +409,22 @@ mouse-3: Toggle minor modes"
       (set-face-bold 'tab-bar bold-p)
       (set-face-bold 'tab-bar-tab bold-p)
       (set-face-bold 'tab-bar-tab-inactive bold-p))
-    (let ((family (face-attribute 'variable-pitch :family)))
-      (dolist (face
-               '(modus-themes-button
-                 tab-bar
-                 tab-bar-tab
-                 tab-bar-tab-inactive
-                 header-line
-                 header-line-highlight
-                 mode-line
-                 mode-line-highlight
-                 mode-line-active
-                 mode-line-inactive))
-        (set-face-attribute face nil :family family)))
+    (dolist (face
+             '(modus-themes-button
+               tab-bar
+               tab-bar-tab
+               tab-bar-tab-inactive
+               header-line
+               header-line-highlight
+               mode-line
+               mode-line-inactive
+               mode-line-highlight))
+      (set-face-attribute face nil :family nil :inherit 'variable-pitch))
     (let ((box-released '(:line-width 2 :style released-button))
-          ;; (box-pressed '(:line-width 2 :style pressed-button))
+          (box-pressed '(:line-width 2 :style pressed-button))
           (box-thinner '(:line-width (1 . 2) :style released-button)))
       (dolist (face
                '(modus-themes-button
-                 ;; tab-bar
                  tab-bar-tab
                  tab-bar-tab-inactive
                  header-line
@@ -435,7 +432,8 @@ mouse-3: Toggle minor modes"
                  mode-line-active
                  mode-line-inactive))
         (set-face-attribute face nil :box box-released))
-      ;; (set-face-attribute 'tab-bar-tab nil :box box-pressed)
+      ;; (set-face-attribute 'custom-button-mouse nil :box box-pressed)
+      ;; (set-face-attribute 'custom-button-pressed nil :box box-pressed)
       (dolist (face
                '(mode-line-highlight
                  header-line-highlight))
@@ -604,7 +602,8 @@ mouse-3: Toggle minor modes"
   :preface
   (defun my/marginalia-mode-hook ()
     (set-face-attribute 'marginalia-documentation nil
-                        :family (face-attribute 'variable-pitch :family)))
+                        :family nil
+                        :inherit 'variable-pitch))
   (add-hook 'after-load-theme-hook #'my/marginalia-mode-hook)
   :init
   (marginalia-mode)
@@ -746,6 +745,15 @@ mouse-3: Toggle minor modes"
   (when (bound-and-true-p evil-mode)
     (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
 
+(use-package pdf-tools
+  :commands (pdf-loader-install)
+  :mode "\\.pdf\\'"
+  :preface
+  (defun my/pdf-view-mode-hook ()
+    (setq-local mode-line-format nil))
+  (add-hook 'pdf-view-mode-hook #'my/pdf-view-mode-hook)
+  :init (pdf-loader-install)
+  :config (add-to-list 'revert-without-query ".pdf"))
 
 ;; Programming
 
@@ -846,6 +854,10 @@ mouse-3: Toggle minor modes"
   (indent-bars-color-by-depth nil)
   (indent-bars-highlight-current-depth nil)
   (indent-bars-display-on-blank-lines nil))
+
+(use-package ediff
+  :ensure nil
+  :custom (ediff-window-setup-function 'ediff-setup-windows-plain))
 
 (use-package flymake
   :ensure nil
@@ -1080,16 +1092,18 @@ CHAR is the emphasis character to use."
     (interactive)
     (set-face-attribute 'org-headline-done nil
                         :strike-through t
-                        :family (face-attribute 'variable-pitch :family))
+                        :family nil
+                        :inherit 'variable-pitch)
     (set-face-bold 'org-checkbox t)
     (let ((bg-color (face-background 'org-agenda-clocking)))
       (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
     (dolist (face
-             '(org-table
+             '(org-hide
+               org-table
                org-todo
                org-done
                org-checkbox))
-      (set-face-attribute face nil :family (face-attribute 'fixed-pitch :family)))
+      (set-face-attribute face nil :family nil :inherit 'fixed-pitch))
     (font-lock-update))
   (defun my/org-mode-hook ()
     (setq-local fill-column nil)
