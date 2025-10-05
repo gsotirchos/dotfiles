@@ -267,7 +267,7 @@ mouse-3: Toggle minor modes"
   (truncate-lines nil)
   (wrap-prefix "…")
   (cursor-in-non-selected-windows nil)
-  (left-margin-width 1)
+  (left-margin-width 0)
   (right-margin-width 0)
   (indent-tabs-mode nil)
   (treemacs-no-png-images t)
@@ -677,7 +677,6 @@ mouse-3: Toggle minor modes"
   (([remap describe-function] . helpful-callable)
    ([remap describe-command] . helpful-command)
    ([remap describe-variable] . helpful-variable)
-   ([remap describe-mode] . helpful-mode)
    ([remap describe-key] . helpful-key)
    ([remap describe-symbol] . helpful-symbol)
    ([remap help-follow-symbol] . helpful-at-point))
@@ -691,6 +690,7 @@ mouse-3: Toggle minor modes"
   :hook (prog-mode . eldoc-box-hover-at-point-mode))
 
 (use-package diff-hl
+  :hook (prog-mode text-mode)
   :custom
   (diff-hl-draw-borders nil)
   :preface
@@ -715,7 +715,8 @@ mouse-3: Toggle minor modes"
     (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
   (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
   :init
-  (global-diff-hl-mode 1)
+  ;; (global-diff-hl-mode 1)
+  ;; (global-diff-hl-mode 1)
   (diff-hl-margin-mode 1))
 
 (use-package magit
@@ -734,15 +735,26 @@ mouse-3: Toggle minor modes"
 (use-package pdf-tools
   :commands (pdf-loader-install)
   :mode "\\.pdf\\'"
+  :bind (:map special-mode-map ([remap quit-window] . nil))
   :preface
+  (defun my/maybe-toggle-pdf-midnight-view ()
+    (setq pdf-view-midnight-colors `(,(face-foreground 'default) . ,(face-background 'default)))
+    (if (< (string-to-number (substring (face-background 'default) 1) 16) #x333333)
+        (pdf-view-midnight-minor-mode 1)
+      (pdf-view-midnight-minor-mode -1)))
   (defun my/pdf-view-mode-hook ()
-    (set-window-cursor-type nil nil)
-    (setq left-margin-width 0)
-    (setq mode-line-format nil))
+    (setq mode-line-format nil)
+    ;; (set-window-cursor-type nil nil)  ;; TODO: toggle on focus
+    (set-window-margins nil 0 0)
+    (pdf-view-fit-width-to-window)
+    (add-hook 'after-load-theme-hook #'my/maybe-toggle-pdf-midnight-view nil t))
   (add-hook 'pdf-view-mode-hook #'my/pdf-view-mode-hook)
   :init (pdf-loader-install)
   :config (add-to-list 'revert-without-query ".pdf"))
 
+(use-package saveplace-pdf-view
+  :after (:any doc-view pdf-tools)
+  :demand t)
 
 ;; Programming
 
@@ -1104,7 +1116,7 @@ CHAR is the emphasis character to use."
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   (advice-add 'my/org-latex-preview-buffer :around #'my/silence)
-  :config (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 0.6)))
+  :config (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 0.5)))
 
 ;; org-fragtog
 ;; org-appear
