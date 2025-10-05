@@ -24,7 +24,7 @@
   (defun my/find-file (file)
     "Open buffer with FILE in new frame or tab."
     (interactive)
-    (let ((file-name (expand-file-name file)))
+    (let ((file-name (file-truename file)))
       (unless (string-equal buffer-file-name file-name)
         (if (cdr (assoc 'fullscreen (frame-parameters)))
             (find-file-other-tab file-name)
@@ -266,6 +266,7 @@ mouse-3: Toggle minor modes"
   (line-spacing fixed-pitch-line-spacing)
   (truncate-lines nil)
   (wrap-prefix "…")
+  (cursor-in-non-selected-windows nil)
   (left-margin-width 1)
   (right-margin-width 0)
   (indent-tabs-mode nil)
@@ -354,7 +355,7 @@ mouse-3: Toggle minor modes"
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
   (modus-themes-italic-constructs t)
-  ;; (modus-themes-variable-pitch-ui t)
+  (modus-themes-variable-pitch-ui t)
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
      (bg-mode-line-active bg-inactive)
@@ -409,17 +410,6 @@ mouse-3: Toggle minor modes"
       (set-face-bold 'tab-bar bold-p)
       (set-face-bold 'tab-bar-tab bold-p)
       (set-face-bold 'tab-bar-tab-inactive bold-p))
-    (dolist (face
-             '(modus-themes-button
-               tab-bar
-               tab-bar-tab
-               tab-bar-tab-inactive
-               header-line
-               header-line-highlight
-               mode-line
-               mode-line-inactive
-               mode-line-highlight))
-      (set-face-attribute face nil :family nil :inherit 'variable-pitch))
     (let ((box-released '(:line-width 2 :style released-button))
           (box-pressed '(:line-width 2 :style pressed-button))
           (box-thinner '(:line-width (1 . 2) :style released-button)))
@@ -429,11 +419,13 @@ mouse-3: Toggle minor modes"
                  tab-bar-tab-inactive
                  header-line
                  mode-line
-                 mode-line-active
                  mode-line-inactive))
         (set-face-attribute face nil :box box-released))
-      ;; (set-face-attribute 'custom-button-mouse nil :box box-pressed)
-      ;; (set-face-attribute 'custom-button-pressed nil :box box-pressed)
+      ;; (add-hook 'Custom-mode-hook
+      ;;           (lambda ()
+      ;;             (set-face-attribute 'custom-button nil :box box-released)
+      ;;             (set-face-attribute 'custom-button-mouse nil :box box-released)
+      ;;             (set-face-attribute 'custom-button-pressed nil :box box-pressed)))
       (dolist (face
                '(mode-line-highlight
                  header-line-highlight))
@@ -602,8 +594,7 @@ mouse-3: Toggle minor modes"
   :preface
   (defun my/marginalia-mode-hook ()
     (set-face-attribute 'marginalia-documentation nil
-                        :family nil
-                        :inherit 'variable-pitch))
+                        :italic t :family nil :inherit 'variable-pitch))
   (add-hook 'after-load-theme-hook #'my/marginalia-mode-hook)
   :init
   (marginalia-mode)
@@ -682,18 +673,13 @@ mouse-3: Toggle minor modes"
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package helpful
-  :commands
-  (helpful-callable
-   helpful-function
-   helpful-command
-   helpful-variable
-   helpful-key
-   helpful-at-point)
   :bind
-  (([remap describe-function] . helpful-function)
+  (([remap describe-function] . helpful-callable)
    ([remap describe-command] . helpful-command)
    ([remap describe-variable] . helpful-variable)
+   ([remap describe-mode] . helpful-mode)
    ([remap describe-key] . helpful-key)
+   ([remap describe-symbol] . helpful-symbol)
    ([remap help-follow-symbol] . helpful-at-point))
   :custom (warning-minimum-level :error))
 
@@ -750,10 +736,13 @@ mouse-3: Toggle minor modes"
   :mode "\\.pdf\\'"
   :preface
   (defun my/pdf-view-mode-hook ()
-    (setq-local mode-line-format nil))
+    (set-window-cursor-type nil nil)
+    (setq left-margin-width 0)
+    (setq mode-line-format nil))
   (add-hook 'pdf-view-mode-hook #'my/pdf-view-mode-hook)
   :init (pdf-loader-install)
   :config (add-to-list 'revert-without-query ".pdf"))
+
 
 ;; Programming
 
@@ -1091,9 +1080,7 @@ CHAR is the emphasis character to use."
     "Apply my tweaks to theme-controlled settings."
     (interactive)
     (set-face-attribute 'org-headline-done nil
-                        :strike-through t
-                        :family nil
-                        :inherit 'variable-pitch)
+                        :strike-through t :family nil :inherit 'variable-pitch)
     (set-face-bold 'org-checkbox t)
     (let ((bg-color (face-background 'org-agenda-clocking)))
       (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
@@ -1106,8 +1093,7 @@ CHAR is the emphasis character to use."
       (set-face-attribute face nil :family nil :inherit 'fixed-pitch))
     (font-lock-update))
   (defun my/org-mode-hook ()
-    (setq-local fill-column nil)
-    (auto-fill-mode 1)
+    (setq fill-column most-positive-fixnum)
     (visual-line-mode 1)
     (my/customize-org-mode)
     (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
