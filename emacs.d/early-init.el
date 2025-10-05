@@ -81,11 +81,12 @@
 
   ;; Basic fonts
 (when (eq system-type 'darwin)
-  (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 130)
-  (set-face-attribute 'variable-pitch nil :family "Lucida Grande" :height 130))
+  (set-face-attribute 'fixed-pitch nil :family "Menlo")  ;; :height 130
+  (set-face-attribute 'variable-pitch nil :family "Lucida Grande"))  ;; :height 130
 (when (eq system-type 'gnu/linux)
-  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 130))
+  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono")  ;; :height 140
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu"))  ;; :height 130
+(defconst fixed-pitch-line-spacing 2)
 (defconst variable-pitch-line-spacing 4)
 (copy-face 'fixed-pitch 'default)
 
