@@ -41,15 +41,15 @@
     (my/find-file  "~/.emacs.d/early-init.el"))
 
   (defun my/prevent-in-home-dir-advice (fn &rest args)
-    "Pre-advice to prevent running FN (with ARGS) in the home directory."
+    "Prevent running the advised function in the home directory."
     (let* ((current-dir (file-truename default-directory))
            (home-dir (file-truename (expand-file-name "~/"))))
       (if (equal current-dir home-dir)
           (message "%s was prevented from running in the home directory." fn)
         (apply fn args))))
 
-  (defun my/silence (fn &rest args)
-    "Pre-advice to silence FN (with ARGS) execution."
+  (defun my/silence-advice (fn &rest args)
+    "Silence the advised function's execution."
     (let ((message-log-max nil)
           (inhibit-message t))
       (apply fn args)))
@@ -85,15 +85,15 @@
   (advice-add 'load-theme :after #'my/run-after-load-theme-hook)
 
   ;; Variable pitch
-  (defun my/variable-pitch-line-spacing-advice (&rest _)
-    "Set `line-spacing' when `variable-pitch-mode' is toggled."
+  (defun my/set-line-spacing-advice (&rest _)
+    "Set `line-spacing' after the advised function is executed."
     (if (and (bound-and-true-p buffer-face-mode)
              (equal buffer-face-mode-face 'variable-pitch))
         (when (boundp 'variable-pitch-line-spacing)
           (setq-local line-spacing variable-pitch-line-spacing))
       (setq line-spacing fixed-pitch-line-spacing)))
 
-  (advice-add 'variable-pitch-mode :after #'my/variable-pitch-line-spacing-advice)
+  (advice-add 'variable-pitch-mode :after #'my/set-line-spacing-advice)
 
   (add-hook 'Custom-mode-hook #'variable-pitch-mode)
   (add-hook 'Info-mode-hook #'variable-pitch-mode)
@@ -749,8 +749,9 @@ mouse-3: Toggle minor modes"
     (pdf-view-fit-width-to-window)
     (add-hook 'after-load-theme-hook #'my/maybe-toggle-pdf-midnight-view nil t))
   (add-hook 'pdf-view-mode-hook #'my/pdf-view-mode-hook)
-  :init (pdf-loader-install)
-  :config (add-to-list 'revert-without-query ".pdf"))
+  :config
+  (pdf-loader-install)
+  (add-to-list 'revert-without-query ".pdf"))
 
 (use-package saveplace-pdf-view
   :after (:any doc-view pdf-tools)
@@ -1008,26 +1009,34 @@ mouse-3: Toggle minor modes"
 (use-package auctex
   :ensure nil
   :custom
-  (preview-auto-cache-preamble t)
   (TeX-auto-save t)
   (TeX-parse-self t)
   (TeX-master nil)
   (TeX-command-extra-options "-shell-escape")
+  (TeX-view-program-selection '((output-pdf "PDF Tools")))
+  (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
+  (TeX-source-correlate-start-server t)
+  (preview-auto-cache-preamble t)
   (preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
   (preview-preserve-counters t)
-  (preview-scale-function 1.75)
-  (preview-image-type 'dvisvgm)
+  (preview-scale-function (/ 1 1.75))
   :preface
   (defun my/LaTeX-mode-hook ()
+    (variable-pitch-mode -1)
     (outline-minor-mode 1)
     (LaTeX-math-mode 1)
     (turn-on-reftex)
-    (TeX-PDF-mode -1))
+    (advice-add 'preview-document :before (lambda (&rest _) (TeX-PDF-mode -1)))
+    (advice-add 'preview-region :before (lambda (&rest _) (TeX-PDF-mode -1)))
+    (advice-add 'TeX-command :before (lambda (&rest _) (TeX-PDF-mode 1))))
   (add-hook 'LaTeX-mode-hook #'my/LaTeX-mode-hook)
   (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
 
 (use-package preview-dvisvgm
-  :after preview-latex)
+  :after preview
+  :custom
+  (preview-image-type 'dvisvgm)
+  (preview-scale-function 1.75))
 
 
 ;; Org
@@ -1053,6 +1062,7 @@ mouse-3: Toggle minor modes"
   (org-agenda-files '(org-directory "~/Desktop"))
   (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP" "FAIL")))
   (org-log-done 'time)
+  (org-tags-column 0)
   (org-hide-emphasis-markers t)
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
@@ -1060,8 +1070,6 @@ mouse-3: Toggle minor modes"
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
-  ;; (org-pretty-entities t)
-  ;; (org-tags-column 0)
   :preface
   (defun my/org-emphasize-dwim (&optional char)
     "DWIM (Do What I Mean) wrapper for `org-emphasize'.
@@ -1105,7 +1113,7 @@ CHAR is the emphasis character to use."
       (set-face-attribute face nil :family nil :inherit 'fixed-pitch))
     (font-lock-update))
   (defun my/org-mode-hook ()
-    (setq fill-column most-positive-fixnum)
+    ;; (setq fill-column most-positive-fixnum)
     (visual-line-mode 1)
     (my/customize-org-mode)
     (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
@@ -1115,7 +1123,7 @@ CHAR is the emphasis character to use."
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
-  (advice-add 'my/org-latex-preview-buffer :around #'my/silence)
+  (advice-add 'my/org-latex-preview-buffer :around #'my/silence-advice)
   :config (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 0.5)))
 
 ;; org-fragtog
