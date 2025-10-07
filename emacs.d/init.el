@@ -508,7 +508,6 @@ mouse-3: Toggle minor modes"
         evil-mode-line-format nil)
   :config
   (evil-mode 1)
-  (evil-set-initial-state 'prog-mode 'normal)
   (global-set-key [remap evil-visual-block] #'scroll-up-command)
   (global-set-key [remap kill-ring-save] #'evil-yank)
   (global-set-key [remap my/quit-dwim] #'evil-quit)
@@ -690,10 +689,12 @@ mouse-3: Toggle minor modes"
   :hook (prog-mode . eldoc-box-hover-at-point-mode))
 
 (use-package diff-hl
-  :hook (prog-mode text-mode)
-  :custom
-  (diff-hl-draw-borders nil)
+  :custom (diff-hl-draw-borders nil)
   :preface
+  (defun my/diff-hl-mode-if-vc ()
+    (when (and (buffer-file-name) (vc-registered (buffer-file-name)))
+      (diff-hl-mode 1)))
+  (add-hook 'find-file-hook #'my/diff-hl-mode-if-vc)
   (defun my/customize-diff-hl ()
     (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
     (seq-mapn
@@ -714,10 +715,7 @@ mouse-3: Toggle minor modes"
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
     (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
   (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
-  :init
-  ;; (global-diff-hl-mode 1)
-  ;; (global-diff-hl-mode 1)
-  (diff-hl-margin-mode 1))
+  :init (diff-hl-margin-mode 1))
 
 (use-package magit
   :bind
@@ -734,7 +732,7 @@ mouse-3: Toggle minor modes"
 
 (use-package pdf-tools
   :commands (pdf-loader-install)
-  :mode "\\.pdf\\'"
+  :mode ("\\.pdf\\'" . pdf-view-mode)
   :bind (:map special-mode-map ([remap quit-window] . nil))
   :preface
   (defun my/maybe-toggle-pdf-midnight-view ()
