@@ -748,8 +748,6 @@ mouse-3: Toggle minor modes"
       (pdf-view-midnight-minor-mode -1)))
   (defun my/pdf-view-mode-hook ()
     (setq mode-line-format nil)
-    ;; (set-window-cursor-type nil nil)  ;; TODO: toggle on focus
-    (set-window-margins nil 0 0)
     (pdf-view-fit-width-to-window)
     (my/maybe-toggle-pdf-midnight-view)
     (add-hook 'after-load-theme-hook #'my/maybe-toggle-pdf-midnight-view nil t))
