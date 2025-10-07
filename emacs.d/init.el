@@ -95,10 +95,14 @@
 
   (advice-add 'variable-pitch-mode :after #'my/set-line-spacing-advice)
 
+  (defun my/fixed-pitch-mode ()
+    (variable-pitch-mode -1))
+
   (add-hook 'Custom-mode-hook #'variable-pitch-mode)
   (add-hook 'Info-mode-hook #'variable-pitch-mode)
-  (add-hook 'text-mode-hook #'variable-pitch-mode)
   (add-hook 'org-mode-hook #'variable-pitch-mode)
+  ;; (add-hook 'text-mode-hook #'variable-pitch-mode)
+  ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
 
   ;; Modeline
   (defvar mode-line-major-modes
@@ -657,8 +661,10 @@ mouse-3: Toggle minor modes"
   (defalias 'consult-line-thing-at-point 'consult-line)
   (consult-customize consult-line-thing-at-point
                      :initial (thing-at-point 'symbol))
-  (add-to-list 'consult-preview-allowed-hooks #'my/org-mode-hook)
-  (add-to-list 'consult-preview-allowed-hooks #'variable-pitch-mode))
+  (add-to-list 'consult-preview-allowed-hooks #'variable-pitch-mode)
+  ;; (add-to-list 'consult-preview-allowed-hooks #'my/fixed-pitch-mode)
+  (add-to-list 'consult-preview-allowed-hooks #'my/pdf-view-mode-hook)
+  (add-to-list 'consult-preview-allowed-hooks #'my/org-mode-hook))
 
 (use-package embark
   :bind
@@ -745,6 +751,7 @@ mouse-3: Toggle minor modes"
     ;; (set-window-cursor-type nil nil)  ;; TODO: toggle on focus
     (set-window-margins nil 0 0)
     (pdf-view-fit-width-to-window)
+    (my/maybe-toggle-pdf-midnight-view)
     (add-hook 'after-load-theme-hook #'my/maybe-toggle-pdf-midnight-view nil t))
   (add-hook 'pdf-view-mode-hook #'my/pdf-view-mode-hook)
   :config
@@ -1020,7 +1027,6 @@ mouse-3: Toggle minor modes"
   (preview-scale-function (/ 1 1.75))
   :preface
   (defun my/LaTeX-mode-hook ()
-    (variable-pitch-mode -1)
     (outline-minor-mode 1)
     (LaTeX-math-mode 1)
     (turn-on-reftex)
