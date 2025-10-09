@@ -337,7 +337,10 @@ mouse-3: Toggle minor modes"
 (use-package comint
   :ensure nil
   :custom (comint-buffer-maximum-size (* 1 1024))
-  :init (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))
+  :config
+  (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer)
+  (add-to-list 'completion-at-point-functions #'comint-dynamic-complete-filename))
+
 
 (use-package desktop
   :ensure nil
@@ -605,10 +608,10 @@ mouse-3: Toggle minor modes"
 
 (use-package orderless
   :custom
-  ;; Actvate orderless completion
-  (completion-styles '(orderless substring basic))
-  ;; Enable partial completion for file wildcard support
-  (completion-category-overrides '((file (styles partial-completion)))))
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-category-defaults nil) ;; Disable defaults, use our settings
+  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
 
 (use-package consult
   :after (evil vertico)
