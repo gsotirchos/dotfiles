@@ -86,7 +86,7 @@
 (when (eq system-type 'gnu/linux)
   (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono")  ;; :height 140
   (set-face-attribute 'variable-pitch nil :family "Ubuntu"))  ;; :height 130
-(defconst fixed-pitch-line-spacing 2)
+(defconst fixed-pitch-line-spacing 4)
 (defconst variable-pitch-line-spacing 4)
 (copy-face 'fixed-pitch 'default)
 

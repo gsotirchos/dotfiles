@@ -338,8 +338,8 @@ mouse-3: Toggle minor modes"
   :ensure nil
   :custom (comint-buffer-maximum-size (* 1 1024))
   :config
-  (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer)
-  (add-to-list 'completion-at-point-functions #'comint-dynamic-complete-filename))
+  ;; (add-to-list 'completion-at-point-functions #'comint-dynamic-complete-filename)
+  (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))
 
 
 (use-package desktop
@@ -486,10 +486,11 @@ mouse-3: Toggle minor modes"
 
 (use-package dired
   :ensure nil
-  :bind (:map dired-mode-map ("b" . dired-up-directory))
+  :bind (:map dired-mode-map ("M-<up>" . dired-up-directory))
   :custom
   (dired-listing-switches "-alv --group-directories-first")
   (dired-omit-files "^\\.[^.].*")
+  (dired-mouse-drag-files t)
   (dired-omit-verbose nil)
   (dired-dwim-target 'dired-dwim-target-next)
   (dired-hide-details-hide-symlink-targets nil)
@@ -497,7 +498,7 @@ mouse-3: Toggle minor modes"
   (delete-by-moving-to-trash t)
   :preface
   (defun my/dired-mode-hook ()
-    (setq-local left-margin-width 0)
+    (dired-omit-mode 1)
     (dired-hide-details-mode 1)
     (hl-line-mode 1))
   (add-hook 'dired-mode-hook #'my/dired-mode-hook))
@@ -875,7 +876,7 @@ mouse-3: Toggle minor modes"
   (flymake-no-changes-timeout 1)
   (flymake-show-diagnostics-at-end-of-line t)
   (flymake-indicator-type 'margins)
-  (flymake-autoresize-margins nil)
+  ;; (flymake-autoresize-margins nil)
   (flymake-margin-indicators-string
    '((note "•" flymake-note-echo)  ;; ●
      (warning "▲" flymake-warning-echo)
@@ -1076,11 +1077,15 @@ mouse-3: Toggle minor modes"
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
   :preface
+  (defun my/unlimited-fill-column-advice (fn &rest args)
+    "Execute FN with ARGS with `fill-column' set to the maximum possible value."
+    (let ((fill-column most-positive-fixnum))
+      (apply fn args)))
+  (advice-add 'org-fill-paragraph :around #'my/unlimited-fill-column-advice)
   (defun my/org-emphasize-dwim (&optional char)
     "DWIM (Do What I Mean) wrapper for `org-emphasize'.
 If there's an active region, apply emphasis to it.
-Otherwise, apply emphasis to the word at point.
-CHAR is the emphasis character to use."
+Otherwise, apply emphasis to the word at point."
     (interactive)
     (if (use-region-p)
         (org-emphasize char)
@@ -1101,11 +1106,30 @@ CHAR is the emphasis character to use."
     "Prevew all LaTeX fragments in buffer."
     (interactive)
     (org-latex-preview '(16)))
+  (defun my/md-to-org-region (start end)
+    "Convert contents between START and END from markdown to org."
+    (interactive "r")
+    (shell-command-on-region start end "pandoc -f markdown -t org" t t))
+  (defun my/org-remove-drawers-in-region (start end)
+    "Remove all Org-mode drawers between START and END."
+    (interactive "r")
+    (save-excursion
+      (goto-char start)
+      (let ((drawer-regexp "^\s*:\\w*:\\(.\\|\n\\)*\s*:END:\s*\n"))
+        (while (re-search-forward drawer-regexp end t)
+          ;; Delete the match, including the newline
+          (replace-match "" nil nil)))))
+  (defun my/set-org-format-latex-scale ()
+    "Set LaTeX fragments' scaling based on text and screen scaling."
+    (let ((text-scaling (if (boundp 'text-scale-mode-step)
+                            (expt text-scale-mode-step text-scale-mode-amount)
+                          1.0))
+          (monitor-scaling (cdr (assoc 'scale-factor (car (display-monitor-attributes-list))))))
+      (setq org-format-latex-options
+            (plist-put org-format-latex-options :scale (/ text-scaling monitor-scaling)))))
   (defun my/customize-org-mode ()
     "Apply my tweaks to theme-controlled settings."
-    (interactive)
-    (set-face-attribute 'org-headline-done nil
-                        :strike-through t :family nil :inherit 'variable-pitch)
+    (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
     (set-face-bold 'org-checkbox t)
     (let ((bg-color (face-background 'org-agenda-clocking)))
       (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
@@ -1122,18 +1146,22 @@ CHAR is the emphasis character to use."
     (visual-line-mode 1)
     (my/customize-org-mode)
     (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
+    (add-hook 'text-scale-mode-hook #'my/set-org-format-latex-scale nil t)
     (dolist (hook
              '(after-load-theme-hook
+               text-scale-mode-hook
                auto-save-hook
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   (advice-add 'my/org-latex-preview-buffer :around #'my/silence-advice)
-  :config (setq-default org-format-latex-options (plist-put org-format-latex-options :scale 0.5)))
+  :config (my/set-org-format-latex-scale))
 
-;; org-fragtog
-;; org-appear
+(use-package org-fragtog
+  :hook org-mode)
 
+(use-package org-appear
+  :hook org-mode)
 
 (provide 'init)
 
