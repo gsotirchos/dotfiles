@@ -1161,7 +1161,8 @@ Otherwise, apply emphasis to the word at point."
   :hook org-mode)
 
 (use-package org-appear
-  :hook org-mode)
+  :hook org-mode
+  :custom (org-appear-autolinks t))
 
 (provide 'init)
 

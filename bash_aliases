@@ -90,6 +90,9 @@ alias ls="ls -h --color=always"    # human-readable, colored ls
 alias ll="ls -l"                   # ll := list ls
 alias la="ls -la"                  # la := list all ls
 alias grep="grep --color -E -n"    # colored, extended regexp, line no. grep
+if command -v "rg" &> /dev/null; then
+    alias grep="rg -p"
+fi
 alias tree="tree \
     -lNC -L 2 \
     --dirsfirst \
