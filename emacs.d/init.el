@@ -54,6 +54,39 @@
           (inhibit-message t))
       (apply fn args)))
 
+  ;; List manipulation utilities
+  (defun my/update-plist-property (plist property fn)
+    "Update the PLIST's PROPERTY's value using FN."
+    (let* ((current-value (plist-get plist property))
+           (new-value (funcall fn current-value)))
+      (plist-put plist property new-value)))
+
+  (defun my/update-overlay-property-cdr (overlay property fn)
+    "Update the OVERLAY's PROPERTY's value's cdr using FN."
+    (let* ((current-value (overlay-get overlay property))
+           (current-car (car current-value))
+           (current-cdr (cdr current-value))
+           (new-cdr (funcall fn current-cdr))
+           (new-value (cons current-car new-cdr)))
+      (overlay-put overlay property new-value)))
+
+  (defun my/text-scale-overlays (category category-name scale)
+    (dolist (overlay (overlays-in (point-min) (point-max)))
+      (when (eq (overlay-get overlay category)
+                category-name)
+        ;; (overlay-put overlay 'display
+        ;;              (cons 'image (plist-put (cdr (overlay-get overlay 'display))
+        ;;                                      :scale scale)))
+        (let ((scale_fn (lambda (_) scale)))
+          (my/update-overlay-property-cdr
+           overlay
+           'display
+           (lambda (value-cdr-plist)
+             (my/update-plist-property
+              value-cdr-plist
+              :scale
+              scale_fn)))))))
+
   ;; Hook management utilities
   (defun my/run-other-buffers-local-hooks (hook)
     "Run local HOOK in all buffers except the current one."
@@ -143,32 +176,32 @@ mouse-3: Toggle minor modes"
   (put 'mode-line-minor-modes 'risky-local-variable t)
 
   (defvar my/mode-line-format
-   '("%e"
-     mode-line-front-space
-     (:propertize evil-mode-line-tag
-                  display (min-width (5.0)))
-     (:propertize (""
-                   mode-line-mule-info
-                   mode-line-client
-                   mode-line-modified
-                   mode-line-remote
-                   mode-line-window-dedicated)
-                  display (min-width (5.0)))
-     mode-line-frame-identification
-     mode-line-buffer-identification
-     (:propertize (" ") display (min-width (2.0)))
-     mode-line-position
-     ;; (:propertize (" ") display (min-width (2.0)))
-     ;; (project-mode-line project-mode-line-format)
-     (vc-mode vc-mode)
-     (:propertize (" ") display (min-width (2.0)))
-     mode-line-major-modes
-     (:propertize (" ") display (min-width (2.0)))
-     ;; mode-line-minor-modes
-     (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-counters))
-     (:propertize (" ") display (min-width (2.0)))
-     mode-line-misc-info
-     mode-line-end-spaces))
+    '("%e"
+      mode-line-front-space
+      (:propertize evil-mode-line-tag
+                   display (min-width (5.0)))
+      (:propertize (""
+                    mode-line-mule-info
+                    mode-line-client
+                    mode-line-modified
+                    mode-line-remote
+                    mode-line-window-dedicated)
+                   display (min-width (5.0)))
+      mode-line-frame-identification
+      mode-line-buffer-identification
+      (:propertize (" ") display (min-width (2.0)))
+      mode-line-position
+      ;; (:propertize (" ") display (min-width (2.0)))
+      ;; (project-mode-line project-mode-line-format)
+      (vc-mode vc-mode)
+      (:propertize (" ") display (min-width (2.0)))
+      mode-line-major-modes
+      (:propertize (" ") display (min-width (2.0)))
+      ;; mode-line-minor-modes
+      (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-counters))
+      (:propertize (" ") display (min-width (2.0)))
+      mode-line-misc-info
+      mode-line-end-spaces))
 
   (add-hook 'after-load-theme-hook (lambda () (setq-default mode-line-format my/mode-line-format)))
 
@@ -340,7 +373,6 @@ mouse-3: Toggle minor modes"
   :config
   ;; (add-to-list 'completion-at-point-functions #'comint-dynamic-complete-filename)
   (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))
-
 
 (use-package desktop
   :ensure nil
@@ -1028,10 +1060,15 @@ mouse-3: Toggle minor modes"
   (preview-preserve-counters t)
   (preview-scale-function (/ 1 1.75))
   :preface
+  (defun my/text-scale-adjust-previews (&rest _)
+    "Adjust the size of latex preview fragments when changing the buffer's text scale."
+    (let ((scale (expt text-scale-mode-step text-scale-mode-amount)))
+      (my/text-scale-overlays 'category 'preview-overlay scale)))
   (defun my/LaTeX-mode-hook ()
     (outline-minor-mode 1)
     (LaTeX-math-mode 1)
     (turn-on-reftex)
+    (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-previews nil t)
     (advice-add 'preview-document :before (lambda (&rest _) (TeX-PDF-mode -1)))
     (advice-add 'preview-region :before (lambda (&rest _) (TeX-PDF-mode -1)))
     (advice-add 'TeX-command :before (lambda (&rest _) (TeX-PDF-mode 1))))
@@ -1064,6 +1101,7 @@ mouse-3: Toggle minor modes"
   (org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
   (org-cycle-separator-lines 1)
   (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
+  (org-image-max-width (/ 2 (+ 1 (sqrt 5))))
   (org-directory "~/Documents/org")
   (org-agenda-files '(org-directory "~/Desktop"))
   (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP" "FAIL")))
@@ -1119,14 +1157,17 @@ Otherwise, apply emphasis to the word at point."
         (while (re-search-forward drawer-regexp end t)
           ;; Delete the match, including the newline
           (replace-match "" nil nil)))))
-  (defun my/set-org-format-latex-scale ()
-    "Set LaTeX fragments' scaling based on text and screen scaling."
-    (let ((text-scaling (if (boundp 'text-scale-mode-step)
-                            (expt text-scale-mode-step text-scale-mode-amount)
-                          1.0))
-          (monitor-scaling (cdr (assoc 'scale-factor (car (display-monitor-attributes-list))))))
-      (setq org-format-latex-options
-            (plist-put org-format-latex-options :scale (/ text-scaling monitor-scaling)))))
+  (defun my/adjust-preview-latex-scale ()
+    (let* ((text-scaling (if (boundp 'text-scale-mode-step)
+                             (expt text-scale-mode-step text-scale-mode-amount)
+                           1.0))
+           (monitor-scaling (cdr (assoc 'scale-factor (car (display-monitor-attributes-list)))))
+           (scaling-fn (lambda (_) (/ text-scaling monitor-scaling))))
+      (my/update-plist-property org-format-latex-options :scale scaling-fn)))
+  (defun my/text-scale-adjust-latex-previews (&rest _)
+    "Adjust the size of latex preview fragments when changing the buffer's text scale."
+    (let ((scale (expt text-scale-mode-step text-scale-mode-amount)))
+      (my/text-scale-overlays 'org-overlay-type 'org-latex-overlay scale)))
   (defun my/customize-org-mode ()
     "Apply my tweaks to theme-controlled settings."
     (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
@@ -1146,7 +1187,8 @@ Otherwise, apply emphasis to the word at point."
     (visual-line-mode 1)
     (my/customize-org-mode)
     (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
-    (add-hook 'text-scale-mode-hook #'my/set-org-format-latex-scale nil t)
+    (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
+    (advice-add 'org-latex-preview :after #'my/text-scale-adjust-latex-previews)
     (dolist (hook
              '(after-load-theme-hook
                text-scale-mode-hook
@@ -1155,14 +1197,15 @@ Otherwise, apply emphasis to the word at point."
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   (advice-add 'my/org-latex-preview-buffer :around #'my/silence-advice)
-  :config (my/set-org-format-latex-scale))
+  :config (my/adjust-preview-latex-scale))
 
 (use-package org-fragtog
   :hook org-mode)
 
 (use-package org-appear
   :hook org-mode
-  :custom (org-appear-autolinks t))
+  ;; :custom (org-appear-autolinks t)
+  )
 
 (provide 'init)
 
