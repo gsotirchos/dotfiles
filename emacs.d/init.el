@@ -1103,7 +1103,7 @@ mouse-3: Toggle minor modes"
   (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
   (org-image-max-width (/ 2 (+ 1 (sqrt 5))))
   (org-directory "~/Documents/org")
-  (org-agenda-files '(org-directory "~/Desktop"))
+  (org-agenda-files (list org-directory "~/Desktop"))
   (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP" "FAIL")))
   (org-log-done 'time)
   (org-tags-column 0)
