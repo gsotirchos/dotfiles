@@ -140,9 +140,9 @@ main() {
     fi
 
     # custom prompt
-    if [[ -f ~/.bash_prompt ]]; then
-        source ~/.bash_prompt
-    fi
+    # if [[ -f ~/.bash_prompt ]]; then
+    #     source ~/.bash_prompt
+    # fi
 
     # fix polluted subshell's environment from parent shell's conda env
     #if [[ -n "${CONDA_PREFIX}" ]]; then
