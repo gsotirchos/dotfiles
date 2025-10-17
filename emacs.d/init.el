@@ -890,6 +890,7 @@ mouse-3: Toggle minor modes"
   ;;     function_definition class_definition
   ;;     for_statement if_statement with_statement while_statement)))
   (indent-bars-prefer-character t)
+  (indent-bars-no-stipple-char ?·)
   (indent-bars-color '(highlight :face default :blend 0.2))
   (indent-bars-zigzag nil)
   (indent-bars-color-by-depth nil)
