@@ -397,7 +397,7 @@ symbol = "spack "
 
 [status]
 disabled = false
-symbol = "[x](bold red) "
+format = "[$status]($style) "
 
 [sudo]
 disabled = false
