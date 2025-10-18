@@ -31,7 +31,8 @@ main() {
 
     # make soft symlinks
     echo -e "${BR_TEXT}- Symlinking dotfiles (${DOTFILES})${TEXT}"
-    source "${DOTFILES}"/etc/symlink_dotfiles.sh "${DOTFILES}" "${HOME}/."  # ~/.dotfiles/* -> ~/.*
+    source "${DOTFILES}"/etc/symlink_files.sh "${DOTFILES}" "${HOME}/."  # ~/.dotfiles/* -> ~/.*
+    ln -sfv "${DOTFILES}"/emacs.d/*            ~/.emacs.d
     ln -sfv "${DOTFILES}"/vim/*                ~/.vim
     ln -sfv "${DOTFILES}"/conda/*              ~/.conda
     ln -sfv "${DOTFILES}"/config/ghostty/*     ~/.config/ghostty
