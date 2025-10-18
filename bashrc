@@ -108,20 +108,8 @@ main() {
             fi
         fi
 
-        #if [[ ${wsl} = true ]]; then
-        #    export DISPLAY="${imac}:0.0"
-        #    #export LIBGL_ALWAYS_INDIRECT=0
-        #fi
-
         xhost + local: &> /dev/null
     fi
-
-    # enable local connections (for docker containers)
-    # TODO: defaults write org.xquartz.X11 enable_iglx -bool true
-    #       defaults write org.xquartz.X11 no_auth -bool true
-    #export IP="$(ipconfig getifaddr en0)"
-    #export DISPLAY="${IP}:0"
-    #xhost + "${IP}" &> /dev/null
 
     # TIME ~170ms
     # bash completion
@@ -129,28 +117,15 @@ main() {
         source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
     fi
 
-    # set __git_ps1 function
-    if [[ -f "${macos_dotfiles}"/etc/set_git_ps1.sh ]]; then
-        source "${macos_dotfiles}/etc/set_git_ps1.sh"
-    fi
-
     # aliases
     if [[ -f ~/.bash_aliases ]]; then
         source ~/.bash_aliases
     fi
 
-    # custom prompt
-    # if [[ -f ~/.bash_prompt ]]; then
-    #     source ~/.bash_prompt
-    # fi
-
-    # fix polluted subshell's environment from parent shell's conda env
-    #if [[ -n "${CONDA_PREFIX}" ]]; then
-    #    env="$(basename "${CONDA_PREFIX}")"
-    #    unset conda
-    #    conda deactivate
-    #    conda activate "${env}"
-    #fi
+    # starship prompt
+    if command -v "starship" &> /dev/null; then
+        eval "$(starship init bash)"
+    fi
 
     # ROS
     if [[ -f /opt/ros/noetic/setup.bash ]]; then

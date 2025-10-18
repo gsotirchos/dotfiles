@@ -1,0 +1,436 @@
+add_newline = false
+format = "$all$shlvl$character"
+
+[character]
+disabled = false
+success_symbol = "[>](bold)"
+error_symbol = "[x](bold red)"
+vimcmd_symbol = "[<](bold green)"
+vimcmd_replace_one_symbol = "[<](bold purple)"
+vimcmd_replace_symbol = "[<](bold purple)"
+vimcmd_visual_symbol = "[<](bold yellow)"
+
+[git_commit]
+disabled = false
+tag_symbol = " tag "
+
+[git_metrics]
+disabled = true
+
+[git_state]
+disabled = false
+
+[git_status]
+disabled = false
+format = "([$all_status$ahead_behind]($style) )"
+modified = "*"
+untracked = "%"
+up_to_date = "="
+ahead = ">"
+behind = "<"
+diverged = "<>"
+renamed = "r"
+deleted = "x"
+
+[aws]
+disabled = true
+symbol = "aws "
+
+[azure]
+disabled = true
+symbol = "az "
+
+[battery]
+disabled = true
+
+[buf]
+disabled = true
+symbol = "buf "
+
+[bun]
+disabled = true
+symbol = "bun "
+
+[c]
+disabled = false
+symbol = "C "
+
+[cpp]
+disabled = false
+symbol = "C++ "
+
+[cobol]
+disabled = true
+symbol = "cobol "
+
+[conda]
+disabled = false
+symbol = "conda "
+
+[container]
+disabled = false
+symbol = "container "
+
+[crystal]
+disabled = true
+symbol = "cr "
+
+[cmake]
+disabled = false
+symbol = "cmake "
+
+[cmd_duration]
+disabled = false
+show_milliseconds = true
+
+[daml]
+disabled = true
+symbol = "daml "
+
+[dart]
+disabled = true
+symbol = "dart "
+
+[deno]
+disabled = true
+symbol = "deno "
+
+[dotnet]
+disabled = true
+symbol = ".NET "
+
+[directory]
+disabled = false
+truncation_symbol = "…/"
+read_only = " ro"
+
+[direnv]
+disabled = false
+
+[docker_context]
+disabled = false
+symbol = "docker "
+
+[elixir]
+disabled = true
+symbol = "exs "
+
+[elm]
+disabled = true
+symbol = "elm "
+
+[erlang]
+disabled = true
+symbol = "erl "
+
+[fennel]
+disabled = true
+symbol = "fnl "
+
+[fill]
+disabled = true
+
+[fossil_branch]
+disabled = true
+symbol = "fossil "
+
+[fossil_metrics]
+disabled = true
+
+[gcloud]
+disabled = true
+symbol = "gcp "
+
+[git_branch]
+disabled = false
+symbol = "git "
+
+[gleam]
+disabled = true
+symbol = "gleam "
+
+[golang]
+disabled = true
+symbol = "go "
+
+[gradle]
+disabled = true
+symbol = "gradle "
+
+[guix_shell]
+disabled = true
+symbol = "guix "
+
+[haskell]
+disabled = true
+symbol = "haskell "
+
+[haxe]
+disabled = true
+symbol = "haxe "
+
+[helm]
+disabled = true
+symbol = "helm "
+
+[hg_branch]
+disabled = true
+symbol = "hg "
+
+[hostname]
+disabled = false
+# ssh_only = false
+ssh_symbol = "ssh "
+
+[java]
+disabled = true
+symbol = "java "
+
+[jobs]
+disabled = false
+
+[julia]
+disabled = true
+symbol = "jl "
+
+[kotlin]
+disabled = true
+symbol = "kt "
+
+[kubernetes]
+disabled = true
+symbol = "kube "
+
+[line_break]
+disabled = false
+
+[localip]
+disabled = false
+
+[lua]
+disabled = true
+symbol = "lua "
+
+[memory_usage]
+disabled = true
+symbol = "memory "
+
+[meson]
+disabled = true
+symbol = "meson "
+
+[mise]
+disabled = true
+
+[mojo]
+disabled = true
+symbol = "mojo "
+
+[nats]
+disabled = true
+symbol = "nats "
+
+[netns]
+disabled = false
+symbol ="net "
+
+[nim]
+disabled = true
+symbol = "nim "
+
+[nix_shell]
+disabled = true
+symbol = "nix "
+
+[nodejs]
+disabled = true
+symbol = "nodejs "
+
+[ocaml]
+disabled = true
+symbol = "ml "
+
+[odin]
+disabled = true
+
+[opa]
+disabled = true
+symbol = "opa "
+
+[openstack]
+disabled = true
+
+[os.symbols]
+AIX = "aix "
+Alpaquita = "alq "
+AlmaLinux = "alma "
+Alpine = "alp "
+Amazon = "amz "
+Android = "andr "
+Arch = "rch "
+Artix = "atx "
+Bluefin = "blfn "
+CachyOS = "cach "
+CentOS = "cent "
+Debian = "deb "
+DragonFly = "dfbsd "
+Emscripten = "emsc "
+EndeavourOS = "ndev "
+Fedora = "fed "
+FreeBSD = "fbsd "
+Garuda = "garu "
+Gentoo = "gent "
+HardenedBSD = "hbsd "
+Illumos = "lum "
+Kali = "kali "
+Linux = "lnx "
+Mabox = "mbox "
+Macos = "mac "
+Manjaro = "mjo "
+Mariner = "mrn "
+MidnightBSD = "mid "
+Mint = "mint "
+NetBSD = "nbsd "
+NixOS = "nix "
+Nobara = "nbra "
+OpenBSD = "obsd "
+OpenCloudOS = "ocos "
+openEuler = "oeul "
+openSUSE = "osuse "
+OracleLinux = "orac "
+Pop = "pop "
+Raspbian = "rasp "
+Redhat = "rhl "
+RedHatEnterprise = "rhel "
+RockyLinux = "rky "
+Redox = "redox "
+Solus = "sol "
+SUSE = "suse "
+Ubuntu = "ubnt "
+Ultramarine = "ultm "
+Unknown = "unk "
+Uos = "uos "
+Void = "void "
+Windows = "win "
+
+[package]
+disabled = false
+symbol = "pkg "
+
+[perl]
+disabled = true
+symbol = "pl "
+
+[php]
+disabled = true
+symbol = "php "
+
+[pijul_channel]
+disabled = true
+symbol = "pijul "
+
+[pixi]
+disabled = true
+symbol = "pixi "
+
+[pulumi]
+disabled = true
+symbol = "pulumi "
+
+[purescript]
+disabled = true
+symbol = "purs "
+
+[python]
+disabled = true
+symbol = "py "
+
+[quarto]
+disabled = true
+symbol = "quarto "
+
+[raku]
+disabled = true
+symbol = "raku "
+
+[red]
+disabled = true
+symbol = "red "
+
+[rlang]
+disabled = true
+symbol = "r "
+
+[ruby]
+disabled = true
+symbol = "rb "
+
+[rust]
+disabled = true
+symbol = "rs "
+
+[scala]
+disabled = true
+symbol = "scala "
+
+[shell]
+disabled = true
+
+[shlvl]
+disabled = false
+format = '[$shlvl$symbol]($style)'
+repeat = true
+symbol = '>'
+repeat_offset = 1
+threshold = 2
+
+[singularity]
+disabled = true
+
+[solidity]
+disabled = true
+symbol = "solidity "
+
+[spack]
+disabled = true
+symbol = "spack "
+
+[status]
+disabled = false
+symbol = "[x](bold red) "
+
+[sudo]
+disabled = false
+symbol = "sudo "
+
+[swift]
+disabled = true
+symbol = "swift "
+
+[terraform]
+disabled = true
+symbol = "terraform "
+
+[time]
+disabled = true
+
+[typst]
+disabled = true
+symbol = "typst "
+
+[username]
+disabled = false
+
+[vagrant]
+disabled = true
+symbol = "vagrant "
+
+[vcsh]
+disabled = true
+
+[vlang]
+disabled = true
+
+[zig]
+disabled = true
+symbol = "zig "
