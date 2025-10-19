@@ -1154,7 +1154,7 @@ Otherwise, apply emphasis to the word at point."
     (interactive "r")
     (save-excursion
       (goto-char start)
-      (let ((drawer-regexp "^\s*:\\w*:\\(.\\|\n\\)*\s*:END:\s*\n"))
+      (let ((drawer-regexp "^\s*:\\w*:\n\\(\s*:.*\n\\)*\s*:END:\s*\n"))
         (while (re-search-forward drawer-regexp end t)
           ;; Delete the match, including the newline
           (replace-match "" nil nil)))))
