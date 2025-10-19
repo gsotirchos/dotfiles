@@ -1,3 +1,8 @@
+#
+# ~/.config/starship.toml
+# documentation: https://starship.rs/config
+#
+
 add_newline = false
 format = "$all$shlvl$character"
 
