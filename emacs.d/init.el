@@ -70,22 +70,32 @@
            (new-value (cons current-car new-cdr)))
       (overlay-put overlay property new-value)))
 
-  (defun my/text-scale-overlays (category category-name scale)
-    (dolist (overlay (overlays-in (point-min) (point-max)))
-      (when (eq (overlay-get overlay category)
-                category-name)
-        ;; (overlay-put overlay 'display
-        ;;              (cons 'image (plist-put (cdr (overlay-get overlay 'display))
-        ;;                                      :scale scale)))
-        (let ((scale_fn (lambda (_) scale)))
-          (my/update-overlay-property-cdr
-           overlay
-           'display
-           (lambda (value-cdr-plist)
-             (my/update-plist-property
-              value-cdr-plist
-              :scale
-              scale_fn)))))))
+  ;; Overlay manipulation utilities
+  (defun my/text-scale-overlays (category-type category-names scale)
+    (let ((category-names-list (if (listp category-names)
+                                   category-names
+                                 `(,category-names))))
+      (dolist (overlay (overlays-in (point-min) (point-max)))
+        (let ((overlay-category (overlay-get overlay category-type)))
+          (when (and overlay-category
+                     (member overlay-category category-names-list))
+            ;; (overlay-put overlay 'display
+            ;;              (cons 'image (plist-put (cdr (overlay-get overlay 'display))
+            ;;                                      :scale scale)))
+            (let ((scale_fn (lambda (_) scale)))
+              (my/update-overlay-property-cdr
+               overlay
+               'display
+               (lambda (value-cdr-plist)
+                 (my/update-plist-property
+                  value-cdr-plist
+                  :scale
+                  scale_fn)))))))))
+
+  (defun my/text-scale-adjust-latex-previews (&rest _)
+    "Adjust the size of latex preview fragments when changing the buffer's text scale."
+    (let ((scale (expt text-scale-mode-step text-scale-mode-amount)))
+      (my/text-scale-overlays 'category '(org-latex-overlay preview-overlay) scale)))
 
   ;; Hook management utilities
   (defun my/run-other-buffers-local-hooks (hook)
@@ -736,7 +746,11 @@ mouse-3: Toggle minor modes"
   (defun my/diff-hl-mode-if-vc ()
     (when (and (buffer-file-name) (vc-registered (buffer-file-name)))
       (diff-hl-mode 1)))
-  (add-hook 'find-file-hook #'my/diff-hl-mode-if-vc)
+  (dolist (hook
+           '(find-file-hook
+             ;; auto-save-hook
+             after-save-hook))
+    (add-hook hook #'my/diff-hl-mode-if-vc))
   (defun my/customize-diff-hl ()
     (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
     (seq-mapn
@@ -1061,15 +1075,12 @@ mouse-3: Toggle minor modes"
   (preview-preserve-counters t)
   (preview-scale-function (/ 1 1.75))
   :preface
-  (defun my/text-scale-adjust-previews (&rest _)
-    "Adjust the size of latex preview fragments when changing the buffer's text scale."
-    (let ((scale (expt text-scale-mode-step text-scale-mode-amount)))
-      (my/text-scale-overlays 'category 'preview-overlay scale)))
   (defun my/LaTeX-mode-hook ()
     (outline-minor-mode 1)
     (LaTeX-math-mode 1)
     (turn-on-reftex)
-    (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-previews nil t)
+    (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
+    (add-hook 'after-load-theme-hook #'delete-all-overlays)
     (advice-add 'preview-document :before (lambda (&rest _) (TeX-PDF-mode -1)))
     (advice-add 'preview-region :before (lambda (&rest _) (TeX-PDF-mode -1)))
     (advice-add 'TeX-command :before (lambda (&rest _) (TeX-PDF-mode 1))))
@@ -1165,10 +1176,6 @@ Otherwise, apply emphasis to the word at point."
            (monitor-scaling (cdr (assoc 'scale-factor (car (display-monitor-attributes-list)))))
            (scaling-fn (lambda (_) (/ text-scaling monitor-scaling))))
       (my/update-plist-property org-format-latex-options :scale scaling-fn)))
-  (defun my/text-scale-adjust-latex-previews (&rest _)
-    "Adjust the size of latex preview fragments when changing the buffer's text scale."
-    (let ((scale (expt text-scale-mode-step text-scale-mode-amount)))
-      (my/text-scale-overlays 'org-overlay-type 'org-latex-overlay scale)))
   (defun my/customize-org-mode ()
     "Apply my tweaks to theme-controlled settings."
     (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
@@ -1190,6 +1197,7 @@ Otherwise, apply emphasis to the word at point."
     (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
     (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
     (advice-add 'org-latex-preview :after #'my/text-scale-adjust-latex-previews)
+    (add-hook 'after-load-theme-hook #'delete-all-overlays)
     (dolist (hook
              '(after-load-theme-hook
                text-scale-mode-hook
