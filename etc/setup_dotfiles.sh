@@ -36,6 +36,7 @@ main() {
     ln -sfv "${DOTFILES}"/vim/*                ~/.vim
     ln -sfv "${DOTFILES}"/conda/*              ~/.conda
     ln -sfv "${DOTFILES}"/config/ghostty/*     ~/.config/ghostty
+    ln -sfv "${DOTFILES}"/config/starship.toml ~/.config/starship.toml
     ln -sfv "${DOTFILES}"/Zotero/translators/* ~/Zotero/translators
 
     # setup launch daemons and launch agents

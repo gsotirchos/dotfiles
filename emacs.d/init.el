@@ -522,9 +522,10 @@ mouse-3: Toggle minor modes"
   (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
     (concat " " string " "))
+  :config
+  (add-hook 'desktop-after-read-hook #'tab-bar-mode)
   (add-to-list 'tab-bar-tab-name-format-functions #'my/prepend-whitespace)
-  (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated)
-  (add-hook 'desktop-after-read-hook #'tab-bar-mode))
+  (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated))
 
 (use-package dired
   :ensure nil
