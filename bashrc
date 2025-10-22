@@ -89,27 +89,27 @@ main() {
     shopt -s direxpand  # expand variables in path completion
     [[ $- == *i* ]] && stty -ixon  # enable Ctrl+S for forward search
 
-    # check if this is a ssh session
-    if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
-        export IS_SSH_SESSION=true
-    else
-        case $(ps -o comm= -p "${PPID}") in
-            sshd | */sshd) export IS_SSH_SESSION=true ;;
-        esac
-    fi
+    ## check if this is a ssh session
+    #if [[ -n "${SSH_CLIENT}" ]] || [[ -n "${SSH_TTY}" ]]; then
+    #    export IS_SSH_SESSION=true
+    #else
+    #    case $(ps -o comm= -p "${PPID}") in
+    #        sshd | */sshd) export IS_SSH_SESSION=true ;;
+    #    esac
+    #fi
 
-    # enable display on ssh connections
-    if [[ "${os}" == "linux" ]]; then
-        if [[ "${IS_SSH_SESSION}" = true ]]; then
-            if [[ "$(hostname)" == "ubuntu-ros-1" ]]; then
-                export DISPLAY=":20.0"
-            else
-                export DISPLAY=":0"
-            fi
-        fi
+    ## enable display on ssh connections
+    #if [[ "${os}" == "linux" ]]; then
+    #    if [[ "${IS_SSH_SESSION}" = true ]]; then
+    #        if [[ "$(hostname)" == "ubuntu-ros-1" ]]; then
+    #            export DISPLAY=":20.0"
+    #        else
+    #            export DISPLAY=":0"
+    #        fi
+    #    fi
 
-        xhost + local: &> /dev/null
-    fi
+    #    xhost + local: &> /dev/null
+    #fi
 
     # TIME ~170ms
     # bash completion
