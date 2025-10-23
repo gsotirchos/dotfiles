@@ -1,5 +1,6 @@
-# vim: set ft=yaml:
 channels:
+  - pytorch
+  - nvidia
   - conda-forge
   - defaults
 channel_priority: flexible
