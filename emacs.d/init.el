@@ -522,7 +522,6 @@ mouse-3: Toggle minor modes"
   (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
     (concat " " string " "))
-  :config
   (add-hook 'desktop-after-read-hook #'tab-bar-mode)
   (add-to-list 'tab-bar-tab-name-format-functions #'my/prepend-whitespace)
   (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated))
@@ -1123,6 +1122,7 @@ mouse-3: Toggle minor modes"
   (org-hide-emphasis-markers t)
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
+  (org-export-with-toc nil)
   (org-latex-create-formula-image-program 'dvisvgm)
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)

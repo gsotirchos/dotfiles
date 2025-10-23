@@ -69,6 +69,9 @@ main() {
     # append to the history file, don't overwrite it
     shopt -s histappend
 
+    # turn on checkwinsize
+    shopt -s checkwinsize
+
     # don't put duplicate lines or lines starting with space in the history.
     export HISTCONTROL=ignoreboth
 
