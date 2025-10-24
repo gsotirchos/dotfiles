@@ -127,12 +127,12 @@ hi! link SpecialKey  NonText
 " Statusline
 hi! clear StatusLine
 hi! clear StatusLineNC
-hi! StatusLIne     cterm=none                   ctermbg=8
-hi! StatusLineNC   cterm=none      ctermfg=7    ctermbg=8
-hi! SLGitInfo      cterm=none      ctermfg=none ctermbg=8
-hi! SLFileInfo     cterm=none      ctermfg=none ctermbg=8
-hi! SLFilePath     cterm=none      ctermfg=none ctermbg=8
-hi! SLFileName     cterm=bold      ctermfg=none ctermbg=8
+hi! StatusLIne     cterm=none                   ctermbg=7
+hi! StatusLineNC   cterm=none      ctermfg=0    ctermbg=7
+hi! SLGitInfo      cterm=none      ctermfg=15   ctermbg=8
+hi! SLFileInfo     cterm=none      ctermfg=15   ctermbg=8
+hi! SLFilePath     cterm=none      ctermfg=0    ctermbg=7
+hi! SLFileName     cterm=bold      ctermfg=0    ctermbg=7
 hi! link SLGitInfoNC      StatusLineNC
 hi! link SLFileInfoNC     StatusLineNC
 hi! link SLFilePathNC     StatusLineNC
