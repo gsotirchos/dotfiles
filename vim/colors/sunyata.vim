@@ -79,7 +79,7 @@ hi! ErrorMsg       cterm=none      ctermfg=1    ctermbg=none
 hi! Warning        cterm=bold      ctermfg=3    ctermbg=none
 hi! WarningMsg     cterm=none      ctermfg=3    ctermbg=none
 hi! HintMsg        cterm=none      ctermfg=12   ctermbg=none
-hi! Todo           cterm=bold      ctermfg=15   ctermbg=11
+hi! Todo           cterm=bold      ctermfg=11   ctermbg=none
 hi! SpellBad       cterm=underline ctermfg=1    ctermbg=none
 hi! SpellCap       cterm=underline ctermfg=3    ctermbg=none
 hi! SpellLocal     cterm=none      ctermfg=3    ctermbg=none
@@ -92,9 +92,9 @@ hi! clear Search
 hi! clear IncSearch
 hi! clear Visual
 hi! clear SignColumn
-hi! Search                                      ctermbg=0
-hi! IncSearch      cterm=none      ctermfg=15   ctermbg=11
-hi! Visual                                      ctermbg=0
+hi! Search                                      ctermbg=15
+hi! IncSearch      cterm=reverse   ctermfg=3    ctermbg=none
+hi! Visual                                      ctermbg=7
 hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
 hi! CursorLineNr   cterm=none      ctermfg=7    ctermbg=none
 hi! NonText        cterm=none      ctermfg=7    ctermbg=none
@@ -130,9 +130,9 @@ hi! clear StatusLineNC
 hi! StatusLine     cterm=none                   ctermbg=7
 hi! StatusLineNC   cterm=none      ctermfg=8    ctermbg=7
 hi! SLGitInfo      cterm=reverse   ctermfg=8    ctermbg=none
-hi! SLFileInfo     cterm=none      ctermfg=15   ctermbg=8
+hi! SLFileInfo     cterm=reverse   ctermfg=8    ctermbg=none
 hi! SLFilePath     cterm=none      ctermfg=8    ctermbg=7
-hi! SLFileName     cterm=bold      ctermfg=0    ctermbg=7
+hi! SLFileName     cterm=bold      ctermfg=none ctermbg=7
 hi! link SLGitInfoNC      StatusLineNC
 hi! link SLFileInfoNC     StatusLineNC
 hi! link SLFilePathNC     StatusLineNC
