@@ -107,12 +107,12 @@ hi! link Conceal    OtherType
 " menus and messages
 hi! Underlined     cterm=underline ctermfg=4    ctermbg=none
 hi! Directory      cterm=none      ctermfg=12   ctermbg=none
-hi! ModeMsg        cterm=bold      ctermfg=4    ctermbg=none
+hi! ModeMsg        cterm=bold      ctermfg=1    ctermbg=none
 hi! Question       cterm=none      ctermfg=3    ctermbg=none
 hi! MsgArea        cterm=none      ctermfg=none ctermbg=none
 hi! ToolbarLine    cterm=none      ctermfg=none ctermbg=8
-hi! Pmenu          cterm=none      ctermfg=none ctermbg=0
-hi! PmenuSel       cterm=none      ctermfg=none ctermbg=4
+hi! Pmenu          cterm=none      ctermfg=7    ctermbg=8
+hi! PmenuSel       cterm=none      ctermfg=15   ctermbg=4
 hi! PmenuThumb     cterm=reverse   ctermfg=none ctermbg=none
 hi! link PmenuSbar   Pmenu
 hi! link Title       SpecialComment
