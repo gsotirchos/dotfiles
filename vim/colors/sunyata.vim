@@ -62,7 +62,7 @@ hi! SpecialComment cterm=bold      ctermfg=none ctermbg=none
 hi! DocComment     cterm=italic    ctermfg=8    ctermbg=none
 hi! Done           cterm=bold      ctermfg=2    ctermbg=none
 hi! Debug          cterm=bold      ctermfg=11   ctermbg=none
-hi! MembOperator   cterm=bold      ctermfg=7    ctermbg=none
+hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=none
 hi! Dimmed         cterm=none      ctermfg=7    ctermbg=none
 hi! MyStrikethrough cterm=strikethrough ctermfg=7 ctermbg=none
 hi! link MyParens   Dimmed
@@ -97,7 +97,7 @@ hi! IncSearch      cterm=none      ctermfg=15   ctermbg=11
 hi! Visual                                      ctermbg=0
 hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
 hi! CursorLineNr   cterm=none      ctermfg=7    ctermbg=none
-hi! NonText        cterm=none      ctermfg=8    ctermbg=none
+hi! NonText        cterm=none      ctermfg=7    ctermbg=none
 hi! link LineNr     NonText
 hi! link VertSplit  NonText
 hi! link Folded     NonText
@@ -127,12 +127,12 @@ hi! link SpecialKey  NonText
 " Statusline
 hi! clear StatusLine
 hi! clear StatusLineNC
-hi! StatusLine     cterm=none                   ctermbg=0
-hi! StatusLineNC   cterm=none      ctermfg=7    ctermbg=0
-hi! SLGitInfo      cterm=reverse   ctermfg=7    ctermbg=none
-hi! SLFileInfo     cterm=none                   ctermbg=8
-hi! SLFilePath     cterm=none      ctermfg=7    ctermbg=0
-hi! SLFileName     cterm=bold                   ctermbg=0
+hi! StatusLine     cterm=none                   ctermbg=7
+hi! StatusLineNC   cterm=none      ctermfg=8    ctermbg=7
+hi! SLGitInfo      cterm=reverse   ctermfg=8    ctermbg=none
+hi! SLFileInfo     cterm=none      ctermfg=15   ctermbg=8
+hi! SLFilePath     cterm=none      ctermfg=8    ctermbg=7
+hi! SLFileName     cterm=bold      ctermfg=0    ctermbg=7
 hi! link SLGitInfoNC      StatusLineNC
 hi! link SLFileInfoNC     StatusLineNC
 hi! link SLFilePathNC     StatusLineNC
