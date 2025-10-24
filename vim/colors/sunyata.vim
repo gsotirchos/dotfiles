@@ -111,7 +111,7 @@ hi! ModeMsg        cterm=bold      ctermfg=1    ctermbg=none
 hi! Question       cterm=none      ctermfg=3    ctermbg=none
 hi! MsgArea        cterm=none      ctermfg=none ctermbg=none
 hi! ToolbarLine    cterm=none      ctermfg=none ctermbg=8
-hi! Pmenu          cterm=none      ctermfg=7    ctermbg=8
+hi! Pmenu          cterm=none      ctermfg=15    ctermbg=8
 hi! PmenuSel       cterm=none      ctermfg=15   ctermbg=4
 hi! PmenuThumb     cterm=reverse   ctermfg=none ctermbg=none
 hi! link PmenuSbar   Pmenu
@@ -127,12 +127,12 @@ hi! link SpecialKey  NonText
 " Statusline
 hi! clear StatusLine
 hi! clear StatusLineNC
-hi! StatusLIne     cterm=none                   ctermbg=7
-hi! StatusLineNC   cterm=none      ctermfg=0    ctermbg=7
+hi! StatusLIne     cterm=none                   ctermbg=8
+hi! StatusLineNC   cterm=none      ctermfg=0    ctermbg=8
 hi! SLGitInfo      cterm=none      ctermfg=15   ctermbg=8
 hi! SLFileInfo     cterm=none      ctermfg=15   ctermbg=8
-hi! SLFilePath     cterm=none      ctermfg=0    ctermbg=7
-hi! SLFileName     cterm=bold      ctermfg=0    ctermbg=7
+hi! SLFilePath     cterm=none      ctermfg=15   ctermbg=8
+hi! SLFileName     cterm=bold      ctermfg=15   ctermbg=8
 hi! link SLGitInfoNC      StatusLineNC
 hi! link SLFileInfoNC     StatusLineNC
 hi! link SLFilePathNC     StatusLineNC
