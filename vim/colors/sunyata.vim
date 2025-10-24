@@ -92,9 +92,9 @@ hi! clear Search
 hi! clear IncSearch
 hi! clear Visual
 hi! clear SignColumn
-hi! Search                                      ctermbg=7
+hi! Search                                      ctermbg=8
 hi! IncSearch      cterm=reverse   ctermfg=3    ctermbg=none
-hi! Visual                                      ctermbg=7
+hi! Visual                                      ctermbg=8
 hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
 hi! CursorLineNr   cterm=none      ctermfg=7    ctermbg=none
 hi! NonText        cterm=none      ctermfg=7    ctermbg=none
