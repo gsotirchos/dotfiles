@@ -63,7 +63,7 @@ hi! DocComment     cterm=italic    ctermfg=8    ctermbg=none
 hi! Done           cterm=bold      ctermfg=2    ctermbg=none
 hi! Debug          cterm=bold      ctermfg=11   ctermbg=none
 hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=none
-hi! Dimmed         cterm=none      ctermfg=7    ctermbg=none
+hi! Dimmed         cterm=none      ctermfg=8    ctermbg=none
 hi! MyStrikethrough cterm=strikethrough ctermfg=7 ctermbg=none
 hi! link MyParens   Dimmed
 hi! link MyNote     Normal
@@ -97,7 +97,7 @@ hi! IncSearch      cterm=reverse   ctermfg=3    ctermbg=none
 hi! Visual                                      ctermbg=8
 hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
 hi! CursorLineNr   cterm=none      ctermfg=7    ctermbg=none
-hi! NonText        cterm=none      ctermfg=7    ctermbg=none
+hi! NonText        cterm=none      ctermfg=8    ctermbg=none
 hi! link LineNr     NonText
 hi! link VertSplit  NonText
 hi! link Folded     NonText
