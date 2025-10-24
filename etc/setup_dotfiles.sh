@@ -3,17 +3,17 @@
 
 main() {
     # text styling
-    local BR_TEXT='\033[1;97m'
-    local TEXT='\033[0m'
+    local bright_style='\033[1;97m'
+    local normal_style='\033[0m'
 
     # check for `realpath` command
     if ! command -v "realpath" &> /dev/null; then
-        echo -e "${BR_TEXT}Error: \`realpath\` command could not be found. Aborted${TEXT}"
+        echo -e "${bright_style}Error: \`realpath\` command could not be found. Aborted${normal_style}"
         exit
     fi
 
     # dotfiles path (directory containing this sourced script)
-    local DOTFILES="$(
+    local dotfiles="$(
         builtin cd "$(
             realpath "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.."
         )" > /dev/null && pwd
@@ -30,33 +30,33 @@ main() {
     touch ~/.hushlogin
 
     # make soft symlinks
-    echo -e "${BR_TEXT}- Symlinking dotfiles (${DOTFILES})${TEXT}"
-    source "${DOTFILES}"/etc/symlink_files.sh "${DOTFILES}" "${HOME}/."  # ~/.dotfiles/* -> ~/.*
-    ln -sfv "${DOTFILES}"/emacs.d/*            ~/.emacs.d
-    ln -sfv "${DOTFILES}"/vim/*                ~/.vim
-    ln -sfv "${DOTFILES}"/conda/*              ~/.conda
-    ln -sfv "${DOTFILES}"/config/ghostty/*     ~/.config/ghostty
-    ln -sfv "${DOTFILES}"/config/starship.toml ~/.config/starship.toml
-    ln -sfv "${DOTFILES}"/Zotero/translators/* ~/Zotero/translators
+    echo -e "${bright_style}- Symlinking dotfiles (${dotfiles})${normal_style}"
+    source "${dotfiles}"/etc/symlink_files.sh "${dotfiles}" "${HOME}/."  # ~/.dotfiles/* -> ~/.*
+    ln -sfv "${dotfiles}"/emacs.d/*            ~/.emacs.d
+    ln -sfv "${dotfiles}"/vim/*                ~/.vim
+    ln -sfv "${dotfiles}"/conda/*              ~/.conda
+    ln -sfv "${dotfiles}"/config/ghostty/*     ~/.config/ghostty
+    ln -sfv "${dotfiles}"/config/starship.toml ~/.config/starship.toml
+    ln -sfv "${dotfiles}"/Zotero/translators/* ~/Zotero/translators
 
     # setup launch daemons and launch agents
     if command -v "launchctl" &> /dev/null; then
-        echo -e "${BR_TEXT}\n- Setting up LaunchDaemons and LaunchAgents${TEXT}"
-        source "${DOTFILES}/etc/setup_launch_daemons_agents.sh" "${DOTFILES}/Library/LaunchDaemons" /Library/LaunchDaemons
-        source "${DOTFILES}/etc/setup_launch_daemons_agents.sh" "${DOTFILES}/Library/LaunchAgents" ~/Library/LaunchAgents
+        echo -e "${bright_style}\n- Setting up LaunchDaemons and LaunchAgents${normal_style}"
+        source "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchDaemons" /Library/LaunchDaemons
+        source "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents" ~/Library/LaunchAgents
     fi
 
     # setup vundle
     if [[ ! -d ~/.vim/bundle/Vundle.vim ]]; then
-        echo -e "${BR_TEXT}\n- Couldn't locate ~/.vim/bundle/Vundle.vim, setting up...${TEXT}"
+        echo -e "${bright_style}\n- Couldn't locate ~/.vim/bundle/Vundle.vim, setting up...${normal_style}"
         git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
         vim +PluginInstall +qall
     fi
 
     # setup julia
     if command -v "julia" &> /dev/null; then
-        echo -e "${BR_TEXT}\n- Setting up Julia${TEXT}"
-        "${DOTFILES}"/julia/setup-julia
+        echo -e "${bright_style}\n- Setting up Julia${normal_style}"
+        "${dotfiles}"/julia/setup-julia
     fi
 }
 
