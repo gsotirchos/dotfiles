@@ -96,7 +96,7 @@ wait_for_changes() {
         # if a timeout is specified...
         if [[ -n "${timeout}" ]]; then
             # and no file event is detected...
-            if [[ -z "$(timeout --foreground "${timeout}" fswatch "${args[@]}")" ]]; then
+            if [[ "$(timeout --foreground "${timeout}" fswatch "${args[@]}")" == "" ]]; then
                 # exit with failure
                 return 1
             else

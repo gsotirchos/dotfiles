@@ -1,8 +1,8 @@
-# shellcheck disable=SC1090
-
 #
 # ~/.bash_profile
 #
+
+# shellcheck disable=SC1090
 
 # echo "SOURCED ~/.bash_profile"
 # [[ $- == *i* ]] && echo 'Interactive' || echo 'Not interactive'
