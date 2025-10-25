@@ -8,6 +8,7 @@ runtime vimrc.d/plugins.vim
 filetype plugin indent on
 
 source $VIMRUNTIME/defaults.vim
+source $HOME/.vim/vimrc.d/statusline.vim
 
 " saving
 set updatetime=400  " autoupdate delay
@@ -37,7 +38,7 @@ set showcmd  " show typed command
 let &fillchars = 'vert:│,diff:-,eob: ,lastline:.,fold: ,foldopen:▾,foldsep:│,foldclose:▸'
 set showbreak=…  " show '…' at the start of wrapped lines
 set list  " show non-text characters
-let &g:listchars = 'tab:|->,trail:·,conceal:◌,extends:…,precedes:…,nbsp:_'
+let &g:listchars = 'tab:>-,trail:·,conceal:◌,extends:…,precedes:…,nbsp:_'
 set laststatus=2  " always show statusline
 
 " behavior
@@ -57,21 +58,21 @@ set softtabstop=4  " ├ 4 spaces per Tab, fold every 4
 set shiftwidth=4  "  ┘
 set nojoinspaces  " don't insert 2 spaces after '.', '?' or '!'
 set nofixendofline  " preserve EOL and the end of file
-set backspace=indent,eol,nostop
+set backspace=indent,eol,start
 set scrolloff=3  " lines to scoll before the reaching last
 set sidescrolloff=5  " columnts to sroll before reaching the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
 "set wrap lbr  " wrap lines by word
-set formatoptions=1jnpr2  " no automatic line breaking
+set formatoptions=1jnr2  " no automatic line breaking
 set breakindent  " wrap preserving indentation
 set display=lastline  " show last wrapped line in window
-set smoothscroll  " scroll screen lines (when wrap is on)
+"set smoothscroll  " scroll screen lines (when wrap is on)
 set shell=$SHELL\ -l  " login shell for 'term'
 set shellcmdflag=-c  " login shell for '!'
 set nolangremap  " disable a legacy behavior that can break plugin maps
 let &clipboard = has('unnamedplus') ? 'unnamed,unnamedplus' : 'unnamed'
 set viewoptions=folds,cursor,curdir
-set diffopt=internal,filler,closeoff,foldcolumn:0  "  ,inline:simple
+set diffopt=filler,foldcolumn:0  " ,internal,closeoff   "  ,inline:simple
 let &path = $PWD == $HOME ? $PWD : '**'  " search all sub-directories except in $HOME
 
 " folding
@@ -88,11 +89,11 @@ set hlsearch  " highlight search matches
 set incsearch  " do incremental search
 
 " autocompletion
-set completeopt=menuone,noinsert,preview,popup  " select 1st item without inserting
+set completeopt=menuone,noinsert,preview  " ,popup  " select 1st item without inserting
 set complete=t,.,i,kspell  " scan tags, this, included, dictionary
 set shortmess=mnrxoTWF  " shorter messages
 set wildmenu  " display completion matches in a status line
-set wildoptions=pum  " and use popup menu for wildmenu instead
+" set wildoptions=pum  " and use popup menu for wildmenu instead
 
 " netrw
 let g:netrw_banner = 0

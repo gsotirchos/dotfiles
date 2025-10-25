@@ -102,8 +102,8 @@ augroup statusline
         \ call s:UpdateParentPathCache()
     autocmd! BufEnter,BufWinEnter,FocusGained *
         \ call s:SetFocusedColors()
-        \|setlocal statusline=%{%MyStatusLine()%}
+        \|setlocal statusline=%!MyStatusLine()
     autocmd! BufLeave,FocusLost *
         \ call s:SetUnfocusedColors()
-        \|setlocal statusline=%{%MyStatusLine()%}
+        \|setlocal statusline=%!MyStatusLine()
 augroup END
