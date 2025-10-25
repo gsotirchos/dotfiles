@@ -32,7 +32,7 @@ if [[ -f "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh ]]; then
 fi
 
 if command -v "module" &> /dev/null; then
-    module load minoconda3
+    module load miniconda3
 fi
 
 # aliases
