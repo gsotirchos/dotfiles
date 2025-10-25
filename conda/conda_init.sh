@@ -29,7 +29,6 @@ else
         export PATH="${conda_path}/bin:$PATH"
     fi
 fi
-unset conda_setup
 
 if [ -f "${conda_path}/etc/profile.d/mamba.sh" ]; then
     source "${conda_path}/etc/profile.d/mamba.sh"

@@ -1,8 +1,8 @@
-# shellcheck disable=SC1090,SC2139
-
 #
 # ~/.bash_aliases
 #
+
+# shellcheck disable=SC1090,SC2139
 
 if [[ "$OS" == "macos" ]]; then
     export TRASH="${HOME}/.Trash"
