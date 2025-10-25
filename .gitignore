@@ -32,9 +32,11 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# Emacs files
+# Editor files
 *~
 \#*\#
 .\#*
 *.elc
 *.eld
+*.swp
+*.swo
