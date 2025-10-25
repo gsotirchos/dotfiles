@@ -1,5 +1,5 @@
 syn clear bashSpecialVariables
-syn clear shSpecialDQ
+" syn clear shSpecialDQ
 
 hi! link shVariable     Function
 hi! link shFunctionTag  Function
