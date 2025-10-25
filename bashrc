@@ -66,12 +66,16 @@ if [[ "$(hostname)" =~ login[0-9]+ ]]; then
     export SQUEUE_FORMAT="%.10i %.60j %.18a %.17R %M"
     alias rm="rm -I"
     alias live_squeue="while true; do clear; squeue --me -o \"$SQUEUE_FORMAT\"; sleep 1; done"
-    #alias rlhive="apptainer exec --nv --writable --bind \"$SCRATCH\" \"$SCRATCH\"/rlhive_container/ bash -l"
-    alias rlhive="module load miniconda3 && conda activate rlhive"
     alias scancel_all="squeue --noheader --format %i | xargs scancel"
-    if command -v "module" &> /dev/null; then
-        module load miniconda3 && conda activate rlhive
-    fi
+    rlhive() {
+        if command -v "module" &> /dev/null; then
+            echo -n "Loading module miniconda3... "
+            module load miniconda3 && echo "DONE"
+        fi
+        echo -n "Activating \"rlhive\" conda env... "
+        conda activate rlhive && echo "DONE"
+    }
+    rlhive
 fi
 
 # starship prompt
