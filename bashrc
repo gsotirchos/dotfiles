@@ -31,18 +31,9 @@ if [[ -f "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh ]]; then
     source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
 fi
 
-if command -v "module" &> /dev/null; then
-    module load miniconda3
-fi
-
 # aliases
 if [[ -f ~/.bash_aliases ]]; then
     source ~/.bash_aliases
-fi
-
-# starship prompt
-if command -v "starship" &> /dev/null; then
-    eval "$(starship init bash)"
 fi
 
 # ROS
@@ -78,4 +69,13 @@ if [[ "$(hostname)" =~ login[0-9]+ ]]; then
     #alias rlhive="apptainer exec --nv --writable --bind \"$SCRATCH\" \"$SCRATCH\"/rlhive_container/ bash -l"
     alias rlhive="module load miniconda3 && conda activate rlhive"
     alias scancel_all="squeue --noheader --format %i | xargs scancel"
+    if command -v "module" &> /dev/null; then
+        module load miniconda3 && conda activate rlhive
+    fi
 fi
+
+# starship prompt
+if command -v "starship" &> /dev/null; then
+    eval "$(starship init bash)"
+fi
+
