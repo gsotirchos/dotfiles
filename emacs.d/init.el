@@ -850,7 +850,7 @@ mouse-3: Toggle minor modes"
   (add-hook 'prog-mode-hook #'my/prog-mode-hook))
 
 (use-package outline-indent
-  :hook ((conf-mode yaml-ts-mode python-base-mode) . outline-indent-minor-mode)
+  :hook ((conf-mode yaml-ts-mode python-base-mode sh-base-mode) . outline-indent-minor-mode)
   :custom (outline-blank-line t)
   ;; (outline-indent-ellipsis " ▼")
   )
@@ -962,7 +962,6 @@ mouse-3: Toggle minor modes"
     (when (fboundp 'modus-themes-get-color-value)
       (my/customize-flymake)
       (add-hook 'after-load-theme-hook #'my/customize-flymake nil t)))
-  ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
   (add-hook 'flymake-mode-hook #'my/flymake-hook))
 
 (use-package flyspell
@@ -1055,7 +1054,10 @@ mouse-3: Toggle minor modes"
 
 (use-package sh-mode
   :ensure nil
-  :mode ("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode))
+  :mode ("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode)
+  :init
+  ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
+  (add-hook 'sh-base-mode-hook (lambda () (hs-minor-mode -1))))
 
 
 ;; LaTeX
