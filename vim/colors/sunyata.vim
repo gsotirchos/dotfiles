@@ -128,7 +128,7 @@ hi! link SpecialKey  NonText
 hi! clear StatusLine
 hi! clear StatusLineNC
 hi! StatusLIne     cterm=none                   ctermbg=8
-hi! StatusLineNC   cterm=none      ctermfg=0    ctermbg=8
+hi! StatusLineNC   cterm=none      ctermfg=7    ctermbg=8
 hi! SLGitInfo      cterm=none      ctermfg=15   ctermbg=8
 hi! SLFileInfo     cterm=none      ctermfg=15   ctermbg=8
 hi! SLFilePath     cterm=none      ctermfg=15   ctermbg=8
