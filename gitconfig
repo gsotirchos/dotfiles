@@ -19,3 +19,5 @@
     required = true
 [diff]
 	tool = vimdiff
+[core]
+	excludesFile = ~/.gitignore

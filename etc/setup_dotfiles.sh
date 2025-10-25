@@ -32,6 +32,7 @@ main() {
     # make soft symlinks
     echo -e "${bright_style}- Symlinking dotfiles (${dotfiles})${normal_style}"
     source "${dotfiles}"/etc/symlink_files.sh "${dotfiles}" "${HOME}/."  # ~/.dotfiles/* -> ~/.*
+    ln -sfv "${dotfiles}"/.gitignore           ~/.gitignore
     ln -sfv "${dotfiles}"/emacs.d/*            ~/.emacs.d
     ln -sfv "${dotfiles}"/vim/*                ~/.vim
     ln -sfv "${dotfiles}"/conda/*              ~/.conda
