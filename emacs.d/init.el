@@ -1054,7 +1054,7 @@ mouse-3: Toggle minor modes"
 
 (use-package sh-mode
   :ensure nil
-  :mode ("/\\.?\\(bashrc\\|bash_.*\\)\\'" . sh-mode)
+  :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode)
   :init
   ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
   (add-hook 'sh-base-mode-hook (lambda () (hs-minor-mode -1))))
