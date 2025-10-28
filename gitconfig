@@ -5,7 +5,7 @@
     ;email = gsotirch@gmail.com
     name = gsotirchos
     email = gsotirchos@student.tudelft.nl
-	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBFSaq4tWAUl0bRcX+v61BqB7nEzcJn2Xyg3dLq+NclW
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBFSaq4tWAUl0bRcX+v61BqB7nEzcJn2Xyg3dLq+NclW
 [status]
     submodulesummary = 1
 [push]
@@ -19,12 +19,12 @@
     process = git-lfs filter-process
     required = true
 [diff]
-	tool = vimdiff
+    tool = vimdiff
 [core]
-	excludesFile = ~/.gitignore
+    excludesFile = ~/.gitignore
 [gpg]
-	format = ssh
+    format = ssh
 [gpg "ssh"]
-	program = /opt/1Password/op-ssh-sign
+    program = /opt/1Password/op-ssh-sign
 [commit]
-	gpgsign = true
+    gpgsign = true
