@@ -189,7 +189,7 @@ mouse-3: Toggle minor modes"
     '("%e"
       mode-line-front-space
       (:propertize evil-mode-line-tag
-                   display (min-width (5.0)))
+                   display (min-width (5.5)))
       (:propertize (""
                     mode-line-mule-info
                     mode-line-client
