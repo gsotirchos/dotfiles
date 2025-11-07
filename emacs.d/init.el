@@ -605,7 +605,8 @@ mouse-3: Toggle minor modes"
         ("<prior>" . corfu-scroll-down)
         ("S-SPC" . corfu-insert-separator)
         ;; ("<return>" . my/corfu-send-in-shell)
-        ("RET" . nil))
+        ;; ("RET" . nil)
+        )
   :preface
   (defun my/corfu-send-in-shell ()
     "Send Corfu candidate in shell modes, else do nothing."
@@ -813,7 +814,9 @@ mouse-3: Toggle minor modes"
   (defun my/pdf-view-mode-hook ()
     (setq mode-line-format nil)
     (pdf-view-fit-width-to-window)
+    (tooltip-mode -1)
     (my/maybe-toggle-pdf-midnight-view)
+    (advice-add 'pdf-util-tooltip-arrow :override 'ignore)
     (add-hook 'after-load-theme-hook #'my/maybe-toggle-pdf-midnight-view nil t))
   (add-hook 'pdf-view-mode-hook #'my/pdf-view-mode-hook)
   :config
