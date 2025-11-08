@@ -71,31 +71,29 @@
       (overlay-put overlay property new-value)))
 
   ;; Overlay manipulation utilities
-  (defun my/text-scale-overlays (category-type category-names scale)
-    (let ((category-names-list (if (listp category-names)
-                                   category-names
-                                 `(,category-names))))
-      (dolist (overlay (overlays-in (point-min) (point-max)))
-        (let ((overlay-category (overlay-get overlay category-type)))
-          (when (and overlay-category
-                     (member overlay-category category-names-list))
-            ;; (overlay-put overlay 'display
-            ;;              (cons 'image (plist-put (cdr (overlay-get overlay 'display))
-            ;;                                      :scale scale)))
-            (let ((scale_fn (lambda (_) scale)))
-              (my/update-overlay-property-cdr
-               overlay
-               'display
-               (lambda (value-cdr-plist)
-                 (my/update-plist-property
-                  value-cdr-plist
-                  :scale
-                  scale_fn)))))))))
+  (defun my/text-scale-overlays (category-type category-name scale)
+    (dolist (overlay (overlays-in (point-min) (point-max)))
+      (let ((overlay-category (overlay-get overlay category-type)))
+        (when (and overlay-category
+                   (eq overlay-category category-name))
+          ;; (overlay-put overlay 'display
+          ;;              (cons 'image (plist-put (cdr (overlay-get overlay 'display))
+          ;;                                      :scale scale)))
+          (let ((scale_fn (lambda (_) scale)))
+            (my/update-overlay-property-cdr
+             overlay
+             'display
+             (lambda (value-cdr-plist)
+               (my/update-plist-property
+                value-cdr-plist
+                :scale
+                scale_fn))))))))
 
   (defun my/text-scale-adjust-latex-previews (&rest _)
     "Adjust the size of latex preview fragments when changing the buffer's text scale."
     (let ((scale (expt text-scale-mode-step text-scale-mode-amount)))
-      (my/text-scale-overlays 'category '(org-latex-overlay preview-overlay) scale)))
+      (my/text-scale-overlays 'category 'preview-overlay scale)
+      (my/text-scale-overlays 'org-overlay-type 'org-latex-overlay scale)))
 
   ;; Hook management utilities
   (defun my/run-other-buffers-local-hooks (hook)
@@ -1220,7 +1218,7 @@ Otherwise, apply emphasis to the word at point."
     (add-hook 'after-load-theme-hook #'delete-all-overlays)
     (dolist (hook
              '(after-load-theme-hook
-               text-scale-mode-hook
+               ;; text-scale-mode-hook
                auto-save-hook
                after-save-hook))
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
