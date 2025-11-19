@@ -1224,7 +1224,9 @@ Otherwise, apply emphasis to the word at point."
       (add-hook hook #'my/org-latex-preview-buffer nil t)))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   (advice-add 'my/org-latex-preview-buffer :around #'my/silence-advice)
-  :config (my/adjust-preview-latex-scale))
+  :config
+  (my/adjust-preview-latex-scale)
+  (plist-put org-format-latex-options :background "Transparent"))
 
 (use-package org-fragtog
   :hook org-mode)
