@@ -9,8 +9,10 @@
 .DS_Store
 .AppleDouble
 .LSOverride
+__MACOSX/
 
 # Icon must end with two \r
+Icon[]
 Icon
 
 # Thumbnails
