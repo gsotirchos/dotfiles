@@ -478,6 +478,7 @@ mouse-3: Toggle minor modes"
                  tab-bar-tab-inactive
                  header-line
                  mode-line
+                 mode-line-active
                  mode-line-inactive))
         (set-face-attribute face nil :box box-released))
       ;; (add-hook 'Custom-mode-hook  ;; TODO
