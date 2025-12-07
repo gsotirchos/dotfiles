@@ -7,7 +7,7 @@
 
 ;; Less aggressive garbage collection on startup
 (setq gc-cons-threshold (* 1024 1024 100)) ;; 100 MB
-(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 1024 800))))
+;; (add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 1024 800))))
 
 ;; Make things a little quieter
 (setq byte-compile-warnings '(not obsolete)
@@ -24,7 +24,7 @@
   ;; Put *.eln files to the non-default directory `var/eln-cache/'
   (when (fboundp 'startup-redirect-eln-cache)
     (startup-redirect-eln-cache
-     (convert-standard-filename (expand-file-name  "var/eln-cache/" user-emacs-directory)))))
+     (convert-standard-filename (expand-file-name "var/eln-cache/" user-emacs-directory)))))
 
 ;; Configure properties for my MacbookAir
 (when (eq system-type 'darwin)
@@ -73,6 +73,7 @@
 (set-fill-column 79)
 (global-visual-line-mode -1)
 (xterm-mouse-mode 1)
+(context-menu-mode 1)
 (column-number-mode 1)
 (pixel-scroll-precision-mode 1)
 (setq frame-resize-pixelwise t
