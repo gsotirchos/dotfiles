@@ -76,6 +76,7 @@ export SHELL="$(which bash)"
 export CC="$(command -v gcc-11 || command -v clang)"
 export CXX="$(command -v g++-11 || command -v clang++)"
 export CXX_STD="c++17"
+export CMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/llvm"
 export CMAKE_GENERATOR="$( \
     command -v ninja &> /dev/null \
         && echo "Ninja" \
