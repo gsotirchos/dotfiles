@@ -316,6 +316,7 @@ mouse-3: Toggle minor modes"
   (use-short-answers t)
   (confirm-kill-emacs #'yes-or-no-p)
   (global-auto-revert-non-file-buffers t)
+  (global-completion-preview-mode t)
   (scroll-margin 0)
   (hscroll-margin 0)
   (scroll-step 1)
@@ -419,8 +420,9 @@ mouse-3: Toggle minor modes"
    '((fringe unspecified)
      (bg-mode-line-active bg-inactive)
      (bg-mode-line-inactive bg-dim)
-     (border-mode-line-active bg-mode-line-active)
-     (border-mode-line-inactive bg-mode-line-inactive)
+     ;; (border-mode-line-active bg-mode-line-active)
+     ;; (border-mode-line-inactive bg-mode-line-inactive)
+     (border-mode-line-active border-mode-line-inactive)
      (header-line bg-dim)
      (bg-tab-bar bg-main)
      (bg-tab-current bg-inactive)
@@ -469,27 +471,31 @@ mouse-3: Toggle minor modes"
       (set-face-bold 'tab-bar bold-p)
       (set-face-bold 'tab-bar-tab bold-p)
       (set-face-bold 'tab-bar-tab-inactive bold-p))
-    (let ((box-released '(:line-width 2 :style released-button))
-          ;; (box-pressed '(:line-width 2 :style pressed-button))
-          (box-thinner '(:line-width (1 . 2) :style released-button)))
+    ;; (let ((box-released '(:line-width 2 :style released-button))
+    ;;       ;; (box-pressed '(:line-width 2 :style pressed-button))
+    ;;       (box-thinner '(:line-width (1 . 2) :style released-button)))
+    ;;   (dolist (face
+    ;;            '(mode-line
+    ;;              mode-line-active
+    ;;              mode-line-inactive))
+    ;;     (set-face-attribute face nil :box box-released))
+    ;;   (set-face-attribute 'mode-line-highlight nil :box box-thinner))
+    (let ((box-style (face-attribute 'mode-line :box)))
       (dolist (face
-               '(modus-themes-button
-                 tab-bar-tab
+               '(tab-bar-tab
                  tab-bar-tab-inactive
-                 header-line
-                 mode-line
-                 mode-line-active
-                 mode-line-inactive))
-        (set-face-attribute face nil :box box-released))
-      ;; (add-hook 'Custom-mode-hook  ;; TODO
-      ;;           (lambda ()
-      ;;             (set-face-attribute 'custom-button nil :box box-released)
-      ;;             (set-face-attribute 'custom-button-mouse nil :box box-released)
-      ;;             (set-face-attribute 'custom-button-pressed nil :box box-pressed)))
-      (dolist (face
-               '(mode-line-highlight
-                 header-line-highlight))
-        (set-face-attribute face nil :box box-thinner))))
+                 header-line))
+        (set-face-attribute face nil :box box-style))
+      (set-face-attribute 'header-line-highlight nil
+                          :box (face-attribute 'mode-line-highlight :box))
+      (add-hook 'Custom-mode-hook
+                (lambda ()
+                  (dolist (face
+                           '(modus-themes-button
+                             custom-button
+                             custom-button-mouse
+                             custom-button-pressed))
+                    (set-face-attribute face nil :box box-style))))))
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   :init
   (let ((theme (nth 0 modus-themes-to-toggle)))
@@ -521,7 +527,7 @@ mouse-3: Toggle minor modes"
   (tab-bar-show 1)
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
-  (tab-bar-separator " ")
+  (tab-bar-separator "")
   (tab-bar-auto-width nil)
   (tab-bar-tab-name-truncated-max 35)
   (tab-bar-format
@@ -532,7 +538,7 @@ mouse-3: Toggle minor modes"
   :preface
   (defun my/prepend-whitespace (string _ _)
     "Just append and prepend spaces to a STRING."
-    (concat " " string " "))
+    (concat "  " string "  "))
   (add-hook 'desktop-after-read-hook #'tab-bar-mode)
   :init
   (when (boundp 'tab-bar-tab-name-format-functions)
@@ -732,7 +738,8 @@ mouse-3: Toggle minor modes"
    :map minibuffer-local-map
    ("C-c" . embark-act)  ;; begin the embark process
    ("C-<return>" . embark-dwim))  ;; run the default action
-  :custom (embark-quit-after-action nil))
+  :custom (embark-quit-after-action nil)
+  :init (setq prefix-help-command 'embark-prefix-help-command))
 
 (use-package embark-consult
   :hook (embark-collect-mode . consult-preview-at-point-mode))
