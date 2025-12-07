@@ -317,6 +317,7 @@ mouse-3: Toggle minor modes"
   (confirm-kill-emacs #'yes-or-no-p)
   (global-auto-revert-non-file-buffers t)
   (global-completion-preview-mode t)
+  (sentence-end-double-space nil)
   (scroll-margin 0)
   (hscroll-margin 0)
   (scroll-step 1)
@@ -409,6 +410,21 @@ mouse-3: Toggle minor modes"
              ns-appearance))
     (add-to-list 'frameset-filter-alist (cons filter :never)))
   :config (desktop-save-mode 1))
+
+(use-package uniquify
+  :ensure nil
+  :custom
+  (uniquify-buffer-name-style 'forward)
+  (uniquify-separator "/")
+  (uniquify-after-kill-buffer-p t)
+  (uniquify-ignore-buffers-re "^\\*"))
+
+(use-package repeat
+  :ensure nil
+  :hook (after-init . repeat-mode)
+  :custom
+  (repeat-too-dangerous '(kill-this-buffer))
+  (repeat-exit-timeout 5))
 
 (use-package modus-themes
   :custom
@@ -1142,8 +1158,11 @@ mouse-3: Toggle minor modes"
   (org-directory "~/Documents/org")
   (org-agenda-files (list org-directory "~/Desktop"))
   (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP" "FAIL")))
+  (org-enforce-todo-dependencies t)
+  (org-agenda-dim-blocked-tasks t)
   (org-log-done 'time)
   (org-tags-column 0)
+  (org-catch-invisible-edits 'error)
   (org-hide-emphasis-markers t)
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
