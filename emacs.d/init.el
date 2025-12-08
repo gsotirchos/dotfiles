@@ -5,40 +5,9 @@
 (use-package emacs
   :ensure nil
   :preface
-  ;; Custom definitions
-  (defun my/delete-back-to-indentation ()
-    "Kill back to the first non-whitespace character."
-    (interactive)
-    (kill-line 0)
-    (indent-for-tab-command))
-
-  (defun my/quit-dwim ()
-    "Close the current tab or frame."
-    (interactive)
-    (condition-case nil
-        (tab-close)
-      (error (condition-case nil
-                 (delete-frame)
-               (error nil)))))
-
-  (defun my/find-file (file)
-    "Open buffer with FILE in new frame or tab."
-    (interactive)
-    (let ((file-name (file-truename file)))
-      (unless (string-equal buffer-file-name file-name)
-        (if (cdr (assoc 'fullscreen (frame-parameters)))
-            (find-file-other-tab file-name)
-          (find-file-other-frame file-name)))))
-
-  (defun my/edit-emacs-init ()
-    "Edit `~/.emacs.d/init.el'."
-    (interactive)
-    (my/find-file  "~/.emacs.d/init.el"))
-
-  (defun my/edit-emacs-early-init ()
-    "Edit `~/.emacs.d/early-init.el'."
-    (interactive)
-    (my/find-file  "~/.emacs.d/early-init.el"))
+  ;; --------------------------------------------------------------------------
+  ;; Helper functions (Background/Utilities/Advice/Hooks)
+  ;; --------------------------------------------------------------------------
 
   (defun my/prevent-in-home-dir-advice (fn &rest args)
     "Prevent running the advised function in the home directory."
@@ -155,84 +124,6 @@
      gcs-done))
 
   (add-hook 'emacs-startup-hook #'my/display-startup-stats)
-
-  ;; Personal keymaps
-  (defvar-keymap my/file-commands-map
-    :doc "My file commands map."
-    "r" '("recent files" . recentf))
-
-  (defvar-keymap my/desktop-commands-map
-    :doc "My desktop commands map."
-    "r" '("read desktop". desktop-read)
-    "s" '("save desktop". desktop-save))
-
-  (defvar-keymap my/personal-map
-    :doc "My prefix map."
-    "f" `("prefix files" . ,my/file-commands-map)
-    "d" `("prefix desktop" . ,my/desktop-commands-map)
-    "w" 'whitespace-mode
-    "m" 'memory-report
-    "C-d" 'help-follow-symbol)
-
-  (keymap-set global-map "C-c" my/personal-map)
-  ;; :bind-keymap ("C-c" . my/personal-map)
-
-  :bind
-  (("C-z" . nil)
-   ("<wheel-left>" . ignore)
-   ("<wheel-right>" . ignore)
-   ("C-<wheel-left>" . ignore)
-   ("S-<wheel-left>" . ignore)
-   ("M-<wheel-left>" . ignore)
-   ("A-<wheel-left>" . ignore)
-   ("C-<wheel-right>" . ignore)
-   ("S-<wheel-right>" . ignore)
-   ("M-<wheel-right>" . ignore)
-   ("A-<wheel-right>" . ignore)
-   ("C-<wheel-up>" . ignore)
-   ("S-<wheel-up>" . ignore)
-   ("M-<wheel-up>" . ignore)
-   ("A-<wheel-up>" . ignore)
-   ("C-<wheel-down>" . ignore)
-   ("S-<wheel-down>" . ignore)
-   ("M-<wheel-down>" . ignore)
-   ("A-<wheel-down>" . ignore)
-   ("C-<delete>" . ignore)
-   ("C-<right>" . ignore)
-   ("C-<left>" . ignore)
-   ("C-<up>" . ignore)
-   ("C-<down>" . ignore)
-   ("M-<escape>" . ignore)
-   ("M-<backspace>" . my/delete-back-to-indentation)
-   ("M-<delete>" . kill-line)
-   ("M-<right>" . end-of-visual-line)
-   ("M-<left>" . beginning-of-visual-line)
-   ("A-<backspace>" . backward-kill-word)
-   ("A-<delete>" . kill-word)
-   ("A-<kp-delete>" . kill-word)
-   ("A-<right>" . right-word)
-   ("A-<left>" . left-word)
-   ("A-<escape>" . ns-next-frame)
-   ("A-~" . ns-prev-frame)
-   ("C-M-f" . toggle-frame-fullscreen)
-   ("C-M-e" . ns-do-show-character-palette)
-   ("M-u" . universal-argument)
-   ("M-c" . kill-ring-save)
-   ("M-n" . make-frame)
-   ("M-t" . tab-new)
-   ("M-w" . my/quit-dwim)
-   ("M-m" . iconify-frame)
-   ("M-h" . ns-do-hide-emacs)
-   ("M-," . my/edit-emacs-init)
-   ("C-M-," . my/edit-emacs-early-init)
-   :map help-map
-   ("=" . describe-char)
-   :map minibuffer-mode-map
-   ("<escape>" . abort-recursive-edit)
-   ("C-u" . scroll-down-command)
-   ("C-d" . scroll-up-command)
-   ("<prior>" . scroll-down-command)
-   ("<next>" . scroll-up-command))
 
   :custom
   (inhibit-startup-message t)
@@ -358,7 +249,12 @@
   (repeat-too-dangerous '(kill-this-buffer))
   (repeat-exit-timeout 5))
 
-(use-package my-modeline
+(use-package my-keybindings
+  :ensure nil
+  :load-path "site-lisp/"
+  :hook after-init)
+
+(use-package my-mode-line
   :ensure nil
   :load-path "site-lisp/"
   :hook after-init
