@@ -145,74 +145,6 @@
   ;; (add-hook 'text-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
 
-  ;; Modeline
-  (defvar mode-line-major-modes
-    (let ((recursive-edit-help-echo
-           "Recursive edit, type C-M-c to get out"))
-      (list (propertize "%[" 'help-echo recursive-edit-help-echo)
-	          `(:propertize ("" mode-name)
-			                    help-echo "Major mode\n\
-mouse-1: Display major mode menu\n\
-mouse-2: Show help for major mode\n\
-mouse-3: Toggle minor modes"
-			                    mouse-face mode-line-highlight
-			                    local-map ,mode-line-major-mode-keymap)
-	          '("" mode-line-process)
-	          (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
-		                    'mouse-face 'mode-line-highlight
-		                    'local-map (make-mode-line-mouse-map
-				                            'mouse-2 #'mode-line-widen))
-	          (propertize "%]" 'help-echo recursive-edit-help-echo)
-	          " ")))
-  (put 'mode-line-major-modes 'risky-local-variable t)
-
-  (defvar mode-line-minor-modes
-    (let ((recursive-edit-help-echo
-           "Recursive edit, type C-M-c to get out"))
-      (list (propertize "%[" 'help-echo recursive-edit-help-echo)
-            "("
-            `(:propertize ("" minor-mode-alist)
-            			        mouse-face mode-line-highlight
-            			        help-echo "Minor mode\n\
-mouse-1: Display minor mode menu\n\
-mouse-2: Show help for minor mode\n\
-mouse-3: Toggle minor modes"
-            			        local-map ,mode-line-minor-mode-keymap)
-            ")"
-	          (propertize "%]" 'help-echo recursive-edit-help-echo)
-	          " ")))
-  (put 'mode-line-minor-modes 'risky-local-variable t)
-
-  (defvar my/mode-line-format
-    '("%e"
-      mode-line-front-space
-      (:propertize evil-mode-line-tag
-                   display (min-width (5.5)))
-      (:propertize (""
-                    mode-line-mule-info
-                    mode-line-client
-                    mode-line-modified
-                    mode-line-remote
-                    mode-line-window-dedicated)
-                   display (min-width (5.0)))
-      mode-line-frame-identification
-      mode-line-buffer-identification
-      (:propertize (" ") display (min-width (2.0)))
-      mode-line-position
-      ;; (:propertize (" ") display (min-width (2.0)))
-      ;; (project-mode-line project-mode-line-format)
-      (vc-mode vc-mode)
-      (:propertize (" ") display (min-width (2.0)))
-      mode-line-major-modes
-      (:propertize (" ") display (min-width (2.0)))
-      ;; mode-line-minor-modes
-      (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-counters))
-      (:propertize (" ") display (min-width (2.0)))
-      mode-line-misc-info
-      mode-line-end-spaces))
-
-  (add-hook 'after-load-theme-hook (lambda () (setq-default mode-line-format my/mode-line-format)))
-
   ;; Startup time
   (defun my/display-startup-stats ()
     "Display startup stats."
@@ -425,6 +357,15 @@ mouse-3: Toggle minor modes"
   :custom
   (repeat-too-dangerous '(kill-this-buffer))
   (repeat-exit-timeout 5))
+
+(use-package my-modeline
+  :ensure nil
+  :load-path "site-lisp/"
+  :hook after-init
+  ;; :init (add-hook 'after-load-theme-hook
+  ;;                 (lambda ()
+  ;;                   (setq-default mode-line-format my/mode-line-format)))
+  )
 
 (use-package modus-themes
   :custom
@@ -848,6 +789,7 @@ mouse-3: Toggle minor modes"
 (use-package saveplace-pdf-view
   :after (:any doc-view pdf-tools)
   :demand t)
+
 
 ;; Programming
 
