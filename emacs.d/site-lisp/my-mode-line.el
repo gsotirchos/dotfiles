@@ -1,9 +1,8 @@
-;;; my-modeline.el --- Custom mode line configuration  -*- lexical-binding: t; -*-
+;;; my-mode-line.el --- Custom mode line configuration  -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
 
-;; Definition of Custom Variables
 (defvar my/mode-line-major-modes
   (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
     (list (propertize "%[" 'help-echo recursive-edit-help-echo)
@@ -41,6 +40,19 @@ mouse-3: Toggle minor modes"
 
 (defvar my/mode-line-spacer
   '(:propertize (" ") display (min-width (2.0))))
+(put 'my/mode-line-spacer 'risky-local-variable t)
+
+(defvar my/mode-line-vc-info
+  '(:eval (when (and vc-mode (not (string-empty-p vc-mode)))
+            (list '(vc-mode vc-mode) my/mode-line-spacer))))
+(put 'my/mode-line-vc-info 'risky-local-variable t)
+
+(defvar my/mode-line-flymake-info
+  '(:eval (when (bound-and-true-p flymake-mode)
+            (list
+             my/mode-line-spacer
+             flymake-mode-line-counters))))
+(put 'my/mode-line-flymake-info 'risky-local-variable t)
 
 (defvar my/mode-line-format
   '("%e"
@@ -55,14 +67,11 @@ mouse-3: Toggle minor modes"
                  display (min-width (5.0)))
     mode-line-frame-identification
     mode-line-buffer-identification
+    my/mode-line-spacer
     mode-line-position
-    ;; VC Mode with Conditional Spacer
-    (:eval (when (and vc-mode (not (string-empty-p vc-mode)))
-             (list '(vc-mode vc-mode) my/mode-line-spacer)))
+    my/mode-line-vc-info
     my/mode-line-major-modes
-    ;; Spacer before misc info
-    (:eval my/mode-line-spacer)
-    (:eval (when (bound-and-true-p flymake-mode) flymake-mode-line-counters))
+    my/mode-line-flymake-info
     mode-line-misc-info
     mode-line-end-spaces))
 
@@ -70,11 +79,11 @@ mouse-3: Toggle minor modes"
 (defvar my/original-mode-line-format nil)
 
 ;;;###autoload
-(define-minor-mode my-modeline-mode
+(define-minor-mode my-mode-line-mode
   "Toggle my custom mode line."
   :global t
   :group 'mode-line
-  (if my-modeline-mode
+  (if my-mode-line-mode
       (progn
         ;; Enable: Save old format and set new one
         (setq my/original-mode-line-format (default-value 'mode-line-format))
@@ -83,5 +92,5 @@ mouse-3: Toggle minor modes"
     (when my/original-mode-line-format
       (setq-default mode-line-format my/original-mode-line-format))))
 
-(provide 'my-modeline)
-;;; my-modeline.el ends here
+(provide 'my-mode-line)
+;;; my-mode-line.el ends here
