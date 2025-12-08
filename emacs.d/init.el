@@ -977,12 +977,6 @@
 
 (use-package org
   :ensure nil
-  :bind
-  (:map org-mode-map
-        ("C-c a" . org-agenda)
-        ("C-c C-x m" . #'my/org-toggle-emphasis-marker-display)
-        ("C-c C-x l" . #'org-toggle-link-display)
-        ([remap org-emphasize] . my/org-emphasize-dwim))
   :custom
   (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
@@ -1015,43 +1009,6 @@
     (let ((fill-column most-positive-fixnum))
       (apply fn args)))
   (advice-add 'org-fill-paragraph :around #'my/unlimited-fill-column-advice)
-  (defun my/org-emphasize-dwim (&optional char)
-    "DWIM (Do What I Mean) wrapper for `org-emphasize'.
-If there's an active region, apply emphasis to it.
-Otherwise, apply emphasis to the word at point."
-    (interactive)
-    (if (use-region-p)
-        (org-emphasize char)
-      (save-excursion
-        (let ((bounds (bounds-of-thing-at-point 'word)))
-          (when bounds
-            (goto-char (car bounds))
-            (set-mark (cdr bounds))
-            (org-emphasize char)
-            (deactivate-mark))))))
-  (defun my/org-toggle-emphasis-marker-display ()
-    "Toggle emphasis marker visibility."
-    (interactive)
-    (setq org-hide-emphasis-markers (not org-hide-emphasis-markers))
-    (font-lock-update)
-    (message "Emphasis markers are now %s." (if org-hide-emphasis-markers "hidden" "visible")))
-  (defun my/org-latex-preview-buffer ()
-    "Prevew all LaTeX fragments in buffer."
-    (interactive)
-    (org-latex-preview '(16)))
-  (defun my/md-to-org-region (start end)
-    "Convert contents between START and END from markdown to org."
-    (interactive "r")
-    (shell-command-on-region start end "pandoc -f markdown -t org" t t))
-  (defun my/org-remove-drawers-in-region (start end)
-    "Remove all Org-mode drawers between START and END."
-    (interactive "r")
-    (save-excursion
-      (goto-char start)
-      (let ((drawer-regexp "^\s*:\\w*:\n\\(\s*:.*\n\\)*\s*:END:\s*\n"))
-        (while (re-search-forward drawer-regexp end t)
-          ;; Delete the match, including the newline
-          (replace-match "" nil nil)))))
   (defun my/adjust-preview-latex-scale ()
     (let* ((text-scaling (if (boundp 'text-scale-mode-step)
                              (expt text-scale-mode-step text-scale-mode-amount)
@@ -1092,6 +1049,11 @@ Otherwise, apply emphasis to the word at point."
   :config
   (my/adjust-preview-latex-scale)
   (plist-put org-format-latex-options :background "Transparent"))
+
+(use-package my-org-utils
+  :ensure nil
+  :load-path "site-lisp/"
+  :hook org-mode)
 
 (use-package org-fragtog
   :hook org-mode)
