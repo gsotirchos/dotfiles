@@ -59,7 +59,7 @@
                 scale_fn))))))))
 
   (defun my/text-scale-adjust-latex-previews (&rest _)
-    "Adjust the size of latex preview fragments when changing the buffer's text scale."
+    "Adjust the size of latex fragments when changing the buffer's text scale."
     (let ((scale (expt text-scale-mode-step text-scale-mode-amount)))
       (my/text-scale-overlays 'category 'preview-overlay scale)
       (my/text-scale-overlays 'org-overlay-type 'org-latex-overlay scale)))
