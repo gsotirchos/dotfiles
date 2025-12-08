@@ -4,11 +4,8 @@
 
 ;;; Code:
 
-(require 'org)
 
-;;; ----------------------------------------------------------------------------
-;;; Interactive Commands
-;;; ----------------------------------------------------------------------------
+(require 'org)
 
 ;;;###autoload
 (defun my/org-emphasize-dwim (&optional char)
@@ -57,9 +54,8 @@ Otherwise, apply emphasis to the word at point (CHAR)."
         ;; Delete the match, including the newline
         (replace-match "" nil nil)))))
 
-;;; ----------------------------------------------------------------------------
+
 ;;; Minor Mode & Keymap
-;;; ----------------------------------------------------------------------------
 
 (defvar-keymap my-org-utils-mode-map
   :doc "Keymap for my-org-utils-mode."

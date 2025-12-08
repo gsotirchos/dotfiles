@@ -3,6 +3,7 @@
 
 ;;; Code:
 
+
 (defvar my/mode-line-major-modes
   (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
     (list (propertize "%[" 'help-echo recursive-edit-help-echo)
@@ -77,6 +78,7 @@ mouse-3: Toggle minor modes"
 
 ;; Save the original format to restore it if we disable the mode
 (defvar my/original-mode-line-format nil)
+
 
 ;;;###autoload
 (define-minor-mode my-mode-line-mode
