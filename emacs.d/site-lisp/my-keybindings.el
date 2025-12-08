@@ -4,9 +4,6 @@
 
 ;;; Code:
 
-;;; ----------------------------------------------------------------------------
-;;; Interactive Commands (The functions bound to keys)
-;;; ----------------------------------------------------------------------------
 
 (defun my/delete-back-to-indentation ()
   "Kill back to the first non-whitespace character."
@@ -121,9 +118,8 @@
   ;; Apply Prefix Map to C-c
   "C-c" my/personal-map)
 
-;;; ----------------------------------------------------------------------------
+
 ;;; Mode Definition
-;;; ----------------------------------------------------------------------------
 
 ;;;###autoload
 (define-minor-mode my-keybindings-mode
