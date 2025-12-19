@@ -352,15 +352,15 @@
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   :init
   (let ((theme (nth 0 modus-themes-to-toggle)))
-    (if (not (fboundp 'modus-themes-load-theme))
-        (load-theme theme)
-      (modus-themes-load-theme theme)))
-  (when (fboundp 'modus-themes-load-theme)
+    (if (fboundp 'modus-themes-load-theme)
+        (modus-themes-load-theme theme)
+      (load-theme theme)))
+  (when (fboundp 'ns-system-appearance-change-functions)
     (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
 
-(use-package ns-auto-titlebar
-  :if (eq system-type 'darwin)
-  :init (ns-auto-titlebar-mode))
+(when (eq system-type 'darwin)
+  (use-package ns-auto-titlebar
+    :init (ns-auto-titlebar-mode)))
 
 (use-package stripes
   :hook (dired-mode)  ;; minibuffer-mode vertico-mode corfu-popupinfo-mode

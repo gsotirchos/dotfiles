@@ -85,10 +85,10 @@
 
   ;; Navigation/Edit
   "C-<delete>" #'ignore
-  "C-<right>" #'ignore
-  "C-<left>" #'ignore
   "C-<up>" #'ignore
   "C-<down>" #'ignore
+  ;; "C-<right>" #'ignore
+  ;; "C-<left>" #'ignore
   "M-<escape>" #'ignore
   "M-<backspace>" #'my/delete-back-to-indentation
   "M-<delete>" #'kill-line
@@ -103,8 +103,8 @@
   ;; Frames/Windows
   "A-<escape>" #'ns-next-frame
   "A-~" #'ns-prev-frame
-  "C-M-f" #'toggle-frame-fullscreen
   "C-M-e" #'ns-do-show-character-palette
+  "C-M-f" #'toggle-frame-fullscreen
   "M-u" #'universal-argument
   "M-c" #'kill-ring-save
   "M-n" #'make-frame
