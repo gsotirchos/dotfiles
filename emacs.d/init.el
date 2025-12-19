@@ -374,7 +374,7 @@
   (when (fboundp 'modus-themes-get-color-value)
     (add-hook 'stripes-mode-hook #'my/customize-stripes)))
 
-(use-package tab-bar-mode
+(use-package tab-bar
   :ensure nil
   :custom
   (tab-bar-show 1)
@@ -389,14 +389,20 @@
      tab-bar-format-align-right
      tab-bar-format-global))
   :preface
-  (defun my/prepend-whitespace (string _ _)
-    "Just append and prepend spaces to a STRING."
+  (defun my/format-tab-spacing (string _ _)
+    "Add spacing for Emacs 30+ format-functions."
     (concat "  " string "  "))
-  (add-hook 'desktop-after-read-hook #'tab-bar-mode)
-  :init
-  (when (boundp 'tab-bar-tab-name-format-functions)
-    (add-to-list 'tab-bar-tab-name-format-functions #'my/prepend-whitespace)
-    (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated)))
+  (defun my/tab-name-padded-and-truncated ()
+    "Calculate the truncated tab name, then add padding (Emacs 29)."
+    (let ((name (tab-bar-tab-name-truncated)))
+      (concat "  " name "  ")))
+  :config
+  (if (boundp 'tab-bar-tab-name-format-functions)
+      (progn
+        (add-to-list 'tab-bar-tab-name-format-functions #'my/format-tab-spacing)
+        (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated))
+    (setq tab-bar-tab-name-function #'my/tab-name-padded-and-truncated))
+  (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package dired
   :ensure nil
@@ -807,34 +813,37 @@
      (error "◼" flymake-error-echo)))
   :preface
   (defun my/customize-flymake ()
-    (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
-                        :foreground (modus-themes-get-color-value 'fg-dim)
-                        :box '(:line-width (5 . -1) :style flat-button)
-                        :height (round (* 0.92 (face-attribute 'default :height)))
-                        :italic t
-                        :inherit 'variable-pitch)
-    (let ((faces
-            '(flymake-eol-information-face
-              flymake-note-echo-at-eol
-              flymake-warning-echo-at-eol
-              flymake-error-echo-at-eol))
-           (fg-colors
-            '(blue-faint
-              cyan-faint
-              yellow-faint
-              red-faint))
-           (bg-colors
-            '(bg-blue-nuanced
-              bg-cyan-nuanced
-              bg-yellow-nuanced
-              bg-red-nuanced)))
-      (seq-mapn
-       (lambda (face fg-color bg-color)
-         (set-face-attribute face nil
-                             :extend t :inherit 'flymake-end-of-line-diagnostics-face
-                             :foreground (modus-themes-get-color-value fg-color)
-                             :background (modus-themes-get-color-value bg-color)))
-       faces fg-colors bg-colors)))
+    (when (facep 'flymake-end-of-line-diagnostics-face)
+      (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
+                          :foreground (modus-themes-get-color-value 'fg-dim)
+                          :box '(:line-width (5 . -1) :style flat-button)
+                          :height (round (* 0.92 (face-attribute 'default :height)))
+                          :italic t
+                          :inherit 'variable-pitch)
+      (let ((faces
+             '(flymake-eol-information-face
+               flymake-note-echo-at-eol
+               flymake-warning-echo-at-eol
+               flymake-error-echo-at-eol))
+            (fg-colors
+             '(blue-faint
+               cyan-faint
+               yellow-faint
+               red-faint))
+            (bg-colors
+             '(bg-blue-nuanced
+               bg-cyan-nuanced
+               bg-yellow-nuanced
+               bg-red-nuanced)))
+        (seq-mapn
+         (lambda (face fg-color bg-color)
+           ;; Check if specific face exists before setting
+           (when (facep face)
+             (set-face-attribute face nil
+                                 :extend t :inherit 'flymake-end-of-line-diagnostics-face
+                                 :foreground (modus-themes-get-color-value fg-color)
+                                 :background (modus-themes-get-color-value bg-color))))
+         faces fg-colors bg-colors))))
   (defun my/flymake-hook ()
     (when (fboundp 'modus-themes-get-color-value)
       (my/customize-flymake)
