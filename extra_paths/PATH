@@ -9,5 +9,7 @@ ${HOMEBREW_PREFIX}/opt/*/libexec/gnubin
 ${HOMEBREW_PREFIX}/opt/openjdk*/bin
 ${HOMEBREW_PREFIX}/opt/llvm/bin
 #${HOMEBREW_PREFIX}/opt/curl/bin
+/Applications/Emacs.app/Contents/MacOS
+/Applications/Emacs.app/Contents/MacOS/bin
 $(xcrun --show-sdk-path)/usr/bin
 #/usr/bin

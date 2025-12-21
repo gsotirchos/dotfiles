@@ -120,7 +120,7 @@
     (message
      "%d packages loaded in %ss with %d garbage collections."
      (length package-activated-list)
-     (emacs-init-time "%.2f")
+     (emacs-init-time "%.3f")
      gcs-done))
 
   (add-hook 'emacs-startup-hook #'my/display-startup-stats)
