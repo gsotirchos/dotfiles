@@ -7,7 +7,7 @@
 
 ;; Less aggressive garbage collection on startup
 (setq gc-cons-threshold (* 1024 1024 100)) ;; 100 MB
-;; (add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 1024 800))))
+(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 1024 800))))
 
 ;; Make things a little quieter
 (setq byte-compile-warnings '(not obsolete)
