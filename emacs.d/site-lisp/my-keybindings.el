@@ -11,6 +11,13 @@
   (kill-line 0)
   (indent-for-tab-command))
 
+(defun my/maybe-make-frame ()
+  "Make a new frame or move to next history element."
+  (interactive)
+  (if (minibufferp)
+      (call-interactively #'next-history-element)
+    (make-frame)))
+
 (defun my/quit-dwim ()
   "Close the current tab or frame."
   (interactive)
@@ -111,7 +118,7 @@
   "C-M-f" #'toggle-frame-fullscreen
   "M-u" #'universal-argument
   "M-c" #'kill-ring-save
-  "M-n" #'make-frame
+  "M-n" #'my/maybe-make-frame
   "M-t" #'tab-new
   "M-w" #'my/quit-dwim
   "M-m" #'iconify-frame
@@ -131,17 +138,22 @@
   :global t
   :lighter " MyKeys"
   :keymap my-keybindings-mode-map
-(if my-keybindings-mode
+  (if my-keybindings-mode
       (progn
         ;; Handle C-z unbind (hard to do in a keymap, easiest globally)
         (global-unset-key (kbd "C-z"))
 
         ;; Minibuffer specific maps (cannot be done in the minor mode map)
         (keymap-set minibuffer-mode-map "<escape>" #'abort-recursive-edit)
+        (keymap-set minibuffer-mode-map "C-p" #'previous-line-or-history-element)
+        (keymap-set minibuffer-mode-map "C-n" #'next-line-or-history-element)
         (keymap-set minibuffer-mode-map "C-u" #'scroll-down-command)
         (keymap-set minibuffer-mode-map "C-d" #'scroll-up-command)
         (keymap-set minibuffer-mode-map "<prior>" #'scroll-down-command)
         (keymap-set minibuffer-mode-map "<next>" #'scroll-up-command)
+
+        (keymap-set isearch-mode-map "C-p" #'isearch-ring-retreat)
+        (keymap-set isearch-mode-map "C-n" #'isearch-ring-advance)
 
         ;; Help map
         (keymap-set help-map "=" #'describe-char))
