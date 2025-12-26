@@ -92,6 +92,7 @@
   (add-hook 'after-load-theme-hook
             (lambda () (my/run-other-buffers-local-hooks 'after-load-theme-hook)))
 
+  (advice-add 'load-theme :before (lambda (&rest _) (mapc #'disable-theme custom-enabled-themes)))
   (advice-add 'load-theme :after #'my/run-after-load-theme-hook)
 
   ;; Variable pitch
@@ -314,7 +315,6 @@
   :preface
   (setq modus-themes-to-toggle '(modus-operandi modus-vivendi-tinted))
   (defun my/apply-theme (appearance)
-    (mapc 'disable-theme custom-enabled-themes)
     (pcase appearance
       ('light (modus-themes-load-theme (nth 0 modus-themes-to-toggle)))
       ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
@@ -364,7 +364,7 @@
 
 (use-package stripes
   :hook (dired-mode)  ;; minibuffer-mode vertico-mode corfu-popupinfo-mode
-  :bind (:map my/personal-map ("s" . stripes-mode))
+  :bind (:map my/toggles-map ("s" . stripes-mode))
   :custom
   (stripes-unit 1)
   (stripes-overlay-priority -100)

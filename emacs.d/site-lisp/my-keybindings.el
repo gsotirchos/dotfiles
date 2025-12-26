@@ -50,14 +50,18 @@
 
 (defvar-keymap my/desktop-commands-map
   :doc "My desktop commands map."
-  "r" '("read desktop". desktop-read)
-  "s" '("save desktop". desktop-save))
+  "r" 'desktop-read
+  "s" 'desktop-save)
+
+(defvar-keymap my/toggles-map
+  :doc "My toggle commands map."
+  "w" 'whitespace-mode)
 
 (defvar-keymap my/personal-map
   :doc "My prefix map."
   "f" `("prefix files" . ,my/file-commands-map)
   "d" `("prefix desktop" . ,my/desktop-commands-map)
-  "w" 'whitespace-mode
+  "t" `("prefix toggle" . ,my/toggles-map)
   "m" 'memory-report
   "C-d" 'help-follow-symbol)
 
