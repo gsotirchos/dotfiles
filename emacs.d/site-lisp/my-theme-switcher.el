@@ -1,9 +1,8 @@
-;;; my-theme-switcher.el --- Theme switcher based on macOS appearance -*- lexical-binding: t -*-
+;;; my-theme-switcher.el --- Theme switcher based on OS appearance -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; Defines a global minor mode `my-theme-switcher-mode` that polls
-;; macOS system appearance every 5 seconds and runs the hook
-;; `my-system-appearance-change-functions` when it changes.
+;; Polls system appearance every 5 seconds and runs `my-system-appearance-change-functions`.
+;; Supports macOS (via defaults read) and GNOME (via gsettings).
 
 ;;; Code:
 
@@ -34,9 +33,29 @@ either 'light or 'dark.")
       'dark
     'light))
 
+(defun my/get-gnome-appearance ()
+  "Return 'dark if GNOME is in Dark Mode, 'light otherwise."
+  ;; Requires a modern GNOME (42+) or GTK4 environment.
+  ;; Returns 'prefer-dark' or 'default' (wrapped in single quotes).
+  (if (string-match-p "dark"
+                      (shell-command-to-string "gsettings get org.gnome.desktop.interface color-scheme"))
+      'dark
+    'light))
+
+(defun my/get-current-appearance ()
+  "Determine appearance based on the current operating system."
+  (cond
+   ((eq system-type 'darwin)
+    (my/get-macos-appearance))
+   ((and (eq system-type 'gnu/linux)
+         (executable-find "gsettings"))
+    (my/get-gnome-appearance))
+   (t
+    'light))) ;; Default fallback for unsupported systems
+
 (defun my/check-system-appearance ()
-  "Check macOS appearance and run hooks if changed."
-  (let ((current-appearance (my/get-macos-appearance)))
+  "Check system appearance and run hooks if changed."
+  (let ((current-appearance (my/get-current-appearance)))
     (unless (eq current-appearance my/last-system-appearance)
       (setq my/last-system-appearance current-appearance)
       ;; Run the hook with the appearance argument
@@ -46,7 +65,7 @@ either 'light or 'dark.")
 
 ;;;###autoload
 (define-minor-mode my-theme-switcher-mode
-  "Global minor mode to poll macOS system appearance and switch themes."
+  "Global minor mode to poll system appearance and switch themes."
   :global t
   :group 'my-theme-switcher
   (if my-theme-switcher-mode
