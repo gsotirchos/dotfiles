@@ -119,7 +119,7 @@
   (defun my/display-startup-stats ()
     "Display startup stats."
     (message
-     "%d packages loaded in %ss with %d garbage collections."
+     "%d packages loaded in %ss with %d garbage collections"
      (length package-activated-list)
      (emacs-init-time "%.3f")
      gcs-done))
@@ -264,6 +264,16 @@
   ;;                   (setq-default mode-line-format my/mode-line-format)))
   )
 
+(when (eq system-type 'darwin)
+  (use-package my-theme-switcher
+    :ensure nil
+    :load-path "site-lisp/"
+    :hook after-init))
+
+(when (eq system-type 'darwin)
+  (use-package ns-auto-titlebar
+    :init (ns-auto-titlebar-mode)))
+
 (use-package modus-themes
   :custom
   (modus-themes-mixed-fonts t)
@@ -355,12 +365,9 @@
     (if (fboundp 'modus-themes-load-theme)
         (modus-themes-load-theme theme)
       (load-theme theme)))
-  (when (fboundp 'ns-system-appearance-change-functions)
-    (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)))
-
-(when (eq system-type 'darwin)
-  (use-package ns-auto-titlebar
-    :init (ns-auto-titlebar-mode)))
+  (if (fboundp 'ns-system-appearance-change-functions)
+      (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
+    (add-hook 'my-system-appearance-change-functions #'my/apply-theme)))
 
 (use-package stripes
   :hook (dired-mode)  ;; minibuffer-mode vertico-mode corfu-popupinfo-mode
