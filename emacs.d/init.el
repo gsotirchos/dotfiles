@@ -466,18 +466,18 @@
 
 (use-package corfu
   :bind
-  (:map corfu-map
-        ("<tab>" . corfu-next)
-        ("S-<tab>" . corfu-previous)
-        ("<escape>" . corfu-reset)
-        ("C-d" . corfu-scroll-up)
-        ("C-u" . corfu-scroll-down)
-        ("<next>" . corfu-scroll-up)
-        ("<prior>" . corfu-scroll-down)
-        ("S-SPC" . corfu-insert-separator)
-        ;; ("<return>" . my/corfu-send-in-shell)
-        ;; ("RET" . nil)
-        )
+  (nil
+   :map corfu-map
+   ;; ("<return>" . my/corfu-send-in-shell)
+   ;; ("RET" . nil)
+   ("<tab>" . corfu-next)
+   ("S-<tab>" . corfu-previous)
+   ("<escape>" . corfu-reset)
+   ("C-d" . corfu-scroll-up)
+   ("C-u" . corfu-scroll-down)
+   ("<next>" . corfu-scroll-up)
+   ("<prior>" . corfu-scroll-down)
+   ("S-SPC" . corfu-insert-separator))
   :preface
   (defun my/corfu-send-in-shell ()
     "Send Corfu candidate in shell modes, else do nothing."
@@ -523,8 +523,7 @@
   :bind (:map vertico-map ("DEL" . vertico-directory-delete-char)))
 
 (use-package marginalia
-  :bind (:map minibuffer-local-map
-              ("M-a" . marginalia-cycle))
+  :bind (:map minibuffer-local-map ("M-a" . marginalia-cycle))
   :custom (marginalia-field-width 180)
   :preface
   (defun my/marginalia-mode-hook ()
@@ -600,7 +599,9 @@
 
 (use-package embark
   :bind
-  (("C-h B" . embark-bindings)  ;; alternative for `describe-bindings'
+  (nil
+   :map help-map
+   ("B" . embark-bindings)  ;; alternative for `describe-bindings'
    :map minibuffer-local-map
    ("C-c" . embark-act)  ;; begin the embark process
    ("C-<return>" . embark-dwim))  ;; run the default action
@@ -662,12 +663,13 @@
 
 (use-package magit
   :bind
-  (:map magit-mode-map
-        ("M-n" . nil)
-        ("M-w" . nil)
-        :map magit-section-mode-map
-        ("<tab>" . magit-section-toggle)
-        ("C-<tab>" . nil))
+  (nil
+   :map magit-mode-map
+   ("M-n" . nil)
+   ("M-w" . nil)
+   :map magit-section-mode-map
+   ("<tab>" . magit-section-toggle)
+   ("C-<tab>" . nil))
   :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :config
   (when (bound-and-true-p evil-mode)
