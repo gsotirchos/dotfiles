@@ -250,11 +250,6 @@
   (repeat-too-dangerous '(kill-this-buffer))
   (repeat-exit-timeout 5))
 
-(use-package my-keybindings
-  :ensure nil
-  :load-path "site-lisp/"
-  :hook after-init)
-
 (use-package my-mode-line
   :ensure nil
   :load-path "site-lisp/"
@@ -270,11 +265,16 @@
     :load-path "site-lisp/"
     :hook after-init))  ;; my-theme-switcher
 
-(when (eq system-type 'darwin)
-  (use-package ns-auto-titlebar
-    :init (ns-auto-titlebar-mode)))  ;; ns-auto-titlebar
+(use-package my-keybindings
+  :ensure nil
+  :load-path "site-lisp/"
+  :hook after-init
+  :init (my-keybindings-mode))
 
 (use-package modus-themes
+  :defer nil
+  :after my-keybindings
+  :bind (:map my/toggles-map ("t" . modus-themes-toggle))
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
@@ -382,17 +382,9 @@ If USE-3D is \\='toggle, toggle the current state."
       (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
     (add-hook 'my-system-appearance-change-functions #'my/apply-theme)))
 
-(use-package stripes
-  :hook (dired-mode)  ;; minibuffer-mode vertico-mode corfu-popupinfo-mode
-  :bind (:map my/toggles-map ("s" . stripes-mode))
-  :custom
-  (stripes-unit 1)
-  (stripes-overlay-priority -100)
- :preface
-  (defun my/customize-stripes ()
-    (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim)))
-  (when (fboundp 'modus-themes-get-color-value)
-    (add-hook 'stripes-mode-hook #'my/customize-stripes)))
+(when (eq system-type 'darwin)
+  (use-package ns-auto-titlebar
+    :init (ns-auto-titlebar-mode)))  ;; ns-auto-titlebar
 
 (use-package tab-bar
   :ensure nil
@@ -423,6 +415,19 @@ If USE-3D is \\='toggle, toggle the current state."
         (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated))
     (setq tab-bar-tab-name-function #'my/tab-name-padded-and-truncated))
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
+
+(use-package stripes
+  :after my-keybindings
+  :hook dired-mode  ;; minibuffer-mode vertico-mode corfu-popupinfo-mode
+  :bind (:map my/toggles-map ("s" . stripes-mode))
+  :custom
+  (stripes-unit 1)
+  (stripes-overlay-priority -100)
+ :preface
+  (defun my/customize-stripes ()
+    (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim)))
+  (when (fboundp 'modus-themes-get-color-value)
+    (add-hook 'stripes-mode-hook #'my/customize-stripes)))
 
 (use-package dired
   :ensure nil
