@@ -268,11 +268,11 @@
   (use-package my-theme-switcher
     :ensure nil
     :load-path "site-lisp/"
-    :hook after-init))
+    :hook after-init))  ;; my-theme-switcher
 
 (when (eq system-type 'darwin)
   (use-package ns-auto-titlebar
-    :init (ns-auto-titlebar-mode)))
+    :init (ns-auto-titlebar-mode)))  ;; ns-auto-titlebar
 
 (use-package modus-themes
   :custom
@@ -282,15 +282,9 @@
   (modus-themes-variable-pitch-ui t)
   (modus-themes-common-palette-overrides
    '((fringe unspecified)
-     (bg-mode-line-active bg-inactive)
-     (bg-mode-line-inactive bg-dim)
-     ;; (border-mode-line-active bg-mode-line-active)
-     ;; (border-mode-line-inactive bg-mode-line-inactive)
-     (border-mode-line-active border-mode-line-inactive)
-     (header-line bg-dim)
      (bg-tab-bar bg-main)
-     (bg-tab-current bg-inactive)
-     (bg-tab-other bg-dim)
+     (bg-tab-current bg-mode-line-active)
+     (bg-tab-other bg-mode-line-inactive)
      (fg-heading-1 fg-main)
      (fg-heading-2 fg-main)
      (fg-heading-3 fg-main)
@@ -328,37 +322,56 @@
     (pcase appearance
       ('light (modus-themes-load-theme (nth 0 modus-themes-to-toggle)))
       ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
+  (defvar my/modus-ui-3d-style nil
+    "Non-nil if the mode-line should have a 3D released-button style.")
+  (defun my/set-modus-ui-style (&optional use-3d)
+    "Toggle the mode-line style between 3D and Flat.
+If USE-3D is \\='toggle, toggle the current state."
+    (interactive "P")
+    (if (eq use-3d 'toggle)
+        (setq my/modus-ui-3d-style (not my/modus-ui-3d-style))
+      (setq my/modus-ui-3d-style use-3d))
+    (let* ((style (if my/modus-ui-3d-style 'released-button nil))
+           (width (if my/modus-ui-3d-style 2 1))
+           (bg-active   (modus-themes-get-color-value 'bg-mode-line-active))
+           (bg-inactive (modus-themes-get-color-value 'bg-mode-line-inactive))
+           (flat-border-active   (modus-themes-get-color-value 'border-mode-line-active))
+           (flat-border-inactive (modus-themes-get-color-value 'border-mode-line-inactive))
+           (color-active   (if my/modus-ui-3d-style bg-active flat-border-active))
+           (color-inactive (if my/modus-ui-3d-style bg-inactive flat-border-inactive))
+           (box-active   (list :line-width width :style style :color color-active))
+           (box-inactive (list :line-width width :style style :color color-inactive)))
+      (dolist (face '(mode-line
+                      mode-line-active
+                      tab-bar-tab
+                      modus-themes-button))
+        (set-face-attribute face nil :box box-active))
+      (dolist (face '(header-line
+                      mode-line-inactive
+                      tab-bar-tab-inactive))
+        (set-face-attribute face nil :box box-inactive))
+      (dolist (face '(mode-line-highlight
+                      header-line-highlight))
+        (set-face-attribute face nil :box (list :line-width (cons 1 width)
+                                                :style style
+                                                :color color-active)))))
+  (defun my/customize-buttons-faces ()
+    (dolist (face
+             '(custom-button
+               custom-button-mouse
+               custom-button-pressed))
+      (when (facep face)
+        (set-face-attribute face nil :box (face-attribute 'modus-themes-button :box)))))
   (defun my/customize-modus-themes ()
+    (my/set-modus-ui-style my/modus-ui-3d-style)
+    (my/customize-buttons-faces)
+    (set-face-background 'header-line (modus-themes-get-color-value 'bg-mode-line-inactive))
     (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim))
     (let ((bold-p nil))
       (set-face-bold 'tab-bar bold-p)
       (set-face-bold 'tab-bar-tab bold-p)
-      (set-face-bold 'tab-bar-tab-inactive bold-p))
-    ;; (let ((box-released '(:line-width 2 :style released-button))
-    ;;       ;; (box-pressed '(:line-width 2 :style pressed-button))
-    ;;       (box-thinner '(:line-width (1 . 2) :style released-button)))
-    ;;   (dolist (face
-    ;;            '(mode-line
-    ;;              mode-line-active
-    ;;              mode-line-inactive))
-    ;;     (set-face-attribute face nil :box box-released))
-    ;;   (set-face-attribute 'mode-line-highlight nil :box box-thinner))
-    (let ((box-style (face-attribute 'mode-line :box)))
-      (dolist (face
-               '(tab-bar-tab
-                 tab-bar-tab-inactive
-                 header-line))
-        (set-face-attribute face nil :box box-style))
-      (set-face-attribute 'header-line-highlight nil
-                          :box (face-attribute 'mode-line-highlight :box))
-      (add-hook 'Custom-mode-hook
-                (lambda ()
-                  (dolist (face
-                           '(modus-themes-button
-                             custom-button
-                             custom-button-mouse
-                             custom-button-pressed))
-                    (set-face-attribute face nil :box box-style))))))
+      (set-face-bold 'tab-bar-tab-inactive bold-p)))
+  (add-hook 'Custom-mode-hook #'my/customize-buttons-faces)
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   :init
   (let ((theme (nth 0 modus-themes-to-toggle)))
@@ -846,7 +859,6 @@
                bg-red-nuanced)))
         (seq-mapn
          (lambda (face fg-color bg-color)
-           ;; Check if specific face exists before setting
            (when (facep face)
              (set-face-attribute face nil
                                  :extend t :inherit 'flymake-end-of-line-diagnostics-face
