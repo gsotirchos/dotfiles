@@ -354,7 +354,8 @@ If USE-3D is \\='toggle, toggle the current state."
                       header-line-highlight))
         (set-face-attribute face nil :box (list :line-width (cons 1 width)
                                                 :style style
-                                                :color color-active)))))
+                                                :color color-active))))
+    (my/customize-buttons-faces))
   (defun my/customize-buttons-faces ()
     (dolist (face
              '(custom-button
@@ -364,7 +365,6 @@ If USE-3D is \\='toggle, toggle the current state."
         (set-face-attribute face nil :box (face-attribute 'modus-themes-button :box)))))
   (defun my/customize-modus-themes ()
     (my/set-modus-ui-style my/modus-ui-3d-style)
-    (my/customize-buttons-faces)
     (set-face-background 'header-line (modus-themes-get-color-value 'bg-mode-line-inactive))
     (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim))
     (let ((bold-p nil))
