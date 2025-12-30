@@ -154,6 +154,7 @@
   (right-margin-width 0)
   (indent-tabs-mode nil)
   (treemacs-no-png-images t)
+  (delete-by-moving-to-trash t)
   (major-mode-remap-alist
    '((python-mode . python-ts-mode)
      (sh-mode . bash-ts-mode)
@@ -169,8 +170,7 @@
 
 (use-package no-littering
   :demand t
-  :custom
-  (custom-file (no-littering-expand-var-file-name "custom.el"))
+  :custom (custom-file (no-littering-expand-var-file-name "custom.el"))
   :config
   (let ((dir (no-littering-expand-var-file-name "lock-files/")))
     (make-directory dir t)
@@ -442,7 +442,6 @@ If USE-3D is \\='toggle, toggle the current state."
   (dired-dwim-target 'dired-dwim-target-next)
   (dired-hide-details-hide-symlink-targets nil)
   (dired-kill-when-opening-new-dired-buffer t)
-  (delete-by-moving-to-trash t)
   :preface
   (defun my/dired-mode-hook ()
     (dired-omit-mode 1)
@@ -629,6 +628,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :init (setq prefix-help-command 'embark-prefix-help-command))
 
 (use-package embark-consult
+  :after (embark consult)
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package helpful
@@ -775,6 +775,7 @@ If USE-3D is \\='toggle, toggle the current state."
 (use-package rainbow-mode)
 
 (use-package rainbow-delimiters
+  :after modus-themes
   :hook (prog-mode minibuffer-setup)
   :preface
   (defun my/customize-rainbow-delimiters ()
@@ -899,6 +900,7 @@ If USE-3D is \\='toggle, toggle the current state."
 ;; Lisp
 
 (use-package emacs-lisp-mode
+  :after my-keybindings
   :ensure nil
   :bind (:map my/personal-map ("(" . 'check-parens))
   :custom (evil-shift-width 2)
