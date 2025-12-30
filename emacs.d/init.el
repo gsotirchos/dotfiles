@@ -333,14 +333,16 @@ If USE-3D is \\='toggle, toggle the current state."
       (setq my/modus-ui-3d-style use-3d))
     (let* ((style (if my/modus-ui-3d-style 'released-button nil))
            (width (if my/modus-ui-3d-style 2 1))
-           (bg-active   (modus-themes-get-color-value 'bg-mode-line-active))
+           (bg-active (modus-themes-get-color-value 'bg-mode-line-active))
            (bg-inactive (modus-themes-get-color-value 'bg-mode-line-inactive))
-           (flat-border-active   (modus-themes-get-color-value 'border-mode-line-active))
+           (flat-border-active (modus-themes-get-color-value 'border-mode-line-active))
            (flat-border-inactive (modus-themes-get-color-value 'border-mode-line-inactive))
-           (color-active   (if my/modus-ui-3d-style bg-active flat-border-active))
+           (color-active (if my/modus-ui-3d-style bg-active flat-border-active))
            (color-inactive (if my/modus-ui-3d-style bg-inactive flat-border-inactive))
-           (box-active   (list :line-width width :style style :color color-active))
-           (box-inactive (list :line-width width :style style :color color-inactive)))
+           (box-active (append (list :line-width width :color color-active)
+                               (when style (list :style style))))
+           (box-inactive (append (list :line-width width :color color-inactive)
+                                 (when style (list :style style)))))
       (dolist (face '(mode-line
                       mode-line-active
                       tab-bar-tab
@@ -352,9 +354,9 @@ If USE-3D is \\='toggle, toggle the current state."
         (set-face-attribute face nil :box box-inactive))
       (dolist (face '(mode-line-highlight
                       header-line-highlight))
-        (set-face-attribute face nil :box (list :line-width (cons 1 width)
-                                                :style style
-                                                :color color-active))))
+        (set-face-attribute face nil :box
+                            (append (list :line-width (cons 1 width) :color color-active)
+                                    (when style (list :style style))))))
     (my/customize-buttons-faces))
   (defun my/customize-buttons-faces ()
     (dolist (face
