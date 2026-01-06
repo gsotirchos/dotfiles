@@ -59,6 +59,11 @@ if [[ "$TERM_PROGRAM" = "iTerm.app" ]]; then
     source ~/.iterm2_shell_integration.bash
 fi
 
+# SSH
+if [[ -n "$SSH_TTY" ]]; then
+    export TERM="${TERM%-ghostty}"
+fi
+
 # HPC
 if [[ "$(hostname)" =~ login[0-9]+ ]]; then
     export TERM="vt100"
