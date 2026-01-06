@@ -75,8 +75,8 @@
 (defvar-keymap my-keybindings-mode-map
   :doc "Keymap for my-keybindings-mode"
   ;; Mouse/Wheel
-  "<wheel-left>" #'ignore
-  "<wheel-right>" #'ignore
+  ;; "<wheel-left>" #'ignore
+  ;; "<wheel-right>" #'ignore
   "C-<wheel-left>" #'ignore
   "S-<wheel-left>" #'ignore
   "M-<wheel-left>" #'ignore
@@ -147,8 +147,8 @@
         (keymap-set minibuffer-mode-map "<escape>" #'abort-recursive-edit)
         (keymap-set minibuffer-mode-map "C-p" #'previous-line-or-history-element)
         (keymap-set minibuffer-mode-map "C-n" #'next-line-or-history-element)
-        (keymap-set minibuffer-mode-map "C-u" #'scroll-down-command)
-        (keymap-set minibuffer-mode-map "C-d" #'scroll-up-command)
+        ;; (keymap-set minibuffer-mode-map "C-u" #'scroll-down-command)
+        ;; (keymap-set minibuffer-mode-map "C-d" #'scroll-up-command)
         (keymap-set minibuffer-mode-map "<prior>" #'scroll-down-command)
         (keymap-set minibuffer-mode-map "<next>" #'scroll-up-command)
 
