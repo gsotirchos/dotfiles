@@ -396,7 +396,7 @@ If USE-3D is \\='toggle, toggle the current state."
   (tab-bar-close-button-show nil)
   (tab-bar-separator "")
   (tab-bar-auto-width nil)
-  (tab-bar-tab-name-truncated-max 35)
+  (tab-bar-tab-name-truncated-max 25)
   (tab-bar-format
    '(tab-bar-format-tabs
      tab-bar-separator
@@ -622,7 +622,7 @@ If USE-3D is \\='toggle, toggle the current state."
    :map help-map
    ("B" . embark-bindings)  ;; alternative for `describe-bindings'
    :map minibuffer-local-map
-   ("C-c" . embark-act)  ;; begin the embark process
+   ("C-." . embark-act)  ;; begin the embark process
    ("C-<return>" . embark-dwim))  ;; run the default action
   :custom (embark-quit-after-action nil)
   :init (setq prefix-help-command 'embark-prefix-help-command))

@@ -14,7 +14,7 @@ window-height = 24
 macos-titlebar-style = tabs
 macos-option-as-alt = true
 shell-integration-features = no-cursor
-quit-after-last-window-closed = false
+quit-after-last-window-closed = true
 window-vsync = true
 
 cursor-style = block
