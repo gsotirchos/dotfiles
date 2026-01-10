@@ -682,11 +682,13 @@ If USE-3D is \\='toggle, toggle the current state."
   :init (diff-hl-margin-mode 1))
 
 (use-package csv-mode
+  :custom (csv-comment-start "##")
   :preface
   (defun my/csv-mode-hook ()
-    (hl-line-mode 1)
-    (csv-header-line 1)
-    (csv-align-mode 1))
+    (csv-header-line)
+    (let ((state (if (derived-mode-p 'csv-mode) 1 -1)))
+      (hl-line-mode state)
+      (csv-align-mode state)))
   (add-hook 'csv-mode-hook #'my/csv-mode-hook))
 
 (use-package magit

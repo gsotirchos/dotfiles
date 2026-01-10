@@ -70,6 +70,7 @@ mouse-3: Toggle minor modes"
     mode-line-buffer-identification
     my/mode-line-spacer
     mode-line-position
+    my/mode-line-spacer
     my/mode-line-vc-info
     my/mode-line-major-modes
     my/mode-line-flymake-info
