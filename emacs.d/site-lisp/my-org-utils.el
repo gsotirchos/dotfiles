@@ -54,6 +54,29 @@ Otherwise, apply emphasis to the word at point (CHAR)."
         ;; Delete the match, including the newline
         (replace-match "" nil nil)))))
 
+;;;###autoload
+(defun my/org-mac-mail-link-get-selected-message-id ()
+  "Query Mail.app and get the Message-ID of currently selected message."
+  (with-temp-buffer
+    (call-process
+     "osascript" nil t nil
+     "-e" "tell application \"Mail\" to get message id of item 1 of (selection as list)")
+    ;; This additional encoding specifically of =/= is because Mail.app
+    ;; claims to be unable to find a message if it's ID contains unencoded
+    ;; slashes.
+    (browse-url-url-encode-chars
+     (buffer-substring-no-properties (point-min) (- (point-max) 1))
+     "[/]")))
+
+;;;###autoload
+(defun my/org-insert-mac-mail-link-string ()
+  "Insert an Org link for the currently selected email in Mail.app."
+  (interactive)
+  (let* ((message-id (org-mac-mail-link-get-selected-message-id))
+         (title (read-string "Link title: "))
+         (link (org-link-make-string (format "message:%%3C%s%%3E" message-id) title)))
+    (insert link)))
+
 
 ;;; Minor Mode & Keymap
 

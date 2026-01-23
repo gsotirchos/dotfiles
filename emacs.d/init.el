@@ -1058,6 +1058,8 @@ If USE-3D is \\='toggle, toggle the current state."
     (let ((fill-column most-positive-fixnum))
       (apply fn args)))
   (advice-add 'org-fill-paragraph :around #'my/unlimited-fill-column-advice)
+  (defun my/org-mac-mail-link-open-link (mid _)
+    (start-process "open-link" nil "open" (format "message://%%3C%s%%3E" mid)))
   (defun my/adjust-preview-latex-scale ()
     (let* ((text-scaling (if (boundp 'text-scale-mode-step)
                              (expt text-scale-mode-step text-scale-mode-amount)
@@ -1097,7 +1099,8 @@ If USE-3D is \\='toggle, toggle the current state."
   (advice-add 'my/org-latex-preview-buffer :around #'my/silence-advice)
   :config
   (my/adjust-preview-latex-scale)
-  (plist-put org-format-latex-options :background "Transparent"))
+  (plist-put org-format-latex-options :background "Transparent")
+  (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link))
 
 (use-package my-org-utils
   :ensure nil
