@@ -462,11 +462,12 @@ If USE-3D is \\='toggle, toggle the current state."
         evil-mode-line-format nil)
   :config
   (evil-mode 1)
-  (global-set-key [remap evil-visual-block] #'scroll-up-command)
   (global-set-key [remap kill-ring-save] #'evil-yank)
   (global-set-key [remap my/quit-dwim] #'evil-quit)
   (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
   (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
+  (global-set-key (kbd "M-v") #'yank)
+  (evil-global-set-key 'insert (kbd "C-v") #'ignore)
   (evil-global-set-key 'motion (kbd "j") #'evil-next-visual-line)
   (evil-global-set-key 'motion (kbd "k") #'evil-previous-visual-line)
   (evil-global-set-key 'motion (kbd "<down>") #'evil-next-visual-line)
@@ -709,6 +710,9 @@ If USE-3D is \\='toggle, toggle the current state."
   :commands (pdf-loader-install)
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :bind (:map special-mode-map ([remap quit-window] . nil))
+  :custom
+  (pdf-view-use-scaling t)
+  (pdf-view-use-imagemagick t)
   :preface
   (defun my/maybe-toggle-pdf-midnight-view ()
     (setq pdf-view-midnight-colors `(,(face-foreground 'default) . ,(face-background 'default)))
