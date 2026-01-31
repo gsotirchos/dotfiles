@@ -313,9 +313,6 @@
      (6 . (1.0))
      (7 . (1.0))
      (8 . (1.0))))
-  (org-todo-keyword-faces
-   `(("WIP" . ,(modus-themes-get-color-value 'blue))
-     ("FAIL" . ,(modus-themes-get-color-value 'red-intense))))
   :preface
   (setq modus-themes-to-toggle '(modus-operandi modus-vivendi-tinted))
   (defun my/apply-theme (appearance)
@@ -419,7 +416,7 @@ If USE-3D is \\='toggle, toggle the current state."
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package stripes
-  :after my-keybindings
+  :after (modus-themes my-keybindings)
   :hook dired-mode  ;; minibuffer-mode vertico-mode corfu-popupinfo-mode
   :bind (:map my/toggles-map ("s" . stripes-mode))
   :custom
@@ -844,6 +841,7 @@ If USE-3D is \\='toggle, toggle the current state."
 
 (use-package flymake
   :ensure nil
+  :after modus-themes
   :hook prog-mode
   :bind (:map flymake-mode-map ("C-c M-f" . flymake-show-buffer-diagnostics))
   :custom
@@ -1030,6 +1028,7 @@ If USE-3D is \\='toggle, toggle the current state."
 
 (use-package org
   :ensure nil
+  :after modus-themes
   :custom
   (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
@@ -1073,6 +1072,9 @@ If USE-3D is \\='toggle, toggle the current state."
       (my/update-plist-property org-format-latex-options :scale scaling-fn)))
   (defun my/customize-org-mode ()
     "Apply my tweaks to theme-controlled settings."
+    (setq org-todo-keyword-faces
+          `(("WIP" . ,(modus-themes-get-color-value 'blue))
+            ("FAIL" . ,(modus-themes-get-color-value 'red-intense))))
     (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
     (set-face-bold 'org-checkbox t)
     (let ((bg-color (face-background 'org-agenda-clocking)))
