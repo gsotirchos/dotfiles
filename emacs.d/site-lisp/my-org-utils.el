@@ -38,10 +38,10 @@ Otherwise, apply emphasis to the word at point (CHAR)."
   (org-latex-preview '(16)))
 
 ;;;###autoload
-(defun my/md-to-org-region (start end)
+(defun my/convert-md-region-to-org (start end)
   "Convert contents between START and END from markdown to org."
   (interactive "r")
-  (shell-command-on-region start end "pandoc -f markdown -t org" t t))
+  (shell-command-on-region start end "pandoc -f markdown+tex_math_single_backslash -t org" t t))
 
 ;;;###autoload
 (defun my/org-remove-drawers-in-region (start end)
