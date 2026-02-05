@@ -95,6 +95,9 @@ alias tree="tree \
     -I '.DS_Store|.localized|._*' --matchdirs"
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
+if command -v "vimx" &> /dev/null; then
+    alias vim=vimx
+fi
 alias vimrc="vim ~/.vim/vimrc"
 alias wi="vim +WikiIndex"
 alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
