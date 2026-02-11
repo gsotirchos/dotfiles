@@ -402,11 +402,11 @@ If USE-3D is \\='toggle, toggle the current state."
   :preface
   (defun my/format-tab-spacing (string _ _)
     "Add spacing for Emacs 30+ format-functions."
-    (concat "  " string "  "))
+    (concat " " string " "))
   (defun my/tab-name-padded-and-truncated ()
     "Calculate the truncated tab name, then add padding (Emacs 29)."
     (let ((name (tab-bar-tab-name-truncated)))
-      (concat "  " name "  ")))
+      (concat " " name " ")))
   :config
   (if (boundp 'tab-bar-tab-name-format-functions)
       (progn
