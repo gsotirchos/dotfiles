@@ -31,6 +31,7 @@ else
 fi
 
 if [ -f "${conda_path}/etc/profile.d/mamba.sh" ]; then
+    export MAMBA_ROOT_PREFIX="$conda_path"
     source "${conda_path}/etc/profile.d/mamba.sh"
 fi
 unset conda_path
