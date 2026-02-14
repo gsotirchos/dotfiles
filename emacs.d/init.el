@@ -155,10 +155,6 @@
   (indent-tabs-mode nil)
   (treemacs-no-png-images t)
   (delete-by-moving-to-trash t)
-  (major-mode-remap-alist
-   '((python-mode . python-ts-mode)
-     (sh-mode . bash-ts-mode)
-     (yaml-mode . yaml-ts-mode)))
 
   :init
   ;; Display table for wrap prefix
@@ -679,15 +675,9 @@ If USE-3D is \\='toggle, toggle the current state."
   (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
   :init (diff-hl-margin-mode 1))
 
-(use-package csv-mode
-  :custom (csv-comment-start "##")
-  :preface
-  (defun my/csv-mode-hook ()
-    (csv-header-line)
-    (let ((state (if (derived-mode-p 'csv-mode) 1 -1)))
-      (hl-line-mode state)
-      (csv-align-mode state)))
-  (add-hook 'csv-mode-hook #'my/csv-mode-hook))
+(use-package ediff
+  :ensure nil
+  :custom (ediff-window-setup-function 'ediff-setup-windows-plain))
 
 (use-package magit
   :bind
@@ -732,6 +722,41 @@ If USE-3D is \\='toggle, toggle the current state."
   :after (:any doc-view pdf-tools)
   :demand t)
 
+(use-package csv-mode
+  :custom (csv-comment-start "##")
+  :preface
+  (defun my/csv-mode-hook ()
+    (csv-header-line)
+    (let ((state (if (derived-mode-p 'csv-mode) 1 -1)))
+      (hl-line-mode state)
+      (csv-align-mode state)))
+  (add-hook 'csv-mode-hook #'my/csv-mode-hook))
+
+(use-package markdown-mode
+   :mode ("\\.md\\'" . markdown-mode))
+
+(use-package gptel
+  :config
+  (let ((ollama-backend (gptel-make-ollama "Ollama"
+                          :host "localhost:11434"
+                          :stream t
+                          :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")
+                          ))
+        (gemini-backend
+         (gptel-make-gemini "Gemini"
+           :key (lambda ()
+                  (with-temp-buffer
+                    (insert-file-contents "~/.gemini_key")
+                    (string-trim (buffer-string))))
+           :stream t
+           :models '(gemini-3-flash-preview
+                     gemini-3-pro-preview
+                     gemini-2.5-flash-lite))))
+    (setq gptel-backend gemini-backend
+          gptel-model 'gemini-3-flash-preview)))
+
+(use-package gptel-agent
+  :after gptel)
 
 ;; Programming
 
@@ -835,9 +860,12 @@ If USE-3D is \\='toggle, toggle the current state."
   (indent-bars-highlight-current-depth nil)
   (indent-bars-display-on-blank-lines nil))
 
-(use-package ediff
-  :ensure nil
-  :custom (ediff-window-setup-function 'ediff-setup-windows-plain))
+(use-package adaptive-wrap
+  :bind (:map my/toggles-map ("w" . adaptive-wrap-prefix-mode))
+  :custom (adaptive-wrap-extra-indent 2)
+  ;; :config (adaptive-wrap-prefix-mode)
+  ;; TODO
+  )
 
 (use-package flymake
   :ensure nil
@@ -922,11 +950,18 @@ If USE-3D is \\='toggle, toggle the current state."
 ;; Python
 
 (use-package python
+  :after treesit
+  :preface (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
   :init
   (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1)))
   (add-hook 'inferior-python-mode-hook
-            (lambda () (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))))
+            (lambda () (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer)))
+  :config
+  (add-to-list 'treesit-language-source-alist
+               '(python "https://github.com/tree-sitter/tree-sitter-python"))
+  (unless (treesit-language-available-p 'python)
+    (treesit-install-language-grammar 'python)))
 
 (use-package flymake-ruff
   :hook (python-base-mode . flymake-ruff-load)
@@ -968,24 +1003,38 @@ If USE-3D is \\='toggle, toggle the current state."
 (use-package yaml-ts-mode
   :ensure nil
   :no-require t
-  :mode ("\\.yaml$" "\\.yml$")
+  :mode ("\\.yaml\\'" "\\.yml\\'")
   :custom (tab-width 2)
   :preface
+  ;; (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
   (defun my/yaml-mode-hook ()
     (setq yaml-indent-offset 2)
     (variable-pitch-mode -1)
     (flyspell-mode -1))
-  (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook))
+  (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook)
+  :config
+  (add-to-list 'treesit-language-source-alist
+               '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml"))
+  (unless (treesit-language-available-p 'yaml)
+    (treesit-install-language-grammar 'yaml)))
 
 
 ;; Bash
 
-(use-package sh-mode
+(use-package sh-script
   :ensure nil
+  :no-require t
+  :after treesit
   :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode)
+  :preface (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
   :init
   ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
-  (add-hook 'sh-base-mode-hook (lambda () (hs-minor-mode -1))))
+  (add-hook 'sh-base-mode-hook (lambda () (hs-minor-mode -1)))
+  :config
+  (add-to-list 'treesit-language-source-alist
+               '(bash "https://github.com/tree-sitter/tree-sitter-bash"))
+  (unless (treesit-language-available-p 'bash)
+    (treesit-install-language-grammar 'bash)))
 
 
 ;; LaTeX
