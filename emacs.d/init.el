@@ -861,11 +861,9 @@ If USE-3D is \\='toggle, toggle the current state."
   (indent-bars-display-on-blank-lines nil))
 
 (use-package adaptive-wrap
+  :hook (prog-mode . adaptive-wrap-prefix-mode)
   :bind (:map my/toggles-map ("w" . adaptive-wrap-prefix-mode))
-  :custom (adaptive-wrap-extra-indent 2)
-  ;; :config (adaptive-wrap-prefix-mode)
-  ;; TODO
-  )
+  :custom (adaptive-wrap-extra-indent 2))
 
 (use-package flymake
   :ensure nil
