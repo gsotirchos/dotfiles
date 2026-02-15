@@ -737,26 +737,32 @@ If USE-3D is \\='toggle, toggle the current state."
 
 (use-package gptel
   :config
-  (let ((ollama-backend (gptel-make-ollama "Ollama"
-                          :host "localhost:11434"
-                          :stream t
-                          :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")
-                          ))
+  (let ((ollama-backend
+         (gptel-make-ollama "Ollama"
+           :host "localhost:11434"
+           :stream t
+           :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")))
         (gemini-backend
          (gptel-make-gemini "Gemini"
-           :key (lambda ()
-                  (with-temp-buffer
-                    (insert-file-contents "~/.gemini_key")
-                    (string-trim (buffer-string))))
+           :key (lambda () (with-temp-buffer
+                             (insert-file-contents "~/.gemini_key")
+                             (string-trim (buffer-string))))
            :stream t
-           :models '(gemini-3-flash-preview
-                     gemini-3-pro-preview
-                     gemini-2.5-flash-lite))))
+           :models '(gemini-2.5-flash-lite
+                     gemini-3-flash-preview
+                     gemini-3-pro-preview))))
     (setq gptel-backend gemini-backend
           gptel-model 'gemini-3-flash-preview)))
 
 (use-package gptel-agent
   :after gptel)
+
+(use-package my-gptel-tools
+  :demand t
+  ;; :after gptel
+  :ensure nil
+  :load-path "site-lisp/"
+  :config (my/gptel-tools-add-tools))
 
 ;; Programming
 
