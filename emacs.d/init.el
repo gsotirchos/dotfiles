@@ -755,12 +755,14 @@ If USE-3D is \\='toggle, toggle the current state."
           gptel-model 'gemini-3-flash-preview)))
 
 (use-package gptel-agent
-  :after gptel)
+  :demand t
+  :after gptel
+  :config (gptel-agent-update))
 
 (use-package my-gptel-tools
-  :demand t
-  ;; :after gptel
   :ensure nil
+  :demand t
+  :after gptel
   :load-path "site-lisp/"
   :config (my/gptel-tools-add-tools))
 
