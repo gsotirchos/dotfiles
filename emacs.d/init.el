@@ -733,7 +733,9 @@ If USE-3D is \\='toggle, toggle the current state."
   (add-hook 'csv-mode-hook #'my/csv-mode-hook))
 
 (use-package markdown-mode
-   :mode ("\\.md\\'" . markdown-mode))
+  :after adaptive-wrap
+  :preface (add-hook 'markdown-mode-hook (lambda () (adaptive-wrap-prefix-mode)))
+  :mode ("\\.md\\'" . markdown-mode))
 
 (use-package gptel
   :config
@@ -748,11 +750,12 @@ If USE-3D is \\='toggle, toggle the current state."
                              (insert-file-contents "~/.gemini_key")
                              (string-trim (buffer-string))))
            :stream t
-           :models '(gemini-2.5-flash-lite
+           :models '(gemini-2.5-pro
+                     gemini-2.5-flash-lite
                      gemini-3-flash-preview
                      gemini-3-pro-preview))))
     (setq gptel-backend gemini-backend
-          gptel-model 'gemini-3-flash-preview)))
+          gptel-model 'gemini-3-pro-preview)))
 
 (use-package gptel-agent
   :demand t
@@ -765,6 +768,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :after gptel
   :load-path "site-lisp/"
   :config (my/gptel-tools-add-tools))
+
 
 ;; Programming
 
