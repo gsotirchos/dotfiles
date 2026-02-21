@@ -8,7 +8,7 @@
 # [[ $- == *i* ]] && echo 'Interactive' || echo 'Not interactive'
 # shopt -q login_shell && echo 'Login shell' || echo 'Not login shell'
 
-export EDITOR="vim"
+export EDITOR="emacsclient -cn"
 
 # instantly append to history every command
 if ! [[ "${PROMPT_COMMAND}" == *"history -a"* ]]; then
