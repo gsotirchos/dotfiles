@@ -62,7 +62,7 @@
 
 (defvar-keymap my/toggles-map
   :doc "My toggle commands map."
-  "s" 'whitespace-mode)
+  "w" 'whitespace-mode)
 
 (defvar-keymap my/personal-map
   :doc "My prefix map."

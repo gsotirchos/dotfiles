@@ -442,6 +442,22 @@ If USE-3D is \\='toggle, toggle the current state."
     (hl-line-mode 1))
   (add-hook 'dired-mode-hook #'my/dired-mode-hook))
 
+(use-package eshell
+  :ensure nil
+  :no-require t
+  :preface
+  (when (executable-find "starship")
+    (defun my/eshell-starship-prompt ()
+      (let* ((status (or (bound-and-true-p eshell-last-command-status) 0))
+             (starship-cmd (format "env TERM=xterm-256color starship prompt --status %d" status)))
+        (ansi-color-apply (shell-command-to-string starship-cmd))))
+    (setq eshell-prompt-function #'my/eshell-starship-prompt
+          eshell-highlight-prompt nil
+          eshell-prompt-regexp "^[^#$\n]* [#>❯(?:graph)] "))
+  (defun my/eshell-mode-hook ()
+    (setq-local pcomplete-termination-string ""))
+  (add-hook 'eshell-mode-hook #'my/eshell-mode-hook))
+
 (use-package evil
   :init
   (setq evil-want-integration t
@@ -508,9 +524,8 @@ If USE-3D is \\='toggle, toggle the current state."
   (corfu-auto t)  ;; auto-completion
   (corfu-quit-no-match 'separator)  ;; test
   (corfu-auto-prefix 2)
-  (corfu-auto-delay 0.1)
+  (corfu-auto-delay 0.2)
   (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-preselect 'prompt)  ;; don't pre-select first candidate
   (corfu-preview-current 'insert)  ;; insert previewed candidate
   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
   (corfu-cycle t)
@@ -520,22 +535,6 @@ If USE-3D is \\='toggle, toggle the current state."
   (global-corfu-mode)
   (corfu-popupinfo-mode)
   (corfu-history-mode))
-
-(use-package eshell
-  :ensure nil
-  :no-require t
-  :preface
-  (defun my/eshell-starship-prompt ()
-    (let* ((status (if (bound-and-true-p eshell-last-command-status)
-                       eshell-last-command-status
-                     0))
-           (starship-cmd (format "env TERM=xterm-256color starship prompt --status %d" status)))
-      (ansi-color-apply (shell-command-to-string starship-cmd))))
-  :custom
-  (eshell-prompt-function #'my/eshell-starship-prompt)
-  (eshell-highlight-prompt nil)
-  (eshell-prompt-regexp "^[^#$\n]*[#>❯] ") ;; Match the prompt character
-  :config (require 'ansi-color))
 
 (use-package vertico
   :custom
@@ -890,7 +889,7 @@ If USE-3D is \\='toggle, toggle the current state."
 
 (use-package adaptive-wrap
   :hook (prog-mode . adaptive-wrap-prefix-mode)
-  :bind (:map my/toggles-map ("w" . adaptive-wrap-prefix-mode))
+  :bind (:map my/toggles-map ("a" . adaptive-wrap-prefix-mode))
   :custom (adaptive-wrap-extra-indent 2))
 
 (use-package flymake
