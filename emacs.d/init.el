@@ -23,6 +23,15 @@
           (inhibit-message t))
       (apply fn args)))
 
+  (defun my/read-envvar-from-file (envvar file)
+    "Read the value of ENVVAR from FILE. Assumes the format: export ENVVAR=\"value\""
+    (with-temp-buffer
+      (insert-file-contents (expand-file-name file))
+      (goto-char (point-min))
+      (if (re-search-forward (format "^export %s=\"\\([^\"]+\\)\"" envvar) nil t)
+          (match-string 1)
+        (user-error "Variable %s not found in %s" envvar file))))
+
   ;; List manipulation utilities
   (defun my/update-plist-property (plist property fn)
     "Update the PLIST's PROPERTY's value using FN."
@@ -761,16 +770,14 @@ If USE-3D is \\='toggle, toggle the current state."
            :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")))
         (gemini-backend
          (gptel-make-gemini "Gemini"
-           :key (lambda () (with-temp-buffer
-                             (insert-file-contents "~/.gemini_key")
-                             (string-trim (buffer-string))))
+           :key (my/read-envvar-from-file "GOOGLE_API_KEY" "~/.api_keys")
            :stream t
-           :models '(gemini-2.5-pro
-                     gemini-2.5-flash-lite
+           :models '(gemini-2.5-flash-lite
+                     gemini-2.5-pro
                      gemini-3-flash-preview
                      gemini-3-pro-preview))))
     (setq gptel-backend gemini-backend
-          gptel-model 'gemini-3-pro-preview)))
+          gptel-model 'gemini-3-flash-preview)))
 
 (use-package gptel-agent
   :demand t
