@@ -521,6 +521,22 @@ If USE-3D is \\='toggle, toggle the current state."
   (corfu-popupinfo-mode)
   (corfu-history-mode))
 
+(use-package eshell
+  :ensure nil
+  :no-require t
+  :preface
+  (defun my/eshell-starship-prompt ()
+    (let* ((status (if (bound-and-true-p eshell-last-command-status)
+                       eshell-last-command-status
+                     0))
+           (starship-cmd (format "env TERM=xterm-256color starship prompt --status %d" status)))
+      (ansi-color-apply (shell-command-to-string starship-cmd))))
+  :custom
+  (eshell-prompt-function #'my/eshell-starship-prompt)
+  (eshell-highlight-prompt nil)
+  (eshell-prompt-regexp "^[^#$\n]*[#>❯] ") ;; Match the prompt character
+  :config (require 'ansi-color))
+
 (use-package vertico
   :custom
   (vertico-scroll-margin 1)
