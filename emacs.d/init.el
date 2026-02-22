@@ -772,10 +772,23 @@ If USE-3D is \\='toggle, toggle the current state."
          (gptel-make-gemini "Gemini"
            :key (my/read-envvar-from-file "GOOGLE_API_KEY" "~/.api_keys")
            :stream t
-           :models '(gemini-2.5-flash-lite
-                     gemini-2.5-pro
-                     gemini-3-flash-preview
-                     gemini-3-pro-preview))))
+           :models '("gemini-2.5-flash-lite"
+                     "gemini-2.5-pro"
+                     "gemini-3-flash-preview"
+                     "gemini-3-pro-preview")))
+        (mistral-backend
+         (gptel-make-openai "Mistral"
+           :host "api.mistral.ai"
+           :endpoint "/v1/chat/completions"
+           :protocol "https"
+           :key (my/read-envvar-from-file "MISTRAL_API_KEY" "~/.api_keys")
+           :stream t
+           :models '("devstral-2512")))
+        (deepseek-backend
+         (gptel-make-deepseek "DeepSeek"
+           :key (my/read-envvar-from-file "DEEPSEEK_API_KEY" "~/.api_keys")
+           :stream t
+           :models '("deepseek-reasoner"))))
     (setq gptel-backend gemini-backend
           gptel-model 'gemini-3-flash-preview)))
 
