@@ -36,8 +36,9 @@ main() {
     ln -sfv "${dotfiles}"/emacs.d/*            ~/.emacs.d
     ln -sfv "${dotfiles}"/vim/*                ~/.vim
     ln -sfv "${dotfiles}"/conda/*              ~/.conda
-    ln -sfv "${dotfiles}"/config/ghostty/*     ~/.config/ghostty
     ln -sfv "${dotfiles}"/config/starship.toml ~/.config/starship.toml
+    ln -sfv "${dotfiles}"/config/ghostty/*     ~/.config/ghostty
+    ln -sfv "${dotfiles}"/config/opencode/*    ~/.config/opencode
     ln -sfv "${dotfiles}"/Zotero/translators/* ~/Zotero/translators
 
     # setup launch daemons and launch agents
