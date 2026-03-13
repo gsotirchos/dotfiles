@@ -6,8 +6,11 @@
   :ensure nil
   :preface
   ;; --------------------------------------------------------------------------
-  ;; Helper functions (Background/Utilities/Advice/Hooks)
+  ;; Helper functions (Background/Utilities/Advice/Hooks/Variables)
   ;; --------------------------------------------------------------------------
+
+  (defvar my/scale-factor 1.75
+    "Global scale factor for images and LaTeX overlays.")
 
   (defun my/prevent-in-home-dir-advice (fn &rest args)
     "Prevent running the advised function in the home directory."
@@ -121,6 +124,7 @@
   (add-hook 'Custom-mode-hook #'variable-pitch-mode)
   (add-hook 'Info-mode-hook #'variable-pitch-mode)
   (add-hook 'org-mode-hook #'variable-pitch-mode)
+  (add-hook 'markdown-view-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'text-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
 
@@ -421,7 +425,7 @@ If USE-3D is \\='toggle, toggle the current state."
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package stripes
-  :after (modus-themes my-keybindings)
+  :after (my-keybindings modus-themes)
   :hook dired-mode  ;; minibuffer-mode vertico-mode corfu-popupinfo-mode
   :bind (:map my/toggles-map ("s" . stripes-mode))
   :custom
@@ -757,8 +761,15 @@ If USE-3D is \\='toggle, toggle the current state."
   (add-hook 'csv-mode-hook #'my/csv-mode-hook))
 
 (use-package markdown-mode
-  :after adaptive-wrap
-  :preface (add-hook 'markdown-mode-hook (lambda () (adaptive-wrap-prefix-mode)))
+  :after (emacs adaptive-wrap)
+  :custom
+  (markdown-max-image-size `(,(round (* my/scale-factor 300)) . ,(round (* my/scale-factor 150))))
+  (markdown-display-remote-images t)
+  :preface
+  (add-hook 'markdown-mode-hook (lambda ()
+                                  (adaptive-wrap-prefix-mode)
+                                  (visual-line-mode 1)
+                                  (markdown-display-inline-images)))
   :mode ("\\.md\\'" . markdown-mode))
 
 (use-package gptel
@@ -1086,6 +1097,7 @@ If USE-3D is \\='toggle, toggle the current state."
 
 (use-package auctex
   :ensure nil
+  :after emacs
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
@@ -1097,7 +1109,7 @@ If USE-3D is \\='toggle, toggle the current state."
   (preview-auto-cache-preamble t)
   (preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
   (preview-preserve-counters t)
-  (preview-scale-function (/ 1 1.75))
+  (preview-scale-function (/ 1 my/scale-factor))
   :preface
   (defun my/LaTeX-mode-hook ()
     (outline-minor-mode 1)
@@ -1112,10 +1124,10 @@ If USE-3D is \\='toggle, toggle the current state."
   (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
 
 (use-package preview-dvisvgm
-  :after preview
+  :after (emacs preview)
   :custom
   (preview-image-type 'dvisvgm)
-  (preview-scale-function 1.75))
+  (preview-scale-function my/scale-factor))
 
 
 ;; Org
