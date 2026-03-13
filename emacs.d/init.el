@@ -1092,6 +1092,12 @@ If USE-3D is \\='toggle, toggle the current state."
   (unless (treesit-language-available-p 'bash)
     (treesit-install-language-grammar 'bash)))
 
+;; ROS
+
+(use-package my-ros-msg-mode
+  :ensure nil
+  :load-path "site-lisp/"
+  :mode ("\\.msg\\'" . my-ros-msg-mode))
 
 ;; LaTeX
 
