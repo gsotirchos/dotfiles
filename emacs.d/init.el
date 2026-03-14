@@ -125,6 +125,7 @@
   (add-hook 'Info-mode-hook #'variable-pitch-mode)
   (add-hook 'org-mode-hook #'variable-pitch-mode)
   (add-hook 'markdown-view-mode-hook #'variable-pitch-mode)
+  (add-hook 'gfm-view-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'text-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
 
@@ -761,16 +762,16 @@ If USE-3D is \\='toggle, toggle the current state."
   (add-hook 'csv-mode-hook #'my/csv-mode-hook))
 
 (use-package markdown-mode
-  :after (emacs adaptive-wrap)
+  :after emacs
+  :mode ("\\.md\\'" . gfm-mode)
   :custom
   (markdown-max-image-size `(,(round (* my/scale-factor 300)) . ,(round (* my/scale-factor 150))))
   (markdown-display-remote-images t)
   :preface
   (add-hook 'markdown-mode-hook (lambda ()
-                                  (adaptive-wrap-prefix-mode)
+                                  (adaptive-wrap-prefix-mode 1)
                                   (visual-line-mode 1)
-                                  (markdown-display-inline-images)))
-  :mode ("\\.md\\'" . markdown-mode))
+                                  (markdown-display-inline-images))))
 
 (use-package gptel
   :config
@@ -851,6 +852,7 @@ If USE-3D is \\='toggle, toggle the current state."
   (defun my/prog-mode-hook ()
     (hs-minor-mode 1)
     (setq show-trailing-whitespace t)
+    (adaptive-wrap-prefix-mode 1)
     ;; (modify-syntax-entry ?- "w")
     (modify-syntax-entry ?_ "w"))
   (add-hook 'prog-mode-hook #'my/prog-mode-hook))
@@ -919,7 +921,6 @@ If USE-3D is \\='toggle, toggle the current state."
   (indent-bars-display-on-blank-lines nil))
 
 (use-package adaptive-wrap
-  :hook (prog-mode . adaptive-wrap-prefix-mode)
   :bind (:map my/toggles-map ("a" . adaptive-wrap-prefix-mode))
   :custom (adaptive-wrap-extra-indent 2))
 
@@ -1062,7 +1063,6 @@ If USE-3D is \\='toggle, toggle the current state."
   :mode ("\\.yaml\\'" "\\.yml\\'")
   :custom (tab-width 2)
   :preface
-  ;; (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
   (defun my/yaml-mode-hook ()
     (setq yaml-indent-offset 2)
     (variable-pitch-mode -1)
