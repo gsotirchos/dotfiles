@@ -28,7 +28,4 @@
         },
     },
     "model": "google/gemini-3-flash-preview",
-    "keybinds": {
-        "app_exit": "ctrl+g"
-    },
 }
