@@ -4,11 +4,10 @@
 
 # shellcheck disable=SC1090
 
+# env_before="$(env)"
 # echo "SOURCED ~/.bash_profile"
 # [[ $- == *i* ]] && echo 'Interactive' || echo 'Not interactive'
 # shopt -q login_shell && echo 'Login shell' || echo 'Not login shell'
-
-# export env_before="$(env)"
 
 # set the locale to English
 export LC_ALL="en_US.UTF-8"
@@ -69,8 +68,8 @@ fi
 #   export LD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}"
 #fi
 
-# use new bash
 export SHELL="$(which bash)"
+export EDITOR="emacsclient -cn"
 
 # set cmake makefile generator, compiler, and standard
 export CC="$(command -v gcc-11 || command -v clang)"
@@ -94,7 +93,7 @@ if [[ $- == *i* ]]; then
     fi
 fi
 
-# export env_after="$(env)"
-# diff <(echo "$env_before") <(echo "$env_after") | grep [A-Z_1-9]+\=
+# env_after="$(env)"
+# diff <(echo "$env_before") <(echo "$env_after") | grep [A-Z_0-9]+\=
 # diff <(echo "$env_before") <(echo "$ensudo bash -c "$(declare -f); exec suv_after") | grep [a-z_]+\=
 # time bash -i -c 'exit'

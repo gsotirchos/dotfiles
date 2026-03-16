@@ -438,6 +438,16 @@ If USE-3D is \\='toggle, toggle the current state."
   (when (fboundp 'modus-themes-get-color-value)
     (add-hook 'stripes-mode-hook #'my/customize-stripes)))
 
+(use-package files
+  :ensure nil
+  :custom (enable-remote-dir-locals t))
+
+(use-package tramp
+  :ensure nil
+  :preface
+  (with-eval-after-load 'tramp
+    (add-to-list 'tramp-remote-path "~/.pixi/bin")))
+
 (use-package dired
   :ensure nil
   :bind (:map dired-mode-map ("M-<up>" . dired-up-directory))
@@ -1010,6 +1020,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :after treesit
   :preface (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
+  ;; TODO maybe: "ruff check --quiet --stdin-filename=stdin -"
   :init
   (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1)))
   (add-hook 'inferior-python-mode-hook

@@ -135,7 +135,7 @@ if command -v "ble_write" &> /dev/null; then
     alias ble_lamp='ble_write -n "MIPOW SMART BULB" -u "0000fffc-0000-1000-8000-00805f9b34fb" -v'
 fi
 
-# Catkin
+# Catkin TODO
 if command -v "catkin" &> /dev/null; then
     cdws() {
         if catkin locate --workspace "$(realpath "$1")" &> /dev/null; then
@@ -146,3 +146,7 @@ if command -v "catkin" &> /dev/null; then
         fi
     }
 fi
+
+export VM_NAME=ros2-gpu-box
+export LOCATION=europe-west4-c
+export PROJECT_ID=project-ac9e6b87-2bfa-4be3-acd
