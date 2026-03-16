@@ -8,12 +8,23 @@ main() {
     local port="4096"
     local remote_dir='$HOME/ws_aic/src/aic'
     local opencode_bin='$HOME/.opencode/bin/opencode'
+    local local_config="$HOME/.config/opencode/opencode.json"
+    local remote_config_dir="$HOME/.config/opencode/"
 
-    # 1. Pre-emptively clear local and remote processes from previous runs
+    # 1. Sync local config to remote VM
+    echo "Syncing local config to VM..."
+    if [ -f "$local_config" ]; then
+        ssh "$vm_user"@"$vm_host" "mkdir -p \"$remote_config_dir\""
+        rsync -az "$local_config" "$vm_user"@"$vm_host":"$remote_config_dir"
+    else
+        echo "Warning: Local config not found at $local_config. Skipping sync."
+    fi
+
+    # 2. Pre-emptively clear local and remote processes from previous runs
     lsof -ti:"$port" | xargs kill -9 2>/dev/null
     ssh "$vm_user"@"$vm_host" "pkill -f '${opencode_bin} serve' || true" 2>/dev/null
 
-    # 2. Define cleanup to run automatically on script exit or interrupt (Ctrl+C)
+    # 3. Define cleanup to run automatically on script exit or interrupt (Ctrl+C)
     cleanup() {
         echo -e "\nSession ended. Cleaning up..."
         kill "$SSH_PID" 2>/dev/null
@@ -22,12 +33,12 @@ main() {
     trap cleanup EXIT INT
 
     echo "Starting remote server and establishing tunnel..."
-    # 3. Execute tunnel and remote server
+    # 4. Execute tunnel and remote server
     ssh -L "$port":localhost:"$port" "$vm_user"@"$vm_host" "cd \"$remote_dir\" && OPENCODE_SERVER_PASSWORD=\"$password\" \"$opencode_bin\" serve --port \"$port\"" &
     SSH_PID="$!"
 
     echo "Waiting for remote server to initialize..."
-    # 4. Polling mechanism using curl to verify actual HTTP connectivity through the tunnel
+    # 5. Polling mechanism using curl to verify actual HTTP connectivity through the tunnel
     while ! curl -s --max-time 1 "http://localhost:$port" > /dev/null; do
         sleep 0.5
     done
