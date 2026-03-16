@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2016,2029
+
+main() {
+    local vm_host="$1" # "${VM_NAME}.${LOCATION}.${PROJECT_ID}"
+    local password="$2"
+    local vm_user="george"
+    local port="4096"
+    local remote_dir='$HOME/ws_aic/src/aic'
+    local opencode_bin='$HOME/.opencode/bin/opencode'
+
+    # 1. Pre-emptively clear local and remote processes from previous runs
+    lsof -ti:"$port" | xargs kill -9 2>/dev/null
+    ssh "$vm_user"@"$vm_host" "pkill -f '${opencode_bin} serve' || true" 2>/dev/null
+
+    # 2. Define cleanup to run automatically on script exit or interrupt (Ctrl+C)
+    cleanup() {
+        echo -e "\nSession ended. Cleaning up..."
+        kill "$SSH_PID" 2>/dev/null
+        ssh "$vm_user"@"$vm_host" "pkill -f '${opencode_bin} serve' || true" 2>/dev/null
+    }
+    trap cleanup EXIT INT
+
+    echo "Starting remote server and establishing tunnel..."
+    # 3. Execute tunnel and remote server
+    ssh -L "$port":localhost:"$port" "$vm_user"@"$vm_host" "cd \"$remote_dir\" && OPENCODE_SERVER_PASSWORD=\"$password\" \"$opencode_bin\" serve --port \"$port\"" &
+    SSH_PID="$!"
+
+    echo "Waiting for remote server to initialize..."
+    # 4. Polling mechanism using curl to verify actual HTTP connectivity through the tunnel
+    while ! curl -s --max-time 1 "http://localhost:$port" > /dev/null; do
+        sleep 0.5
+    done
+
+    echo "Attaching local OpenCode client..."
+    OPENCODE_SERVER_PASSWORD="$password" opencode attach "http://localhost:$port"
+}
+
+main "$@"
+unset main
