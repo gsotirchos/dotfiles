@@ -75,6 +75,14 @@ merge_compile_commands() {
     fi
 }
 
+# benchmark prompt
+prompt_time() {
+    time (
+        [[ -n "$PROMPT_COMMAND" ]] && eval "$PROMPT_COMMAND"
+        _prompt="${PS1@P}"
+    )
+}
+
 # System
 alias ec="emacsclient -a '' -c &"  # start emacs daemon and/or client
 alias rm=trash                     # trash files instead of deleting
