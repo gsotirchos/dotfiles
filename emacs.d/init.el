@@ -184,8 +184,8 @@
 
 (use-package no-littering
   :demand t
-  :custom (custom-file (no-littering-expand-var-file-name "custom.el"))
   :config
+  (setq custom-file (no-littering-expand-var-file-name "custom.el"))
   (let ((dir (no-littering-expand-var-file-name "lock-files/")))
     (make-directory dir t)
     (setq lock-file-name-transforms `((".*" ,dir t))))
@@ -515,10 +515,12 @@ If USE-3D is \\='toggle, toggle the current state."
 
 (use-package evil-collection
   :after evil
-  :init (evil-collection-init))
+  :defer nil
+  :config (evil-collection-init))
 
 (use-package evil-surround
-  :init (global-evil-surround-mode 1))
+  :defer nil
+  :config (global-evil-surround-mode 1))
 
 (use-package corfu
   :bind
@@ -564,13 +566,14 @@ If USE-3D is \\='toggle, toggle the current state."
   (corfu-history-mode))
 
 (use-package vertico
+  :defer nil
   :custom
   (vertico-scroll-margin 1)
   (vertico-mouse-mode t)
   (vertico-count 10)  ;; Limit to a fixed size
   (vertico-cycle t)  ;; Enable cycling for `vertico-next/previous'
   (vertico-resize 'grow-only)  ;; Grow and shrink the Vertico minibuffer
-  :init (vertico-mode))
+  :config (vertico-mode))
 
 (use-package vertico-directory
   :after vertico
@@ -678,6 +681,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :custom (warning-minimum-level :error))
 
 (use-package which-key
+  :ensure nil
   :custom (which-key-idle-delay 1)
   :init (which-key-mode))
 
@@ -685,6 +689,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :hook (prog-mode . eldoc-box-hover-at-point-mode))
 
 (use-package diff-hl
+  :defer nil
   :custom (diff-hl-draw-borders nil)
   :preface
   (defun my/diff-hl-mode-if-vc ()
@@ -715,7 +720,7 @@ If USE-3D is \\='toggle, toggle the current state."
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
     (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
   (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
-  :init (diff-hl-margin-mode 1))
+  :config (diff-hl-margin-mode 1))
 
 (use-package ediff
   :ensure nil
@@ -782,7 +787,6 @@ If USE-3D is \\='toggle, toggle the current state."
   (markdown-display-remote-images t)
   :preface
   (add-hook 'markdown-mode-hook (lambda ()
-                                  (adaptive-wrap-prefix-mode 1)
                                   (visual-line-mode 1)
                                   (markdown-display-inline-images))))
 
@@ -865,7 +869,6 @@ If USE-3D is \\='toggle, toggle the current state."
   (defun my/prog-mode-hook ()
     (hs-minor-mode 1)
     (setq show-trailing-whitespace t)
-    (adaptive-wrap-prefix-mode 1)
     ;; (modify-syntax-entry ?- "w")
     (modify-syntax-entry ?_ "w"))
   (add-hook 'prog-mode-hook #'my/prog-mode-hook))
@@ -916,7 +919,11 @@ If USE-3D is \\='toggle, toggle the current state."
   (add-hook 'rainbow-delimiters-mode-hook #'my/rainbow-delimiters-hook))
 
 (use-package indent-bars
-  :hook (prog-mode yaml-ts-mode)
+  :preface
+  (defun my/indent-bars-maybe-enable ()
+    (unless (derived-mode-p 'emacs-lisp-mode)
+      (indent-bars-mode 1)))
+  :hook ((prog-mode yaml-ts-mode) . my/indent-bars-maybe-enable)
   :custom
   (indent-bars-display-on-blank-lines nil)
   ;; (indent-bars-no-descend-lists t)  ;; no extra bars in contd. func. args
@@ -934,6 +941,7 @@ If USE-3D is \\='toggle, toggle the current state."
   (indent-bars-display-on-blank-lines nil))
 
 (use-package adaptive-wrap
+  :hook ((prog-mode markdown-mode) . adaptive-wrap-prefix-mode)
   :bind (:map my/toggles-map ("a" . adaptive-wrap-prefix-mode))
   :custom (adaptive-wrap-extra-indent 2))
 
@@ -1013,8 +1021,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :after my-keybindings
   :ensure nil
   :bind (:map my/personal-map ("(" . 'check-parens))
-  :custom (evil-shift-width 2)
-  :preface (add-hook 'emacs-lisp-mode-hook (lambda () (indent-bars-mode -1))))
+  :custom (evil-shift-width 2))
 
 
 ;; Python
