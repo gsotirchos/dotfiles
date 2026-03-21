@@ -80,8 +80,12 @@ if [[ -n "$SSH_TTY" ]]; then
 fi
 
 # start starship prompt
-if command -v "starship" &> /dev/null; then
-    export STARSHIP_CONFIG=${HOME}/.config/starship.toml
-    eval "$(starship init bash)"
+#if command -v "starship" &> /dev/null; then
+#    export STARSHIP_CONFIG=${HOME}/.config/starship.toml
+#    eval "$(starship init bash)"
+#fi
+
+if command -v "prmt" &> /dev/null; then
+    export PS1='$(prmt --code $? "{path:cyan.bold} {git:magenta.bold}\n{ok:bold:>}{fail:red.bold:>} ")'
 fi
 
