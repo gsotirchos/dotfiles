@@ -13,7 +13,7 @@
   "Configuration for the custom theme switcher."
   :group 'convenience)
 
-(defcustom my/theme-poll-interval 10
+(defcustom my/theme-poll-interval 5
   "Interval in seconds to check for system appearance changes.
 Used only if native OS events are unavailable."
   :type 'integer
@@ -66,14 +66,14 @@ If FORCE is non-nil, run hooks even if the appearance hasn't changed."
       (run-hook-with-args 'my-system-appearance-change-functions current-appearance))))
 
 (defun my/mac-ns-theme-handler (appearance)
-  "Handler for native macOS appearance change."
+  "Handler for native macOS APPEARANCE change."
   ;; The hook gives us 'dark or 'light
   (unless (eq appearance my/last-system-appearance)
     (setq my/last-system-appearance appearance)
     (run-hook-with-args 'my-system-appearance-change-functions appearance)))
 
 (defun my/dbus-gnome-theme-handler (namespace key value)
-  "Handler for D-Bus SettingChanged signals."
+  "Handler for D-Bus SettingChanged signals (NAMESPACE KEY VALUE)."
   (when (and (string-equal namespace "org.freedesktop.appearance")
              (string-equal key "color-scheme"))
     ;; 0 = Default, 1 = Prefer Dark, 2 = Prefer Light
