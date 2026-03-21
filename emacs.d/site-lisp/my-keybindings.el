@@ -112,6 +112,7 @@
   "A-<left>" #'left-word
 
   ;; Frames/Windows
+  "C-z" #'ignore
   "A-<escape>" #'ns-next-frame
   "A-~" #'ns-prev-frame
   "C-M-e" #'ns-do-show-character-palette
@@ -138,13 +139,9 @@
   :global t
   :lighter " MyKeys"
   :keymap my-keybindings-mode-map
-  (if my-keybindings-mode
-      (progn
-        ;; Handle C-z unbind (hard to do in a keymap, easiest globally)
-        (global-unset-key (kbd "C-z"))
-
-        ;; Minibuffer specific maps (cannot be done in the minor mode map)
-        (keymap-set minibuffer-mode-map "<escape>" #'abort-recursive-edit)
+  (when my-keybindings-mode
+    ;; Minibuffer specific maps (cannot be done in the minor mode map)
+    (keymap-set minibuffer-mode-map "<escape>" #'abort-recursive-edit)
         (keymap-set minibuffer-mode-map "C-p" #'previous-line-or-history-element)
         (keymap-set minibuffer-mode-map "C-n" #'next-line-or-history-element)
         ;; (keymap-set minibuffer-mode-map "C-u" #'scroll-down-command)
@@ -156,11 +153,7 @@
         (keymap-set isearch-mode-map "C-n" #'isearch-ring-advance)
 
         ;; Help map
-        (keymap-set help-map "=" #'describe-char))
-
-    ;; Note: Truly "restoring" global unsets like C-z is complex,
-    ;; so just leave them or rebind to original.
-    (global-set-key (kbd "C-z") #'suspend-frame)))
+        (keymap-set help-map "=" #'describe-char)))
 
 (provide 'my-keybindings)
 
