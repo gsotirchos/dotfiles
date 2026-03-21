@@ -72,7 +72,7 @@ Otherwise, apply emphasis to the word at point (CHAR)."
 (defun my/org-insert-mac-mail-link-string ()
   "Insert an Org link for the currently selected email in Mail.app."
   (interactive)
-  (let* ((message-id (org-mac-mail-link-get-selected-message-id))
+  (let* ((message-id (my/org-mac-mail-link-get-selected-message-id))
          (title (read-string "Link title: "))
          (link (org-link-make-string (format "message:%%3C%s%%3E" message-id) title)))
     (insert link)))
