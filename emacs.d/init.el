@@ -149,6 +149,10 @@
   (make-backup-files nil)
   (set-mark-command-repeat-pop t)
   (large-file-warning-threshold nil)
+  (custom-safe-themes t)
+  (enable-local-variables :all)
+  ;; (enable-local-eval t)
+  ;; (package-check-signature nil)
   (vc-follow-symlinks t)
   (ad-redefinition-action 'accept)
   (use-short-answers t)
@@ -444,9 +448,15 @@ If USE-3D is \\='toggle, toggle the current state."
 
 (use-package tramp
   :ensure nil
-  :preface
-  (with-eval-after-load 'tramp
-    (add-to-list 'tramp-remote-path "~/.pixi/bin")))
+  :custom
+  (tramp-verbose 6)
+  (tramp-use-connection-share nil) ; Let ~/.ssh/config handle it
+  (vc-handled-backends '(Git)) ; Limit VC to Git only
+  ;; :config
+  ;; (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  ;; Optional: Disable version control completelyif it's still too slow
+  ;; (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
+  )
 
 (use-package dired
   :ensure nil

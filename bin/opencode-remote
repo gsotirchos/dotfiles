@@ -4,9 +4,9 @@
 main() {
     local vm_host="$1" # "${VM_NAME}.${LOCATION}.${PROJECT_ID}"
     local password="$2"
-    local vm_user="george"
+    local remote_dir="${3:-'$HOME/ws_aic/src/aic'}"
+    local vm_user="$USER"
     local port="4096"
-    local remote_dir='$HOME/ws_aic/src/aic'
     local remote_opencode_bin='$HOME/.opencode/bin/opencode'
     local local_config="$HOME/.config/opencode/opencode.json"
     local local_api_keys="$HOME/.api_keys"
@@ -29,19 +29,19 @@ main() {
 
     # 2. Pre-emptively clear local and remote processes from previous runs
     lsof -ti:"$port" | xargs kill -9 2>/dev/null
-    ssh "$vm_user"@"$vm_host" "pkill -f '${remote_opencode_bin} serve && killall opencode' || true" 2>/dev/null
+    ssh "$vm_user"@"$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
 
     # 3. Define cleanup to run automatically on script exit or interrupt (Ctrl+C)
     cleanup() {
         echo -e "\nSession ended. Cleaning up..."
         kill "$SSH_PID" 2>/dev/null
-        ssh "$vm_user"@"$vm_host" "pkill -f '${remote_opencode_bin} serve && killall opencode' || true" 2>/dev/null
+        ssh "$vm_user"@"$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
     }
     trap cleanup EXIT INT
 
     echo "Starting remote server and establishing tunnel..."
     # 4. Execute tunnel and remote server
-    ssh -L "$port":localhost:"$port" "$vm_user"@"$vm_host" "cd \"$remote_dir\" && OPENCODE_SERVER_PASSWORD=\"$password\" \"$remote_opencode_bin\" serve --port \"$port\"" &
+    ssh -L "$port":localhost:"$port" "$vm_user"@"$vm_host" ". ~/.api_keys && cd \"$remote_dir\" && OPENCODE_SERVER_PASSWORD=\"$password\" \"$remote_opencode_bin\" serve --port \"$port\"" &
     SSH_PID="$!"
 
     echo "Waiting for remote server to initialize..."
