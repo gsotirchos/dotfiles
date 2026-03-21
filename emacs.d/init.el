@@ -391,13 +391,7 @@ If USE-3D is \\='toggle, toggle the current state."
     (if (fboundp 'modus-themes-load-theme)
         (modus-themes-load-theme theme)
       (load-theme theme)))
-  (if (fboundp 'ns-system-appearance-change-functions)
-      (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
-    (add-hook 'my-system-appearance-change-functions #'my/apply-theme)))
-
-(when (eq system-type 'darwin)
-  (use-package ns-auto-titlebar
-    :init (ns-auto-titlebar-mode)))  ;; ns-auto-titlebar
+  (add-hook 'my-system-appearance-change-functions #'my/apply-theme))
 
 (use-package tab-bar
   :ensure nil
