@@ -28,19 +28,21 @@ either 'light or 'dark.")
 
 (defun my/get-macos-appearance ()
   "Return 'dark if macOS is in Dark Mode, 'light otherwise."
-  (if (string-equal "Dark\n"
-                    (shell-command-to-string "defaults read -g AppleInterfaceStyle"))
-      'dark
-    'light))
+  (let ((default-directory "/"))
+    (if (string-equal "Dark\n"
+                      (shell-command-to-string "defaults read -g AppleInterfaceStyle"))
+        'dark
+      'light)))
 
 (defun my/get-gnome-appearance ()
   "Return 'dark if GNOME is in Dark Mode, 'light otherwise."
   ;; Requires a modern GNOME (42+) or GTK4 environment.
   ;; Returns 'prefer-dark' or 'default' (wrapped in single quotes).
-  (if (string-match-p "dark"
-                      (shell-command-to-string "gsettings get org.gnome.desktop.interface color-scheme"))
-      'dark
-    'light))
+  (let ((default-directory "/"))
+    (if (string-match-p "dark"
+                        (shell-command-to-string "gsettings get org.gnome.desktop.interface color-scheme"))
+        'dark
+      'light)))
 
 (defun my/get-current-appearance ()
   "Determine appearance based on the current operating system."

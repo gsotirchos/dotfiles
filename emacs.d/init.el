@@ -452,9 +452,8 @@ If USE-3D is \\='toggle, toggle the current state."
   (tramp-verbose 6)
   (tramp-use-connection-share nil) ; Let ~/.ssh/config handle it
   (vc-handled-backends '(Git)) ; Limit VC to Git only
-  ;; :config
-  ;; (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-  ;; Optional: Disable version control completelyif it's still too slow
+  (tramp-remote-path (append tramp-remote-path '("/snap/bin" "~/.local/bin")))
+  ;; Optional: Disable version control completely if it's still too slow
   ;; (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
   )
 
