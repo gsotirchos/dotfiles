@@ -1021,7 +1021,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :after my-keybindings
   :ensure nil
   :bind (:map my/personal-map ("(" . 'check-parens))
-  :custom (evil-shift-width 2))
+  :preface (add-hook 'emacs-lisp-mode-hook (lambda () (setq-local evil-shift-width 2))))
 
 
 ;; Python
@@ -1082,10 +1082,10 @@ If USE-3D is \\='toggle, toggle the current state."
   :ensure nil
   :no-require t
   :mode ("\\.yaml\\'" "\\.yml\\'")
-  :custom (tab-width 2)
   :preface
   (defun my/yaml-mode-hook ()
-    (setq yaml-indent-offset 2)
+    (setq-local yaml-indent-offset 2)
+    (setq-local tab-width 2)
     (variable-pitch-mode -1)
     (flyspell-mode -1))
   (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook)
