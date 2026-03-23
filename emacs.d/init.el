@@ -157,7 +157,6 @@
   (ad-redefinition-action 'accept)
   (use-short-answers t)
   (confirm-kill-emacs #'yes-or-no-p)
-  (global-auto-revert-non-file-buffers t)
   (global-completion-preview-mode t)
   (sentence-end-double-space nil)
   (scroll-margin 0)
@@ -198,6 +197,10 @@
 (use-package autorevert
   :after no-littering
   :ensure nil
+  :custom
+  (global-auto-revert-non-file-buffers t)
+  (auto-revert-remote-files t)
+  ;; (auto-revert-verbose nil)
   :init (global-auto-revert-mode 1))
 
 (use-package saveplace
@@ -438,18 +441,21 @@ If USE-3D is \\='toggle, toggle the current state."
 
 (use-package files
   :ensure nil
+  :preface
+  (defun my/revert-buffer-quick-preserve (&optional auto-save)
+    "Like `revert-buffer-quick', but preserves modes (accepts AUTO-SAVE)."
+    (interactive "P")
+    (revert-buffer auto-save (not (buffer-modified-p)) t))
+  :bind (([remap revert-buffer-quick] . #'my/revert-buffer-quick-preserve))
   :custom (enable-remote-dir-locals t))
 
 (use-package tramp
   :ensure nil
   :custom
-  (tramp-verbose 6)
+  (tramp-verbose 2)
   (tramp-use-connection-share nil) ; Let ~/.ssh/config handle it
   (vc-handled-backends '(Git)) ; Limit VC to Git only
-  (tramp-remote-path (append tramp-remote-path '("/snap/bin" "~/.local/bin")))
-  ;; Optional: Disable version control completely if it's still too slow
-  ;; (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
-  )
+  (tramp-remote-path (append tramp-remote-path '("/snap/bin" "~/.local/bin"))))
 
 (use-package dired
   :ensure nil
