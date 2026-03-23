@@ -5,6 +5,8 @@
 ;; Hide modeline on startup
 (setq mode-line-format nil)
 
+;; (add-to-list 'default-frame-alist '(undecorated-round . t))
+
 ;; Less aggressive garbage collection on startup
 (setq gc-cons-threshold (* 1024 1024 100)) ;; 100 MB
 (add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 1024 1024 20))))
