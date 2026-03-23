@@ -791,6 +791,8 @@ If USE-3D is \\='toggle, toggle the current state."
   :custom
   (markdown-max-image-size `(,(round (* my/scale-factor 300)) . ,(round (* my/scale-factor 150))))
   (markdown-display-remote-images t)
+  (markdown-list-item-bullets '("●" "○" "◎" "◆" "◇" "►" "•"))
+  (markdown-list-indent-width 2)
   :preface
   (add-hook 'markdown-mode-hook (lambda ()
                                   (visual-line-mode 1)

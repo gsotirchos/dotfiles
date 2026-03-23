@@ -16,6 +16,7 @@ macos-option-as-alt = true
 shell-integration-features = no-cursor
 quit-after-last-window-closed = true
 window-vsync = true
+bell-features = system
 
 cursor-style = block
 cursor-style-blink = false
