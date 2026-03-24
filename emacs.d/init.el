@@ -930,7 +930,7 @@ If USE-3D is \\='toggle, toggle the current state."
 (use-package indent-bars
   :preface
   (defun my/indent-bars-maybe-enable ()
-    (unless (derived-mode-p 'emacs-lisp-mode)
+    (unless (derived-mode-p 'emacs-lisp-mode 'lisp-data-mode)
       (indent-bars-mode 1)))
   :hook ((prog-mode yaml-ts-mode) . my/indent-bars-maybe-enable)
   :custom
