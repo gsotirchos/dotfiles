@@ -19,7 +19,8 @@ main() {
             env_var_name="${env_var_name%%.*}"
 
             local extra_paths
-            readarray -t extra_paths < <(envsubst < "${extra_paths_file}")  # expand env vars in paths
+            # expand env vars in paths, excluding lines starting with `#'
+            readarray -t extra_paths < <(sed '/^[[:space:]]*#/d; /^[[:space:]]*$/d' "${extra_paths_file}" | envsubst)
 
             modified_env_vars["${env_var_name}"]="$(append_paths "$env_var_name" "${extra_paths[@]}")"
         fi
