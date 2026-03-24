@@ -656,6 +656,7 @@ If USE-3D is \\='toggle, toggle the current state."
   (defalias 'consult-line-thing-at-point 'consult-line)
   (consult-customize consult-line-thing-at-point
                      :initial (thing-at-point 'symbol))
+  (add-to-list 'consult-preview-allowed-hooks #'adaptive-wrap-prefix-mode)
   (add-to-list 'consult-preview-allowed-hooks #'variable-pitch-mode)
   ;; (add-to-list 'consult-preview-allowed-hooks #'my/fixed-pitch-mode)
   (add-to-list 'consult-preview-allowed-hooks #'my/pdf-view-mode-hook)
@@ -826,20 +827,20 @@ If USE-3D is \\='toggle, toggle the current state."
            :key (my/read-envvar-from-file "DEEPSEEK_API_KEY" "~/.api_keys")
            :stream t
            :models '("deepseek-reasoner"))))
-    (setq gptel-backend gemini-backend
-          gptel-model 'gemini-3-flash-preview)))
+    (setq gptel-backend mistral-backend
+          gptel-model 'devstral-2512)))
 
 (use-package gptel-agent
   :demand t
   :after gptel
   :config (gptel-agent-update))
 
-(use-package my-gptel-tools
-  :ensure nil
-  :demand t
-  :after gptel
-  :load-path "site-lisp/"
-  :config (my/gptel-tools-add-tools))
+;; (use-package my-gptel-tools
+;;   :ensure nil
+;;   :demand t
+;;   :after gptel
+;;   :load-path "site-lisp/"
+;;   :config (my/gptel-tools-add-tools))
 
 
 ;; Programming
@@ -1072,15 +1073,14 @@ If USE-3D is \\='toggle, toggle the current state."
       (conda-env-activate-for-buffer)))
   (add-hook 'find-file-hook #'my/conda-env-activate-for-buffer)
   (defun my/conda-eglot-hook ()
-    (defun my/eglot-conda-reconnect ()
-      (eglot-reconnect (eglot--current-server-or-lose)))
-    (add-hook 'conda-postactivate-hook #'my/eglot-conda-reconnect nil t)
-    (add-hook 'conda-postdeactivate-hook #'my/eglot-conda-reconnect nil t))
+    (let ((fn (lambda () (eglot-reconnect (eglot--current-server-or-lose)))))
+      (add-hook 'conda-postactivate-hook fn nil t)
+      (add-hook 'conda-postdeactivate-hook fn nil t)))
   (add-hook 'eglot-managed-mode-hook #'my/conda-eglot-hook)
   ;; :config
   ;; (conda-env-initialize-interactive-shells)
   ;; (conda-env-initialize-eshell)
-  ;; (conda-env-autoactivate-mode t)
+  ;; (conda-env-autoactivate-mode 1)
   )
 
 

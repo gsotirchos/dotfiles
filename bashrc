@@ -82,8 +82,8 @@ fi
 # start starship prompt
 if command -v "prmt" &> /dev/null; then
     export PS1='$(prmt --code $? "{path:cyan.bold} {git:magenta.bold}\n{ok:bold:>}{fail:red.bold:>} ")'
+    export PS1='${CONDA_DEFAULT_ENV:+\[\e[0;32m\]($CONDA_DEFAULT_ENV)\[\e[0m\] }'"$PS1"
 elif command -v "starship" &> /dev/null; then
     export STARSHIP_CONFIG=${HOME}/.config/starship.toml
     eval "$(starship init bash)"
 fi
-
