@@ -1,8 +1,4 @@
-if has('mac')
-    let g:wiki_root = $HOME . '/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vaults/Wiki'
-else
-    let g:wiki_root = $HOME . '/Documents/Obsidian/Wiki'
-endif
+let g:wiki_root = $HOME . '/Documents/org'
 call mkdir(g:wiki_root, 'p')
 let g:wiki_index_name = 'Inbox'
 let g:wiki_journal = {'name': 'Journal'}
