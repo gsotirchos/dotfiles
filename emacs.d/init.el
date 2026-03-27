@@ -1182,7 +1182,7 @@ If USE-3D is \\='toggle, toggle the current state."
   (org-image-max-width (/ 2 (+ 1 (sqrt 5))))
   (org-directory "~/Documents/org")
   (org-agenda-files (list org-directory "~/Desktop"))
-  (org-todo-keywords '((sequence "TODO" "WIP" "|" "DONE" "SKIP" "FAIL")))
+  (org-todo-keywords '((sequence "TODO" "WAIT" "WIP" "|" "DONE" "SKIP" "FAIL")))
   (org-enforce-todo-dependencies t)
   (org-agenda-dim-blocked-tasks t)
   (org-log-done 'time)
@@ -1218,7 +1218,8 @@ If USE-3D is \\='toggle, toggle the current state."
   (defun my/customize-org-mode ()
     "Apply my tweaks to theme-controlled settings."
     (setq org-todo-keyword-faces
-          `(("WIP" . ,(modus-themes-get-color-value 'blue))
+          `(("WAIT" . ,(modus-themes-get-color-value 'fg-dim))
+            ("WIP" . ,(modus-themes-get-color-value 'blue))
             ("FAIL" . ,(modus-themes-get-color-value 'red-intense))))
     (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
     (set-face-bold 'org-checkbox t)
