@@ -154,6 +154,7 @@
   ;; (enable-local-eval t)
   ;; (package-check-signature nil)
   (vc-follow-symlinks t)
+  (browse-url-mailto-function 'browse-url-default-browser)
   (ad-redefinition-action 'accept)
   (use-short-answers t)
   (confirm-kill-emacs #'yes-or-no-p)
