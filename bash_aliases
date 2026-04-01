@@ -62,9 +62,9 @@ empty_trash() {
     fi
 }
 
-# make a .url file with given link
-make_url() {
-    echo -e "[InternetShortcut]\nURL=$2" > "${1%%.url}.url"
+# make a .url file, using the povided link (optinal)
+touch_url_file() {
+    echo -e "[InternetShortcut]\nURL=$2" > "$(echo "${1:-file}" | sed 's/\.url$//').url"
 }
 
 # merge all build/*/copmile_commands.json to a single build/copmile_commands.json
@@ -102,10 +102,6 @@ alias tree="tree \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"
 alias sftp='$(which with-readline 2> /dev/null) sftp'
-alias pkg_list="pkg_info -u | sed 's/\(.*\)-[0-9].*/\1/g'"
-if command -v "vimx" &> /dev/null; then
-    alias vim=vimx
-fi
 alias vimrc="vim ~/.vim/vimrc"
 alias wi="vim +WikiIndex"
 alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
@@ -139,11 +135,12 @@ if [[ -f ~/.conda/conda_init.sh ]]; then
     unset conda_mamba
 fi
 
+# Control BLE light bulb
 if command -v "ble_write" &> /dev/null; then
     alias ble_lamp='ble_write -n "MIPOW SMART BULB" -u "0000fffc-0000-1000-8000-00805f9b34fb" -v'
 fi
 
-# Catkin TODO
+# Catkin (ROS 1)
 if command -v "catkin" &> /dev/null; then
     cdws() {
         if catkin locate --workspace "$(realpath "$1")" &> /dev/null; then
@@ -158,3 +155,15 @@ fi
 export VM_NAME=ros2-gpu-box
 export LOCATION=europe-west4-c
 export PROJECT_ID=project-ac9e6b87-2bfa-4be3-acd
+
+gcevm_start() {
+    until gcloud compute instances start "$VM_NAME" --zone="$LOCATION"; do
+        sleep 1;
+        echo -e "------\n"
+    done && \
+        afplay /System/Library/Sounds/Glass.aiff  # echo -e \\a
+}
+
+gcevm_ssh() {
+    gcloud compute ssh "$VM_NAME" --zone="$LOCATION"
+}
