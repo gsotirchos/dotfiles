@@ -59,8 +59,8 @@ if [[ "$(hostname)" =~ login[0-9]+ ]]; then
     rlhive
 fi
 
-# enable iTerm2 shell integration on macOS
 if [[ "$TERM_PROGRAM" = "iTerm.app" ]]; then
+    # enable iTerm2 shell integration on macOS
     if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
         curl -L "https://iterm2.com/shell_integration/bash" \
              -o ~/.iterm2_shell_integration.bash
@@ -72,6 +72,9 @@ if [[ "$TERM_PROGRAM" = "iTerm.app" ]]; then
     export PROMPT_COMMAND="${PROMPT_COMMAND//$'\n'__iterm2_prompt_command/}"
 
     source ~/.iterm2_shell_integration.bash
+elif [[ -n "$GHOSTTY_RESOURCES_DIR" ]]; then
+    # enable Ghostty shell integration
+    source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
 fi
 
 # SSH
@@ -79,7 +82,7 @@ if [[ -n "$SSH_TTY" ]]; then
     export TERM="${TERM%-ghostty}"
 fi
 
-# configure or start prompt prompt
+# configure or start prompt
 if command -v "prmt" &> /dev/null && prmt --version &> /dev/null; then
     export PS1='$(prmt --code $? "{path:cyan.bold} {git:magenta.bold}\n{ok:bold:>}{fail:red.bold:>} ")'
     export PS1='${CONDA_DEFAULT_ENV:+\[\e[0;32m\]($CONDA_DEFAULT_ENV)\[\e[0m\] }'"$PS1"
