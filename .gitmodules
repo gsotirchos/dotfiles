@@ -1,0 +1,3 @@
+[submodule "config/ghostty/ghostty-themes"]
+	path = config/ghostty/ghostty-themes
+	url = https://github.com/anhsirk0/ghostty-themes.git
