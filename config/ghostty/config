@@ -7,19 +7,19 @@ font-thicken = true
 
 window-padding-x = 11
 window-padding-y = 0
-window-step-resize = true
+#window-step-resize = true
 window-width = 80
 window-height = 24
-
-macos-titlebar-style = tabs
-macos-option-as-alt = true
-shell-integration-features = no-cursor
-quit-after-last-window-closed = true
 window-vsync = true
-bell-features = system
 
-cursor-style = block
-cursor-style-blink = false
+macos-titlebar-style = native
+#macos-window-buttons = hidden
+macos-option-as-alt = true
+
+quit-after-last-window-closed = true
+shell-integration-features = ssh-env
+bell-features = system
+mouse-hide-while-typing = true
 cursor-opacity = 1.0
 
 theme = light:modus-operandi, dark:modus-vivendi-tinted
