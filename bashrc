@@ -77,11 +77,6 @@ elif [[ -n "$GHOSTTY_RESOURCES_DIR" ]]; then
     source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
 fi
 
-# SSH
-if [[ -n "$SSH_TTY" ]]; then
-    export TERM="${TERM%-ghostty}"
-fi
-
 # configure or start prompt
 if command -v "prmt" &> /dev/null && prmt --version &> /dev/null; then
     export PS1='$(prmt --code $? "{path:cyan.bold} {git:magenta.bold}\n{ok:bold:>}{fail:red.bold:>} ")'
