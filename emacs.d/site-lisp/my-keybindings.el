@@ -47,10 +47,10 @@
   (interactive)
   (my/find-file  "~/.emacs.d/early-init.el"))
 
-(defun my/open-scratch-buffer-new-window ()
-  "Open the *scratch* buffer in another window."
+(defun my/open-scratch-buffer-new-frame ()
+  "Open the *scratch* buffer in another frame."
   (interactive)
-  (switch-to-buffer-other-window (get-buffer-create "*scratch*")))
+  (switch-to-buffer-other-frame (get-buffer-create "*scratch*")))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Keymaps
@@ -131,7 +131,7 @@
   "M-h" #'ns-do-hide-emacs
   "M-," #'my/edit-emacs-init
   "C-M-," #'my/edit-emacs-early-init
-  "C-M-n" #'my/open-scratch-buffer-new-window
+  "C-M-n" #'my/open-scratch-buffer-new-frame
 
   ;; Apply Prefix Map to C-c
   "C-c" my/personal-map)
