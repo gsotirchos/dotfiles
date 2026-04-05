@@ -843,7 +843,7 @@ If USE-3D is \\='toggle, toggle the current state."
         (_fireworks-backend
          (gptel-make-openai "FireworksAI"
            :host "api.fireworks.ai"
-           :endpoint "/inference/v1/chat/completions"  ; Fireworks OpenAI-compatible endpoint
+           :endpoint "/inference/v1/chat/completions"
            :protocol "https"
            :key (lambda () (my/read-1password-secret "FIREWORKS_API_KEY"))
            :stream t
@@ -856,7 +856,7 @@ If USE-3D is \\='toggle, toggle the current state."
            :key (lambda () (my/read-1password-secret "CODESTRAL_API_KEY"))
            :stream t
            :models '("codestral-latest")))
-        (_mistral-backend
+        (mistral-backend
          (gptel-make-openai "Devstral"
            :host "api.mistral.ai"
            :endpoint "/v1/chat/completions"
@@ -864,7 +864,7 @@ If USE-3D is \\='toggle, toggle the current state."
            :key (lambda () (my/read-1password-secret "DEVSTRAL_API_KEY"))
            :stream t
            :models '("devstral-latest"))))
-    (setq gptel-backend _mistral-backend
+    (setq gptel-backend mistral-backend
           gptel-model 'devstral-latest)))
 
 (use-package gptel-agent
