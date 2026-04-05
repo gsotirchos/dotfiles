@@ -35,6 +35,14 @@
           (match-string 1)
         (user-error "Variable %s not found in %s" envvar file))))
 
+  (defun my/read-1password-secret (path)
+    "Read the value of a secret from 1Password using PATH.
+PATH should be in the format 'op://Vault/Item/Field'."
+    (let ((secret (string-trim (shell-command-to-string (format "op read --account my.1password.eu \"%s\" --no-newline" path)))))
+      (if (string-match-p "^\\[ERROR\\]" secret)
+          (user-error "1Password error: %s" secret)
+        secret)))
+
   ;; List manipulation utilities
   (defun my/update-plist-property (plist property fn)
     "Update the PLIST's PROPERTY's value using FN."
@@ -801,6 +809,12 @@ If USE-3D is \\='toggle, toggle the current state."
                                   (markdown-display-inline-images))))
 
 (use-package gptel
+  :bind
+  (nil
+   :map my/personal-map
+   ("C-g s" . gptel-send)
+   ("C-g r" . gptel-rewrite)
+   ("C-g m" . gptel-menu))
   :config
   (let ((ollama-backend
          (gptel-make-ollama "Ollama"
@@ -809,27 +823,41 @@ If USE-3D is \\='toggle, toggle the current state."
            :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")))
         (gemini-backend
          (gptel-make-gemini "Gemini"
-           :key (my/read-envvar-from-file "GOOGLE_API_KEY" "~/.api_keys")
+           :key (my/read-1password-secret "op://Private/GOOGLE_API_KEY/credential")
            :stream t
-           :models '("gemini-2.5-flash-lite"
-                     "gemini-2.5-pro"
-                     "gemini-3-flash-preview"
+           :models '("gemini-3-flash-preview"
                      "gemini-3-pro-preview")))
+        (deepseek-backend
+         (gptel-make-deepseek "DeepSeek"
+           :key (my/read-1password-secret "op://Private/DEEPSEEK_API_KEY/credential")
+           :stream t
+           :models '("deepseek-reasoner")))
+        (fireworks-backend
+         (gptel-make-openai "FireworksAI"
+           :host "api.fireworks.ai"
+           :endpoint "/inference/v1/chat/completions"  ; Fireworks OpenAI-compatible endpoint
+           :protocol "https"
+           :key (my/read-1password-secret "op://Private/FIREWORKSAI_API_KEY/credential")
+           :stream t
+           :models '("accounts/fireworks/models/deepseek-v3p2")))
+        (codestral-backend
+         (gptel-make-openai "Codestral"
+           :host "codestral.mistral.ai"
+           :endpoint "/v1/chat/completions"
+           :protocol "https"
+           :key (my/read-1password-secret "op://Private/CODESTRAL_API_KEY/credential")
+           :stream t
+           :models '("codestral-latest")))
         (mistral-backend
          (gptel-make-openai "Mistral"
            :host "api.mistral.ai"
            :endpoint "/v1/chat/completions"
            :protocol "https"
-           :key (my/read-envvar-from-file "MISTRAL_API_KEY" "~/.api_keys")
+           :key (my/read-1password-secret "op://Private/MISTRAL_API_KEY/credential")
            :stream t
-           :models '("devstral-2512")))
-        (deepseek-backend
-         (gptel-make-deepseek "DeepSeek"
-           :key (my/read-envvar-from-file "DEEPSEEK_API_KEY" "~/.api_keys")
-           :stream t
-           :models '("deepseek-reasoner"))))
+           :models '("devstral-latest"))))
     (setq gptel-backend mistral-backend
-          gptel-model 'devstral-2512)))
+          gptel-model 'devstral-latest)))
 
 (use-package gptel-agent
   :demand t
@@ -850,7 +878,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :ensure nil
   :no-require t
   :hook ((python-base-mode sh-base-mode LaTeX-mode) . eglot-ensure)
-  :bind (:map eglot-mode-map ("C-c rn" . eglot-rename))
+  :bind (:map my/personal-map ("rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
   (eglot-extend-to-xref nil)
@@ -959,7 +987,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :ensure nil
   :after modus-themes
   :hook prog-mode
-  :bind (:map flymake-mode-map ("C-c M-f" . flymake-show-buffer-diagnostics))
+  :bind (:map my/personal-map ("M-f" . flymake-show-buffer-diagnostics))
   :custom
   (flymake-no-changes-timeout 1)
   (flymake-show-diagnostics-at-end-of-line t)

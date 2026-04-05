@@ -9,7 +9,6 @@ main() {
     local port="4096"
     local remote_opencode_bin='$HOME/.opencode/bin/opencode'
     local local_config="$HOME/.config/opencode/opencode.json"
-    local local_api_keys="$HOME/.api_keys"
 
     function sync_file_to_vm() {
         local local_file="$1"
@@ -25,7 +24,6 @@ main() {
 
     # 1. Sync local config to remote VM
     sync_file_to_vm "$local_config"
-    sync_file_to_vm "$local_api_keys"
 
     # 2. Pre-emptively clear local and remote processes from previous runs
     lsof -ti:"$port" | xargs kill -9 2>/dev/null
@@ -39,9 +37,20 @@ main() {
     }
     trap cleanup EXIT INT
 
+    echo "Fetching secrets from 1Password..."
+    local remote_env=$(op inject <<EOF
+export GOOGLE_API_KEY="{{ op://Private/GOOGLE_API_KEY/credential }}"
+export MISTRAL_API_KEY="{{ op://Private/MISTRAL_API_KEY/credential }}"
+export DEEPSEEK_API_KEY="{{ op://Private/DEEPSEEK_API_KEY/credential }}"
+export FIREWORKS_API_KEY="{{ op://Private/FIREWORKS_API_KEY/credential }}"
+export ZEN_API_KEY="{{ op://Private/ZEN_API_KEY/credential }}"
+EOF
+)
+    remote_env=$(echo "$remote_env" | tr '\n' '; ')
+
     echo "Starting remote server and establishing tunnel..."
     # 4. Execute tunnel and remote server
-    ssh -L "$port":localhost:"$port" "$vm_user"@"$vm_host" ". ~/.api_keys && cd \"$remote_dir\" && OPENCODE_SERVER_PASSWORD=\"$password\" \"$remote_opencode_bin\" serve --port \"$port\"" &
+    ssh -L "$port":localhost:"$port" "$vm_user"@"$vm_host" "$remote_env cd \"$remote_dir\" && OPENCODE_SERVER_PASSWORD=\"$password\" \"$remote_opencode_bin\" serve --port \"$port\"" &
     SSH_PID="$!"
 
     echo "Waiting for remote server to initialize..."
