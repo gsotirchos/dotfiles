@@ -111,6 +111,11 @@ fi
 alias py="python3"
 alias ipy="ipython"
 
+# opencode
+if command -v "opencode" &> /dev/null; then
+    alias opencode="op-env opencode"
+fi
+
 # lazy Conda
 if [[ -f ~/.conda/conda_init.sh ]]; then
     # lazy conda initialization
