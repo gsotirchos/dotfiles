@@ -29,7 +29,6 @@ declare -a files_to_source=(
     "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh  # TIME ~170ms
     /opt/ros/noetic/setup.bash
     ~/.bash_aliases
-    ~/.api_keys
 )
 
 for file in "${files_to_source[@]}"; do

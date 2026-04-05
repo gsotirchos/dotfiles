@@ -347,7 +347,7 @@ PATH should be in the format 'op://Vault/Item/Field'."
      (7 . (1.0))
      (8 . (1.0))))
   :preface
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi-tinted))
+  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi))
   (defun my/apply-theme (appearance)
     (pcase appearance
       ('light (modus-themes-load-theme (nth 0 modus-themes-to-toggle)))
