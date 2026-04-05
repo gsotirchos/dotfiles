@@ -12,7 +12,7 @@ window-width = 80
 window-height = 24
 window-vsync = true
 
-macos-titlebar-style = native
+macos-titlebar-style = transparent
 #macos-window-buttons = hidden
 macos-option-as-alt = true
 
@@ -22,7 +22,7 @@ bell-features = system
 mouse-hide-while-typing = true
 cursor-opacity = 1.0
 
-theme = light:modus-operandi, dark:modus-vivendi-tinted
+theme = light:modus-operandi, dark:modus-vivendi
 
 keybind = super+up=jump_to_prompt:-2
 keybind = super+down=jump_to_prompt:+2
