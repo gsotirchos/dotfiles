@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2016
+
+ACCOUNT="my.1password.eu"
+SECRETS_FILE="$HOME/.op_secrets"
+
+# Translates the list of names into op path mappings
+generate_mappings() {
+    while read -r name || [[ -n "$name" ]]; do
+        [[ -z "$name" || "$name" == "#"* ]] && continue
+        echo "${name}=\"op://Private/${name}/credential\""
+    done < "$SECRETS_FILE"
+}
+
+# Mode: Print (output export strings using op run injection)
+if [[ $# -eq 0 ]] ; then
+    exec op run --account "$ACCOUNT" --env-file <(generate_mappings) -- \
+        "$SHELL" -c 'for n in $(grep -v "^#" ~/.op_secrets); do printf "export %s=%q; " "$n" "${!n}"; done'
+else
+    exec op run --account "$ACCOUNT" --env-file <(generate_mappings) -- "$@"
+fi

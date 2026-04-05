@@ -849,11 +849,11 @@ If USE-3D is \\='toggle, toggle the current state."
            :stream t
            :models '("codestral-latest")))
         (mistral-backend
-         (gptel-make-openai "Mistral"
+         (gptel-make-openai "Devstral"
            :host "api.mistral.ai"
            :endpoint "/v1/chat/completions"
            :protocol "https"
-           :key (my/read-1password-secret "MISTRAL_API_KEY")
+           :key (my/read-1password-secret "DEVSTRAL_API_KEY")
            :stream t
            :models '("devstral-latest"))))
     (setq gptel-backend mistral-backend
