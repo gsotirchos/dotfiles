@@ -8,7 +8,7 @@ syntax keyword cppSTLconstant nullptr
 
 
 "hi! link myScopeOperator Normal
-hi! link cTerminator     MembOperator
+"hi! link cTerminator     MembOperator
 hi! link cTypedef        Typedef
 "hi! link cDefine         Constant
 hi! link cPreProcVar     Constant
@@ -18,7 +18,7 @@ hi! link cCustom         Function
 "hi! link cppCast         Function
 hi! link cEnum           cMember
 hi! link cppAttribute    Comment
-hi! link cppNamespace    Identifier
+hi! link cppNamespace    Character
 "hi! link cppOperator     cOperator
 hi! link cppSTLvariable  cMember
 hi! link cppSTLnamespace cppNamespace

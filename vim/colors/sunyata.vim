@@ -39,8 +39,8 @@ hi! link Exception   Statement
 hi! link Operator    Statement
 
 " variable names
-hi! Function       cterm=none      ctermfg=6    ctermbg=none
-hi! Identifier     cterm=none      ctermfg=14   ctermbg=none
+hi! Function       cterm=none      ctermfg=4    ctermbg=none
+hi! Identifier     cterm=none      ctermfg=12   ctermbg=none
 
 " constants
 hi! String         cterm=none      ctermfg=9    ctermbg=none
@@ -63,7 +63,7 @@ hi! DocComment     cterm=italic    ctermfg=8    ctermbg=none
 hi! Done           cterm=bold      ctermfg=2    ctermbg=none
 hi! Debug          cterm=bold      ctermfg=11   ctermbg=none
 hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=none
-hi! Dimmed         cterm=none      ctermfg=8    ctermbg=none
+hi! Dimmed         cterm=none      ctermfg=15   ctermbg=none
 hi! MyStrikethrough cterm=strikethrough ctermfg=7 ctermbg=none
 hi! link MyParens   Dimmed
 hi! link MyNote     Normal
@@ -127,17 +127,17 @@ hi! link SpecialKey  NonText
 " Statusline
 hi! clear StatusLine
 hi! clear StatusLineNC
-hi! StatusLIne     cterm=none                   ctermbg=8
+hi! StatusLIne     cterm=none      ctermfg=15   ctermbg=8
 hi! StatusLineNC   cterm=none      ctermfg=7    ctermbg=8
-hi! SLGitInfo      cterm=none      ctermfg=15   ctermbg=8
-hi! SLFileInfo     cterm=none      ctermfg=15   ctermbg=8
-hi! SLFilePath     cterm=none      ctermfg=15   ctermbg=8
 hi! SLFileName     cterm=bold      ctermfg=15   ctermbg=8
+hi! SLFileNameNC   cterm=bold      ctermfg=7    ctermbg=8
+hi! link SLGitInfo        StatusLine
+hi! link SLFileInfo       StatusLine
+hi! link SLFilePath       StatusLine
+hi! link StatusLineTerm   StatusLine
 hi! link SLGitInfoNC      StatusLineNC
 hi! link SLFileInfoNC     StatusLineNC
 hi! link SLFilePathNC     StatusLineNC
-hi! link SLFileNameNC     StatusLineNC
-hi! link StatusLineTerm   StatusLine
 hi! link StatusLineTermNC StatusLineNC
 
 "netrw
