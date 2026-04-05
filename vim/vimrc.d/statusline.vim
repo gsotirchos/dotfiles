@@ -1,50 +1,69 @@
-function! s:GetRightSideContent()
-    let lines_field = ' %' . (b:numberwidth + 0) . '(L%l%)/%-' . (b:numberwidth + 0) . '(%L%)'
-    let columns_field = '%4(C%c%)/%-4(' . len(getline('.')) . '%)'
-    return '%=' . b:SLFileInfoHL . lines_field . columns_field . '%*'
+function! s:GetRightSideContent(winid, bufnr)
+    let l:numberwidth = getbufvar(a:bufnr, 'numberwidth', 0)
+    let lines_field = ' %' . (l:numberwidth + 0) . '(L%l%)/%-' . (l:numberwidth + 0) . '(%L%)'
+
+    let l:lnum = a:winid > 0 ? line('.', a:winid) : line('.')
+    let l:line = get(getbufline(a:bufnr, l:lnum), 0, '')
+    let columns_field = '%4(C%c%)/%-4(' . len(l:line) . '%)'
+
+    let l:SLFileInfoHL = getbufvar(a:bufnr, 'SLFileInfoHL', '')
+    return '%=' . l:SLFileInfoHL . lines_field . columns_field . '%*'
 endfunction
 
-function! s:GetLeftSideContent()
-    if (&filetype =~# '^.*preview.*$')  " Preview window
-        return b:SLFileInfoHL . '%( %Y %)%*'
-    elseif (&filetype == 'qf')  " LocationList or QuickFix List
-        return b:SLFileInfoHL . ' %q %*'
-    elseif (&filetype == 'netrw')  " Preview window
-        return b:SLFileInfoHL . '%( %Y %)%*'
-    elseif (&buftype ==# 'terminal')  " Terminal window
-        return b:SLFileInfoHL . '%( %t %)%*'
+function! s:GetLeftSideContent(winid, bufnr)
+    let l:filetype = getbufvar(a:bufnr, '&filetype')
+    let l:buftype = getbufvar(a:bufnr, '&buftype')
+    let l:SLFileInfoHL = getbufvar(a:bufnr, 'SLFileInfoHL', '')
+    if (l:filetype =~# '^.*preview.*$')  " Preview window
+        return l:SLFileInfoHL . '%( %Y %)%*'
+    elseif (l:filetype == 'qf')  " LocationList or QuickFix List
+        return l:SLFileInfoHL . ' %q %*'
+    elseif (l:filetype == 'netrw')  " netrw window
+        return l:SLFileInfoHL . '%( %Y %)%*'
+    elseif (l:buftype ==# 'terminal')  " Terminal window
+        return l:SLFileInfoHL . '%( %t %)%*'
     else
-        return s:GetRegularEditorLeftSide()
+        return s:GetRegularEditorLeftSide(a:winid, a:bufnr)
     endif
 endfunction
 
-function! s:GetRegularEditorLeftSide()
+function! s:GetRegularEditorLeftSide(winid, bufnr)
     let filetype_field = '%( %Y %)'
-    if !exists('b:parent_path_cached')
-        call s:UpdateParentPathCache()
+    if empty(getbufvar(a:bufnr, 'parent_path_cached', ''))
+        call s:UpdateParentPathCache(a:bufnr)
     endif
     let git_info_field =  '%( %{get(g:, "coc_git_status", "")} %)'
-    let parent_path_field = s:GetParentDirectoryField()
+    let parent_path_field = s:GetParentDirectoryField(a:winid, a:bufnr)
     let file_name_field = '%t%m%a '
-    let left_hand_side = b:SLFileInfoHL . filetype_field . b:SLGitInfoHL . git_info_field . b:SLFilePathHL .  parent_path_field . b:SLFileNameHL . file_name_field . '%*'
+
+    let l:SLFileInfoHL = getbufvar(a:bufnr, 'SLFileInfoHL', '')
+    let l:SLGitInfoHL = getbufvar(a:bufnr, 'SLGitInfoHL', '')
+    let l:SLFilePathHL = getbufvar(a:bufnr, 'SLFilePathHL', '')
+    let l:SLFileNameHL = getbufvar(a:bufnr, 'SLFileNameHL', '')
+
+    let left_hand_side = l:SLFileInfoHL . filetype_field . l:SLGitInfoHL . git_info_field . l:SLFilePathHL .  parent_path_field . l:SLFileNameHL . file_name_field . '%*'
     return left_hand_side
 endfunction
 
-function! s:GetParentDirectoryField()
-    let l:path_field_length = s:CalculatePathFieldLength()
-    let parent_path_field = '%( '. s:FormatField(b:parent_path_cached, l:path_field_length) . '%)'
+function! s:GetParentDirectoryField(winid, bufnr)
+    let l:path_field_length = s:CalculatePathFieldLength(a:winid, a:bufnr)
+    let l:parent_path_cached = getbufvar(a:bufnr, 'parent_path_cached', '')
+    let parent_path_field = '%( '. s:FormatField(l:parent_path_cached, l:path_field_length) . '%)'
     return parent_path_field
 endfunction
 
-function! s:CalculatePathFieldLength()
-    let l:filetype_field_length = empty(&filetype) ? 0 : len(' ' . &filetype . ' ')
+function! s:CalculatePathFieldLength(winid, bufnr)
+    let l:filetype = getbufvar(a:bufnr, '&filetype')
+    let l:filetype_field_length = empty(l:filetype) ? 0 : len(' ' . l:filetype . ' ')
     let l:git_info_field_length = !exists("g:coc_git_status") ? 0 : len(' ' . get(g:, 'coc_git_status', '') . ' ')
-    if (&filetype == '')
+
+    if (l:filetype == '')
         let l:half_name_length = len('[No Name]') / 2
     else
-        let l:half_name_length = max([1, float2nr(floor(len(expand('%:t')) / 2.0))])
+        let l:filename = fnamemodify(bufname(a:bufnr), ':t')
+        let l:half_name_length = max([1, float2nr(floor(len(l:filename) / 2.0))])
     endif
-    return max([0, winwidth(0) / 2 - l:filetype_field_length - l:git_info_field_length - l:half_name_length - 1])
+    return max([0, winwidth(a:winid) / 2 - l:filetype_field_length - l:git_info_field_length - l:half_name_length - 1])
 endfunction
 
 function! s:FormatField(str, max_len)
@@ -66,13 +85,18 @@ function! s:FormatField(str, max_len)
     return l:str
 endfunction
 
-function! s:UpdateParentPathCache()
-    if (&filetype == 'help' || &buftype ==# 'terminal')
-        let b:parent_path_cached = ''
-        let b:full_parent_path_cached = ''
+function! s:UpdateParentPathCache(...)
+    let l:bufnr = a:0 > 0 ? a:1 : bufnr('%')
+    let l:filetype = getbufvar(l:bufnr, '&filetype')
+    let l:buftype = getbufvar(l:bufnr, '&buftype')
+    if (l:filetype == 'help' || l:buftype ==# 'terminal')
+        call setbufvar(l:bufnr, 'parent_path_cached', '')
+        call setbufvar(l:bufnr, 'full_parent_path_cached', '')
     else
-        let b:parent_path_cached = substitute(expand('%:p:h'), expand('~'), '~', '') . '/'
-        let b:full_parent_path_cached = resolve(expand('%:p:h'))
+        let l:path = fnamemodify(bufname(l:bufnr), ':p:h')
+        let l:short_path = substitute(l:path, expand('~'), '~', '') . '/'
+        call setbufvar(l:bufnr, 'parent_path_cached', l:short_path)
+        call setbufvar(l:bufnr, 'full_parent_path_cached', resolve(l:path))
     endif
 endfunction
 
@@ -91,8 +115,10 @@ function! s:SetUnfocusedColors()
 endfunction
 
 function! MyStatusLine()
-    let left_hand_side = s:GetLeftSideContent()
-    let right_hand_side = s:GetRightSideContent()
+    let l:winid = get(g:, 'statusline_winid', win_getid())
+    let l:bufnr = winbufnr(l:winid)
+    let left_hand_side = s:GetLeftSideContent(l:winid, l:bufnr)
+    let right_hand_side = s:GetRightSideContent(l:winid, l:bufnr)
     return left_hand_side . right_hand_side
 endfunction
 
