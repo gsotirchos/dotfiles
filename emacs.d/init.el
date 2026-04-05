@@ -40,7 +40,7 @@
 
   (defun my/read-1password-secret (path)
     "Read the value of a secret from 1Password using PATH.
-PATH should be in the format 'op://Vault/Item/Field'."
+PATH should be in the format `op://Vault/Item/Field'."
     (let ((cached (gethash path my/1password-secret-cache)))
       (if cached
           cached
@@ -110,7 +110,8 @@ PATH should be in the format 'op://Vault/Item/Field'."
 
   ;; Custom after theme load hook
   (defvar after-load-theme-hook nil
-    "Hook that runs after a color theme is loaded using `load-theme'.")
+    "Hook that runs after a color theme is loaded using `load-theme'."
+    )
 
   (defun my/run-after-load-theme-hook (&rest _)
     "Run `after-load-theme-hook`."
@@ -823,23 +824,23 @@ If USE-3D is \\='toggle, toggle the current state."
    ("C-g r" . gptel-rewrite)
    ("C-g m" . gptel-menu))
   :config
-  (let ((ollama-backend
+  (let ((_ollama-backend
          (gptel-make-ollama "Ollama"
            :host "localhost:11434"
            :stream t
            :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")))
-        (gemini-backend
+        (_gemini-backend
          (gptel-make-gemini "Gemini"
            :key (lambda () (my/read-1password-secret "GOOGLE_API_KEY"))
            :stream t
            :models '("gemini-3-flash-preview"
                      "gemini-3-pro-preview")))
-        (deepseek-backend
+        (_deepseek-backend
          (gptel-make-deepseek "DeepSeek"
            :key (lambda () (my/read-1password-secret "DEEPSEEK_API_KEY"))
            :stream t
            :models '("deepseek-reasoner")))
-        (fireworks-backend
+        (_fireworks-backend
          (gptel-make-openai "FireworksAI"
            :host "api.fireworks.ai"
            :endpoint "/inference/v1/chat/completions"  ; Fireworks OpenAI-compatible endpoint
@@ -847,7 +848,7 @@ If USE-3D is \\='toggle, toggle the current state."
            :key (lambda () (my/read-1password-secret "FIREWORKS_API_KEY"))
            :stream t
            :models '("accounts/fireworks/models/deepseek-v3p2")))
-        (codestral-backend
+        (_codestral-backend
          (gptel-make-openai "Codestral"
            :host "codestral.mistral.ai"
            :endpoint "/v1/chat/completions"
@@ -855,7 +856,7 @@ If USE-3D is \\='toggle, toggle the current state."
            :key (lambda () (my/read-1password-secret "CODESTRAL_API_KEY"))
            :stream t
            :models '("codestral-latest")))
-        (mistral-backend
+        (_mistral-backend
          (gptel-make-openai "Devstral"
            :host "api.mistral.ai"
            :endpoint "/v1/chat/completions"
@@ -863,7 +864,7 @@ If USE-3D is \\='toggle, toggle the current state."
            :key (lambda () (my/read-1password-secret "DEVSTRAL_API_KEY"))
            :stream t
            :models '("devstral-latest"))))
-    (setq gptel-backend mistral-backend
+    (setq gptel-backend _mistral-backend
           gptel-model 'devstral-latest)))
 
 (use-package gptel-agent
