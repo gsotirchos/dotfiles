@@ -38,7 +38,7 @@
   (defun my/read-1password-secret (path)
     "Read the value of a secret from 1Password using PATH.
 PATH should be in the format 'op://Vault/Item/Field'."
-    (let ((secret (string-trim (shell-command-to-string (format "op read --account my.1password.eu \"%s\" --no-newline" path)))))
+    (let ((secret (string-trim (shell-command-to-string (format "op read --account my.1password.eu \"op://Private/%s/credential\" --no-newline" path)))))
       (if (string-match-p "^\\[ERROR\\]" secret)
           (user-error "1Password error: %s" secret)
         secret)))
@@ -823,13 +823,13 @@ If USE-3D is \\='toggle, toggle the current state."
            :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")))
         (gemini-backend
          (gptel-make-gemini "Gemini"
-           :key (my/read-1password-secret "op://Private/GOOGLE_API_KEY/credential")
+           :key (my/read-1password-secret "GOOGLE_API_KEY")
            :stream t
            :models '("gemini-3-flash-preview"
                      "gemini-3-pro-preview")))
         (deepseek-backend
          (gptel-make-deepseek "DeepSeek"
-           :key (my/read-1password-secret "op://Private/DEEPSEEK_API_KEY/credential")
+           :key (my/read-1password-secret "DEEPSEEK_API_KEY")
            :stream t
            :models '("deepseek-reasoner")))
         (fireworks-backend
@@ -837,7 +837,7 @@ If USE-3D is \\='toggle, toggle the current state."
            :host "api.fireworks.ai"
            :endpoint "/inference/v1/chat/completions"  ; Fireworks OpenAI-compatible endpoint
            :protocol "https"
-           :key (my/read-1password-secret "op://Private/FIREWORKSAI_API_KEY/credential")
+           :key (my/read-1password-secret "FIREWORKS_API_KEY")
            :stream t
            :models '("accounts/fireworks/models/deepseek-v3p2")))
         (codestral-backend
@@ -845,7 +845,7 @@ If USE-3D is \\='toggle, toggle the current state."
            :host "codestral.mistral.ai"
            :endpoint "/v1/chat/completions"
            :protocol "https"
-           :key (my/read-1password-secret "op://Private/CODESTRAL_API_KEY/credential")
+           :key (my/read-1password-secret "CODESTRAL_API_KEY")
            :stream t
            :models '("codestral-latest")))
         (mistral-backend
@@ -853,7 +853,7 @@ If USE-3D is \\='toggle, toggle the current state."
            :host "api.mistral.ai"
            :endpoint "/v1/chat/completions"
            :protocol "https"
-           :key (my/read-1password-secret "op://Private/MISTRAL_API_KEY/credential")
+           :key (my/read-1password-secret "MISTRAL_API_KEY")
            :stream t
            :models '("devstral-latest"))))
     (setq gptel-backend mistral-backend
