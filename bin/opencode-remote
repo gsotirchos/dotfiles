@@ -2,6 +2,9 @@
 # shellcheck disable=SC2016,2029,2087
 
 main() {
+    # Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
+    set +x
+
     local vm_host="$1" # "${VM_NAME}.${LOCATION}.${PROJECT_ID}"
     local password="$2"
     local remote_dir="${3:-'$HOME/ws_aic/src/aic'}"
@@ -41,15 +44,13 @@ main() {
     # 4. Build remote env and execute via stdin to avoid ps leaks
     local remote_inject=$(op-env)
 
-    printf -v q_password "%q" "$password"
-    printf -v q_remote_dir "%q" "$remote_dir"
-    printf -v q_bin "%q" "$remote_opencode_bin"
-
+    # ShellCheck SC2087: EOF is intentionally unquoted to expand local variables
     ssh -L "$port":localhost:"$port" "$vm_user"@"$vm_host" "bash -s" <<EOF &
 $remote_inject
-cd $q_remote_dir
-OPENCODE_SERVER_PASSWORD=$q_password $q_bin serve --port "$port"
+cd $remote_dir
+OPENCODE_SERVER_PASSWORD="$password" $remote_opencode_bin serve --port "$port"
 EOF
+
     SSH_PID="$!"
 
     echo "Waiting for remote server to initialize..."
