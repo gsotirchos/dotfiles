@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016
 
+# Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
+set +x
+
 ACCOUNT="my.1password.eu"
 SECRETS_FILE="$HOME/.op_secrets"
 
@@ -12,10 +15,28 @@ generate_mappings() {
     done < "$SECRETS_FILE"
 }
 
-# Mode: Print (output export strings using op run injection)
+# Extracts the secrets securely from 1Password.
+#
+# Note: We use `eval "$(get_secrets)"` below rather than `op run` to
+# fix passing signals like SIGWINCH (terminal resize) to the final
+# process. `op run` wraps the command and fails to forward window
+# change signals, breaking terminal UIs (like `opencode`). By
+# `eval`'ing the secrets into this script's memory and then using
+# `exec`, the final application replaces this process and receives
+# signals directly.
+#
+# TRADE-OFFS:
+# - Security: Secrets pass through a plaintext pipe/memory for a brief moment.
+# - Debugging: 'set -x' is disabled here, but one must still be cautious
+#   not to log the output of this script in plaintext.
+get_secrets() {
+    op run --no-masking --account "$ACCOUNT" --env-file <(generate_mappings) -- \
+        "$SHELL" -c 'for n in $(grep -v "^#" ~/.op_secrets); do echo "export $n=\"${!n}\""; done'
+}
+
 if [[ $# -eq 0 ]] ; then
-    exec op run --account "$ACCOUNT" --env-file <(generate_mappings) -- \
-        "$SHELL" -c 'for n in $(grep -v "^#" ~/.op_secrets); do printf "export %s=%q; " "$n" "${!n}"; done'
+    get_secrets
 else
-    exec op run --account "$ACCOUNT" --env-file <(generate_mappings) -- "$@"
+    # exec op run --account "$ACCOUNT" --env-file <(generate_mappings) -- "$@"
+    eval "$(get_secrets)" && exec "$@"
 fi
