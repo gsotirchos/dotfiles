@@ -820,6 +820,7 @@ If USE-3D is \\='toggle, toggle the current state."
   :bind
   (nil
    :map my/personal-map
+   ("C-g g" . gptel)
    ("C-g s" . gptel-send)
    ("C-g r" . gptel-rewrite)
    ("C-g m" . gptel-menu))
