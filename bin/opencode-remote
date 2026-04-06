@@ -17,7 +17,7 @@ main() {
         local local_file="$1"
         echo "Syncing ${local_file} to VM..."
         if [ -f "$local_file" ]; then
-            local remote_file_dir="$(dirname "${local_file/"$HOME"/"~"}")"
+            local remote_file_dir="$(dirname "${local_file/"$HOME"/"\$HOME"}")"
             ssh "$vm_user"@"$vm_host" "mkdir -p \"$remote_file_dir\""
             rsync -azLK "$local_file" "$vm_user"@"$vm_host":"$remote_file_dir"
         else
