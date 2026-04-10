@@ -312,7 +312,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (nil
    :map my/toggles-map
    ("t" . modus-themes-toggle)
-   ("3" . my/set-modus-ui-style))
+   ("3" . my/modus-themes/toggle-3d-style))
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
@@ -357,25 +357,23 @@ PATH should be in the format `op://Vault/Item/Field'."
     (pcase appearance
       ('light (modus-themes-load-theme (nth 0 modus-themes-to-toggle)))
       ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
-  (defvar my/modus-themes/use-3d-style -1
+  (defvar my/modus-themes/3d-style nil
     "Non-nil if the mode-line should have a 3D released-button style.")
   (defun my/modus-themes/3d-style (&optional use-3d)
-    "Toggle the theme style between 3D and Flat (mode-line, buttons, etc.).
-If USE-3D is \\='toggle, toggle the current style.
-If USE-3D is -1, disable 3D style."
+    "Activate 3D style theme (mode-line, buttons, etc.).
+If USE-3D is \\='toggle, toggle the current style."
     (interactive "P")
-    (if (or (eq use-3d nil)
-            (eq use-3d 'toggle))
-        (setq my/modus-themes/use-3d-style (not my/modus-themes/use-3d-style))
-      (setq my/modus-themes/use-3d-style (if (eq use-3d -1) nil use-3d)))
-    (let* ((style (if my/modus-themes/use-3d-style 'released-button nil))
-           (width (if my/modus-themes/use-3d-style 2 1))
+    (if (or (eq use-3d 'toggle))
+        (setq my/modus-themes/3d-style (not my/modus-themes/3d-style))
+      (setq my/modus-themes/3d-style use-3d))
+    (let* ((style (if my/modus-themes/3d-style 'released-button nil))
+           (width (if my/modus-themes/3d-style 2 1))
            (bg-active (modus-themes-get-color-value 'bg-mode-line-active))
            (bg-inactive (modus-themes-get-color-value 'bg-mode-line-inactive))
            (flat-border-active (modus-themes-get-color-value 'border-mode-line-active))
            (flat-border-inactive (modus-themes-get-color-value 'border-mode-line-inactive))
-           (color-active (if my/modus-themes/use-3d-style bg-active flat-border-active))
-           (color-inactive (if my/modus-themes/use-3d-style bg-inactive flat-border-inactive))
+           (color-active (if my/modus-themes/3d-style bg-active flat-border-active))
+           (color-inactive (if my/modus-themes/3d-style bg-inactive flat-border-inactive))
            (box-active (append (list :line-width width :color color-active)
                                (when style (list :style style))))
            (box-inactive (append (list :line-width width :color color-inactive)
@@ -395,6 +393,10 @@ If USE-3D is -1, disable 3D style."
                             (append (list :line-width (cons 1 width) :color color-active)
                                     (when style (list :style style))))))
     (my/customize-buttons-faces))
+  (defun my/modus-themes/toggle-3d-style ()
+    "Toggle the theme style between 3D and Flat"
+    (interactive)
+    (my/modus-themes/3d-style 'toggle))
   (defun my/customize-buttons-faces ()
     (dolist (face
              '(custom-button
@@ -403,7 +405,7 @@ If USE-3D is -1, disable 3D style."
       (when (facep face)
         (set-face-attribute face nil :box (face-attribute 'modus-themes-button :box)))))
   (defun my/customize-modus-themes ()
-    (my/modus-themes/3d-style my/modus-themes/use-3d-style)
+    (my/modus-themes/3d-style my/modus-themes/3d-style)
     (set-face-background 'header-line (modus-themes-get-color-value 'bg-mode-line-inactive))
     (set-face-foreground 'tab-bar-tab-inactive (modus-themes-get-color-value 'fg-dim))
     (let ((bold-p nil))
