@@ -50,7 +50,7 @@
 (defun my/open-scratch-buffer-new-frame ()
   "Open the *scratch* buffer in another frame."
   (interactive)
-  (switch-to-buffer-other-frame (get-buffer-create "*scratch*")))
+  (switch-to-buffer-other-frame "*scratch*"))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Keymaps
