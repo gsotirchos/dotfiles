@@ -1,7 +1,7 @@
 let g:wiki_root = $HOME . '/Documents/org'
 call mkdir(g:wiki_root, 'p')
-let g:wiki_index_name = 'Inbox'
-let g:wiki_journal = {'name': 'Journal'}
+let g:wiki_index_name = 'inbox'
+let g:wiki_journal = {'name': 'journal'}
 let g:wiki_zotero_root = $HOME . '/Zotero'
 let g:wiki_global_load = 0
 let g:wiki_completion_enabled = 0

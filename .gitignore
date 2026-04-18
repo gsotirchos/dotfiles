@@ -44,3 +44,12 @@ Temporary Items
 *.swp
 *.swo
 auto/
+
+# Python
+__pycache__/
+*.py[codz]
+*$py.class
+*.so
+.Python
+.pixi
+

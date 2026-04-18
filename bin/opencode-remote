@@ -5,10 +5,9 @@ main() {
     # Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
     set +x
 
-    local vm_host="$1" # "${VM_NAME}.${LOCATION}.${PROJECT_ID}"
+    local vm_host="$1" # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
     local password="$2"
     local remote_dir="${3:-'$HOME/ws_aic/src/aic'}"
-    local vm_user="$USER"
     local port="4096"
     local remote_opencode_bin='$HOME/.opencode/bin/opencode'
     local local_config="$HOME/.config/opencode/opencode.json"
@@ -18,8 +17,8 @@ main() {
         echo "Syncing ${local_file} to VM..."
         if [ -f "$local_file" ]; then
             local remote_file_dir="$(dirname "${local_file/"$HOME"/"\$HOME"}")"
-            ssh "$vm_user"@"$vm_host" "mkdir -p \"$remote_file_dir\""
-            rsync -azLK "$local_file" "$vm_user"@"$vm_host":"$remote_file_dir"
+            ssh "$vm_host" "mkdir -p \"$remote_file_dir\""
+            rsync -azLK "$local_file" "$vm_host":"$remote_file_dir"
         else
             echo "Warning: Local ${local_file} not found. Skipping sync."
         fi
@@ -30,13 +29,13 @@ main() {
 
     # 2. Pre-emptively clear local and remote processes from previous runs
     lsof -ti:"$port" | xargs kill -9 2>/dev/null
-    ssh "$vm_user"@"$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
+    ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
 
     # 3. Define cleanup to run automatically on script exit or interrupt (Ctrl+C)
     cleanup() {
         echo -e "\nSession ended. Cleaning up..."
         kill "$SSH_PID" 2>/dev/null
-        ssh "$vm_user"@"$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
+        ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
     }
     trap cleanup EXIT INT
 
@@ -45,7 +44,7 @@ main() {
     local remote_inject=$(op-env)
 
     # ShellCheck SC2087: EOF is intentionally unquoted to expand local variables
-    ssh -L "$port":localhost:"$port" "$vm_user"@"$vm_host" "bash -s" <<EOF &
+    ssh -L "$port":localhost:"$port" "$vm_host" "bash -s" <<EOF &
 $remote_inject
 cd $remote_dir
 OPENCODE_SERVER_PASSWORD="$password" $remote_opencode_bin serve --port "$port"
