@@ -98,7 +98,7 @@ else
     alias grep="grep --color -E -n"  # colored, extended regexp, line no.
 fi
 alias tree="tree \
-    -lNC -L 2 \
+    -lFNC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"
 alias sftp='$(which with-readline 2> /dev/null) sftp'
