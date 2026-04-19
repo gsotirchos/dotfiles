@@ -5,10 +5,10 @@ main() {
     # Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
     set +x
 
-    local vm_host="$1" # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
+    vm_host="$1" # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
+    port="4096"
     local password="$2"
     local remote_dir="${3:-'$HOME/ws_aic/src/aic'}"
-    local port="4096"
     local remote_opencode_bin='$HOME/.opencode/bin/opencode'
     local local_config="$HOME/.config/opencode/opencode.json"
 
@@ -55,7 +55,7 @@ EOF
     echo "Waiting for remote server to initialize..."
     # 5. Polling mechanism using curl to verify actual HTTP connectivity through the tunnel
     while ! curl -s --max-time 1 "http://localhost:$port" > /dev/null; do
-        sleep 0.5
+        sleep 0.2
     done
 
     echo "Attaching local OpenCode client..."
