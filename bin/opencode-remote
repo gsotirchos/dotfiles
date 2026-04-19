@@ -5,7 +5,7 @@ main() {
     # Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
     set +x
 
-    vm_host="$1" # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
+    vm_host="$1"  # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
     port="4096"
     local password="$2"
     local remote_dir="${3:-'$HOME/ws_aic/src/aic'}"
