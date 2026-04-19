@@ -3,39 +3,39 @@
     "provider": {
         "google": {
             "options": {
-                "apiKey": "{env:GOOGLE_API_KEY}"
-            }
+                "apiKey": "{env:GOOGLE_API_KEY}",
+            },
         },
         "mistral": {
             "options": {
-                "apiKey": "{env:MISTRAL_API_KEY}"
-            }
+                "apiKey": "{env:MISTRAL_API_KEY}",
+            },
         },
         "deepseek": {
             "options": {
-                "apiKey": "{env:DEEPSEEK_API_KEY}"
-            }
+                "apiKey": "{env:DEEPSEEK_API_KEY}",
+            },
         },
         "fireworks": {
             "options": {
-                "apiKey": "{env:FIREWORKS_API_KEY}"
-            }
+                "apiKey": "{env:FIREWORKS_API_KEY}",
+            },
         },
         "zen": {
             "options": {
-                "apiKey": "{env:ZEN_API_KEY}"
-            }
+                "apiKey": "{env:ZEN_API_KEY}",
+            },
         },
     },
     "agent": {
         "plan": {
-            "model": "google/gemini-flash-latest",
-            // "model": "google/gemini-3.1-pro-preview",
+            // "model": "google/gemini-flash-latest",
+            "model": "google/gemini-3.1-pro-preview",
         },
         "build": {
-            "model": "google/gemini-flash-latest",
-            // "model": "google/gemini-3.1-pro-preview",
+            // "model": "google/gemini-flash-latest",
+            "model": "google/gemini-3.1-pro-preview",
         },
     },
     "theme": "system",
-}
+},
