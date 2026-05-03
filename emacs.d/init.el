@@ -1238,6 +1238,7 @@ If USE-3D is \\='toggle, toggle the current style."
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
   (org-export-with-toc nil)
+  (org-src-preserve-indentation t)
   (org-latex-create-formula-image-program 'dvisvgm)
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)

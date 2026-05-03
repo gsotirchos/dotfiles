@@ -5,10 +5,18 @@ main() {
     # Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
     set +x
 
+    if [ "$#" -lt 3 ]; then
+        echo "Usage: opencode-remote <vm_host> <password> <remote_dir> [args...]"
+        exit 1
+    fi
+
     vm_host="$1"  # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
     port="4096"
     local password="$2"
-    local remote_dir="${3:-'$HOME/ws_aic/src/aic'}"
+    local remote_dir="$3"
+    shift 3
+
+    local args=("$@")
     local remote_opencode_bin='$HOME/.opencode/bin/opencode'
     local local_config="$HOME/.config/opencode/opencode.json"
 
@@ -58,8 +66,15 @@ EOF
         sleep 0.2
     done
 
-    echo "Attaching local OpenCode client..."
-    OPENCODE_SERVER_PASSWORD="$password" opencode attach "http://localhost:$port"
+    if [ "${args[0]:-}" = "web" ]; then
+        echo "Opening web interface..."
+        open "http://localhost:$port"
+        echo "Press Ctrl+C to stop the remote server and tunnel."
+        wait "$SSH_PID"
+    else
+        echo "Attaching local OpenCode client..."
+        OPENCODE_SERVER_PASSWORD="$password" opencode attach "http://localhost:$port" "${args[@]}"
+    fi
 }
 
 main "$@"
