@@ -1226,6 +1226,7 @@ If USE-3D is \\='toggle, toggle the current style."
   (org-cycle-separator-lines 1)
   (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
   (org-image-max-width (/ 2 (+ 1 (sqrt 5))))
+  (org-archive-location ".archive/%s_archive::")
   (org-directory "~/Documents/org")
   (org-agenda-files (list org-directory "~/Desktop"))
   (org-todo-keywords '((sequence "TODO" "WIP" "WAIT" "|" "DONE" "SKIP" "FAIL")))
@@ -1244,6 +1245,15 @@ If USE-3D is \\='toggle, toggle the current style."
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
   :preface
+  (defun my/org-create-archive-dir (&rest _)
+    "Automatically create the .archive directory if it doesn't exist."
+    (let* ((location (org-archive--compute-location
+                      (or (org-entry-get nil "ARCHIVE" 'inherit) org-archive-location)))
+           (afile (car location))
+           (dir (when afile (file-name-directory afile))))
+      (when (and dir (not (file-exists-p dir)))
+        (make-directory dir t))))
+  (advice-add 'org-archive-subtree :before #'my/org-create-archive-dir)
   (defun my/unlimited-fill-column-advice (fn &rest args)
     "Execute FN with ARGS with `fill-column' set to the maximum possible value."
     (let ((fill-column most-positive-fixnum))
