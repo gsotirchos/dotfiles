@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- Remap MacBook Air's ISO section/"§" key to backtick/"`". -->
+<!-- Remap MacBook Air's ISO section/"§" key to backtick/"`" and physical backtick to Left Shift. -->
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>org.custom.keyboard-remap</string>
+    <string>org.keyboard.remap</string>
     <key>ProgramArguments</key>
     <array>
       <string>/usr/bin/hidutil</string>
@@ -12,9 +12,14 @@
       <string>--set</string>
       <string>
           {
-              "UserKeyMapping": [{
+              "UserKeyMapping": [
+                  {
                       "HIDKeyboardModifierMappingSrc":0x700000064,
                       "HIDKeyboardModifierMappingDst":0x700000035
+                  },
+                  {
+                      "HIDKeyboardModifierMappingSrc":0x700000035,
+                      "HIDKeyboardModifierMappingDst":0x7000000E1
                   }
               ]
           }

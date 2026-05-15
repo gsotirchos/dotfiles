@@ -23,14 +23,14 @@ main() {
             sudo chown root:wheel "${target_path}"
             sudo chmod 644 "${target_path}"
             # Attempt to kickstart/reload
-            sudo launchctl bootout "system/${plist_name%.plist}" "${target_path}" 2>/dev/null || true
+            sudo launchctl bootout "system" "${target_path}" 2>/dev/null || true
             sudo launchctl bootstrap system "${target_path}"
         else
             echo "Configuring User Agent: ${plist_name}"
             mkdir -p "${target_dir}"
             ln -sfv "${plist_path}" "${target_path}"
             # Attempt to kickstart/reload
-            launchctl bootout "gui/${uid}/${plist_name%.plist}" "${target_path}" 2>/dev/null || true
+            launchctl bootout "gui/${uid}" "${target_path}" 2>/dev/null || true
             launchctl bootstrap "gui/${uid}" "${target_path}"
         fi
     done
