@@ -59,11 +59,11 @@ hi! link SpecialChar Character
 " my custom groups
 hi! OtherType      cterm=none      ctermfg=12   ctermbg=none
 hi! SpecialComment cterm=bold      ctermfg=none ctermbg=none
-hi! DocComment     cterm=italic    ctermfg=8    ctermbg=none
+hi! DocComment     cterm=italic    ctermfg=7    ctermbg=none
 hi! Done           cterm=bold      ctermfg=2    ctermbg=none
 hi! Debug          cterm=bold      ctermfg=11   ctermbg=none
 hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=none
-hi! Dimmed         cterm=none      ctermfg=15   ctermbg=none
+hi! Dimmed         cterm=none      ctermfg=8    ctermbg=none
 hi! MyStrikethrough cterm=strikethrough ctermfg=7 ctermbg=none
 hi! link MyParens   Dimmed
 hi! link MyNote     Normal
