@@ -56,7 +56,7 @@ empty_trash() {
     if [[ ${REPLY} =~ ^[Yy]$ ]]; then
         for file in "${TRASH}"/{..?,.[!.],}*; do
             if [[ -e "${file}" ]] || [[ -L "${file}" ]]; then
-                env rm -rf "${file}" && echo "deleted '${file}'"
+                env rm -rf --preserve-root "${file}" && echo "deleted '${file}'"
             fi
         done && (play_trash_sound &) 2> /dev/null
     fi
@@ -89,9 +89,12 @@ alias rm=trash                     # trash files instead of deleting
 alias mv="mv -iv"                  # confirmatory, verbose
 alias cp="cp -ivr"                 # confirmatory, verbose, recursive
 alias ln="ln -iv"                  # confirmatory, verbose
-alias ls="ls -h --color=always"    # human-readable, colored
+alias ls="ls -vh --color=always"   # human-readable, version-ordered, colored
 alias ll="ls -l"                   # ll := list
 alias la="ls -la"                  # la := list all
+alias mkdir="mkdir -pv"            # recursive, verbose
+alias chmod="chmod -v"             # verbose
+alias chown="chown -v"             # verbose
 if command -v "rg" &> /dev/null; then
     alias grep="rg -p"
 else
@@ -101,15 +104,23 @@ alias tree="tree \
     -lFNC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"
+alias ports="lsof -i -P -n | grep LISTEN"  # see what is listening on which ports
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias vimrc="vim ~/.vim/vimrc"
 alias wi="vim +WikiIndex"
 alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
-if ! command -v "open" &> /dev/null; then
+if ! cmmmand -v "open" &> /dev/null; then
     alias open=xdg-open
 fi
 alias py="python3"
 alias ipy="ipython"
+alias pyclean="find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete"
+
+if [[ "$OS" == "macos" ]]; then
+    alias update="brew update && brew upgrade && brew autoremove && brew cleanup --prune=all"
+# else
+#     ...
+fi
 
 # opencode
 if command -v "opencode" &> /dev/null; then
@@ -140,11 +151,6 @@ if [[ -f ~/.conda/conda_init.sh ]]; then
     unset conda_mamba
 fi
 
-# Control BLE light bulb
-if command -v "ble_write" &> /dev/null; then
-    alias ble_lamp='ble_write -n "MIPOW SMART BULB" -u "0000fffc-0000-1000-8000-00805f9b34fb" -v'
-fi
-
 # Catkin (ROS 1)
 if command -v "catkin" &> /dev/null; then
     cdws() {
@@ -155,6 +161,18 @@ if command -v "catkin" &> /dev/null; then
             return 1
         fi
     }
+fi
+
+# Colcon (ROS 2)
+if command -v "colcon" &> /dev/null; then
+    alias cb="colcon build --symlink-install"
+    alias cbp="colcon build --symlink-install --packages-select"
+    alias ss="source install/setup.bash"
+fi
+
+# Control BLE light bulb
+if command -v "ble_write" &> /dev/null; then
+    alias ble_lamp='ble_write -n "MIPOW SMART BULB" -u "0000fffc-0000-1000-8000-00805f9b34fb" -v'
 fi
 
 export VM_NAME=ros2-gpu-box
@@ -171,4 +189,12 @@ gcevm_start() {
 
 gcevm_ssh() {
     gcloud compute ssh "$VM_NAME" --zone="$LOCATION"
+}
+
+gcevm_stop() {
+    gcloud compute instances stop "$VM_NAME" --zone="$LOCATION"
+}
+
+gcevm_status() {
+    gcloud compute instances describe "$VM_NAME" --zone="$LOCATION" | grep "status:"
 }
