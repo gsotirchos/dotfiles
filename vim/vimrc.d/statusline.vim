@@ -7,7 +7,7 @@ function! s:GetRightSideContent(winid, bufnr)
     let columns_field = '%4(C%c%)/%-4(' . len(l:line) . '%)'
 
     let l:SLFileInfoHL = getbufvar(a:bufnr, 'SLFileInfoHL', '')
-    return '%=' . l:SLFileInfoHL . lines_field . columns_field . '%*'
+    return l:SLFileInfoHL . '%=' . lines_field . columns_field . '%*'
 endfunction
 
 function! s:GetLeftSideContent(winid, bufnr)
