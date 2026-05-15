@@ -4,7 +4,7 @@
 
 main() {
     # text styling
-    local bright_style='\033[1;97m'
+    local bright_style='\033[1m'
     local normal_style='\033[0m'
 
     # check for `realpath` command
