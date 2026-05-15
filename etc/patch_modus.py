@@ -2,7 +2,7 @@
 import os
 import re
 
-# Paths relative to the script's location (etc/patch_modus.py)
+# Paths relative to the script's location (${dotfiles}/etc/patch_modus.py)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DOTFILES_DIR = os.path.dirname(SCRIPT_DIR)
 THEMES_DIR = os.path.join(DOTFILES_DIR, "config/ghostty/ghostty-themes/themes")
