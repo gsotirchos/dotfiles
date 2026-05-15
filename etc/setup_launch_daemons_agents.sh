@@ -1,15 +1,39 @@
-# shellcheck disable=SC2016
+#!/usr/bin/env bash
 
-for plist_file in "$1"/*.plist; do
-    chown_plist_cmd='chown ${USER}:$(id --group --name "${USER}") '"${plist_file}"
-    ln_plist_cmd="ln -sfv ${plist_file} $2/$(basename "${plist_file}")"
-    unload_plist_cmd="launchctl unload -w $2/$(basename "${plist_file}")"
-    load_plist_cmd="launchctl load -w $2/$(basename "${plist_file}")"
-    plist_cmd="${chown_plist_cmd}; ${ln_plist_cmd}; ${unload_plist_cmd}; ${load_plist_cmd}"
+main() {
+    local source_dir="$1"
+    local target_dir="$2"
+    local domain=""
+    local uid=$(id -u)
 
-    if [[ -n "$(find "$2" -maxdepth 0 -user root)" ]]; then
-        sudo -- bash -c "${plist_cmd}"
+    if [[ "$target_dir" == "/Library/LaunchDaemons" ]]; then
+        domain="system"
     else
-        bash -c "${plist_cmd}"
+        domain="gui/${uid}"
     fi
-done
+
+    for plist_path in "${source_dir}"/*.plist; do
+        [[ -e "${plist_path}" ]] || continue
+        local plist_name=$(basename "${plist_path}")
+        local target_path="${target_dir}/${plist_name}"
+
+        if [[ "${domain}" == "system" ]]; then
+            echo "Configuring System Daemon: ${plist_name}"
+            sudo cp -fv "${plist_path}" "${target_path}"
+            sudo chown root:wheel "${target_path}"
+            sudo chmod 644 "${target_path}"
+            # Attempt to kickstart/reload
+            sudo launchctl bootout "system/${plist_name%.plist}" "${target_path}" 2>/dev/null || true
+            sudo launchctl bootstrap system "${target_path}"
+        else
+            echo "Configuring User Agent: ${plist_name}"
+            mkdir -p "${target_dir}"
+            ln -sfv "${plist_path}" "${target_path}"
+            # Attempt to kickstart/reload
+            launchctl bootout "gui/${uid}/${plist_name%.plist}" "${target_path}" 2>/dev/null || true
+            launchctl bootstrap "gui/${uid}" "${target_path}"
+        fi
+    done
+}
+
+main "$@"

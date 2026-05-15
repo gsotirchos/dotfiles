@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # shellcheck disable=SC1090,SC2155
 # shellcheck source-path=.dotfiles
 
@@ -20,18 +21,17 @@ main() {
     )"
 
     # prepare user folder
-    mkdir -vp ~/.vim/undo
-    mkdir -vp ~/.vim/spell
-    mkdir -vp ~/.vim/tags
-    mkdir -vp ~/.config/ghostty
-    mkdir -vp ~/.conda
-    mkdir -vp ~/.local/bin
-    mkdir -v ~/Zotero/translators
+    mkdir -vp \
+        ~/.local/bin \
+        ~/.vim/{undo,spell,tags} \
+        ~/.config/{ghostty,opencode} \
+        ~/.conda \
+        ~/Zotero/translators
     touch ~/.hushlogin
 
     # make soft symlinks
     echo -e "${bright_style}- Symlinking dotfiles (${dotfiles})${normal_style}"
-    source "${dotfiles}"/etc/symlink_files.sh "${dotfiles}" "${HOME}/."  # ~/.dotfiles/* -> ~/.*
+    "${dotfiles}/etc/symlink_files.sh" "${dotfiles}" "${HOME}/."  # ~/.dotfiles/* -> ~/.*
     ln -sfv "${dotfiles}"/.gitignore           ~/.gitignore
     ln -sfv "${dotfiles}"/emacs.d/*            ~/.emacs.d
     ln -sfv "${dotfiles}"/vim/*                ~/.vim
@@ -44,8 +44,8 @@ main() {
     # setup launch daemons and launch agents
     if command -v "launchctl" &> /dev/null; then
         echo -e "${bright_style}\n- Setting up LaunchDaemons and LaunchAgents${normal_style}"
-        source "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchDaemons" /Library/LaunchDaemons
-        source "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents" ~/Library/LaunchAgents
+        "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchDaemons" /Library/LaunchDaemons
+        "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents" ~/Library/LaunchAgents
     fi
 
     # setup vundle
