@@ -175,9 +175,9 @@ if command -v "ble_write" &> /dev/null; then
     alias ble_lamp='ble_write -n "MIPOW SMART BULB" -u "0000fffc-0000-1000-8000-00805f9b34fb" -v'
 fi
 
-export VM_NAME=ros2-gpu-box
-export LOCATION=europe-west4-c
-export PROJECT_ID=project-ac9e6b87-2bfa-4be3-acd
+export VM_NAME=
+export LOCATION=
+export PROJECT_ID=
 
 gcevm_start() {
     until gcloud compute instances start "$VM_NAME" --zone="$LOCATION"; do
