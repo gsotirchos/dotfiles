@@ -60,6 +60,13 @@ main() {
         echo -e "${bright_style}\n- Setting up Julia${normal_style}"
         "${dotfiles}"/julia/setup-julia
     fi
+
+    # setup git hooks
+    echo -e "${bright_style}\n- Setting up Git hook${normal_style}"
+    git -C "${dotfiles}" config core.hooksPath etc/hooks
+
+    # patch Ghostty Modus themes
+    "${dotfiles}/etc/patch_modus.py"
 }
 
 main "$@"

@@ -22,7 +22,7 @@ bell-features = system
 mouse-hide-while-typing = true
 cursor-opacity = 1.0
 
-theme = light:modus-operandi, dark:modus-vivendi
+theme = light:patched-modus-operandi, dark:patched-modus-vivendi
 
 keybind = super+up=jump_to_prompt:-2
 keybind = super+down=jump_to_prompt:+2
