@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # original: https://saeedesmaili.com/delete-unwanted-and-duplicated-items-on-1password
 
 main() {
