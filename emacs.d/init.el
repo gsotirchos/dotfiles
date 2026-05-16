@@ -550,9 +550,13 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package evil-collection
   :after evil
+  :defer 1
+  ;; :demand t
   :config (evil-collection-init))
 
 (use-package evil-surround
+  :defer 1
+  ;; :demand t
   :config (global-evil-surround-mode 1))
 
 (use-package corfu
