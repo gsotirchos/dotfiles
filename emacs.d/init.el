@@ -242,6 +242,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package recentf
   :after no-littering
   :ensure nil
+  :custom (recentf-auto-cleanup 'never)
   :init (recentf-mode 1)
   :config
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-var-directory))
@@ -302,8 +303,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package my-keybindings
   :ensure nil
   :load-path "site-lisp/"
-  :hook after-init
-  :init (my-keybindings-mode))
+  :hook (after-init . my-keybindings-mode))
 
 (use-package modus-themes
   :defer nil
@@ -415,10 +415,11 @@ If USE-3D is \\='toggle, toggle the current style."
   (add-hook 'Custom-mode-hook #'my/customize-buttons-faces)
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   :init
-  (let ((theme (nth 0 modus-themes-to-toggle)))
-    (if (fboundp 'modus-themes-load-theme)
-        (modus-themes-load-theme theme)
-      (load-theme theme)))
+  ;; Theme will be applied via `my-theme-switcher-mode` on startup
+  ;; (let ((theme (nth 0 modus-themes-to-toggle)))
+  ;;   (if (fboundp 'modus-themes-load-theme)
+  ;;       (modus-themes-load-theme theme)
+  ;;     (load-theme theme)))
   (add-hook 'my-system-appearance-change-functions #'my/apply-theme))
 
 (use-package tab-bar
@@ -478,9 +479,11 @@ If USE-3D is \\='toggle, toggle the current style."
   :ensure nil
   :custom
   (tramp-verbose 2)
-  (tramp-use-connection-share nil) ; Let ~/.ssh/config handle it
-  (vc-handled-backends '(Git)) ; Limit VC to Git only
-  (tramp-remote-path (append tramp-remote-path '("/snap/bin" "~/.local/bin"))))
+  (tramp-use-connection-share nil)  ;; Let ~/.ssh/config handle it
+  (vc-handled-backends '(Git))  ;; Limit VC to Git only
+  :config
+  (add-to-list 'tramp-remote-path "/snap/bin")
+  (add-to-list 'tramp-remote-path "~/.local/bin"))
 
 (use-package dired
   :ensure nil
@@ -517,6 +520,7 @@ If USE-3D is \\='toggle, toggle the current style."
   (add-hook 'eshell-mode-hook #'my/eshell-mode-hook))
 
 (use-package evil
+  :demand t
   :init
   (setq evil-want-integration t
         evil-want-keybinding nil
@@ -546,11 +550,9 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package evil-collection
   :after evil
-  :defer nil
   :config (evil-collection-init))
 
 (use-package evil-surround
-  :defer nil
   :config (global-evil-surround-mode 1))
 
 (use-package corfu
@@ -600,11 +602,12 @@ If USE-3D is \\='toggle, toggle the current style."
   :defer nil
   :custom
   (vertico-scroll-margin 1)
-  (vertico-mouse-mode t)
   (vertico-count 10)  ;; Limit to a fixed size
   (vertico-cycle t)  ;; Enable cycling for `vertico-next/previous'
   (vertico-resize 'grow-only)  ;; Grow and shrink the Vertico minibuffer
-  :config (vertico-mode))
+  :config
+  (vertico-mode)
+  (vertico-mouse-mode 1))
 
 (use-package vertico-directory
   :after vertico
@@ -721,7 +724,6 @@ If USE-3D is \\='toggle, toggle the current style."
   :hook (prog-mode . eldoc-box-hover-at-point-mode))
 
 (use-package diff-hl
-  :defer nil
   :custom (diff-hl-draw-borders nil)
   :preface
   (defun my/diff-hl-mode-if-vc ()
@@ -877,7 +879,6 @@ If USE-3D is \\='toggle, toggle the current style."
           gptel-model 'devstral-latest)))
 
 (use-package gptel-agent
-  :demand t
   :after gptel
   :config (gptel-agent-update))
 
