@@ -91,6 +91,15 @@ PATH should be in the format `op://Vault/Item/Field'."
       (my/text-scale-overlays 'category 'preview-overlay scale)
       (my/text-scale-overlays 'org-overlay-type 'org-latex-overlay scale)))
 
+  (defun my/delete-latex-preview-overlays (&rest _)
+    "Delete only LaTeX preview overlays in the current buffer."
+    (dolist (overlay (overlays-in (point-min) (point-max)))
+      (let ((category (overlay-get overlay 'category))
+            (org-type (overlay-get overlay 'org-overlay-type)))
+        (when (or (eq category 'preview-overlay)
+                  (eq org-type 'org-latex-overlay))
+          (delete-overlay overlay)))))
+
   ;; Hook management utilities
   (defun my/run-other-buffers-local-hooks (hook)
     "Run local HOOK in all buffers except the current one."
@@ -1202,7 +1211,7 @@ If USE-3D is \\='toggle, toggle the current style."
     (LaTeX-math-mode 1)
     (turn-on-reftex)
     (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
-    (add-hook 'after-load-theme-hook #'delete-all-overlays)
+    (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t)
     (advice-add 'preview-document :before (lambda (&rest _) (TeX-PDF-mode -1)))
     (advice-add 'preview-region :before (lambda (&rest _) (TeX-PDF-mode -1)))
     (advice-add 'TeX-command :before (lambda (&rest _) (TeX-PDF-mode 1))))
@@ -1302,7 +1311,7 @@ If USE-3D is \\='toggle, toggle the current style."
     (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
     (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
     (advice-add 'org-latex-preview :after #'my/text-scale-adjust-latex-previews)
-    (add-hook 'after-load-theme-hook #'delete-all-overlays)
+    (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t)
     (dolist (hook
              '(after-load-theme-hook
                ;; text-scale-mode-hook
