@@ -895,8 +895,7 @@ If USE-3D is \\='toggle, toggle the current style."
            :protocol "https"
            :key (lambda () (my/read-1password-secret "MISTRAL_API_KEY"))
            :stream t
-           :models '("mistral-medium-3-5")))
-        )
+           :models '("mistral-medium-3-5"))))
     (setq gptel-backend mistral-backend
           gptel-model 'mistral-medium-3-5)))
 
@@ -1332,7 +1331,11 @@ If USE-3D is \\='toggle, toggle the current style."
   :config
   (my/adjust-preview-latex-scale)
   (plist-put org-format-latex-options :background "Transparent")
-  (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link))
+  (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
+  (font-lock-add-keywords 'org-mode
+                          '(("^\\*+ " 0 'fixed-pitch prepend)
+                            ("^[ \t]*\\(?:[-+*]\\|[a-zA-Z0-9]+[.)]\\)[ \t]+" 0 'fixed-pitch prepend))
+                          'append))
 
 (use-package my-org-utils
   :ensure nil
