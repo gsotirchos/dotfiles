@@ -880,16 +880,25 @@ If USE-3D is \\='toggle, toggle the current style."
            :key (lambda () (my/read-1password-secret "CODESTRAL_API_KEY"))
            :stream t
            :models '("codestral-latest")))
-        (mistral-backend
+        (_devstral-backend
          (gptel-make-openai "Devstral"
            :host "api.mistral.ai"
            :endpoint "/v1/chat/completions"
            :protocol "https"
            :key (lambda () (my/read-1password-secret "DEVSTRAL_API_KEY"))
            :stream t
-           :models '("devstral-latest"))))
+           :models '("devstral-latest")))
+        (mistral-backend
+         (gptel-make-openai "Mistral"
+           :host "api.mistral.ai"
+           :endpoint "/v1/chat/completions"
+           :protocol "https"
+           :key (lambda () (my/read-1password-secret "MISTRAL_API_KEY"))
+           :stream t
+           :models '("mistral-medium-3-5")))
+        )
     (setq gptel-backend mistral-backend
-          gptel-model 'devstral-latest)))
+          gptel-model 'mistral-medium-3-5)))
 
 (use-package gptel-agent
   :after gptel
