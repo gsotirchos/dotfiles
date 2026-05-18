@@ -108,8 +108,8 @@ alias ports="lsof -i -P -n | grep LISTEN"  # see what is listening on which port
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias vimrc="vim ~/.vim/vimrc"
 alias wi="vim +WikiIndex"
-alias dunnet="clear && emacs -batch -l dunnet 2> /dev/null"
-if ! cmmmand -v "open" &> /dev/null; then
+alias dunnet="clear && emacs -batch -l dunnet 1> /dev/null"
+if ! command -v "open" &> /dev/null; then
     alias open=xdg-open
 fi
 alias py="python3"
