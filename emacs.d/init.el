@@ -951,6 +951,22 @@ If USE-3D is \\='toggle, toggle the current style."
     (modify-syntax-entry ?_ "w"))
   (add-hook 'prog-mode-hook #'my/prog-mode-hook))
 
+(use-package outline
+  :ensure nil
+  :no-require t
+  :preface
+  (defun my/outline-toggle-children-advice (orig-fun &rest args)
+    "Fix `outline-toggle-children` for multi-line headings."
+    (save-excursion
+      (outline-back-to-heading)
+      (let ((end (save-excursion (outline-end-of-heading) (point))))
+        (if (not (outline-invisible-p end))
+            (outline-hide-subtree)
+          (outline-show-children)
+          (outline-show-entry)))))
+  :init
+  (advice-add 'outline-toggle-children :around #'my/outline-toggle-children-advice))
+
 (use-package outline-indent
   :hook ((conf-mode yaml-ts-mode python-base-mode sh-base-mode) . outline-indent-minor-mode)
   :custom (outline-blank-line t)
