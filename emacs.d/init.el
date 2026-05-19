@@ -308,11 +308,10 @@ PATH should be in the format `op://Vault/Item/Field'."
   ;;                   (setq-default mode-line-format my/mode-line-format)))
   )
 
-(when (eq system-type 'darwin)
-  (use-package my-theme-switcher
-    :ensure nil
-    :load-path "site-lisp/"
-    :hook after-init))  ;; my-theme-switcher
+(use-package my-theme-switcher
+  :ensure nil
+  :load-path "site-lisp/"
+  :hook after-init)
 
 (use-package my-keybindings
   :ensure nil
@@ -429,11 +428,6 @@ If USE-3D is \\='toggle, toggle the current style."
   (add-hook 'Custom-mode-hook #'my/customize-buttons-faces)
   (add-hook 'after-load-theme-hook #'my/customize-modus-themes)
   :init
-  ;; Theme will be applied via `my-theme-switcher-mode` on startup
-  ;; (let ((theme (nth 0 modus-themes-to-toggle)))
-  ;;   (if (fboundp 'modus-themes-load-theme)
-  ;;       (modus-themes-load-theme theme)
-  ;;     (load-theme theme)))
   (add-hook 'my-system-appearance-change-functions #'my/apply-theme))
 
 (use-package tab-bar
@@ -1190,25 +1184,18 @@ If USE-3D is \\='toggle, toggle the current style."
   :no-require t
   :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'")
   :preface
-  (defun my/nxml-outline-on-heading-p-advice (orig-fun &rest args)
-    "Advise `outline-on-heading-p' to support multi-line headings in nxml-mode."
-    (if (derived-mode-p 'nxml-mode)
-        (or (apply orig-fun args)
-            (save-excursion
-              (let ((pos (point)))
-                (and (ignore-errors (outline-back-to-heading t) t)
-                     (<= pos (save-excursion (outline-end-of-heading) (point)))))))
-      (apply orig-fun args)))
   (defun my/nxml-mode-hook ()
     (setq-local tab-width nxml-child-indent)
+    (setq-local standard-indent nxml-child-indent)
+    (setq-local evil-shift-width nxml-child-indent)
+    (setq-local nxml-attribute-indent 1)
     (flyspell-mode -1)
     (outline-minor-mode 1)
     (setq-local outline-regexp "\\s-*<[^/!?]")
-    (setq-local outline-heading-end-regexp "[^>]*>")
+    (setq-local outline-heading-end-regexp ">[\n\r]*")
     (setq-local outline-level
                 (lambda ()
                   (+ 1 (/ (current-indentation) nxml-child-indent)))))
-  :init (advice-add 'outline-on-heading-p :around #'my/nxml-outline-on-heading-p-advice)
   :config (add-hook 'nxml-mode-hook #'my/nxml-mode-hook))
 
 
@@ -1374,8 +1361,8 @@ If USE-3D is \\='toggle, toggle the current style."
   (plist-put org-format-latex-options :background "Transparent")
   (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
   (font-lock-add-keywords 'org-mode
-                          '(("^\\*+" 0 'fixed-pitch prepend)
-                            ("^[ \t]*\\(?:[-+*]\\|[a-zA-Z0-9]+[.)]\\)" 0 'fixed-pitch prepend))
+                          '(("^\\*+ " 0 'fixed-pitch prepend)
+                            ("^[ \t]*\\(?:[-+*]\\|[a-zA-Z0-9]+[.)]\\)[ \t]+" 0 'fixed-pitch prepend))
                           'append))
 
 (use-package my-org-utils
