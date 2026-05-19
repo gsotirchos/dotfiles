@@ -1172,6 +1172,24 @@ If USE-3D is \\='toggle, toggle the current style."
     (treesit-install-language-grammar 'yaml)))
 
 
+;; XML
+
+(use-package nxml-mode
+  :ensure nil
+  :no-require t
+  :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'")
+  :preface
+  (defun my/nxml-mode-hook ()
+    (setq-local tab-width nxml-child-indent)
+    (flyspell-mode -1)
+    (outline-minor-mode 1)
+    (setq-local outline-regexp "\\s-*<[^/!?]")
+    (setq-local outline-level
+                (lambda ()
+                  (+ 1 (/ (current-indentation) nxml-child-indent)))))
+  (add-hook 'nxml-mode-hook #'my/nxml-mode-hook))
+
+
 ;; Bash
 
 (use-package sh-script
