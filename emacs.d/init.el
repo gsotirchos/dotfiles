@@ -1204,10 +1204,10 @@ If USE-3D is \\='toggle, toggle the current style."
     (setq-local tab-width nxml-child-indent)
     (setq-local standard-indent nxml-child-indent)
     (setq-local evil-shift-width nxml-child-indent)
-    (setq-local nxml-attribute-indent 1)
+    (setq-local nxml-attribute-indent nxml-child-indent)
     (flyspell-mode -1)
     (outline-minor-mode 1)
-    (setq-local outline-regexp "\\s-*<[^/!?]")
+    (setq-local outline-regexp "\\s-*<[^!?]")
     (setq-local outline-heading-end-regexp ">[\n\r]*")
     (setq-local outline-level
                 (lambda ()
