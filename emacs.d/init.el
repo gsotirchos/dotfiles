@@ -1190,16 +1190,26 @@ If USE-3D is \\='toggle, toggle the current style."
   :no-require t
   :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'")
   :preface
+  (defun my/nxml-outline-on-heading-p-advice (orig-fun &rest args)
+    "Advise `outline-on-heading-p' to support multi-line headings in nxml-mode."
+    (if (derived-mode-p 'nxml-mode)
+        (or (apply orig-fun args)
+            (save-excursion
+              (let ((pos (point)))
+                (and (ignore-errors (outline-back-to-heading t) t)
+                     (<= pos (save-excursion (outline-end-of-heading) (point)))))))
+      (apply orig-fun args)))
   (defun my/nxml-mode-hook ()
     (setq-local tab-width nxml-child-indent)
     (flyspell-mode -1)
     (outline-minor-mode 1)
     (setq-local outline-regexp "\\s-*<[^/!?]")
-    (setq-local outline-heading-end-regexp ".*?>")
+    (setq-local outline-heading-end-regexp "[^>]*>")
     (setq-local outline-level
                 (lambda ()
                   (+ 1 (/ (current-indentation) nxml-child-indent)))))
-  (add-hook 'nxml-mode-hook #'my/nxml-mode-hook))
+  :init (advice-add 'outline-on-heading-p :around #'my/nxml-outline-on-heading-p-advice)
+  :config (add-hook 'nxml-mode-hook #'my/nxml-mode-hook))
 
 
 ;; Bash
