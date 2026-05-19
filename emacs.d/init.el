@@ -1207,8 +1207,8 @@ If USE-3D is \\='toggle, toggle the current style."
     (setq-local nxml-attribute-indent nxml-child-indent)
     (flyspell-mode -1)
     (outline-minor-mode 1)
-    (setq-local outline-regexp "\\s-*<[^!?]")
-    (setq-local outline-heading-end-regexp ">[\n\r]*")
+    (setq-local outline-regexp "\\s-*<[^!?][^/]")
+    (setq-local outline-heading-end-regexp ">[\n\r]")
     (setq-local outline-level
                 (lambda ()
                   (+ 1 (/ (current-indentation) nxml-child-indent)))))
