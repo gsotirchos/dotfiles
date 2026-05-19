@@ -1333,8 +1333,8 @@ If USE-3D is \\='toggle, toggle the current style."
   (plist-put org-format-latex-options :background "Transparent")
   (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
   (font-lock-add-keywords 'org-mode
-                          '(("^\\*+ " 0 'fixed-pitch prepend)
-                            ("^[ \t]*\\(?:[-+*]\\|[a-zA-Z0-9]+[.)]\\)[ \t]+" 0 'fixed-pitch prepend))
+                          '(("^\\*+" 0 'fixed-pitch prepend)
+                            ("^[ \t]*\\(?:[-+*]\\|[a-zA-Z0-9]+[.)]\\)" 0 'fixed-pitch prepend))
                           'append))
 
 (use-package my-org-utils
