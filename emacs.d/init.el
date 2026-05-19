@@ -1195,6 +1195,7 @@ If USE-3D is \\='toggle, toggle the current style."
     (flyspell-mode -1)
     (outline-minor-mode 1)
     (setq-local outline-regexp "\\s-*<[^/!?]")
+    (setq-local outline-heading-end-regexp ".*?>")
     (setq-local outline-level
                 (lambda ()
                   (+ 1 (/ (current-indentation) nxml-child-indent)))))
