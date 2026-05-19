@@ -139,7 +139,8 @@ PATH should be in the format `op://Vault/Item/Field'."
              (equal buffer-face-mode-face 'variable-pitch))
         (when (boundp 'variable-pitch-line-spacing)
           (setq-local line-spacing variable-pitch-line-spacing))
-      (setq line-spacing fixed-pitch-line-spacing)))
+      (when (boundp 'fixed-pitch-line-spacing)
+        (setq-local line-spacing fixed-pitch-line-spacing))))
 
   (advice-add 'variable-pitch-mode :after #'my/set-line-spacing-advice)
 
@@ -223,6 +224,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package autorevert
   :after no-littering
   :ensure nil
+  :no-require t
   :custom
   (global-auto-revert-non-file-buffers t)
   (auto-revert-remote-files t)
@@ -232,11 +234,13 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package saveplace
   :after no-littering
   :ensure nil
+  :no-require t
   :init (save-place-mode 1))
 
 (use-package savehist
   :after no-littering
   :ensure nil
+  :no-require t
   :custom
   (history-length 100)
   (savehist-autosave-interval 30)
@@ -251,6 +255,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package recentf
   :after no-littering
   :ensure nil
+  :no-require t
   :custom (recentf-auto-cleanup 'never)
   :init (recentf-mode 1)
   :config
@@ -433,6 +438,7 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package tab-bar
   :ensure nil
+  :no-require t
   :custom
   (tab-bar-show 1)
   (tab-bar-new-button-show nil)
@@ -496,6 +502,7 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package dired
   :ensure nil
+  :no-require t
   :bind (:map dired-mode-map ("M-<up>" . dired-up-directory))
   :custom
   (dired-listing-switches "-alv --group-directories-first")
@@ -1024,6 +1031,7 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package flymake
   :ensure nil
+  :no-require t
   :after modus-themes
   :hook prog-mode
   :bind (:map my/personal-map ("M-f" . flymake-show-buffer-diagnostics))
@@ -1084,6 +1092,7 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package ispell
   :ensure nil
+  :no-require t
   :custom
   (ispell-program-name "aspell")
   (ispell-local-dictionary-alist
@@ -1104,6 +1113,8 @@ If USE-3D is \\='toggle, toggle the current style."
 ;; Python
 
 (use-package python
+  :ensure nil
+  :no-require t
   :after treesit
   :preface (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
@@ -1255,6 +1266,7 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package org
   :ensure nil
+  :no-require t
   :after modus-themes
   :custom
   (org-startup-with-latex-preview t)
