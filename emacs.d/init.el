@@ -1051,7 +1051,7 @@ If USE-3D is \\='toggle, toggle the current style."
   (flymake-indicator-type 'margins)
   ;; (flymake-autoresize-margins nil)
   (flymake-margin-indicators-string
-   '((note "•" flymake-note-echo)  ;; ●
+   '((note "●" flymake-note-echo)  ;; •
      (warning "▲" flymake-warning-echo)
      (error "◼" flymake-error-echo)))
   :preface
