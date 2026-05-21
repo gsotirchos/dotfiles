@@ -40,7 +40,6 @@ done
 # HPC
 if [[ "$(hostname)" =~ login[0-9]+ ]]; then
     export TERM="vt100"
-    #export TMPDIR="~/.tmp"
     export SCRATCH="/scratch/${USER}"
     export RISC="${SCRATCH}/RISC/risc"
     export SQUEUE_FORMAT="%.10i %.60j %.18a %.17R %M"
