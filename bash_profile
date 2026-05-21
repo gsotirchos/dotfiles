@@ -40,20 +40,17 @@ if [[ -f /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# set dotfiles path
+# set dotfiles paths
 dotfiles="$( \
     builtin cd "$( \
         dirname "$(realpath "${BASH_SOURCE[0]}")"
     )" > /dev/null && pwd
 )"
 
-macos_dotfiles="${HOME}/.macos-dotfiles"
-
 # set macos-dotfiles path
 if [[ "${dotfiles}" == "${HOME}/.dotfiles" ]]; then
     macos_dotfiles="${dotfiles}"
 else
-    dotfiles="${HOME}/.dotfiles"
     macos_dotfiles="${HOME}/.macos-dotfiles"
 fi
 
@@ -63,13 +60,13 @@ if [[ -d "${dotfiles}"/extra_paths ]]; then
     source "${macos_dotfiles}/etc/append_to_paths.sh" "${dotfiles}/extra_paths"
 fi
 
-## prepare dynamic libraries path
-#if [[ "$OS" == "linux" ]]; then
-#   export LD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}"
-#fi
-
 export SHELL="$(which bash)"
 export EDITOR="emacsclient -cn"
+
+if [[ "$OS" == "linux" ]]; then
+    # export LD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}"
+    export TMPDIR="~/.tmp"
+fi
 
 # set cmake makefile generator, compiler, and standard
 export CC="$(command -v gcc-11 || command -v clang)"
@@ -87,7 +84,6 @@ unset dotfiles
 unset macos_dotfiles
 
 if [[ $- == *i* ]]; then
-    # source bashrc
     if [[ -f ~/.bashrc ]]; then
         source ~/.bashrc
     fi
