@@ -11,6 +11,7 @@
     recurse = true
 [diff]
     tool = vimdiff
+    submodule = log
 [core]
     excludesFile = ~/.gitignore
 [alias]
