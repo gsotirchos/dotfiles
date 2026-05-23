@@ -62,6 +62,8 @@ fi
 
 export SHELL="$(which bash)"
 export EDITOR="emacsclient -cn"
+export GIT_EDITOR="emacsclient -c"
+export VISUAL="emacsclient -c"
 
 if [[ "$OS" == "linux" ]]; then
     # export LD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}"
