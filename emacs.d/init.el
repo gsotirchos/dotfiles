@@ -835,6 +835,8 @@ If USE-3D is \\='toggle, toggle the current style."
   (markdown-display-remote-images t)
   (markdown-list-item-bullets '("●" "○" "◎" "◆" "◇" "►" "•"))
   (markdown-list-indent-width 2)
+  (standard-indent 2)
+  (evil-shift-width 2)
   :preface
   (add-hook 'markdown-mode-hook (lambda ()
                                   (visual-line-mode 1)
@@ -1182,7 +1184,6 @@ If USE-3D is \\='toggle, toggle the current style."
   :preface
   (defun my/yaml-mode-hook ()
     (setq-local yaml-indent-offset 2)
-    (setq-local tab-width 2)
     (variable-pitch-mode -1)
     (flyspell-mode -1))
   (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook)
@@ -1201,7 +1202,6 @@ If USE-3D is \\='toggle, toggle the current style."
   :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'")
   :preface
   (defun my/nxml-mode-hook ()
-    (setq-local tab-width nxml-child-indent)
     (setq-local standard-indent nxml-child-indent)
     (setq-local evil-shift-width nxml-child-indent)
     (setq-local nxml-attribute-indent nxml-child-indent)
