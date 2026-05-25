@@ -134,6 +134,7 @@ if [[ -f ~/.conda/conda_init.sh ]]; then
         # TIME ~499ms
         echo -ne "-- Initializing conda ..."
         unset conda
+        # export CONDA_BASH_COMPLETION_LOADED="Y"
         source ~/.conda/conda_init.sh
         echo -e " DONE"
         conda "$@"
