@@ -15,8 +15,8 @@ syntax region MyTagMark
 syntax match MyParens "[(){}\[\]<>,;]" containedin=NONE display
 syntax match MyEquals "\(\W\|\_s\)\@<==\(\S\)\@!" containedin=NONE display
 syntax match MyOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP display
-syntax match MyOperator "\(\S\)\@<![<>!~:]\+[=]\=\(\S\)\@!" display
-syntax match MyOperator "\(\S\)\@<!\(\(==\)\|\(->\)\)\(\S\)\@!" display
+syntax match MyOperator "\([\S\n]\)\@<![<>!~:]\+[=]\=\(\S\)\@!" display
+syntax match MyOperator "\([\S\n]\)\@<!\(\(==\)\|\(->\)\)\(\S\)\@!" display
 
 " member operators
 syntax match MembOperator "[,;]" containedin=NONE display
