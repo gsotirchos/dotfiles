@@ -1,3 +1,25 @@
 [submodule "config/ghostty/ghostty-themes"]
 	path = config/ghostty/ghostty-themes
 	url = https://github.com/anhsirk0/ghostty-themes.git
+[submodule "vim/pack/plugins/start/vim-polyglot"]
+	path = vim/pack/plugins/start/vim-polyglot
+	url = https://github.com/sheerun/vim-polyglot.git
+[submodule "vim/pack/plugins/start/wiki.vim"]
+	path = vim/pack/plugins/start/wiki.vim
+	url = https://github.com/lervag/wiki.vim.git
+[submodule "vim/pack/plugins/start/vim-rsi"]
+	path = vim/pack/plugins/start/vim-rsi
+	url = https://github.com/tpope/vim-rsi.git
+[submodule "vim/pack/plugins/start/vim-surround"]
+	path = vim/pack/plugins/start/vim-surround
+	url = https://github.com/tpope/vim-surround.git
+[submodule "vim/pack/plugins/start/vim-commentary"]
+	path = vim/pack/plugins/start/vim-commentary
+	url = https://github.com/tpope/vim-commentary.git
+[submodule "vim/pack/plugins/start/vim-unimpaired"]
+	path = vim/pack/plugins/start/vim-unimpaired
+	url = https://github.com/tpope/vim-unimpaired.git
+[submodule "vim/pack/plugins/start/coc.nvim"]
+	path = vim/pack/plugins/start/coc.nvim
+	url = https://github.com/neoclide/coc.nvim.git
+	branch = release

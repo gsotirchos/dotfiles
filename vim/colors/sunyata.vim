@@ -73,7 +73,7 @@ hi! link MyEquals   Statement
 hi! link MyOperator OtherType
 
 " errors and warnings
-hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=0
+hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=None
 hi! Error          cterm=bold      ctermfg=1    ctermbg=none
 hi! ErrorMsg       cterm=none      ctermfg=1    ctermbg=none
 hi! Warning        cterm=bold      ctermfg=3    ctermbg=none
@@ -153,10 +153,10 @@ hi! clear DiffAdd
 hi! clear DiffChange
 hi! clear DiffDelete
 hi! clear DiffText
-hi! DiffAdd                        ctermfg=10   ctermbg=0
-hi! DiffChange                                  ctermbg=0
-hi! DiffDelete                     ctermfg=9    ctermbg=0
-hi! DiffText                       ctermfg=11   ctermbg=0
+hi! DiffAdd                        ctermfg=10   ctermbg=None
+hi! DiffChange                                  ctermbg=None
+hi! DiffDelete                     ctermfg=9    ctermbg=None
+hi! DiffText                       ctermfg=11   ctermbg=None
 hi! DiffAdded                      ctermfg=2    ctermbg=none
 hi! DiffChanged                    ctermfg=none ctermbg=none
 hi! DiffRemoved                    ctermfg=1    ctermbg=none
@@ -175,11 +175,11 @@ hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
 "hi! link ALEWarningLine             Normal
 
 " CoC
-hi! CocVirtualText         cterm=none      ctermfg=8    ctermbg=0
-hi! CocErrorFloat          cterm=none      ctermfg=1    ctermbg=0
-hi! CocWarningFloat        cterm=none      ctermfg=3    ctermbg=0
-hi! CocInfoFloat           cterm=none      ctermfg=none ctermbg=0
-hi! CocHintFloat           cterm=none      ctermfg=12   ctermbg=0
+hi! CocVirtualText         cterm=none      ctermfg=8    ctermbg=None
+hi! CocErrorFloat          cterm=none      ctermfg=1    ctermbg=None
+hi! CocWarningFloat        cterm=none      ctermfg=3    ctermbg=None
+hi! CocInfoFloat           cterm=none      ctermfg=none ctermbg=None
+hi! CocHintFloat           cterm=none      ctermfg=12   ctermbg=None
 hi! link CocErrorSign          ErrorMsg
 hi! link CocErrorVirtualText   CocErrorFloat
 hi! link CocWarningSign        WarningMsg
