@@ -2,17 +2,6 @@ let g:polyglot_disabled = ['autoindent', 'sensible']
 
 " ---
 
-set rtp+=$HOME/.vim/bundle/Vundle.vim
+" Any plugin-specific settings can go here now.
+" Vim 8+ natively loads plugins from vim/pack/*/start/* automatically.
 
-call vundle#begin()
-Plugin 'VundleVim/Vundle.vim'
-"Plugin 'neoclide/coc.nvim', {'branch': 'release'}
-"Plugin 'github/copilot.vim'
-Plugin 'sheerun/vim-polyglot'
-Plugin 'lervag/wiki.vim'
-Plugin 'tpope/vim-rsi'
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-commentary'
-Plugin 'tpope/vim-unimpaired'
-"Plugin 'wikitopian/hardmode'
-call vundle#end()

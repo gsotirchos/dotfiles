@@ -2099,6 +2099,8 @@ add_library
 add_link_options
 add_subdirectory
 add_test
+ament_environment_hooks
+ament_package
 aux_source_directory
 break
 build_command
