@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 " Configure ALE strictly for static checking (no LSP)
 let g:ale_disable_lsp = 1
 let g:ale_completion_enabled = 0
@@ -8,11 +10,12 @@ let g:ale_sign_warning = '◼'
 let g:ale_virtualtext_delay = &updatetime
 let g:ale_virtualtext_single = 1
 let g:ale_virtualtext_prefix = ' ◀︎ '
-" let g:ale_echo_msg_format = '〈%linter%〉 %s'
+let g:ale_echo_msg_format = '[%linter%] %code: %%s'
 
 " Explicitly enable static-checking linters (No LSPs)
 let g:ale_linters_explicit = 1
 let g:ale_linters = {
+\   'vim': ['vint'],
 \   'sh': ['shellcheck', 'bashate'],
 \   'cmake': ['cmake_lint'],
 \   'cpp': ['clangtidy', 'cppcheck', 'cc'],
@@ -33,7 +36,8 @@ let g:ale_fixers = {
 
 " Custom Tool Flags matching your modern outside-vim setup
 let g:ale_sh_shellcheck_options = '--shell=bash'
-let g:ale_sh_shfmt_options = '-ln=bash -i ' . &ts . ' -ci -bn -sr'
+let g:ale_sh_shfmt_options = '-ln=bash -i ' . &tabstop . ' -ci -bn -sr'
 let g:ale_python_ruff_options = '--config ~/.pyproject.toml'
 let g:ale_tex_latexindent_options = '-m -rv'
 let g:ale_markdown_markdownlint_options = '--config ~/.markdownlint.json'
+"let g:ale_sh_bashate_executable = expand('~/.dotfiles/bin/bashate')
