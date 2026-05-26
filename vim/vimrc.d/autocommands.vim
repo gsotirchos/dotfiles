@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 function! s:UpdateSyntax(num_lines)
     if a:num_lines >= 2000
         syntax sync maxlines=2000
@@ -8,14 +10,37 @@ function! s:UpdateSyntax(num_lines)
     endif
 endfunction
 
+function! s:GetGutterWidth(bufnr)
+    let l:sc = getbufvar(a:bufnr, '&signcolumn')
+    if l:sc ==# 'no'
+        return 0
+    elseif l:sc ==# 'yes'
+        return 2
+    elseif l:sc ==# 'auto'
+        if exists('*sign_getplaced')
+            let l:placed = sign_getplaced(a:bufnr, {'group': '*'})
+            if !empty(l:placed) && !empty(l:placed[0].signs)
+                return 2
+            endif
+        endif
+    endif
+    return 0
+endfunction
+
 function! s:UpdateSignColumn(file_name, is_modifiable)
-    "if empty(a:file_name) || !a:is_modifiable
+    if empty(a:file_name) || !a:is_modifiable
         setlocal signcolumn=no
-        let b:gutterwidth = 0
-    "elseif (&signcolumn =~ '')
-    "    setlocal signcolumn=yes
-    "    let b:gutterwidth = 2
-    "endif
+    else
+        setlocal signcolumn=auto
+    endif
+endfunction
+
+function! s:UpdateLayout()
+    let b:numberwidth = 1 + float2nr(ceil(log10(line('$') + 1)))
+    let b:gutterwidth = s:GetGutterWidth(bufnr('%'))
+    let l:max_width = get(g:, 'maxwinwidth', 80)
+    let &l:textwidth = min([l:max_width, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
+    let &l:sidescrolloff = winwidth('%') / 2
 endfunction
 
 function! s:UpdateBreakindentopt()
@@ -37,10 +62,10 @@ augroup vimrc
         \|call s:UpdateSignColumn(@%, &modifiable)
 
     autocmd BufWinEnter,BufRead,TextChanged,TextChangedI,VimResized *
-        \ let b:numberwidth = 1 + float2nr(ceil(log10(line('$') + 1)))
-        \|let b:gutterwidth = exists('b:gutterwidth') ? b:gutterwidth : 0
-        \|let &textwidth = min([maxwinwidth, winwidth(0)]) - b:gutterwidth - &number * b:numberwidth - 1
-        \|let &sidescrolloff = winwidth('%') / 2
+        \ call s:UpdateLayout()
+
+    autocmd User ALELintPost,ALEFixPost
+        \ call s:UpdateLayout()
 
     " enable syntax
     autocmd Colorscheme * nested
