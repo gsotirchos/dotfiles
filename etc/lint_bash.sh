@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1090
+
+main() {
+    # Check for realpath
+    if ! command -v "realpath" &> /dev/null; then
+        echo "Error: \`realpath\` command could not be found. Aborted" >&2
+        exit 1
+    fi
+
+    local target_dir="${1}"
+    if [[ -z "${target_dir}" ]]; then
+        echo "Usage: $0 <directory_to_lint>" >&2
+        exit 1
+    fi
+
+    if [[ ! -d "${target_dir}" ]]; then
+        echo "Error: Directory '${target_dir}' does not exist." >&2
+        exit 1
+    fi
+
+    target_dir="$(realpath "${target_dir}")"
+
+    # Verify shellcheck and bashate are available
+    if ! command -v shellcheck &> /dev/null; then
+        echo "Error: shellcheck is not installed or not in PATH." >&2
+        exit 1
+    fi
+
+    if ! command -v bashate &> /dev/null; then
+        # Determine dotfiles root path (parent of etc/ directory) to find fallback bashate wrapper
+        local dotfiles="$(
+            builtin cd "$(
+                realpath "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.."
+            )" > /dev/null && pwd
+        )"
+        # Fall back to local wrapper script if available
+        if [[ -x "${dotfiles}/bin/bashate" ]]; then
+            local bashate_cmd="${dotfiles}/bin/bashate"
+        else
+            echo "Error: bashate is not installed or not in PATH." >&2
+            exit 1
+        fi
+    else
+        local bashate_cmd="bashate"
+    fi
+
+    # Dynamically find all bash/shell files in the target directory
+    # - Excludes the 'vim' and '.git' directories to avoid third-party clutter
+    # - Matches files ending in .sh, specific bash config files, and any files with shell shebangs
+    local files=()
+    while IFS= read -r -d '' file; do
+        files+=("$file")
+    done < <(
+        find "${target_dir}" \
+            -path "${target_dir}/vim" -prune \
+            -o -path "${target_dir}/.git" -prune \
+            -o -type f \( \
+            -name "*.sh" \
+            -o -name "bash_aliases" \
+            -o -name "bashrc" \
+            -o -name "bash_profile" \
+            -o -exec sh -c '
+                head -n 1 "$1" | grep -qE "^#!(.*/bin/|/usr/bin/env )(bash|sh)"
+            ' _ {} \; \
+            \) -print0
+    )
+
+    if [[ ${#files[@]} -eq 0 ]]; then
+        echo "No bash/shell files found to lint in '${target_dir}'."
+        return 0
+    fi
+
+    echo "Linting ${#files[@]} file(s) in '${target_dir}' with shellcheck..."
+    shellcheck "${files[@]}"
+    local shellcheck_status=$?
+
+    echo "Linting ${#files[@]} file(s) in '${target_dir}' with bashate..."
+    "${bashate_cmd}" "${files[@]}"
+    local bashate_status=$?
+
+    if [[ ${shellcheck_status} -eq 0 ]] && [[ ${bashate_status} -eq 0 ]]; then
+        echo "All checks passed successfully!"
+        return 0
+    else
+        echo "Some checks failed."
+        return 1
+    fi
+}
+
+main "$@"
