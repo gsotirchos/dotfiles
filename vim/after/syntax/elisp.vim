@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 " original: https://github.com/sherylynn/vim-elisp/blob/master/syntax/elisp.vim
 "setlocal syntax=lisp
 "定义 可以多个关键词放一组 叫什么只是称呼，是后面link的高亮

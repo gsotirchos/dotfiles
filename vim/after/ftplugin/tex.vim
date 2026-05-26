@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 runtime after/ftplugin/markdown.vim
 setlocal colorcolumn=+2
 setlocal complete-=i  " don't scan included files

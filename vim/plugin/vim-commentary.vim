@@ -1,7 +1,9 @@
+scriptencoding utf-8
+
 augroup commentary
     autocmd FileType * let b:commentary_format = substitute(&commentstring, ' ', '', 'g')
 augroup END
-if get(g:, "loaded_commentary", 0) == 0
+if get(g:, 'loaded_commentary', 0) ==# 0
     finish
 endif
 
@@ -17,5 +19,5 @@ endif
 "nnoremap <Leader>cc       <Plug>Commentary
 "nnoremap <Leader>cu       <Plug>Commentary<Plug>Commentary
 
-nnoremap <Leader>c<Space> :echo "🗿🗿🗿🗿🗿🗿🗿🗿🗿🗿"<Return>
-vnoremap <Leader>c<Space> <Esc>:echo "🗿🗿🗿🗿🗿🗿🗿🗿🗿🗿"<Return>
+nnoremap <Leader>c<Space> :echo '🗿🗿🗿🗿🗿🗿🗿🗿🗿🗿'<Return>
+vnoremap <Leader>c<Space> <Esc>:echo '🗿🗿🗿🗿🗿🗿🗿🗿🗿🗿'<Return>

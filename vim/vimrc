@@ -2,6 +2,10 @@
 " ~/.vim/vimrc
 "
 
+set encoding=utf-8
+scriptencoding utf-8
+
+" vint: -ProhibitSetNoCompatible
 set nocompatible  " be IMproved, required
 filetype off  " required
 runtime vimrc.d/plugins.vim
@@ -21,7 +25,6 @@ set autoread  " auto-read modified open files
 
 " set encodings and line ending formats
 set fileencodings=ucs-bom,utf-8,cp1253,default,latin1  " tried on open
-set encoding=utf-8  " encoding used for displaying inside vim
 set fileformats=unix,mac,dos  " format order to be tried on a new buffer
 set nrformats=bin,hex  " number formats to be checked for
 
@@ -48,6 +51,7 @@ set maxmempattern=100000  " set maximum memory for pattern matching to 100Mb
 "set regexpengine=1  " use old regex engine (WARNING: it's laggy)
 set mouse=a  " enable mouse
 let maxwinwidth=80  " minimum column width when formatting
+set signcolumn=auto  " auto-show the sign column by default
 set splitbelow  " open new horizontal windows at bottom
 set splitright  " open new vertical windows at right
 set previewheight=3  " set preview window height to 3
