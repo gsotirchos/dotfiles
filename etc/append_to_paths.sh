@@ -4,7 +4,11 @@
 # input argument: the directory containing the files specifying the paths to be appended
 main() {
     # don't run in subshell
-    if [[ $SHLVL -gt 1 ]]; then
+    if [[ ${SHLVL:-1} -gt 1 ]]; then
+        return 1
+    fi
+
+    if [[ $# -lt 1 ]]; then
         return 1
     fi
 
@@ -35,12 +39,22 @@ main() {
 # input argument 1: the env variable name
 # input arguments 2...: the paths to be appended
 append_paths() {
-    local env_var_name="$1"
+    local env_var_name="${1:-}"
+    if [[ -z "${env_var_name}" ]]; then
+        return 0
+    fi
     shift
+
     # shellcheck disable=SC2207,SC2068,SC2145,SC2294
-    local paths_to_add=($(eval echo \"$@\"))  # expand widlcards
+    local paths_to_add=($(eval echo \"$@\"))  # expand wildcards
     local -A added_paths
-    IFS=':' read -ra existing_paths <<< "${!env_var_name}"
+
+    local existing_val=""
+    if declare -p "$env_var_name" &>/dev/null; then
+        existing_val="${!env_var_name}"
+    fi
+
+    IFS=':' read -ra existing_paths <<< "${existing_val}"
     for path in "${existing_paths[@]}"; do
         if [[ "${path}" ]]; then
             #echo "existing path: $path"
@@ -50,7 +64,7 @@ append_paths() {
     local new_paths_array=()
 
     for path in "${paths_to_add[@]}"; do
-        if [[ "${added_paths["$path"]}" ]]; then
+        if [[ "${added_paths["$path"]:-}" ]]; then
             #echo "Warning: skipped adding existing path \"$path\" in $env_var_name"
             continue
         fi
@@ -63,7 +77,7 @@ append_paths() {
         added_paths["$path"]=1
     done
 
-    new_paths_array+=("${!env_var_name}")
+    new_paths_array+=("${existing_val}")
     local IFS=":"
     echo "${new_paths_array[*]}"
 }

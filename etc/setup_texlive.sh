@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 brew install basictex
 sudo tlmgr update --self
 sudo tlmgr install \

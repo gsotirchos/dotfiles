@@ -19,4 +19,4 @@ if [[ -z "$real_bashate" ]] || [[ ! -x "$real_bashate" ]]; then
     exit 0
 fi
 
-exec "$real_bashate" -i E003,E005,E042 --max-line-length 120 "$@"
+exec "$real_bashate" -i E005,E042 --max-line-length 120 "$@"
