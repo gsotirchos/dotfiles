@@ -236,7 +236,7 @@ function! s:UpdateGitInfoCache(bufnr)
         let l:status_indicators .= '+'
     endif
     if l:untracked_files > 0
-        let l:status_indicators .= '%%'
+        let l:status_indicators .= '?'
     endif
     let l:git_info .= l:status_indicators
 
