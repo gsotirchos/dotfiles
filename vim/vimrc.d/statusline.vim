@@ -32,16 +32,17 @@ function! s:GetRegularEditorLeftSide(winid, bufnr)
     if empty(getbufvar(a:bufnr, 'parent_path_cached', ''))
         call s:UpdateParentPathCache(a:bufnr)
     endif
-    let git_info_field =  '%( %{get(g:, "coc_git_status", "")} %)'
-    let parent_path_field = s:GetParentDirectoryField(a:winid, a:bufnr)
-    let file_name_field = '%t%m%a '
-
     let l:SLFileInfoHL = getbufvar(a:bufnr, 'SLFileInfoHL', '')
     let l:SLGitInfoHL = getbufvar(a:bufnr, 'SLGitInfoHL', '')
     let l:SLFilePathHL = getbufvar(a:bufnr, 'SLFilePathHL', '')
     let l:SLFileNameHL = getbufvar(a:bufnr, 'SLFileNameHL', '')
 
-    let left_hand_side = l:SLFileInfoHL . filetype_field . l:SLGitInfoHL . git_info_field . l:SLFilePathHL .  parent_path_field . l:SLFileNameHL . file_name_field . '%*'
+    let l:git_info = s:GetGitInfoField(a:bufnr)
+    let git_info_field = empty(l:git_info) ? '' : l:SLGitInfoHL . ' ' . l:git_info . ' '
+    let parent_path_field = s:GetParentDirectoryField(a:winid, a:bufnr)
+    let file_name_field = '%t%m%a '
+
+    let left_hand_side = l:SLFileInfoHL . filetype_field . git_info_field . l:SLFilePathHL .  parent_path_field . l:SLFileNameHL . file_name_field . '%*'
     return left_hand_side
 endfunction
 
@@ -55,7 +56,7 @@ endfunction
 function! s:CalculatePathFieldLength(winid, bufnr)
     let l:filetype = getbufvar(a:bufnr, '&filetype')
     let l:filetype_field_length = empty(l:filetype) ? 0 : len(' ' . l:filetype . ' ')
-    let l:git_info_field_length = !exists("g:coc_git_status") ? 0 : len(' ' . get(g:, 'coc_git_status', '') . ' ')
+    let l:git_info_field_length = len(s:GetGitInfoField(a:bufnr))
 
     if (l:filetype == '')
         let l:half_name_length = len('[No Name]') / 2
@@ -100,6 +101,109 @@ function! s:UpdateParentPathCache(...)
     endif
 endfunction
 
+" Function to actually fetch all Git info for the current file
+function! s:UpdateGitInfoCache(bufnr)
+    " Only run on loaded files with valid paths
+    let l:filepath = resolve(expand('#' . a:bufnr . ':p'))
+    if l:filepath == ''
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        call setbufvar(a:bufnr, 'is_git_repo', 0)
+        return
+    endif
+
+    let l:filedir = fnamemodify(l:filepath, ':h')
+
+    " Check and cache if we are inside a Git repo (Performance Optimization #1)
+    if getbufvar(a:bufnr, 'is_git_repo', -1) == 0
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        return
+    endif
+
+    let l:git_command_prefix = 'git -C "' . escape(l:filedir, '"') . '" '
+
+    " If we haven't checked for Git repository yet, check now
+    if getbufvar(a:bufnr, 'is_git_repo', -1) == -1
+        call system(l:git_command_prefix . 'rev-parse --is-inside-work-tree 2> /dev/null')
+        if v:shell_error != 0
+            call setbufvar(a:bufnr, 'is_git_repo', 0)
+            call setbufvar(a:bufnr, 'git_info_cached', '')
+            return
+        endif
+            call setbufvar(a:bufnr, 'is_git_repo', 1)
+    endif
+
+    let l:git_info = ''
+
+    " Get the current branch name
+    let l:branch = trim(system(l:git_command_prefix . 'rev-parse --abbrev-ref HEAD 2> /dev/null'))
+    if v:shell_error == 0 && l:branch != '' && l:branch != 'HEAD'
+        let l:git_info .= ' ' . l:branch
+    else
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        return
+    endif
+
+    " Get status indicators (staged, unstaged, untracked)
+    let l:status = system(l:git_command_prefix . 'status --porcelain 2> /dev/null')
+    let l:staged_changes = 0
+    let l:unstaged_changes = 0
+    let l:untracked_files = 0
+    for l:line in split(l:status, '\n')
+        if l:line =~ '^[MADRC]'
+            let l:staged_changes += 1
+        elseif l:line =~ '^.[MD]'
+            if l:line !~ '^[MADRC].'
+                let l:unstaged_changes += 1
+            endif
+        elseif l:line =~ '^??'
+            let l:untracked_files += 1
+        endif
+    endfor
+
+    let l:status_indicators = ''
+    if l:unstaged_changes > 0
+        let l:status_indicators .= '*'
+    endif
+    if l:staged_changes > 0
+        let l:status_indicators .= '+'
+    endif
+    if l:untracked_files > 0
+        let l:status_indicators .= '%%'
+    endif
+    let l:git_info .= l:status_indicators
+
+    " Get commits ahead and behind remote
+    let l:upstream = trim(system(l:git_command_prefix . 'rev-parse --verify --quiet @{upstream} 2> /dev/null'))
+    if v:shell_error == 0
+        let l:ahead = len(split(system(l:git_command_prefix . 'log --oneline HEAD..@{upstream} 2> /dev/null'), '\n')) - 1
+        let l:behind = len(split(system(l:git_command_prefix . 'log --oneline @{upstream}..HEAD 2> /dev/null'), '\n')) - 1
+        let l:diff_info = ''
+        if l:ahead > 0
+            let l:diff_info .= '>' . l:ahead
+        endif
+        if l:behind > 0
+            let l:diff_info .= '<' . l:behind
+        endif
+        if l:diff_info == ''
+            let l:diff_info = '='
+        endif
+        let l:git_info .= l:diff_info
+    endif
+    let l:git_info .= ' '
+
+    call setbufvar(a:bufnr, 'git_info_cached', l:git_info)
+endfunction
+
+" Function to get the cached Git info for the current file
+function! s:GetGitInfoField(bufnr)
+    let l:cached = getbufvar(a:bufnr, 'git_info_cached', -1)
+    if l:cached is -1
+        call s:UpdateGitInfoCache(a:bufnr)
+        return getbufvar(a:bufnr, 'git_info_cached', '')
+    endif
+    return l:cached
+endfunction
+
 function! s:SetFocusedColors()
     let b:SLFileInfoHL = '%#SLFileInfo#'
     let b:SLFilePathHL = '%#SLFilePath#'
@@ -125,11 +229,13 @@ endfunction
 augroup statusline
     autocmd!
     autocmd! BufReadPost,BufWrite *
-        \ call s:UpdateParentPathCache()
+        \ call s:UpdateParentPathCache(str2nr(expand('<abuf>')))
+        \|call s:UpdateGitInfoCache(str2nr(expand('<abuf>')))
     autocmd! BufEnter,BufWinEnter,FocusGained *
         \ call s:SetFocusedColors()
         \|setlocal statusline=%!MyStatusLine()
     autocmd! BufLeave,FocusLost *
         \ call s:SetUnfocusedColors()
         \|setlocal statusline=%!MyStatusLine()
+        \|call s:UpdateGitInfoCache(str2nr(expand('<abuf>')))
 augroup END

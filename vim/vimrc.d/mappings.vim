@@ -71,13 +71,7 @@ nnoremap <Leader>b :buffers<Return>:buffer<Space>
 " Search documentation for the word under cursor
 nnoremap <silent> <Leader>h :call ShowDocumentation()<Return>
 function! ShowDocumentation()
-    if exists('*CocAction')
-        if CocAction('hasProvider', 'hover')
-            call CocActionAsync('doHover')
-        endif
-    else
-        call feedkeys('K', 'in')
-    endif
+    call feedkeys('K', 'in')
 endfunction
 
 " Toggle LocList
@@ -88,12 +82,6 @@ function! ToggleLocList()
     else
         let l:loclist_win_height = winheight(0) / 3
         let l:line_nr = line('.')
-        if exists(':CocDiagnostics')
-            if !exists('l:coc_diagnostics_opened')
-                :CocDiagnostics
-                let l:coc_diagnostics_opened = v:true
-            endif
-        endif
         exec 'lopen ' . l:loclist_win_height
         exec ':silent! /|' . l:line_nr . ' col'
         nohlsearch
