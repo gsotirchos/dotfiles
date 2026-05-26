@@ -33,16 +33,16 @@ nnoremap <expr> i IndentWithI()
 nnoremap <expr> a IndentWithA()
 function! IndentWithI()
     if len(getline('.')) == 0
-        return  "\"_cc"
+        return '"_cc'
     else
-        return  "i"
+        return 'i'
     endif
 endfunction
 function! IndentWithA()
     if len(getline('.')) == 0
-        return  "\"_cc"
+        return '"_cc'
     else
-        return  "a"
+        return 'a'
     endif
 endfunction
 

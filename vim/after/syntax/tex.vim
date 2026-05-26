@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 syn match texCmdBackslash "\\" containedin=texStatement,texTypeStyle,texNewCmd contained conceal
 syn match texStatement "newline" containedin=texStatement contained conceal cchar=⏎
 syn match texSpecialChar "\\\\" containedin=texSpecialChar contained conceal cchar=⏎
@@ -8,8 +10,8 @@ syn match texSectionZone "\\ " containedin=texSectionZone conceal cchar=_
 syn match texBeginEnd "\\begin\|\\end" containedin=texStatement
 
 "syn clear texBadMath
-if !exists("g:tex_no_math")
-    call TexNewMathZone("M","align",1)
+if !exists('g:tex_no_math')
+    call TexNewMathZone('M', 'align', 1)
 endif
 
 

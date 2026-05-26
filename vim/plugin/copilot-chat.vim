@@ -1,4 +1,6 @@
-if !exists("*CopilotChat")
+scriptencoding utf-8
+
+if !exists('*CopilotChat')
     finish
 endif
 
