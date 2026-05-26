@@ -37,6 +37,7 @@ main() {
 append_paths() {
     local env_var_name="$1"
     shift
+    # shellcheck disable=SC2207,SC2068,SC2145,SC2294
     local paths_to_add=($(eval echo \"$@\"))  # expand widlcards
     local -A added_paths
     IFS=':' read -ra existing_paths <<< "${!env_var_name}"

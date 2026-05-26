@@ -1,3 +1,5 @@
+# shellcheck shell=bash disable=SC1090
+
 # make git prompt command available
 if ! command -v "__git_ps1" &> /dev/null; then
     git_prompt_path="/etc/bash_completion.d/git-prompt"

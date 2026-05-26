@@ -2,7 +2,7 @@
 # ~/.bash_aliases
 #
 
-# shellcheck disable=SC1090,SC2139,SC1091
+# shellcheck shell=bash disable=SC1090,SC2139,SC1091
 
 if [[ "$OS" == "macos" ]]; then
     export TRASH="${HOME}/.Trash"
@@ -64,7 +64,8 @@ empty_trash() {
 
 # make a .url file, using the povided link (optinal)
 touch_url_file() {
-    echo -e "[InternetShortcut]\nURL=$2" > "$(echo "${1:-file}" | sed 's/\.url$//').url"
+    local filename="${1:-file}"
+    echo -e "[InternetShortcut]\nURL=$2" > "${filename%.url}.url"
 }
 
 # merge all build/*/copmile_commands.json to a single build/copmile_commands.json
@@ -109,7 +110,14 @@ alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias vimrc="vim ~/.vim/vimrc"
 alias wi="vim +WikiIndex"
 if command -v "vint" &> /dev/null; then
-    alias vint_vimrc='vint vim/vimrc && find vim/ -path "vim/pack" -prune -o -name "*.vim" -print | xargs -n 1 vint'
+    lint_vim() {
+        if [[ -f "$1" ]]; then
+            echo "is file"
+            vint "$1"
+        else
+            find "${1:-"."}" -path '*/pack' -prune -o -regex "\(.*\.vim\|.*vimrc\)" -print0 | xargs -0 -n 1 vint
+        fi
+    }
 fi
 alias dunnet="clear && emacs -batch -l dunnet 1> /dev/null"
 if ! command -v "open" &> /dev/null; then

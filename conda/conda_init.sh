@@ -2,7 +2,7 @@
 # ~/.conda/conda_init.sh
 #
 
-# shellcheck disable=SC1091
+# shellcheck shell=bash disable=SC1091
 
 
 potential_paths=(

@@ -2,7 +2,7 @@
 # ~/.bashrc
 #
 
-# shellcheck disable=SC1090,SC1091,SC2139
+# shellcheck shell=bash disable=SC1090,SC1091,SC2139
 
 # echo "SOURCED ~/.bashrc"
 # [[ $- == *i* ]] && echo 'Interactive' || echo 'Not interactive'
