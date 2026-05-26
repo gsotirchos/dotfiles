@@ -161,6 +161,8 @@
         ;; Help map
         (keymap-set help-map "=" #'describe-char)))
 
+(define-key key-translation-map (kbd "S-<escape>") (kbd "~"))
+
 (provide 'my-keybindings)
 
 ;;; my-keybindings.el ends here
