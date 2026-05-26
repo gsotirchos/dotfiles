@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016
+set -euo pipefail
 
 main() {
     # Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
     set +x
 
     ACCOUNT="my.1password.eu"
-    SECRETS_FILE="$HOME/.op_secrets"
+    SECRETS_FILE="${HOME}/.op_secrets"
 
     # Translates the list of names into op path mappings
     generate_mappings() {

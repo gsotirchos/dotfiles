@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # original: https://saeedesmaili.com/delete-unwanted-and-duplicated-items-on-1password
 
 main() {
@@ -77,7 +78,7 @@ main() {
         --format=json
     )
     for id in $("${list_cmd[@]}" | jq -r '.[] | select(.id != null) | .id'); do
-        item=$(op item get "$id" --vault "$vault" --account "$account" --format=json)  # TIME consuming
+        item=$(op item get "$id" --vault "$vault" --account "$account" --format=json 2>/dev/null || echo "null")  # TIME consuming
         if [[ $item == null ]]; then
             echo "$id has no items; skipped"
             continue
@@ -92,9 +93,9 @@ main() {
         # delete items with URLs as usernames
         username=$(echo "$fields" | jq -r '.[] | select(.label=="username").value')
         if [[ $username == http* ]]; then
-          op item delete "$id" --archive --vault "$vault" --account "$account"
-          echo "$id deleted (url in username)"
-          continue
+            op item delete "$id" --archive --vault "$vault" --account "$account"
+            echo "$id deleted (url in username)"
+            continue
         fi
 
         # delete duplicate items
@@ -103,7 +104,7 @@ main() {
         website=$(echo "$href" | awk -F[/:] '{print $4}')
         if [[ -n $website && -n $username ]]; then
             key="$website-$username"
-            if [[ ${itemMap[$key]} ]]; then
+            if [[ -n "${itemMap[$key]:-}" ]]; then
                 echo "Duplicate found:"
                 echo "  Item 1: id: ${itemMap[$key]}, username: $username, website: $website"
                 echo "  Item 2: id: $id, username: $username, website: $website"
@@ -130,13 +131,13 @@ main() {
         fi
 
         # remove prefixes like "www."
-        modified=true
-        while $modified; do
-            modified=false
+        modified="true"
+        while [[ "$modified" == "true" ]]; do
+            modified="false"
             for prefix in "${prefixes[@]}"; do
                 if [[ "$fixed_title" == "$prefix."* ]]; then
                     fixed_title="${fixed_title#"$prefix."}"
-                    modified=true
+                    modified="true"
                     break
                 fi
             done

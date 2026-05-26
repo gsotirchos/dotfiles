@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1090,SC2155
 # shellcheck source-path=.dotfiles
+set -euo pipefail
 
 main() {
     # text styling
@@ -10,7 +11,7 @@ main() {
     # check for `realpath` command
     if ! command -v "realpath" &> /dev/null; then
         echo -e "${bright_style}Error: \`realpath\` command could not be found. Aborted${normal_style}"
-        exit
+        exit 1
     fi
 
     # dotfiles path (directory containing this sourced script)
@@ -57,7 +58,7 @@ main() {
 
     # setup julia
     if command -v "julia" &> /dev/null; then
-        echo -e "${bright_style}\n- Setting up Julia${normal_style}"
+        echo -e "- Setting up Julia"
         "${dotfiles}"/julia/setup-julia
     fi
 

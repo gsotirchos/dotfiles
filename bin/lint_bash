@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 main() {
     # Check for realpath
@@ -23,10 +24,10 @@ main() {
     fi
 
     # Locate custom bashate executable
-    if [[ -x "${MACOS_DOTFILES}/bin/bashate" ]]; then
-        local bashate_cmd="${MACOS_DOTFILES}/bin/bashate"
+    if [[ -x "${MACOS_DOTFILES:-}/bin/bashate" ]]; then
+        local bashate_cmd="${MACOS_DOTFILES:-}/bin/bashate"
     else
-        local bashate_cmd="${DOTFILES}/bin/bashate"
+        local bashate_cmd="${DOTFILES:-}/bin/bashate"
     fi
 
     # Dynamically find all bash/shell files in the target directory
@@ -56,12 +57,12 @@ main() {
     fi
 
     echo "Linting ${#files[@]} file(s) in '${target_dir}' with shellcheck..."
-    shellcheck "${files[@]}"
-    local shellcheck_status=$?
+    local shellcheck_status=0
+    shellcheck "${files[@]}" || shellcheck_status=$?
 
     echo "Linting ${#files[@]} file(s) in '${target_dir}' with bashate..."
-    "${bashate_cmd}" "${files[@]}"
-    local bashate_status=$?
+    local bashate_status=0
+    "${bashate_cmd}" "${files[@]}" || bashate_status=$?
 
     if [[ ${shellcheck_status} -eq 0 ]] && [[ ${bashate_status} -eq 0 ]]; then
         echo "All checks passed successfully!"

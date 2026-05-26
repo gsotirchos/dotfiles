@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # command to sync files with remote pi (used with some file watch utility)
+if [[ $# -ne 2 ]]; then
+    echo "Usage: $(basename "$0") <dir> <target>" >&2
+    exit 1
+fi
+
 dir="$(realpath "$1")"
 target="$2"
-eval "watchfile ${dir} \"rsync -va ${dir}/ ${target}/$(basename "${dir}")\""
+eval "watchfile ${dir} \"rsync -va ${dir}/ ${target}/\$(basename \"${dir}\")\""

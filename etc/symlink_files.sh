@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 main() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: $(basename "$0") <target_dir> <destination_dir>" >&2
+        exit 1
+    fi
+
     local target_dir="$(realpath "$1")"
     local destination_dir="$(realpath "$2")"
 

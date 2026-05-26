@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016,2029,2087
+set -euo pipefail
 
 main() {
     # Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
@@ -19,6 +20,7 @@ main() {
     local args=("$@")
     local remote_opencode_bin='$HOME/.opencode/bin/opencode'
     local local_config="$HOME/.config/opencode/opencode.json"
+    local SSH_PID=""
 
     function sync_file_to_vm() {
         local local_file="$1"
@@ -36,13 +38,15 @@ main() {
     sync_file_to_vm "$local_config"
 
     # 2. Pre-emptively clear local and remote processes from previous runs
-    lsof -ti:"$port" | xargs kill -9 2>/dev/null
+    (lsof -ti:"$port" | xargs kill -9 2>/dev/null) || true
     ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
 
     # 3. Define cleanup to run automatically on script exit or interrupt (Ctrl+C)
     cleanup() {
         echo -e "\nSession ended. Cleaning up..."
-        kill "$SSH_PID" 2>/dev/null
+        if [[ -n "${SSH_PID:-}" ]]; then
+            kill "$SSH_PID" 2>/dev/null || true
+        fi
         ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
     }
     trap cleanup EXIT INT

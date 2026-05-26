@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 TIMEOUT=0.4
 LATENCY=0.1
@@ -8,6 +9,7 @@ USAGE="Usage:\n    $(basename "$0") [-c] FILE COMMAND"
 
 # parse arguments
 args=()
+has_clear="false"
 for arg in "$@"; do
     case "${arg}" in
         "-h" | "--help")
@@ -55,7 +57,7 @@ execute_command() {
     local RESET='\033[0m'
 
     # kill internal processes on exit
-    trap 'jobs -p | xargs kill &> /dev/null' EXIT INT
+    trap 'jobs -p | xargs kill &> /dev/null || true' EXIT INT
 
     # clear display
     if [[ "${has_clear}" == "true" ]]; then
@@ -75,15 +77,17 @@ execute_command() {
 
 # function to kill a process and wait for it
 kill_and_wait() {
-    local exec_pid="$1"
-    kill "${exec_pid}" &> /dev/null
-    wait "${exec_pid}" &> /dev/null
+    local exec_pid="${1:-}"
+    if [[ -n "${exec_pid}" ]]; then
+        kill "${exec_pid}" &> /dev/null || true
+        wait "${exec_pid}" &> /dev/null || true
+    fi
 }
 
 # function to check if a file's checksum changed after an event
 wait_for_changes() {
-    local watched_file="$1"
-    local timeout="$2"
+    local watched_file="${1:-}"
+    local timeout="${2:-}"
 
     local old_checksum="$(sha1sum "${watched_file}")"
     local new_checksum="${old_checksum}"
@@ -96,7 +100,9 @@ wait_for_changes() {
         # if a timeout is specified...
         if [[ -n "${timeout}" ]]; then
             # and no file event is detected...
-            if [[ "$(timeout --foreground "${timeout}" fswatch "${args[@]}")" == "" ]]; then
+            local fswatch_out=""
+            fswatch_out="$(timeout --foreground "${timeout}" fswatch "${args[@]}" 2>/dev/null || true)"
+            if [[ -z "${fswatch_out}" ]]; then
                 # exit with failure
                 return 1
             else
@@ -113,10 +119,10 @@ wait_for_changes() {
 }
 
 main() {
-    local exec_pid
+    local exec_pid=""
 
     # exit script on ctrl-c
-    trap 'echo & message "Terminated" && kill "${exec_pid}" &> /dev/null & exit 1' INT
+    trap 'echo & message "Terminated" && { kill "${exec_pid}" &> /dev/null || true; } & exit 1' INT
 
     # execute command once first
     execute_command &
