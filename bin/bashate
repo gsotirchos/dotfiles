@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Find the real bashate by looking in PATH, avoiding recursive calls to this script
+this_script=$(realpath "$0" 2> /dev/null || readlink -f "$0" 2> /dev/null || echo "$0")
+real_bashate=""
+
+# Find all 'bashate' executables in PATH, and pick the first one that isn't this script
+for candidate in $(type -a -p bashate 2> /dev/null); do
+    candidate_abs=$(realpath "$candidate" 2> /dev/null || readlink -f "$candidate" 2> /dev/null || echo "$candidate")
+    if [[ "$candidate_abs" != "$this_script" ]]; then
+        real_bashate="$candidate"
+        break
+    fi
+done
+
+# Check if we actually found a valid executable
+if [[ -z "$real_bashate" ]] || [[ ! -x "$real_bashate" ]]; then
+    # Exit silently so Vim/ALE doesn't throw a crash error
+    exit 0
+fi
+
+exec "$real_bashate" -i E003,E005,E042 --max-line-length 100 "$@"
