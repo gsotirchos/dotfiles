@@ -73,7 +73,7 @@ hi! link MyEquals   Statement
 hi! link MyOperator OtherType
 
 " errors and warnings
-hi! MatchParen     cterm=bold      ctermfg=11   ctermbg=None
+hi! MatchParen     cterm=underline ctermbg=None
 hi! Error          cterm=bold      ctermfg=1    ctermbg=none
 hi! ErrorMsg       cterm=none      ctermfg=1    ctermbg=none
 hi! Warning        cterm=bold      ctermfg=3    ctermbg=none
