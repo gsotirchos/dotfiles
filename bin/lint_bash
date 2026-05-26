@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090
 
 main() {
     # Check for realpath
@@ -8,11 +7,7 @@ main() {
         exit 1
     fi
 
-    local target_dir="${1}"
-    if [[ -z "${target_dir}" ]]; then
-        echo "Usage: $0 <directory_to_lint>" >&2
-        exit 1
-    fi
+    local target_dir="${1:-"."}"
 
     if [[ ! -d "${target_dir}" ]]; then
         echo "Error: Directory '${target_dir}' does not exist." >&2
@@ -27,22 +22,11 @@ main() {
         exit 1
     fi
 
-    if ! command -v bashate &> /dev/null; then
-        # Determine dotfiles root path (parent of etc/ directory) to find fallback bashate wrapper
-        local dotfiles="$(
-            builtin cd "$(
-                realpath "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.."
-            )" > /dev/null && pwd
-        )"
-        # Fall back to local wrapper script if available
-        if [[ -x "${dotfiles}/bin/bashate" ]]; then
-            local bashate_cmd="${dotfiles}/bin/bashate"
-        else
-            echo "Error: bashate is not installed or not in PATH." >&2
-            exit 1
-        fi
+    # Locate custom bashate executable
+    if [[ -x "${MACOS_DOTFILES}/bin/bashate" ]]; then
+        local bashate_cmd="${MACOS_DOTFILES}/bin/bashate"
     else
-        local bashate_cmd="bashate"
+        local bashate_cmd="${DOTFILES}/bin/bashate"
     fi
 
     # Dynamically find all bash/shell files in the target directory
