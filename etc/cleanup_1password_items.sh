@@ -69,7 +69,14 @@ main() {
         data
     )
 
-    for id in $(op item list --categories Login --vault "$vault" --account "$account" --format=json | jq -r '.[] | select(.id != null) | .id'); do
+    local list_cmd=(
+        op item list
+        --categories Login
+        --vault "$vault"
+        --account "$account"
+        --format=json
+    )
+    for id in $("${list_cmd[@]}" | jq -r '.[] | select(.id != null) | .id'); do
         item=$(op item get "$id" --vault "$vault" --account "$account" --format=json)  # TIME consuming
         if [[ $item == null ]]; then
             echo "$id has no items; skipped"

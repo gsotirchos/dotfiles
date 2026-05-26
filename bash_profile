@@ -2,7 +2,7 @@
 # ~/.bash_profile
 #
 
-# shellcheck disable=SC1090
+# shellcheck shell=bash disable=SC1090
 
 # env_before="$(env)"
 # echo "SOURCED ~/.bash_profile"
@@ -41,23 +41,23 @@ if [[ -f /opt/homebrew/bin/brew ]]; then
 fi
 
 # set dotfiles paths
-dotfiles="$( \
-    builtin cd "$( \
+export DOTFILES="$(
+    builtin cd "$(
         dirname "$(realpath "${BASH_SOURCE[0]}")"
     )" > /dev/null && pwd
 )"
 
-# set macos-dotfiles path
-if [[ "${dotfiles}" == "${HOME}/.dotfiles" ]]; then
-    macos_dotfiles="${dotfiles}"
+# set macos-DOTFILES path
+if [[ "${DOTFILES}" == "${HOME}/.dotfiles" ]]; then
+    export MACOS_DOTFILES="${DOTFILES}"
 else
-    macos_dotfiles="${HOME}/.macos-dotfiles"
+    export MACOS_DOTFILES="${HOME}/.macos-dotfiles"
 fi
 
 # TIME ~60ms
 # append extra paths from files to $PATH, $LIBRARY_PATH, etc.
-if [[ -d "${dotfiles}"/extra_paths ]]; then
-    source "${macos_dotfiles}/etc/append_to_paths.sh" "${dotfiles}/extra_paths"
+if [[ -d "${DOTFILES}"/extra_paths ]]; then
+    source "${MACOS_DOTFILES}/etc/append_to_paths.sh" "${DOTFILES}/extra_paths"
 fi
 
 export SHELL="$(which bash)"
@@ -67,7 +67,7 @@ export VISUAL="emacsclient -c"
 
 if [[ "$OS" == "linux" ]]; then
     # export LD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}"
-    export TMPDIR="~/.tmp"
+    export TMPDIR="${HOME}/.tmp"
 fi
 
 # set cmake makefile generator, compiler, and standard
@@ -75,15 +75,12 @@ export CC="$(command -v gcc-11 || command -v clang)"
 export CXX="$(command -v g++-11 || command -v clang++)"
 export CXX_STD="c++17"
 export CMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/llvm"
-export CMAKE_GENERATOR="$( \
+export CMAKE_GENERATOR="$(
     command -v ninja &> /dev/null \
         && echo "Ninja" \
-        || echo "" \
+        || echo ""
 )"
 export CMAKE_EXPORT_COMPILE_COMMANDS=1
-
-unset dotfiles
-unset macos_dotfiles
 
 if [[ $- == *i* ]]; then
     if [[ -f ~/.bashrc ]]; then
