@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 function! s:GetRightSideContent(winid, bufnr)
     let l:numberwidth = getbufvar(a:bufnr, 'numberwidth', 0)
     let lines_field = ' %' . (l:numberwidth + 0) . '(L%l%)/%-' . (l:numberwidth + 0) . '(%L%)'
@@ -16,9 +18,9 @@ function! s:GetLeftSideContent(winid, bufnr)
     let l:SLFileInfoHL = getbufvar(a:bufnr, 'SLFileInfoHL', '')
     if (l:filetype =~# '^.*preview.*$')  " Preview window
         return l:SLFileInfoHL . '%( %Y %)%*'
-    elseif (l:filetype == 'qf')  " LocationList or QuickFix List
+    elseif (l:filetype ==# 'qf')  " LocationList or QuickFix List
         return l:SLFileInfoHL . ' %q %*'
-    elseif (l:filetype == 'netrw')  " netrw window
+    elseif (l:filetype ==# 'netrw')  " netrw window
         return l:SLFileInfoHL . '%( %Y %)%*'
     elseif (l:buftype ==# 'terminal')  " Terminal window
         return l:SLFileInfoHL . '%( %t %)%*'
@@ -58,7 +60,7 @@ function! s:CalculatePathFieldLength(winid, bufnr)
     let l:filetype_field_length = empty(l:filetype) ? 0 : len(' ' . l:filetype . ' ')
     let l:git_info_field_length = len(s:GetGitInfoField(a:bufnr))
 
-    if (l:filetype == '')
+    if (l:filetype ==# '')
         let l:half_name_length = len('[No Name]') / 2
     else
         let l:filename = fnamemodify(bufname(a:bufnr), ':t')
@@ -69,7 +71,7 @@ endfunction
 
 function! s:FormatField(str, max_len)
     if a:max_len <= 4
-        return ""
+        return ''
     endif
     let l:str = a:str
     if len(l:str) > a:max_len
@@ -90,7 +92,7 @@ function! s:UpdateParentPathCache(...)
     let l:bufnr = a:0 > 0 ? a:1 : bufnr('%')
     let l:filetype = getbufvar(l:bufnr, '&filetype')
     let l:buftype = getbufvar(l:bufnr, '&buftype')
-    if (l:filetype == 'help' || l:buftype ==# 'terminal')
+    if (l:filetype ==# 'help' || l:buftype ==# 'terminal')
         call setbufvar(l:bufnr, 'parent_path_cached', '')
         call setbufvar(l:bufnr, 'full_parent_path_cached', '')
     else
@@ -103,9 +105,14 @@ endfunction
 
 " Function to actually fetch all Git info for the current file
 function! s:UpdateGitInfoCache(bufnr)
+    if !get(g:, 'statusline_git_enabled', 1)
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        return
+    endif
+
     " Only run on loaded files with valid paths
     let l:filepath = resolve(expand('#' . a:bufnr . ':p'))
-    if l:filepath == ''
+    if l:filepath ==# ''
         call setbufvar(a:bufnr, 'git_info_cached', '')
         call setbufvar(a:bufnr, 'is_git_repo', 0)
         return
@@ -121,22 +128,84 @@ function! s:UpdateGitInfoCache(bufnr)
 
     let l:git_command_prefix = 'git -C "' . escape(l:filedir, '"') . '" '
 
-    " If we haven't checked for Git repository yet, check now
-    if getbufvar(a:bufnr, 'is_git_repo', -1) == -1
-        call system(l:git_command_prefix . 'rev-parse --is-inside-work-tree 2> /dev/null')
-        if v:shell_error != 0
-            call setbufvar(a:bufnr, 'is_git_repo', 0)
-            call setbufvar(a:bufnr, 'git_info_cached', '')
-            return
-        endif
-            call setbufvar(a:bufnr, 'is_git_repo', 1)
+    let l:start_time = reltime()
+    let l:status_output = system(l:git_command_prefix . 'status --porcelain --branch 2> /dev/null')
+    let l:elapsed = reltimestr(reltime(l:start_time))
+    
+    if get(g:, 'statusline_git_profile', 0)
+        echom '[Git Status Profile] bufnr=' . a:bufnr . ' took ' . trim(l:elapsed) . 's to execute git status'
     endif
 
-    let l:git_info = ''
+    if v:shell_error != 0
+        call setbufvar(a:bufnr, 'is_git_repo', 0)
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        return
+    endif
+    call setbufvar(a:bufnr, 'is_git_repo', 1)
 
-    " Get the current branch name
-    let l:branch = trim(system(l:git_command_prefix . 'rev-parse --abbrev-ref HEAD 2> /dev/null'))
-    if v:shell_error == 0 && l:branch != '' && l:branch != 'HEAD'
+    let l:lines = split(l:status_output, '\n')
+    if empty(l:lines)
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        return
+    endif
+
+    let l:branch_line = l:lines[0]
+    " Check if the first line starts with '## '
+    if l:branch_line !~# '^##'
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        return
+    endif
+    
+    let l:branch_line = l:branch_line[3:]
+
+    let l:branch = ''
+    let l:diff_info = ''
+
+    " Look for ahead/behind info inside [...]
+    let l:bracket_idx = stridx(l:branch_line, '[')
+    if l:bracket_idx != -1
+        let l:brackets = l:branch_line[l:bracket_idx + 1 : len(l:branch_line) - 2] " strip [ and ]
+        let l:ahead = 0
+        let l:behind = 0
+        let l:ahead_match = matchlist(l:brackets, 'ahead \(\d\+\)')
+        if !empty(l:ahead_match)
+            let l:ahead = str2nr(l:ahead_match[1])
+        endif
+        let l:behind_match = matchlist(l:brackets, 'behind \(\d\+\)')
+        if !empty(l:behind_match)
+            let l:behind = str2nr(l:behind_match[1])
+        endif
+        
+        if l:behind > 0
+            let l:diff_info .= '>' . l:behind
+        endif
+        if l:ahead > 0
+            let l:diff_info .= '<' . l:ahead
+        endif
+        if l:diff_info ==# ''
+            let l:diff_info = '='
+        endif
+    else
+        " Check if there is an upstream
+        if stridx(l:branch_line, '...') != -1
+            let l:diff_info = '='
+        endif
+    endif
+
+    " Extract branch name
+    let l:branch_part = l:branch_line
+    let l:dot_idx = stridx(l:branch_part, '...')
+    if l:dot_idx != -1
+        let l:branch_part = l:branch_part[: l:dot_idx - 1]
+    endif
+    let l:space_idx = stridx(l:branch_part, ' ')
+    if l:space_idx != -1
+        let l:branch_part = l:branch_part[: l:space_idx - 1]
+    endif
+    let l:branch = trim(l:branch_part)
+
+    let l:git_info = ''
+    if l:branch !=# '' && l:branch !=# 'HEAD'
         let l:git_info .= ' ' . l:branch
     else
         call setbufvar(a:bufnr, 'git_info_cached', '')
@@ -144,18 +213,17 @@ function! s:UpdateGitInfoCache(bufnr)
     endif
 
     " Get status indicators (staged, unstaged, untracked)
-    let l:status = system(l:git_command_prefix . 'status --porcelain 2> /dev/null')
     let l:staged_changes = 0
     let l:unstaged_changes = 0
     let l:untracked_files = 0
-    for l:line in split(l:status, '\n')
-        if l:line =~ '^[MADRC]'
+    for l:line in l:lines[1:]
+        if l:line =~# '^[MADRC]'
             let l:staged_changes += 1
-        elseif l:line =~ '^.[MD]'
-            if l:line !~ '^[MADRC].'
+        elseif l:line =~# '^.[MD]'
+            if l:line !~# '^[MADRC].'
                 let l:unstaged_changes += 1
             endif
-        elseif l:line =~ '^??'
+        elseif l:line =~# '^??'
             let l:untracked_files += 1
         endif
     endfor
@@ -172,23 +240,8 @@ function! s:UpdateGitInfoCache(bufnr)
     endif
     let l:git_info .= l:status_indicators
 
-    " Get commits ahead and behind remote
-    let l:upstream = trim(system(l:git_command_prefix . 'rev-parse --verify --quiet @{upstream} 2> /dev/null'))
-    if v:shell_error == 0
-        let l:ahead = len(split(system(l:git_command_prefix . 'log --oneline HEAD..@{upstream} 2> /dev/null'), '\n')) - 1
-        let l:behind = len(split(system(l:git_command_prefix . 'log --oneline @{upstream}..HEAD 2> /dev/null'), '\n')) - 1
-        let l:diff_info = ''
-        if l:ahead > 0
-            let l:diff_info .= '>' . l:ahead
-        endif
-        if l:behind > 0
-            let l:diff_info .= '<' . l:behind
-        endif
-        if l:diff_info == ''
-            let l:diff_info = '='
-        endif
-        let l:git_info .= l:diff_info
-    endif
+    " Append ahead/behind diff info
+    let l:git_info .= l:diff_info
     let l:git_info .= ' '
 
     call setbufvar(a:bufnr, 'git_info_cached', l:git_info)
@@ -239,3 +292,42 @@ augroup statusline
         \|setlocal statusline=%!MyStatusLine()
         \|call s:UpdateGitInfoCache(str2nr(expand('<abuf>')))
 augroup END
+
+if !exists('g:statusline_git_enabled')
+    let g:statusline_git_enabled = 1
+endif
+if !exists('g:statusline_git_profile')
+    let g:statusline_git_profile = 0
+endif
+
+function! ToggleGitStatus()
+    let g:statusline_git_enabled = get(g:, 'statusline_git_enabled', 1) ? 0 : 1
+    if g:statusline_git_enabled
+        echo 'Git status in statusline: ENABLED'
+        for l:buf in range(1, bufnr('$'))
+            if bufexists(l:buf)
+                call setbufvar(l:buf, 'git_info_cached', -1)
+            endif
+        endfor
+    else
+        echo 'Git status in statusline: DISABLED'
+        for l:buf in range(1, bufnr('$'))
+            if bufexists(l:buf)
+                call setbufvar(l:buf, 'git_info_cached', '')
+            endif
+        endfor
+    endif
+    redrawstatus!
+endfunction
+
+function! ToggleGitProfile()
+    let g:statusline_git_profile = get(g:, 'statusline_git_profile', 0) ? 0 : 1
+    if g:statusline_git_profile
+        echo 'Git status profiling: ENABLED (logs will appear in :messages)'
+    else
+        echo 'Git status profiling: DISABLED'
+    endif
+endfunction
+
+command! ToggleGitStatus call ToggleGitStatus()
+command! ToggleGitProfile call ToggleGitProfile()
