@@ -127,9 +127,10 @@ function! s:UpdateGitInfoCache(bufnr)
     endif
 
     let l:git_command_prefix = 'git -C "' . escape(l:filedir, '"') . '" '
+    let l:upstream_flag = get(g:, 'statusline_git_upstream_enabled', 0) ? '' : ' --no-ahead-behind'
 
     let l:start_time = reltime()
-    let l:status_output = system(l:git_command_prefix . 'status --porcelain --branch 2> /dev/null')
+    let l:status_output = system(l:git_command_prefix . 'status --porcelain --branch' . l:upstream_flag . ' 2> /dev/null')
     let l:elapsed = reltimestr(reltime(l:start_time))
     
     if get(g:, 'statusline_git_profile', 0)
@@ -186,9 +187,11 @@ function! s:UpdateGitInfoCache(bufnr)
             let l:diff_info = '='
         endif
     else
-        " Check if there is an upstream
-        if stridx(l:branch_line, '...') != -1
-            let l:diff_info = '='
+        if g:statusline_git_upstream_enabled
+            " Check if there is an upstream
+            if stridx(l:branch_line, '...') != -1
+                let l:diff_info = '='
+            endif
         endif
     endif
 
@@ -296,6 +299,9 @@ augroup END
 if !exists('g:statusline_git_enabled')
     let g:statusline_git_enabled = 1
 endif
+if !exists('g:statusline_git_upstream_enabled')
+    let g:statusline_git_upstream_enabled = 0
+endif
 if !exists('g:statusline_git_profile')
     let g:statusline_git_profile = 0
 endif
@@ -320,6 +326,21 @@ function! ToggleGitStatus()
     redrawstatus!
 endfunction
 
+function! ToggleGitUpstream()
+    let g:statusline_git_upstream_enabled = get(g:, 'statusline_git_upstream_enabled', 0) ? 0 : 1
+    if g:statusline_git_upstream_enabled
+        echo 'Git ahead/behind check in statusline: ENABLED'
+    else
+        echo 'Git ahead/behind check in statusline: DISABLED'
+    endif
+    for l:buf in range(1, bufnr('$'))
+        if bufexists(l:buf)
+            call setbufvar(l:buf, 'git_info_cached', -1)
+        endif
+    endfor
+    redrawstatus!
+endfunction
+
 function! ToggleGitProfile()
     let g:statusline_git_profile = get(g:, 'statusline_git_profile', 0) ? 0 : 1
     if g:statusline_git_profile
@@ -330,4 +351,5 @@ function! ToggleGitProfile()
 endfunction
 
 command! ToggleGitStatus call ToggleGitStatus()
+command! ToggleGitUpstream call ToggleGitUpstream()
 command! ToggleGitProfile call ToggleGitProfile()
