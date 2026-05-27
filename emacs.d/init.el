@@ -1391,8 +1391,14 @@ If USE-3D is \\='toggle, toggle the current style."
   (plist-put org-format-latex-options :background "Transparent")
   (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
   (font-lock-add-keywords 'org-mode
-                          '(("^\\*+ " 0 'fixed-pitch prepend)
-                            ("^[ \t]*\\(?:[-+*]\\|[a-zA-Z0-9]+[.)]\\)[ \t]+" 0 'fixed-pitch prepend))
+                          '(;; Org headings (e.g., "* ", "** ")
+                            ("^\\*+ " 0 'fixed-pitch prepend)
+                            ;; Any leading whitespace (aligns descriptions)
+                            ("^[ \t]+" 0 'fixed-pitch prepend)
+                            ;; Unordered list items (e.g., "- ", "+ ", "* ")
+                            ("^[ \t]*[-+*][ \t]+" 0 'fixed-pitch prepend)
+                            ;; Ordered list items (e.g., "1. ", "a) ")
+                            ("^[ \t]*[a-zA-Z0-9]+[.)][ \t]+" 0 'fixed-pitch prepend))
                           'append))
 
 (use-package my-org-utils
