@@ -12,20 +12,20 @@ This document provides compact, high-signal guidance to help AI agents working i
 Always run the appropriate linters after making changes. Custom configuration files for these tools are located in the repository root.
 
 ### Bash / Shell Scripts
-Use the custom `./bin/lint_bash` utility to run both `shellcheck` (using `shellcheckrc`) and `bashate` on your changes:
+Use the custom `./bin/lint-bash` utility to run both `shellcheck` (using `shellcheckrc`) and `bashate` on your changes:
 ```bash
 # Lint a single file
-./bin/lint_bash <path-to-file>
+./bin/lint-bash <path-to-file>
 
 # Lint an entire directory (defaults to current directory)
-./bin/lint_bash [path-to-directory]
+./bin/lint-bash [path-to-directory]
 ```
 
 ### Vim Configuration and Scripts
-Run `vint` to check for syntax and style issues on `.vimrc` or `.vim` files. If the shell environment has loaded the custom aliases, you can use `lint_vim`:
+Run `vint` to check for syntax and style issues on `.vimrc` or `.vim` files. If the shell environment has loaded the custom aliases, you can use `lint-vim`:
 ```bash
 # Lint a single file
-vint <path-to-file>  # OR: lint_vim <path-to-file>
+vint <path-to-file>  # OR: lint-vim <path-to-file>
 ```
 
 ### Python Files
