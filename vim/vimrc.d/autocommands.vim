@@ -86,11 +86,8 @@ augroup vimrc
         \ call s:UpdateBreakindentopt()
         \|call s:UpdateIndentGuides()
 
-    " re-enable colorscheme (and syntax) when gaining back focus
-    autocmd FocusGained * nested
-        \ if !exists('g:syntax_on')
-            \|colorscheme sunyata
-        \|endif
+    " Check and sync theme (and re-enable colorscheme if syntax is lost) when gaining focus
+    autocmd FocusGained * nested call s:CheckSystemTheme()
 
     " autosave named files
     autocmd CursorHold,FocusGained,FocusLost ?* nested
@@ -147,3 +144,36 @@ augroup vimrc
     autocmd BufWinLeave ?* mkview
     autocmd BufWinEnter * silent! loadview
 augroup END
+
+
+function! s:CheckSystemTheme() abort
+    let l:is_dark = 0 " Default
+
+    if !has('gui_running')
+        if has('macunix')
+            let l:mode = system('defaults read -g AppleInterfaceStyle 2>/dev/null')
+            let l:is_dark = (v:shell_error == 0)
+        elseif has('unix')
+            let l:mode = system('gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null')
+            if v:shell_error || empty(l:mode)
+                let l:mode = system('dbus-send --print-reply --dest=org.freedesktop.portal.Desktop /org/freedesktop/portal/desktop org.freedesktop.portal.Settings.Read string:"org.freedesktop.appearance" string:"color-scheme" 2>/dev/null')
+            endif
+            if l:mode =~? 'dark' || l:mode =~? '1'
+                let l:is_dark = 1
+            else
+                let l:is_dark = 0
+            endif
+        endif
+    endif
+
+    let l:current_mode = l:is_dark ? 'dark' : 'light'
+    if &background !=# l:current_mode || !exists('g:syntax_on')
+        let &background = l:current_mode
+        colorscheme sunyata
+    endif
+endfunction
+
+" Setup periodic check (if Vim supports timers)
+if has('timers') && !exists('s:theme_timer_id')
+    let s:theme_timer_id = timer_start(5000, {-> s:CheckSystemTheme()}, {'repeat': -1})
+endif
