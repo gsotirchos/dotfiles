@@ -13,6 +13,44 @@ set t_Co=16
 let g:colors_name = 'sunyata'
 
 
+let s:is_dark = 0 " Default to light
+
+if !has('gui_running')
+    if has('macunix')
+        " macOS detection
+        let s:mode = system('defaults read -g AppleInterfaceStyle 2>/dev/null')
+        let s:is_dark = (v:shell_error == 0)
+    elseif has('unix')
+        " Linux detection (GTK/GNOME/Ubuntu standard)
+        let s:mode = system('gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null')
+
+        " If gsettings fails or isn't populated, try the generic XDG portal
+        if v:shell_error || empty(s:mode)
+            let s:mode = system('dbus-send --print-reply --dest=org.freedesktop.portal.Desktop /org/freedesktop/portal/desktop org.freedesktop.portal.Settings.Read string:"org.freedesktop.appearance" string:"color-scheme" 2>/dev/null')
+        endif
+
+        " 1 = prefer-dark, 2 = prefer-light. Also checks for the literal string 'dark'
+        if s:mode =~? 'dark' || s:mode =~? '1'
+            let s:is_dark = 1
+        else
+            let s:is_dark = 0
+        endif
+    endif
+endif
+
+if s:is_dark
+    let s:bg = '0'
+    let s:bg_dim = '8'
+    let s:fg_dim = '7'
+    let s:fg = '15'
+else
+    let s:bg = '15'
+    let s:bg_dim = '7'
+    let s:fg_dim = '8'
+    let s:fg = '0'
+endif
+
+
 " Entries are aligned in columns at intervals of 4:
 "   HilightName |   cterm=...   |   |   |   ctermfg=... |   ctermbg=... |   |
 "   link ThisHilightName    ThatHilightName |   |   |   |   |   |   |   |   |
@@ -63,12 +101,12 @@ hi! link SpecialChar    Character
 " my custom groups
 hi! OtherType       cterm=none              ctermfg=12      ctermbg=none
 hi! SpecialComment  cterm=bold              ctermfg=none    ctermbg=none
-hi! DocComment      cterm=italic            ctermfg=7       ctermbg=none
+execute 'hi! DocComment      cterm=italic            ctermfg=' . s:bg_dim . '       ctermbg=none'
 hi! Done            cterm=bold              ctermfg=2       ctermbg=none
 hi! Debug           cterm=bold              ctermfg=11      ctermbg=none
-hi! MembOperator    cterm=bold              ctermfg=8       ctermbg=none
-hi! Dimmed          cterm=none              ctermfg=8       ctermbg=none
-hi! MyStrikethrough cterm=strikethrough     ctermfg=7       ctermbg=none
+execute 'hi! MembOperator    cterm=bold              ctermfg=' . s:fg_dim . '       ctermbg=none'
+execute 'hi! Dimmed          cterm=none              ctermfg=' . s:fg_dim . '       ctermbg=none'
+execute 'hi! MyStrikethrough cterm=strikethrough     ctermfg=' . s:bg_dim . '       ctermbg=none'
 hi! link MyParens   Dimmed
 hi! link MyNote     Normal
 hi! link MyTagMark  SpecialComment
@@ -96,12 +134,12 @@ hi! clear Search
 hi! clear IncSearch
 hi! clear Visual
 hi! clear SignColumn
-hi! Search          cterm=none              ctermfg=none    ctermbg=15
-hi! IncSearch       cterm=bold              ctermfg=none    ctermbg=15
-hi! Visual          cterm=none              ctermfg=none    ctermbg=7
+execute 'hi! Search          cterm=none              ctermfg=none    ctermbg=' . s:bg
+execute 'hi! IncSearch       cterm=bold              ctermfg=none    ctermbg=' . s:bg
+execute 'hi! Visual          cterm=none              ctermfg=none    ctermbg=' . s:bg_dim
 hi! ColorColumn     cterm=none              ctermfg=3       ctermbg=none
-hi! CursorLineNr    cterm=none              ctermfg=7       ctermbg=none
-hi! NonText         cterm=none              ctermfg=8       ctermbg=none
+execute 'hi! CursorLineNr    cterm=none              ctermfg=' . s:bg_dim . '       ctermbg=none'
+execute 'hi! NonText         cterm=none              ctermfg=' . s:fg_dim . '       ctermbg=none'
 hi! link LineNr     NonText
 hi! link VertSplit  NonText
 hi! link Folded     NonText
@@ -114,9 +152,9 @@ hi! Directory       cterm=none              ctermfg=12      ctermbg=none
 hi! ModeMsg         cterm=bold              ctermfg=1       ctermbg=none
 hi! Question        cterm=none              ctermfg=3       ctermbg=none
 hi! MsgArea         cterm=none              ctermfg=none    ctermbg=none
-hi! ToolbarLine     cterm=none              ctermfg=none    ctermbg=8
-hi! Pmenu           cterm=none              ctermfg=15      ctermbg=8
-hi! PmenuSel        cterm=none              ctermfg=15      ctermbg=4
+execute 'hi! ToolbarLine     cterm=none              ctermfg=none    ctermbg=' . s:fg_dim
+execute 'hi! Pmenu           cterm=none              ctermfg=' . s:bg . '      ctermbg=' . s:fg_dim
+execute 'hi! PmenuSel        cterm=none              ctermfg=' . s:bg . '      ctermbg=4'
 hi! PmenuThumb      cterm=reverse           ctermfg=none    ctermbg=none
 hi! link PmenuSbar      Pmenu
 hi! link Title          SpecialComment
@@ -131,10 +169,10 @@ hi! link SpecialKey     NonText
 " Statusline
 hi! clear StatusLine
 hi! clear StatusLineNC
-hi! StatusLine      cterm=none              ctermfg=none    ctermbg=7
-hi! StatusLineNC    cterm=none              ctermfg=8       ctermbg=15
-hi! SLFileName      cterm=bold              ctermfg=none    ctermbg=7
-hi! SLFileNameNC    cterm=bold              ctermfg=8       ctermbg=15
+execute 'hi! StatusLine      cterm=none              ctermfg=none    ctermbg=' . s:bg_dim
+execute 'hi! StatusLineNC    cterm=none              ctermfg=' . s:fg_dim . '      ctermbg=' . s:bg
+execute 'hi! SLFileName      cterm=bold              ctermfg=none    ctermbg=' . s:bg_dim
+execute 'hi! SLFileNameNC    cterm=bold              ctermfg=' . s:fg_dim . '      ctermbg=' . s:bg
 hi! link SLGitInfo          StatusLine
 hi! link SLFileInfo         StatusLine
 hi! link SLFilePath         StatusLine
@@ -179,7 +217,7 @@ hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
 "hi! link ALEWarningLine             Normal
 
 " CoC
-hi! CocVirtualText  cterm=none              ctermfg=8       ctermbg=none
+execute 'hi! CocVirtualText  cterm=none              ctermfg=' . s:fg_dim . '       ctermbg=none'
 hi! CocErrorFloat   cterm=none              ctermfg=1       ctermbg=none
 hi! CocWarningFloat cterm=none              ctermfg=3       ctermbg=none
 hi! CocInfoFloat    cterm=none              ctermfg=none    ctermbg=none
