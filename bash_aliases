@@ -85,26 +85,30 @@ prompt_time() {
 }
 
 # System
-alias ec="emacsclient -a '' -c &"                          # start emacs daemon and/or client
-alias rm=trash                                             # trash files instead of deleting
-alias mv="mv -iv"                                          # confirmatory, verbose
-alias cp="cp -ivr"                                         # confirmatory, verbose, recursive
-alias ln="ln -iv"                                          # confirmatory, verbose
-alias ls="ls -vh --color=always --group-directories-first" # human-readable, version-ordered, colored, dir-first
-alias ll="ls -l"                                           # ll := list
-alias la="ls -la"                                          # la := list all
-alias mkdir="mkdir -pv"                                    # recursive, verbose
-alias chmod="chmod -v"                                     # verbose
-alias chown="chown -v"                                     # verbose
-if command -v "rg" &> /dev/null; then
-    alias grep="rg -p"
-else
-    alias grep="grep --color -E -n" # colored, extended regexp, line no.
-fi
+alias ec="emacsclient -a '' -c &" # start emacs daemon and/or client
+alias rm=trash                    # trash files instead of deleting
+alias mv="mv -iv"                 # confirmatory, verbose
+alias cp="cp -ivr"                # confirmatory, verbose, recursive
+alias ln="ln -iv"                 # confirmatory, verbose
+alias ls="ls -vh --color=always \
+    --group-directories-first" # human-readable, version-ordered, colored, dirs first
+alias ll="ls -l"               # ll := list
+alias la="ls -la"              # la := list all
+alias mkdir="mkdir -pv"        # recursive, verbose
+alias chmod="chmod -v"         # verbose
+alias chown="chown -v"         # verbose
 alias tree="tree \
     -lFNC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"
+if command -v rg &> /dev/null; then
+    alias grep='rg -p -g "!.git"  -g "!.venv" -g "!.conda" -g "!.pixi" -g "!pack"'
+else
+    alias grep='grep --color -E -n --exclude-dir={.git,.venv,.conda,.pixi,pack}'
+fi
+if command -v fd &> /dev/null; then
+    alias find='fd -E .git -E .venv -E .conda -E .pixi -E pack'
+fi
 alias ports="lsof -i -P -n | grep LISTEN" # see what is listening on which ports
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias vimrc="vim ~/.vim/vimrc"
