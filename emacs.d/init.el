@@ -1127,6 +1127,13 @@ If USE-3D is \\='toggle, toggle the current style."
   :preface (add-hook 'emacs-lisp-mode-hook (lambda () (setq-local evil-shift-width 2))))
 
 
+;; Vimscript
+
+(use-package vimscript-ts-mode
+  :ensure nil
+  :mode "/\\.?\\(vimrc\\|vims?\\)\\'")
+
+
 ;; Python
 
 (use-package python
@@ -1180,6 +1187,24 @@ If USE-3D is \\='toggle, toggle the current style."
   )
 
 
+;; Bash
+
+(use-package sh-script
+  :ensure nil
+  :no-require t
+  :after treesit
+  :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode)
+  :preface (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+  :init
+  ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
+  (add-hook 'sh-base-mode-hook (lambda () (hs-minor-mode -1)))
+  :config
+  (add-to-list 'treesit-language-source-alist
+               '(bash "https://github.com/tree-sitter/tree-sitter-bash"))
+  (unless (treesit-language-available-p 'bash)
+    (treesit-install-language-grammar 'bash)))
+
+
 ;; YAML
 
 (use-package yaml-ts-mode
@@ -1220,29 +1245,13 @@ If USE-3D is \\='toggle, toggle the current style."
   :config (add-hook 'nxml-mode-hook #'my/nxml-mode-hook))
 
 
-;; Bash
-
-(use-package sh-script
-  :ensure nil
-  :no-require t
-  :after treesit
-  :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode)
-  :preface (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
-  :init
-  ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
-  (add-hook 'sh-base-mode-hook (lambda () (hs-minor-mode -1)))
-  :config
-  (add-to-list 'treesit-language-source-alist
-               '(bash "https://github.com/tree-sitter/tree-sitter-bash"))
-  (unless (treesit-language-available-p 'bash)
-    (treesit-install-language-grammar 'bash)))
-
 ;; ROS
 
 (use-package my-ros-msg-mode
   :ensure nil
   :load-path "site-lisp/"
   :mode ("\\.msg\\'" . my-ros-msg-mode))
+
 
 ;; LaTeX
 
