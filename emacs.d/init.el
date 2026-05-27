@@ -5,10 +5,6 @@
 (use-package emacs
   :ensure nil
   :preface
-  ;; --------------------------------------------------------------------------
-  ;; Helper functions (Background/Utilities/Advice/Hooks/Variables)
-  ;; --------------------------------------------------------------------------
-
   (defvar my/scale-factor 1.75
     "Global scale factor for images and LaTeX overlays.")
 
