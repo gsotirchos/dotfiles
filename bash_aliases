@@ -110,7 +110,7 @@ alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias vimrc="vim ~/.vim/vimrc"
 alias wi="vim +WikiIndex"
 if command -v "vint" &> /dev/null; then
-    lint_vim() {
+    lint-vim() {
         if [[ -f "$1" ]]; then
             vint "$1"
         else
