@@ -1,5 +1,5 @@
 " Vim color file
-" Maintainer:   George Sotirchos <gsotirch@gmail.com>
+" Maintainer: George Sotirchos <gsotirch@gmail.com>
 
 " handy help sections:
 " group-name, highlight-groups, cterm-colors
@@ -13,58 +13,62 @@ set t_Co=16
 let g:colors_name = 'sunyata'
 
 
-hi! Normal         cterm=none      ctermfg=none ctermbg=none
-hi! Comment        cterm=none      ctermfg=2    ctermbg=none term=none
+" Entries are aligned in columns at intervals of 4:
+"   HilightName |   cterm=...   |   |   |   ctermfg=... |   ctermbg=... |   |
+"   link ThisHilightName    ThatHilightName |   |   |   |   |   |   |   |   |
+
+hi! Normal          cterm=none              ctermfg=none    ctermbg=none
+hi! Comment         cterm=none  term=none   ctermfg=2       ctermbg=none
 
 " generic Preprocessor
-hi! PreProc        cterm=none      ctermfg=3    ctermbg=none
-hi! link Include   PreProc
-hi! link Define    PreProc
-hi! link Macro     PreProc
-hi! link PreCondit PreProc
+hi! PreProc         cterm=none              ctermfg=3       ctermbg=none
+hi! link Include    PreProc
+hi! link Define     PreProc
+hi! link Macro      PreProc
+hi! link PreCondit  PreProc
 
 " types
-hi! Type           cterm=bold      ctermfg=13   ctermbg=none
-hi! link Structure    Statement
-hi! link StorageClass Statement
-hi! link Typedef      Statement
+hi! Type            cterm=bold              ctermfg=13      ctermbg=none
+hi! link Structure      Statement
+hi! link StorageClass   Statement
+hi! link Typedef        Statement
 
 " statements
-hi! Statement      cterm=bold      ctermfg=5    ctermbg=none
-hi! link Conditional Statement
-hi! link Repeat      Statement
-hi! link Label       Statement
-hi! link Keyword     Statement
-hi! link Exception   Statement
-hi! link Operator    Statement
+hi! Statement       cterm=bold              ctermfg=5       ctermbg=none
+hi! link Conditional    Statement
+hi! link Repeat         Statement
+hi! link Label          Statement
+hi! link Keyword        Statement
+hi! link Exception      Statement
+hi! link Operator       Statement
 
 " variable names
-hi! Function       cterm=none      ctermfg=4    ctermbg=none
-hi! Identifier     cterm=none      ctermfg=12   ctermbg=none
+hi! Function        cterm=none              ctermfg=4       ctermbg=none
+hi! Identifier      cterm=none              ctermfg=12      ctermbg=none
 
 " constants
-hi! String         cterm=none      ctermfg=9    ctermbg=none
-hi! Character      cterm=none      ctermfg=11   ctermbg=none
-hi! link Constant Character"
-hi! link Number   Character
-hi! link Float    Number
-hi! link Boolean  Character
+hi! String          cterm=none              ctermfg=9       ctermbg=none
+hi! Character       cterm=none              ctermfg=11      ctermbg=none
+hi! link Constant   Character"
+hi! link Number     Character
+hi! link Float      Number
+hi! link Boolean    Character
 
 " special symbols
-hi! Delimiter      cterm=none      ctermfg=2    ctermbg=none
-hi! link Tag         Delimiter
-hi! link Special     Character
-hi! link SpecialChar Character
+hi! Delimiter       cterm=none              ctermfg=2       ctermbg=none
+hi! link Tag            Delimiter
+hi! link Special        Character
+hi! link SpecialChar    Character
 
 " my custom groups
-hi! OtherType      cterm=none      ctermfg=12   ctermbg=none
-hi! SpecialComment cterm=bold      ctermfg=none ctermbg=none
-hi! DocComment     cterm=italic    ctermfg=7    ctermbg=none
-hi! Done           cterm=bold      ctermfg=2    ctermbg=none
-hi! Debug          cterm=bold      ctermfg=11   ctermbg=none
-hi! MembOperator   cterm=bold      ctermfg=8    ctermbg=none
-hi! Dimmed         cterm=none      ctermfg=8    ctermbg=none
-hi! MyStrikethrough cterm=strikethrough ctermfg=7 ctermbg=none
+hi! OtherType       cterm=none              ctermfg=12      ctermbg=none
+hi! SpecialComment  cterm=bold              ctermfg=none    ctermbg=none
+hi! DocComment      cterm=italic            ctermfg=7       ctermbg=none
+hi! Done            cterm=bold              ctermfg=2       ctermbg=none
+hi! Debug           cterm=bold              ctermfg=11      ctermbg=none
+hi! MembOperator    cterm=bold              ctermfg=8       ctermbg=none
+hi! Dimmed          cterm=none              ctermfg=8       ctermbg=none
+hi! MyStrikethrough cterm=strikethrough     ctermfg=7       ctermbg=none
 hi! link MyParens   Dimmed
 hi! link MyNote     Normal
 hi! link MyTagMark  SpecialComment
@@ -73,18 +77,18 @@ hi! link MyEquals   Statement
 hi! link MyOperator OtherType
 
 " errors and warnings
-hi! MatchParen     cterm=underline ctermbg=None
-hi! Error          cterm=bold      ctermfg=1    ctermbg=none
-hi! ErrorMsg       cterm=none      ctermfg=1    ctermbg=none
-hi! Warning        cterm=bold      ctermfg=3    ctermbg=none
-hi! WarningMsg     cterm=none      ctermfg=3    ctermbg=none
-hi! HintMsg        cterm=none      ctermfg=12   ctermbg=none
-hi! Todo           cterm=bold      ctermfg=11   ctermbg=none
-hi! SpellBad       cterm=underline ctermfg=1    ctermbg=none
-hi! SpellCap       cterm=underline ctermfg=3    ctermbg=none
-hi! SpellLocal     cterm=none      ctermfg=3    ctermbg=none
-hi! link SpellRare SpellLocal
-hi! link InfoMsg Dimmed
+hi! MatchParen      cterm=underline         ctermfg=none    ctermbg=none
+hi! Error           cterm=bold              ctermfg=1       ctermbg=none
+hi! ErrorMsg        cterm=none              ctermfg=1       ctermbg=none
+hi! Warning         cterm=bold              ctermfg=3       ctermbg=none
+hi! WarningMsg      cterm=none              ctermfg=3       ctermbg=none
+hi! HintMsg         cterm=none              ctermfg=12      ctermbg=none
+hi! Todo            cterm=bold              ctermfg=11      ctermbg=none
+hi! SpellBad        cterm=underline         ctermfg=1       ctermbg=none
+hi! SpellCap        cterm=underline         ctermfg=3       ctermbg=none
+hi! SpellLocal      cterm=none              ctermfg=3       ctermbg=none
+hi! link SpellRare  SpellLocal
+hi! link InfoMsg    Dimmed
 
 " visual elements
 hi! clear CursorLine
@@ -92,12 +96,12 @@ hi! clear Search
 hi! clear IncSearch
 hi! clear Visual
 hi! clear SignColumn
-hi! Search         cterm=reverse
-hi! IncSearch      cterm=reverse   ctermfg=3    ctermbg=none
-hi! Visual         cterm=reverse   ctermfg=15
-hi! ColorColumn    cterm=none      ctermfg=3    ctermbg=none
-hi! CursorLineNr   cterm=none      ctermfg=7    ctermbg=none
-hi! NonText        cterm=none      ctermfg=8    ctermbg=none
+hi! Search          cterm=none              ctermfg=none    ctermbg=15
+hi! IncSearch       cterm=bold              ctermfg=none    ctermbg=15
+hi! Visual          cterm=none              ctermfg=none    ctermbg=7
+hi! ColorColumn     cterm=none              ctermfg=3       ctermbg=none
+hi! CursorLineNr    cterm=none              ctermfg=7       ctermbg=none
+hi! NonText         cterm=none              ctermfg=8       ctermbg=none
 hi! link LineNr     NonText
 hi! link VertSplit  NonText
 hi! link Folded     NonText
@@ -105,65 +109,65 @@ hi! link FoldColumn NonText
 hi! link Conceal    OtherType
 
 " menus and messages
-hi! Underlined     cterm=underline ctermfg=4    ctermbg=none
-hi! Directory      cterm=none      ctermfg=12   ctermbg=none
-hi! ModeMsg        cterm=bold      ctermfg=1    ctermbg=none
-hi! Question       cterm=none      ctermfg=3    ctermbg=none
-hi! MsgArea        cterm=none      ctermfg=none ctermbg=none
-hi! ToolbarLine    cterm=none      ctermfg=none ctermbg=8
-hi! Pmenu          cterm=none      ctermfg=15   ctermbg=8
-hi! PmenuSel       cterm=none      ctermfg=15   ctermbg=4
-hi! PmenuThumb     cterm=reverse   ctermfg=none ctermbg=none
-hi! link PmenuSbar   Pmenu
-hi! link Title       SpecialComment
-hi! link TabLineSel  SpecialComment
-hi! link TabLine     ToolbarButton
-hi! link TabLineFill ToolbarButton
-hi! link MoreMsg     ModeMsg
-hi! link Ignore      NonText
-hi! link EndOfBuffer NonText
-hi! link SpecialKey  NonText
+hi! Underlined      cterm=underline         ctermfg=4       ctermbg=none
+hi! Directory       cterm=none              ctermfg=12      ctermbg=none
+hi! ModeMsg         cterm=bold              ctermfg=1       ctermbg=none
+hi! Question        cterm=none              ctermfg=3       ctermbg=none
+hi! MsgArea         cterm=none              ctermfg=none    ctermbg=none
+hi! ToolbarLine     cterm=none              ctermfg=none    ctermbg=8
+hi! Pmenu           cterm=none              ctermfg=15      ctermbg=8
+hi! PmenuSel        cterm=none              ctermfg=15      ctermbg=4
+hi! PmenuThumb      cterm=reverse           ctermfg=none    ctermbg=none
+hi! link PmenuSbar      Pmenu
+hi! link Title          SpecialComment
+hi! link TabLineSel     SpecialComment
+hi! link TabLine        ToolbarButton
+hi! link TabLineFill    ToolbarButton
+hi! link MoreMsg        ModeMsg
+hi! link Ignore         NonText
+hi! link EndOfBuffer    NonText
+hi! link SpecialKey     NonText
 
 " Statusline
 hi! clear StatusLine
 hi! clear StatusLineNC
-hi! StatusLine     cterm=reverse   ctermfg=NONE ctermbg=NONE
-hi! StatusLineNC   cterm=reverse   ctermfg=7    ctermbg=NONE
-hi! SLFileName     cterm=reverse,bold ctermfg=NONE ctermbg=NONE
-hi! SLFileNameNC   cterm=reverse,bold ctermfg=7    ctermbg=NONE
-hi! link SLGitInfo        StatusLine
-hi! link SLFileInfo       StatusLine
-hi! link SLFilePath       StatusLine
-hi! link StatusLineTerm   StatusLine
-hi! link SLGitInfoNC      StatusLineNC
-hi! link SLFileInfoNC     StatusLineNC
-hi! link SLFilePathNC     StatusLineNC
-hi! link StatusLineTermNC StatusLineNC
+hi! StatusLine      cterm=none              ctermfg=none    ctermbg=7
+hi! StatusLineNC    cterm=none              ctermfg=8       ctermbg=15
+hi! SLFileName      cterm=bold              ctermfg=none    ctermbg=7
+hi! SLFileNameNC    cterm=bold              ctermfg=8       ctermbg=15
+hi! link SLGitInfo          StatusLine
+hi! link SLFileInfo         StatusLine
+hi! link SLFilePath         StatusLine
+hi! link StatusLineTerm     StatusLine
+hi! link SLGitInfoNC        StatusLineNC
+hi! link SLFileInfoNC       StatusLineNC
+hi! link SLFilePathNC       StatusLineNC
+hi! link StatusLineTermNC   StatusLineNC
 
 "netrw
-hi! netrwDir cterm=bold ctermfg=4
-hi! netrwExe cterm=bold ctermfg=2
-hi! netrwSymlink cterm=bold ctermfg=6
-hi! link netrwClassify Dimmed
-hi! link netrwTreebar NonText
-hi! link netrwLink MyOperator
+hi! netrwDir        cterm=bold              ctermfg=4       ctermbg=none
+hi! netrwExe        cterm=bold              ctermfg=2       ctermbg=none
+hi! netrwSymlink    cterm=bold              ctermfg=6       ctermbg=none
+hi! link netrwClassify  Dimmed
+hi! link netrwTreebar   NonText
+hi! link netrwLink      MyOperator
 
 " Vimdiff
 hi! clear DiffAdd
 hi! clear DiffChange
 hi! clear DiffDelete
 hi! clear DiffText
-hi! DiffAdd                        ctermfg=10   ctermbg=None
-hi! DiffChange                                  ctermbg=None
-hi! DiffDelete                     ctermfg=9    ctermbg=None
-hi! DiffText                       ctermfg=11   ctermbg=None
-hi! DiffAdded                      ctermfg=2    ctermbg=none
-hi! DiffChanged                    ctermfg=none ctermbg=none
-hi! DiffRemoved                    ctermfg=1    ctermbg=none
-hi! link diffNewFile SpecialComment
-hi! link diffFile    SpecialComment
-hi! link diffLine    SpecialComment
-hi! link diffSubname SpecialComment
+hi! DiffAdd                                 ctermfg=10      ctermbg=none
+hi! DiffChange                              ctermfg=none    ctermbg=none
+hi! DiffDelete                              ctermfg=9       ctermbg=none
+hi! DiffText                                ctermfg=11      ctermbg=none
+hi! DiffAdded                               ctermfg=2       ctermbg=none
+hi! DiffChanged                             ctermfg=none    ctermbg=none
+hi! DiffRemoved                             ctermfg=1       ctermbg=none
+hi! link diffNewFile    SpecialComment
+hi! link diffFile       SpecialComment
+hi! link diffLine       SpecialComment
+hi! link diffSubname    SpecialComment
 
 " ALE
 hi! link ALEVirtualTextError        ErrorMsg
@@ -175,27 +179,27 @@ hi! link ALEVirtualTextStyleWarning ALEVirtualTextInfo
 "hi! link ALEWarningLine             Normal
 
 " CoC
-hi! CocVirtualText         cterm=none      ctermfg=8    ctermbg=None
-hi! CocErrorFloat          cterm=none      ctermfg=1    ctermbg=None
-hi! CocWarningFloat        cterm=none      ctermfg=3    ctermbg=None
-hi! CocInfoFloat           cterm=none      ctermfg=none ctermbg=None
-hi! CocHintFloat           cterm=none      ctermfg=12   ctermbg=None
-hi! link CocErrorSign          ErrorMsg
-hi! link CocErrorVirtualText   CocErrorFloat
-hi! link CocWarningSign        WarningMsg
-hi! link CocWarningVirtualText CocWarningFloat
-hi! link CocInfoSign           InfoMsg
-hi! link CocInfoVirtualText    CocInfoFloat
-hi! link CocHintSign           HintMsg
-hi! link CocHintVirtualText    CocHintFloat
-hi! link CocHighlightText      Search
-hi! link CocHighlightRead      CocHighlightText
+hi! CocVirtualText  cterm=none              ctermfg=8       ctermbg=none
+hi! CocErrorFloat   cterm=none              ctermfg=1       ctermbg=none
+hi! CocWarningFloat cterm=none              ctermfg=3       ctermbg=none
+hi! CocInfoFloat    cterm=none              ctermfg=none    ctermbg=none
+hi! CocHintFloat    cterm=none              ctermfg=12      ctermbg=none
+hi! link CocErrorSign           ErrorMsg
+hi! link CocErrorVirtualText    CocErrorFloat
+hi! link CocWarningSign         WarningMsg
+hi! link CocWarningVirtualText  CocWarningFloat
+hi! link CocInfoSign            InfoMsg
+hi! link CocInfoVirtualText     CocInfoFloat
+hi! link CocHintSign            HintMsg
+hi! link CocHintVirtualText     CocHintFloat
+hi! link CocHighlightText       Search
+hi! link CocHighlightRead       CocHighlightText
 
 " Copilot
-"hi! link CopilotSuggestion    NonText
-"hi! link CopilotAnnotation    Comment
-hi! link CopilotWelcome       ModeMsg
-hi! link CopilotPrompt        NonText
-hi! link CopilotSeparatorLine NonText
-hi! link CopilotSeparatorIcon Normal
-"hi! link CopilotWaiting       Comment
+"hi! link CopilotSuggestion      NonText
+"hi! link CopilotAnnotation      Comment
+hi! link CopilotWelcome         ModeMsg
+hi! link CopilotPrompt          NonText
+hi! link CopilotSeparatorLine   NonText
+hi! link CopilotSeparatorIcon   Normal
+"hi! link CopilotWaiting         Comment

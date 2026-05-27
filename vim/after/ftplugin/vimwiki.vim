@@ -1,2 +1,2 @@
 " enable coc-markdownlint support
-setlocal ft=markdown.vimwiki
+"setlocal ft=markdown.vimwiki
