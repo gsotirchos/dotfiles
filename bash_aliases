@@ -85,17 +85,17 @@ prompt_time() {
 }
 
 # System
-alias ec="emacsclient -a '' -c &" # start emacs daemon and/or client
-alias rm=trash                    # trash files instead of deleting
-alias mv="mv -iv"                 # confirmatory, verbose
-alias cp="cp -ivr"                # confirmatory, verbose, recursive
-alias ln="ln -iv"                 # confirmatory, verbose
-alias ls="ls -vh --color=always"  # human-readable, version-ordered, colored
-alias ll="ls -l"                  # ll := list
-alias la="ls -la"                 # la := list all
-alias mkdir="mkdir -pv"           # recursive, verbose
-alias chmod="chmod -v"            # verbose
-alias chown="chown -v"            # verbose
+alias ec="emacsclient -a '' -c &"                          # start emacs daemon and/or client
+alias rm=trash                                             # trash files instead of deleting
+alias mv="mv -iv"                                          # confirmatory, verbose
+alias cp="cp -ivr"                                         # confirmatory, verbose, recursive
+alias ln="ln -iv"                                          # confirmatory, verbose
+alias ls="ls -vh --color=always --group-directories-first" # human-readable, version-ordered, colored, dir-first
+alias ll="ls -l"                                           # ll := list
+alias la="ls -la"                                          # la := list all
+alias mkdir="mkdir -pv"                                    # recursive, verbose
+alias chmod="chmod -v"                                     # verbose
+alias chown="chown -v"                                     # verbose
 if command -v "rg" &> /dev/null; then
     alias grep="rg -p"
 else
@@ -112,7 +112,6 @@ alias wi="vim +WikiIndex"
 if command -v "vint" &> /dev/null; then
     lint_vim() {
         if [[ -f "$1" ]]; then
-            echo "is file"
             vint "$1"
         else
             find "${1:-"."}" -path '*/pack' -prune -o -regex "\(.*\.vim\|.*vimrc\)" -print0 | xargs -0 -n 1 vint
