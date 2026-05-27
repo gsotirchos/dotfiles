@@ -1406,6 +1406,24 @@ If USE-3D is \\='toggle, toggle the current style."
   :load-path "site-lisp/"
   :hook org-mode)
 
+(use-package org-indent
+  :ensure nil
+  :no-require t
+  :preface
+  (defun my/org-indent-set-line-properties-advice (orig-fn level indentation &optional heading)
+    "Append an ellipsis specifically to the wrap-prefix property of the current line."
+    (let ((beg (line-beginning-position))
+          (end (line-beginning-position 2)))
+      ;; The original function calculates and sets both line-prefix and wrap-prefix,
+      ;; and then moves point to the next line via (forward-line).
+      (funcall orig-fn level indentation heading)
+      ;; We intercept the wrap-prefix it just set on the line, and append our ellipsis.
+      (let ((wrap-prop (get-text-property beg 'wrap-prefix)))
+        (when (stringp wrap-prop)
+          (put-text-property beg end 'wrap-prefix (concat wrap-prop "…"))))))
+  :config
+  (advice-add 'org-indent-set-line-properties :around #'my/org-indent-set-line-properties-advice))
+
 (use-package org-fragtog
   :hook org-mode)
 
