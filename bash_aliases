@@ -35,19 +35,17 @@ trash() {
     done
 }
 
-# play the "empty trash" sound on macOS
 play_trash_sound() {
     if [[ "$OS" == "macos" ]]; then
         touch "${TRASH}"/.delete_me && osascript -e 'tell app "Finder" to empty' \;
     fi
 }
 
-# empty the trash folder
 empty_trash() {
     if [[ "${TRASH}" == "" ]]; then
         echo "No trash folder found."
         return 1
-    elif [[ -n "$(find "${TRASH}" -maxdepth 0 -type d -empty)" ]]; then
+    elif [[ -n "$(env find "${TRASH}" -maxdepth 0 -type d -empty)" ]]; then
         echo "Trash is already empty."
         return 1
     fi
@@ -62,57 +60,69 @@ empty_trash() {
     fi
 }
 
-# make a .url file, using the povided link (optinal)
 touch_url_file() {
     local filename="${1:-file}"
     echo -e "[InternetShortcut]\nURL=$2" > "${filename%.url}.url"
 }
 
-# merge all build/*/copmile_commands.json to a single build/copmile_commands.json
-merge_compile_commands() {
-    if command -v "catkin" &> /dev/null; then
-        local build_dir="$(catkin locate --build)"
-        jq -s 'map(.[])' "${build_dir}"/*/compile_commands.json > "${build_dir}"/compile_commands.json
-    fi
-}
-
-# benchmark prompt
-prompt_time() {
+benchmark_prompt() {
     time (
         [[ -n "$PROMPT_COMMAND" ]] && eval "$PROMPT_COMMAND"
         _prompt="${PS1@P}"
     )
 }
 
-# System
-alias ec="emacsclient -a '' -c &" # start emacs daemon and/or client
-alias rm=trash                    # trash files instead of deleting
-alias mv="mv -iv"                 # confirmatory, verbose
-alias cp="cp -ivr"                # confirmatory, verbose, recursive
-alias ln="ln -iv"                 # confirmatory, verbose
+alias rm=trash     # trash files instead of deleting
+alias mv="mv -iv"  # confirmatory, verbose
+alias cp="cp -ivr" # confirmatory, verbose, recursive
+alias ln="ln -iv"  # confirmatory, verbose
 alias ls="ls -vh --color=always \
-    --group-directories-first" # human-readable, version-ordered, colored, dirs first
-alias ll="ls -l"               # ll := list
-alias la="ls -la"              # la := list all
-alias mkdir="mkdir -pv"        # recursive, verbose
-alias chmod="chmod -v"         # verbose
-alias chown="chown -v"         # verbose
+    --group-directories-first"    # human-readable, version-ordered, colored, dirs first
+alias ll="ls -l"                  # ll := list
+alias la="ls -la"                 # la := list all
+alias mkdir="mkdir -pv"           # recursive, verbose
+alias chmod="chmod -v"            # verbose
+alias chown="chown -v"            # verbose
+alias ec="emacsclient -a '' -c &" # start emacs daemon and/or client
 alias tree="tree \
     -lFNC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"
-if command -v rg &> /dev/null; then
-    alias grep='rg -p -g "!.git"  -g "!.venv" -g "!.conda" -g "!.pixi" -g "!pack"'
-else
-    alias grep='grep --color -E -n --exclude-dir={.git,.venv,.conda,.pixi,pack}'
-fi
-if command -v fd &> /dev/null; then
-    alias find='fd -E .git -E .venv -E .conda -E .pixi -E pack'
-fi
 alias ports="lsof -i -P -n | grep LISTEN" # see what is listening on which ports
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias vimrc="vim ~/.vim/vimrc"
 alias wi="vim +WikiIndex"
+alias dunnet="clear && emacs -batch -l dunnet 1> /dev/null"
+alias py="python3"
+alias ipy="ipython"
+alias pyclean="find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete"
+
+if command -v "rg" &> /dev/null; then
+    alias grep='rg -p -g "!.git"  -g "!.venv" -g "!.conda" -g "!.pixi" -g "!pack"'
+else
+    alias grep='grep --color -E -n --exclude-dir={.git,.venv,.conda,.pixi,pack}'
+fi
+
+if command -v "fd" &> /dev/null; then
+    alias find='fd -E .git -E .venv -E .conda -E .pixi -E pack'
+else
+    find() {
+        local p=() x=(\( -name .git -o -name .venv -o -name .conda -o -name .pixi -o -name pack \) -prune -o)
+        while [[ $1 && ! $1 =~ ^[-!\(] ]]; do
+            p+=("$1")
+            shift
+        done
+        if [[ $# -eq 0 ]]; then
+            set -- -print
+        elif [[ $* =~ -(print|exec|ok|delete|ls) ]]; then
+            set -- \( "$@" \)
+        else
+            set -- \( "$@" \) -print
+        fi
+        command find "${p[@]:-.}" "${x[@]}" "$@"
+    }
+fi
+
 if command -v "vint" &> /dev/null; then
     lint-vim() {
         if [[ -f "$1" ]]; then
@@ -122,13 +132,10 @@ if command -v "vint" &> /dev/null; then
         fi
     }
 fi
-alias dunnet="clear && emacs -batch -l dunnet 1> /dev/null"
+
 if ! command -v "open" &> /dev/null; then
     alias open=xdg-open
 fi
-alias py="python3"
-alias ipy="ipython"
-alias pyclean="find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete"
 
 if [[ "$OS" == "macos" ]]; then
     alias update="brew update && brew upgrade && brew autoremove && brew cleanup --prune=all"
@@ -136,7 +143,6 @@ if [[ "$OS" == "macos" ]]; then
 #     ...
 fi
 
-# opencode
 if command -v "opencode" &> /dev/null; then
     alias opencode="op-env opencode"
     alias oc="opencode"
@@ -177,6 +183,12 @@ if command -v "catkin" &> /dev/null; then
             return 1
         fi
     }
+
+    # merge all build/*/copmile_commands.json to a single build/copmile_commands.json
+    merge_compile_commands() {
+        local build_dir="$(catkin locate --build)"
+        jq -s 'map(.[])' "${build_dir}"/*/compile_commands.json > "${build_dir}"/compile_commands.json
+    }
 fi
 
 # Colcon (ROS 2)
@@ -190,27 +202,3 @@ fi
 if command -v "ble_write" &> /dev/null; then
     alias ble_lamp='ble_write -n "MIPOW SMART BULB" -u "0000fffc-0000-1000-8000-00805f9b34fb" -v'
 fi
-
-export VM_NAME=
-export LOCATION=
-export PROJECT_ID=
-
-gcevm_start() {
-    until gcloud compute instances start "$VM_NAME" --zone="$LOCATION"; do
-        sleep 1
-        echo -e "------\n"
-    done \
-        && afplay /System/Library/Sounds/Glass.aiff # echo -e \\a
-}
-
-gcevm_ssh() {
-    gcloud compute ssh "$VM_NAME" --zone="$LOCATION"
-}
-
-gcevm_stop() {
-    gcloud compute instances stop "$VM_NAME" --zone="$LOCATION"
-}
-
-gcevm_status() {
-    gcloud compute instances describe "$VM_NAME" --zone="$LOCATION" | grep "status:"
-}
