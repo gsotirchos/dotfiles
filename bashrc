@@ -22,11 +22,11 @@ shopt -s checkwinsize
 shopt -s direxpand
 shopt -s extglob
 shopt -s hostcomplete
-complete -f -o nospace cd  # improve cd completion
-stty -ixon  # enable Ctrl+S for forward search
+complete -f -o nospace cd # improve cd completion
+stty -ixon                # enable Ctrl+S for forward search
 
 declare -a files_to_source=(
-    "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh  # TIME ~170ms
+    "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh # TIME ~170ms
     /opt/ros/noetic/setup.bash
     ~/.bash_aliases
 )
@@ -61,7 +61,7 @@ if [[ "$TERM_PROGRAM" = "iTerm.app" ]]; then
     # enable iTerm2 shell integration on macOS
     if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
         curl -L "https://iterm2.com/shell_integration/bash" \
-             -o ~/.iterm2_shell_integration.bash
+            -o ~/.iterm2_shell_integration.bash
     fi
 
     # clean up PROMPT_COMMAND just in case, to avoid surprises...
