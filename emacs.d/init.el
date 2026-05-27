@@ -556,7 +556,12 @@ If USE-3D is \\='toggle, toggle the current style."
   (evil-global-set-key 'normal (kbd "<tab>") #'evil-toggle-fold)
   (evil-global-set-key 'normal (kbd "C-i") #'evil-jump-forward)
   (evil-global-set-key 'visual (kbd "p") #'evil-paste-before)
-  (evil-global-set-key 'visual (kbd "P") #'evil-visual-paste))
+  (evil-global-set-key 'visual (kbd "P") #'evil-visual-paste)
+  (define-key evil-command-line-map (kbd "C-a") nil)
+  (define-key evil-command-line-map (kbd "C-b") nil)
+  (define-key evil-command-line-map (kbd "C-d") nil)
+  (define-key evil-command-line-map (kbd "C-f") nil)
+  (define-key evil-command-line-map (kbd "C-l") nil))
 
 (use-package evil-collection
   :after evil
