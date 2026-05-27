@@ -3,7 +3,7 @@ scriptencoding utf-8
 augroup commentary
     autocmd FileType * let b:commentary_format = substitute(&commentstring, ' ', '', 'g')
 augroup END
-if get(g:, 'loaded_commentary', 0) ==# 0
+if get(g:, 'loaded_commentary', 0) ==# 1
     finish
 endif
 
