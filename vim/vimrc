@@ -34,7 +34,6 @@ set concealcursor=c  " only conceal command mode
 set conceallevel=1  " only conceal using 1 character
 "set number  " show line numbers
 set numberwidth=1  " smallest width at start
-"set wrap  " wrap long lines
 set sidescroll=1  " enable sidescrolling
 set showmatch  " show matching parentheses
 set showcmd  " show typed command
@@ -66,11 +65,11 @@ set backspace=indent,eol,start
 set scrolloff=3  " lines to scoll before the reaching last
 set sidescrolloff=5  " columnts to sroll before reaching the last
 set whichwrap+=h,l,<,>,[,]  " fix line movement on line borders
-"set wrap lbr  " wrap lines by word
 set formatoptions=1jnr2  " no automatic line breaking
+set wrap linebreak nolist " wrap long lines
 set breakindent  " wrap preserving indentation
 set display=lastline  " show last wrapped line in window
-"set smoothscroll  " scroll screen lines (when wrap is on)
+set smoothscroll  " scroll screen lines (when wrap is on)
 set shell=$SHELL\ -l  " login shell for 'term'
 set shellcmdflag=-c  " login shell for '!'
 set nolangremap  " disable a legacy behavior that can break plugin maps
