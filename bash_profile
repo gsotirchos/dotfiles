@@ -75,6 +75,8 @@ export CMAKE_GENERATOR="$(
 )"
 export CMAKE_EXPORT_COMPILE_COMMANDS=1
 
+export BASH_PROFILE_SOURCED=1
+
 if [[ $- == *i* ]]; then
     if [[ -f ~/.bashrc ]]; then
         source ~/.bashrc
