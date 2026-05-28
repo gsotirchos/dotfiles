@@ -40,19 +40,11 @@ if [[ -x /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# set dotfiles paths
-export DOTFILES="$(
-    builtin cd "$(
-        dirname "$(realpath "${BASH_SOURCE[0]}")"
-    )" > /dev/null && pwd
-)"
-
-
-# set macos-DOTFILES path
-if [[ -d "${HOME}/.macos-dotfiles" ]]; then
+# set dotfiles path
+export DOTFILES="${HOME}/.dotfiles"
+export MACOS_DOTFILES="${HOME}/.macos-dotfiles"
+if [[ ! -d "${MACOS_DOTFILES}" ]]; then
     export MACOS_DOTFILES="${DOTFILES}"
-else
-    export MACOS_DOTFILES="${HOME}/.macos-dotfiles"
 fi
 
 # TIME ~60ms
