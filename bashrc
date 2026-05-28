@@ -60,6 +60,7 @@ if [[ "$(hostname)" =~ login[0-9]+ ]]; then
     rlhive
 fi
 
+# enable shell integration
 if [[ "$TERM_PROGRAM" = "iTerm.app" ]]; then
     # enable iTerm2 shell integration on macOS
     if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
@@ -77,6 +78,8 @@ elif [[ -n "$GHOSTTY_RESOURCES_DIR" ]]; then
     # enable Ghostty shell integration
     source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
 fi
+
+export BASHRC_SOURCED=1
 
 # configure or start prompt
 if command -v "prmt" &> /dev/null && prmt --version &> /dev/null; then
