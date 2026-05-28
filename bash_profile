@@ -36,7 +36,7 @@ case "$(uname -s)" in
 esac
 
 # homebrew
-if [[ -f /opt/homebrew/bin/brew ]]; then
+if [[ -x /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
@@ -47,8 +47,9 @@ export DOTFILES="$(
     )" > /dev/null && pwd
 )"
 
+
 # set macos-DOTFILES path
-if [[ "${DOTFILES}" == "${HOME}/.dotfiles" ]]; then
+if [[ -d "${HOME}/.macos-dotfiles" ]]; then
     export MACOS_DOTFILES="${DOTFILES}"
 else
     export MACOS_DOTFILES="${HOME}/.macos-dotfiles"
