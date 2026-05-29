@@ -32,14 +32,14 @@ main() {
 
     # make soft symlinks
     echo -e "${bright_style}- Symlinking dotfiles (${dotfiles})${normal_style}"
-    "${dotfiles}/etc/symlink_files.sh" "${dotfiles}" "${HOME}/."  # ~/.dotfiles/* -> ~/.*
-    ln -sfv "${dotfiles}"/.gitignore           ~/.gitignore
-    ln -sfv "${dotfiles}"/emacs.d/*            ~/.emacs.d
-    ln -sfv "${dotfiles}"/vim/*                ~/.vim
-    ln -sfv "${dotfiles}"/conda/*              ~/.conda
+    "${dotfiles}/etc/symlink_files.sh" "${dotfiles}" "${HOME}/." # ~/.dotfiles/* -> ~/.*
+    ln -sfv "${dotfiles}"/.gitignore ~/.gitignore
+    ln -sfv "${dotfiles}"/emacs.d/* ~/.emacs.d
+    ln -sfv "${dotfiles}"/vim/* ~/.vim
+    ln -sfv "${dotfiles}"/conda/* ~/.conda
     ln -sfv "${dotfiles}"/config/starship.toml ~/.config/starship.toml
-    ln -sfv "${dotfiles}"/config/ghostty/*     ~/.config/ghostty
-    ln -sfv "${dotfiles}"/config/opencode/*    ~/.config/opencode
+    ln -sfv "${dotfiles}"/config/ghostty/* ~/.config/ghostty
+    ln -sfv "${dotfiles}"/config/opencode/* ~/.config/opencode
     ln -sfv "${dotfiles}"/Zotero/translators/* ~/Zotero/translators
 
     # setup launch daemons and launch agents
