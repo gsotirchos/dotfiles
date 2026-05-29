@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+import sys
+import json
+
+def clean_json(s):
+    out = []
+    i = 0
+    n = len(s)
+    in_string = False
+    escape = False
+    while i < n:
+        c = s[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif c == '\\':
+                escape = True
+            elif c == '"':
+                in_string = False
+            out.append(c)
+            i += 1
+        else:
+            if c == '"':
+                in_string = True
+                out.append(c)
+                i += 1
+            elif c == '/' and i + 1 < n and s[i+1] == '/':
+                while i < n and s[i] != '\n':
+                    i += 1
+            elif c == '/' and i + 1 < n and s[i+1] == '*':
+                i += 2
+                while i + 1 < n and not (s[i] == '*' and s[i+1] == '/'):
+                    i += 1
+                i += 2
+            else:
+                out.append(c)
+                i += 1
+    s_no_comments = "".join(out)
+    out_final = []
+    i = 0
+    n = len(s_no_comments)
+    in_string = False
+    escape = False
+    while i < n:
+        c = s_no_comments[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif c == '\\':
+                escape = True
+            elif c == '"':
+                in_string = False
+            out_final.append(c)
+            i += 1
+        else:
+            if c == '"':
+                in_string = True
+                out_final.append(c)
+                i += 1
+            elif c == ',':
+                j = i + 1
+                while j < n and s_no_comments[j].isspace():
+                    j += 1
+                if j < n and s_no_comments[j] in ('}', ']'):
+                    i = j
+                else:
+                    out_final.append(c)
+                    i += 1
+            else:
+                out_final.append(c)
+                i += 1
+    return "".join(out_final)
+
+def main():
+    content = sys.stdin.read()
+    if not content.strip():
+        sys.exit(0)
+    try:
+        cleaned = clean_json(content)
+        data = json.loads(cleaned)
+        print(json.dumps(data, indent=4))
+    except Exception as e:
+        sys.stderr.write(f"Error cleaning/parsing JSON: {e}\n")
+        sys.stdout.write(content)
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main()
