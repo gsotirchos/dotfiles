@@ -785,6 +785,7 @@ If USE-3D is \\='toggle, toggle the current style."
    ("<tab>" . magit-section-toggle)
    ("C-<tab>" . nil))
   :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  :preface (add-hook 'magit-status-mode-hook (lambda () (visual-line-mode 1)))
   :config
   (when (bound-and-true-p evil-mode)
     (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
@@ -1038,7 +1039,7 @@ If USE-3D is \\='toggle, toggle the current style."
   (indent-bars-display-on-blank-lines nil))
 
 (use-package adaptive-wrap
-  :hook ((prog-mode markdown-mode) . adaptive-wrap-prefix-mode)
+  :hook ((prog-mode magit-status-mode markdown-mode) . adaptive-wrap-prefix-mode)
   :bind (:map my/toggles-map ("a" . adaptive-wrap-prefix-mode))
   :custom (adaptive-wrap-extra-indent 2))
 
