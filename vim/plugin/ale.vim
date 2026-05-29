@@ -22,7 +22,15 @@ let g:ale_linters = {
 \   'python': ['ruff'],
 \   'tex': ['chktex', 'proselint'],
 \   'markdown': ['markdownlint'],
+\   'json': ['jq'],
 \}
+
+" Custom fixer for JSON (strips trailing commas and comments, then formats)
+function! ALEFixJson(buffer) abort
+    return {
+    \   'command': expand('${DOTFILES}/bin/fix-json')
+    \}
+endfunction
 
 " Fixers on save (safe undojoin wrapper to prevent undo history breakage)
 let g:ale_fix_on_save = 1
@@ -32,6 +40,7 @@ let g:ale_fixers = {
 \   'cpp': [{ -> execute('undojoin', 'silent!') + 0 }, 'clang-format'],
 \   'python': [{ -> execute('undojoin', 'silent!') + 0 }, 'ruff', 'ruff_format'],
 \   'tex': [{ -> execute('undojoin', 'silent!') + 0 }, 'latexindent'],
+\   'json': [{ -> execute('undojoin', 'silent!') + 0 }, 'ALEFixJson'],
 \}
 
 " Custom Tool Flags matching your modern outside-vim setup
@@ -40,4 +49,4 @@ let g:ale_sh_shfmt_options = '-ln=bash -i ' . &tabstop . ' -ci -bn -sr'
 let g:ale_python_ruff_options = '--config ~/.pyproject.toml'
 let g:ale_tex_latexindent_options = '-m -rv'
 let g:ale_markdown_markdownlint_options = '--config ~/.markdownlint.json'
-let g:ale_sh_bashate_executable = expand('~/.dotfiles/bin/bashate')
+let g:ale_sh_bashate_executable = expand('${DOTFILES}/bin/bashate')
