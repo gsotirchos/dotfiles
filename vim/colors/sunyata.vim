@@ -105,12 +105,12 @@ if s:is_dark
     hi! DocComment      cterm=italic            ctermfg=8       ctermbg=none
     hi! MembOperator    cterm=bold              ctermfg=7       ctermbg=none
     hi! Dimmed          cterm=none              ctermfg=7       ctermbg=none
-    hi! MyStrikethrough cterm=strikethrough     ctermfg=8       ctermbg=none
+    hi! MyStrikethrough cterm=strikethrough     ctermfg=7       ctermbg=none
 else
     hi! DocComment      cterm=italic            ctermfg=7       ctermbg=none
     hi! MembOperator    cterm=bold              ctermfg=8       ctermbg=none
     hi! Dimmed          cterm=none              ctermfg=8       ctermbg=none
-    hi! MyStrikethrough cterm=strikethrough     ctermfg=7       ctermbg=none
+    hi! MyStrikethrough cterm=strikethrough     ctermfg=8       ctermbg=none
 endif
 hi! Done            cterm=bold              ctermfg=2       ctermbg=none
 hi! Debug           cterm=bold              ctermfg=11      ctermbg=none
@@ -146,14 +146,14 @@ if s:is_dark
     hi! Search          cterm=none              ctermfg=none    ctermbg=0
     hi! IncSearch       cterm=bold              ctermfg=none    ctermbg=0
     hi! Visual          cterm=none              ctermfg=none    ctermbg=8
-    hi! CursorLineNr    cterm=none              ctermfg=8       ctermbg=none
-    hi! NonText         cterm=none              ctermfg=7       ctermbg=none
+    hi! CursorLineNr    cterm=none              ctermfg=7       ctermbg=none
+    hi! NonText         cterm=none              ctermfg=8       ctermbg=none
 else
     hi! Search          cterm=none              ctermfg=none    ctermbg=15
     hi! IncSearch       cterm=bold              ctermfg=none    ctermbg=15
     hi! Visual          cterm=none              ctermfg=none    ctermbg=7
-    hi! CursorLineNr    cterm=none              ctermfg=7       ctermbg=none
-    hi! NonText         cterm=none              ctermfg=8       ctermbg=none
+    hi! CursorLineNr    cterm=none              ctermfg=8       ctermbg=none
+    hi! NonText         cterm=none              ctermfg=7       ctermbg=none
 endif
 hi! link LineNr     NonText
 hi! link VertSplit  NonText

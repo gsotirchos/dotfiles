@@ -12,7 +12,7 @@ syntax region MyTagMark
     \ containedin=.*Comment.* contained oneline
 
 " assignemnt and logical operators
-syntax match MyParens "[(){}\[\]<>,;]" containedin=NONE display
+syntax match MyParens "[(){}\[\],;]" containedin=NONE display  " <>
 syntax match MyEquals "\(\W\|\_s\)\@<==\(\S\)\@!" containedin=NONE display
 syntax match MyOperator "[-+*/^?$%&|\\!~:]\+" contains=TOP display
 syntax match MyOperator "\([\S\n]\)\@<![<>!~:]\+[=]\=\(\S\)\@!" display
