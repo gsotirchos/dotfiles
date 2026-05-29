@@ -28,7 +28,7 @@ let g:ale_linters = {
 " Custom fixer for JSON (strips trailing commas and comments, then formats)
 function! ALEFixJson(buffer) abort
     return {
-    \   'command': expand('${DOTFILES}/bin/fix-json')
+    \   'command': expand('${MACOS_DOTFILES}/bin/fix-json')
     \}
 endfunction
 
@@ -49,4 +49,4 @@ let g:ale_sh_shfmt_options = '-ln=bash -i ' . &tabstop . ' -ci -bn -sr'
 let g:ale_python_ruff_options = '--config ~/.pyproject.toml'
 let g:ale_tex_latexindent_options = '-m -rv'
 let g:ale_markdown_markdownlint_options = '--config ~/.markdownlint.json'
-let g:ale_sh_bashate_executable = expand('${DOTFILES}/bin/bashate')
+let g:ale_sh_bashate_executable = expand('${MACOS_DOTFILES}/bin/bashate')
