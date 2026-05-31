@@ -17,8 +17,8 @@ export LANG="en_US.UTF-8"
 export HISTCONTROL=ignoreboth
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-export HISTSIZE=1000
-export HISTFILESIZE=2000
+export HISTSIZE=100000
+export HISTFILESIZE=100000
 
 # determine OS
 case "$(uname -s)" in
