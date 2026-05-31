@@ -98,7 +98,7 @@ alias ipy="ipython"
 alias pyclean="find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete"
 
 if command -v "rg" &> /dev/null; then
-    alias grep='rg -p -g "!.git"  -g "!.venv" -g "!.conda" -g "!.pixi" -g "!pack"'
+    alias grep='rg -p -g "!.git" -g "!.venv" -g "!.conda" -g "!.pixi" -g "!pack"'
 else
     alias grep='grep --color -E -n --exclude-dir={.git,.venv,.conda,.pixi,pack}'
 fi
