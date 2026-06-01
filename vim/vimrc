@@ -10,6 +10,7 @@ set nocompatible  " be IMproved, required
 filetype off  " required
 runtime vimrc.d/plugins.vim
 filetype plugin indent on
+let g:dotfiles_dir = empty($MACOS_DOTFILES) ? '~/.dotfiles' : $MACOS_DOTFILES
 
 source $VIMRUNTIME/defaults.vim
 source $HOME/.vim/vimrc.d/statusline.vim
