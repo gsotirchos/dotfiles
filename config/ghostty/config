@@ -26,17 +26,19 @@ cursor-opacity = 1.0
 theme = light:patched-modus-operandi, dark:patched-modus-vivendi
 
 keybind = shift+escape=text:~
-keybind = super+up=jump_to_prompt:-2
-keybind = super+down=jump_to_prompt:+2
-keybind = super+enter=unbind
-keybind = super+ctrl+right=unbind
-keybind = super+ctrl+left=unbind
-keybind = super+1=unbind
-keybind = super+2=unbind
-keybind = super+3=unbind
-keybind = super+4=unbind
-keybind = super+5=unbind
-keybind = super+6=unbind
-keybind = super+7=unbind
-keybind = super+8=unbind
-keybind = super+9=unbind
+keybind = option+delete=esc:d
+keybind = command+delete=text:\x0b
+keybind = command+up=jump_to_prompt:-2
+keybind = command+down=jump_to_prompt:+2
+keybind = command+enter=unbind
+keybind = command+ctrl+right=unbind
+keybind = command+ctrl+left=unbind
+keybind = command+1=unbind
+keybind = command+2=unbind
+keybind = command+3=unbind
+keybind = command+4=unbind
+keybind = command+5=unbind
+keybind = command+6=unbind
+keybind = command+7=unbind
+keybind = command+8=unbind
+keybind = command+9=unbind
