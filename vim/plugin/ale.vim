@@ -27,9 +27,7 @@ let g:ale_linters = {
 
 " Custom fixer for JSON (strips trailing commas and comments, then formats)
 function! ALEFixJson(buffer) abort
-    return {
-    \   'command': expand('${MACOS_DOTFILES}/bin/fix-json')
-    \}
+    return { 'command': expand($MACOS_DOTFILES . '/bin/fix-json') }
 endfunction
 
 " Fixers on save (safe undojoin wrapper to prevent undo history breakage)
@@ -46,7 +44,7 @@ let g:ale_fixers = {
 " Custom Tool Flags matching your modern outside-vim setup
 let g:ale_sh_shellcheck_options = '--shell=bash'
 let g:ale_sh_shfmt_options = '-ln=bash -i ' . &tabstop . ' -ci -bn -sr'
-let g:ale_python_ruff_options = '--config ~/.pyproject.toml'
+let g:ale_python_ruff_options = '--config ' . expand($MACOS_DOTFILES . '/pyproject.toml')
 let g:ale_tex_latexindent_options = '-m -rv'
-let g:ale_markdown_markdownlint_options = '--config ~/.markdownlint.json'
-let g:ale_sh_bashate_executable = expand('${MACOS_DOTFILES}/bin/bashate')
+let g:ale_markdown_markdownlint_options = '--config ' . expand($MACOS_DOTFILES . '/markdownlint.json')
+let g:ale_sh_bashate_executable = expand($MACOS_DOTFILES . '/bin/bashate')
