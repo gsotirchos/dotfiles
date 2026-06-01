@@ -985,6 +985,24 @@ If USE-3D is \\='toggle, toggle the current style."
   :config (add-to-list 'eglot-server-programs
                        `(python-base-mode . ("pyright-langserver" "--stdio"))))
 
+(use-package apheleia
+  :preface
+  (add-hook 'python-base-mode-hook
+            (lambda () (setq-local apheleia-formatter '(ruff-isort ruff))))
+  (add-hook 'sh-base-mode-hook
+            (lambda () (setq-local apheleia-formatter 'shfmt)))
+  :init (apheleia-global-mode 1)
+  :config
+  (let ((config-path (expand-file-name "pyproject.toml" (or (getenv "MACOS_DOTFILES") "~/.dotfiles"))))
+    (setf (alist-get 'ruff apheleia-formatters)
+          `("ruff" "format" "--config" ,config-path "--silent" "--stdin-filename" filepath "-"))
+    (setf (alist-get 'ruff-isort apheleia-formatters)
+          `("ruff" "check" "--select" "I" "--fix" "--config" ,config-path "--silent" "--stdin-filename" filepath "-"))
+    (setf (alist-get 'shfmt apheleia-formatters)
+          '("shfmt" "-ln" "bash" "-i" "2" "-ci" "-bn" "-sr"))
+    (setf (alist-get 'latexindent apheleia-formatters)
+          '("latexindent" "--logfile=/dev/null" "-m" "-rv"))))
+
 (use-package prog-mode
   :ensure nil
   :preface
@@ -994,24 +1012,6 @@ If USE-3D is \\='toggle, toggle the current style."
     ;; (modify-syntax-entry ?- "w")
     (modify-syntax-entry ?_ "w"))
   (add-hook 'prog-mode-hook #'my/prog-mode-hook))
-
-(use-package apheleia
-  :preface
-  (add-hook 'python-base-mode-hook
-            (lambda () (setq-local apheleia-formatter '(ruff-isort ruff))))
-  (add-hook 'sh-base-mode-hook
-            (lambda () (setq-local apheleia-formatter 'shfmt)))
-  :config
-  (setf (alist-get 'shfmt apheleia-formatters)
-        '("shfmt" "-ln" "bash" "-i" "2" "-ci" "-bn" "-sr"))
-  (setf (alist-get 'latexindent apheleia-formatters)
-        '("latexindent" "--logfile=/dev/null" "-m" "-rv"))
-  (let ((config-path (expand-file-name "pyproject.toml" (or (getenv "MACOS_DOTFILES") "~/.dotfiles"))))
-    (setf (alist-get 'ruff apheleia-formatters)
-          `("ruff" "format" "--config" ,config-path "--silent" "--stdin-filename" filepath "-"))
-    (setf (alist-get 'ruff-isort apheleia-formatters)
-          `("ruff" "check" "--select" "I" "--fix" "--config" ,config-path "--silent" "--stdin-filename" filepath "-")))
-  :init (apheleia-global-mode 1))
 
 (use-package outline
   :ensure nil
