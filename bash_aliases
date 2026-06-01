@@ -88,7 +88,7 @@ alias tree="tree \
     -lFNC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"
-alias ports="lsof -i -P -n | grep LISTEN" # see what is listening on which ports
+alias ports="lsof -i -P -n | env grep LISTEN" # see what is listening on which ports
 alias sftp='$(which with-readline 2> /dev/null) sftp'
 alias vimrc="vim ~/.vim/vimrc"
 alias wi="vim +WikiIndex"
@@ -100,7 +100,7 @@ alias pyclean="find . -type f -name '*.py[co]' -delete -o -type d -name __pycach
 if command -v "rg" &> /dev/null; then
     alias grep='rg -p -g "!.git" -g "!.venv" -g "!.conda" -g "!.pixi" -g "!pack"'
 else
-    alias grep='grep --color -E -n --exclude-dir={.git,.venv,.conda,.pixi,pack}'
+    alias grep2='env grep --color -I -H -E -n -r --exclude-dir={.git,.venv,.conda,.pixi,pack}'
 fi
 
 if command -v "fd" &> /dev/null; then
