@@ -1257,13 +1257,7 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package flymake-bashate
   :commands flymake-bashate-setup
-  :hook (sh-base-mode . flymake-bashate-setup)
-  :custom
-  ;; (flymake-bashate-executable (expand-file-name "bin/bashate" dotfiles-dir))
-  (flymake-bashate-executable "/opt/homebrew/bin/bashate")
-  ;; (flymake-bashate-ignore "E005,E042")
-  (flymake-bashate-max-line-length 120)  ;; needed because of a bug (TODO)
-  )
+  :hook (sh-base-mode . flymake-bashate-setup))
 
 ;; YAML
 
