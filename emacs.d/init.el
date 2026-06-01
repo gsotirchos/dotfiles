@@ -5,6 +5,10 @@
 (use-package emacs
   :ensure nil
   :preface
+  (defconst fixed-pitch-line-spacing 4)
+  (defconst variable-pitch-line-spacing 4)
+  (defconst dotfiles-dir (or (getenv "MACOS_DOTFILES") "~/.dotfiles"))
+
   (defvar my/scale-factor 1.75
     "Global scale factor for images and LaTeX overlays.")
 
@@ -975,13 +979,13 @@ If USE-3D is \\='toggle, toggle the current style."
      ;; :colorProvider
      :foldingRangeProvider
      :executeCommandProvider))
-  ;; (defun my/eglot-mode-hook ()
-  ;;   (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
-  ;;   (flymake-mode 1))
+  :preface
+  (defun my/eglot-mode-hook ()
+    (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t))
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
   :init
+  (setq eglot-stay-out-of '(flymake))
   (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
-  ;; (setq eglot-stay-out-of '(flymake))
-  ;; (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
   :config (add-to-list 'eglot-server-programs
                        `(python-base-mode . ("pyright-langserver" "--stdio"))))
 
@@ -993,13 +997,13 @@ If USE-3D is \\='toggle, toggle the current style."
             (lambda () (setq-local apheleia-formatter 'shfmt)))
   :init (apheleia-global-mode 1)
   :config
-  (let ((config-path (expand-file-name "pyproject.toml" (or (getenv "MACOS_DOTFILES") "~/.dotfiles"))))
+  (let ((config-path (expand-file-name "pyproject.toml" dotfiles-dir)))
     (setf (alist-get 'ruff apheleia-formatters)
           `("ruff" "format" "--config" ,config-path "--silent" "--stdin-filename" filepath "-"))
     (setf (alist-get 'ruff-isort apheleia-formatters)
           `("ruff" "check" "--select" "I" "--fix" "--config" ,config-path "--silent" "--stdin-filename" filepath "-"))
     (setf (alist-get 'shfmt apheleia-formatters)
-          '("shfmt" "-ln" "bash" "-i" "2" "-ci" "-bn" "-sr"))
+          '("shfmt" "-ln" "bash" "-i" "4" "-ci" "-bn" "-sr"))
     (setf (alist-get 'latexindent apheleia-formatters)
           '("latexindent" "--logfile=/dev/null" "-m" "-rv"))))
 
@@ -1197,7 +1201,6 @@ If USE-3D is \\='toggle, toggle the current style."
   :after treesit
   :preface (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
-  ;; TODO maybe: "ruff check --quiet --stdin-filename=stdin -"
   :init
   (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1)))
   (add-hook 'inferior-python-mode-hook
@@ -1210,13 +1213,7 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package flymake-ruff
   :hook (python-base-mode . flymake-ruff-load)
-  :custom (python-flymake-command python-check-command)
-  :preface
-  (defun my/eglot-python-flymake-hook ()
-    (when (derived-mode-p 'python-base-mode)
-      (add-hook 'flymake-diagnostic-functions #'python-flymake nil t)
-      (add-hook 'flymake-diagnostic-functions #'flymake-ruff--run-checker nil t)))
-  (add-hook 'eglot-managed-mode-hook #'my/eglot-python-flymake-hook))
+  :custom (python-flymake-command python-check-command))
 
 (use-package conda
   :preface
@@ -1247,7 +1244,6 @@ If USE-3D is \\='toggle, toggle the current style."
 (use-package sh-script
   :ensure nil
   :no-require t
-  :after treesit
   :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode)
   :preface (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
   :init
@@ -1259,6 +1255,15 @@ If USE-3D is \\='toggle, toggle the current style."
   (unless (treesit-language-available-p 'bash)
     (treesit-install-language-grammar 'bash)))
 
+(use-package flymake-bashate
+  :commands flymake-bashate-setup
+  :hook (sh-base-mode . flymake-bashate-setup)
+  :custom
+  ;; (flymake-bashate-executable (expand-file-name "bin/bashate" dotfiles-dir))
+  (flymake-bashate-executable "/opt/homebrew/bin/bashate")
+  ;; (flymake-bashate-ignore "E005,E042")
+  (flymake-bashate-max-line-length 120)  ;; needed because of a bug (TODO)
+  )
 
 ;; YAML
 
