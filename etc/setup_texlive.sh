@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
-brew install basictex
+if command -v "rg" &> /dev/null; then
+    if [[ "$OS" == "macos" ]]; then
+        brew install basictex
+    # else
+    #     TODO
+    fi
+fi
 sudo tlmgr update --self
 sudo tlmgr install \
     latexmk \
@@ -12,6 +18,9 @@ sudo tlmgr install \
     siunitx \
     cancel \
     extarrows \
+    mleftright \
+    bbm \
+    mathtools \
     csquotes \
     ebgaramond \
     courierten \

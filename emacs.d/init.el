@@ -1375,6 +1375,7 @@ If USE-3D is \\='toggle, toggle the current style."
   (org-export-with-toc nil)
   (org-src-preserve-indentation t)
   (org-latex-create-formula-image-program 'dvisvgm)
+  (org-latex-packages-alist (list (concat "\\input{" (expand-file-name "etc/math_commands.tex" dotfiles-dir) "}")))
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
