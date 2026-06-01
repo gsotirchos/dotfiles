@@ -8,15 +8,17 @@ DOTFILES_DIR = os.path.dirname(SCRIPT_DIR)
 THEMES_DIR = os.path.join(DOTFILES_DIR, "config/ghostty/ghostty-themes/themes")
 OUTPUT_DIR = os.path.join(DOTFILES_DIR, "config/ghostty/themes")
 
+
 def get_brightness(hex_color):
-    hex_color = hex_color.lstrip('#')
+    hex_color = hex_color.lstrip("#")
     if len(hex_color) == 3:
-        hex_color = ''.join([c*2 for c in hex_color])
+        hex_color = "".join([c * 2 for c in hex_color])
     r = int(hex_color[0:2], 16)
     g = int(hex_color[2:4], 16)
     b = int(hex_color[4:6], 16)
     # Perceptive brightness
-    return (r * 0.299 + g * 0.587 + b * 0.114)
+    return r * 0.299 + g * 0.587 + b * 0.114
+
 
 def patch_theme(theme_name):
     input_path = os.path.join(THEMES_DIR, theme_name)
@@ -25,12 +27,12 @@ def patch_theme(theme_name):
     if not os.path.exists(input_path):
         return
 
-    with open(input_path, 'r') as f:
+    with open(input_path, "r") as f:
         content = f.read()
 
     # Extract palette colors 0, 7, 8, 15
     palette = {}
-    for match in re.finditer(r'palette\s*=\s*(\d+)\s*=\s*(#[0-9a-fA-F]+|[a-zA-Z]+)', content):
+    for match in re.finditer(r"palette\s*=\s*(\d+)\s*=\s*(#[0-9a-fA-F]+|[a-zA-Z]+)", content):
         idx = int(match.group(1))
         if idx in [0, 7, 8, 15]:
             palette[idx] = match.group(2)
@@ -59,12 +61,13 @@ def patch_theme(theme_name):
     new_content = content
     for idx, color in overrides.items():
         # Replace the specific palette line for this index
-        pattern = rf'(palette\s*=\s*{idx}\s*=\s*)(?:#[0-9a-fA-F]+|[a-zA-Z]+)'
-        new_content = re.sub(pattern, rf'\1{color}', new_content)
+        pattern = rf"(palette\s*=\s*{idx}\s*=\s*)(?:#[0-9a-fA-F]+|[a-zA-Z]+)"
+        new_content = re.sub(pattern, rf"\1{color}", new_content)
 
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         f.write(f"# Patched version of {theme_name}\n")
         f.write(new_content)
+
 
 def main():
     if not os.path.exists(OUTPUT_DIR):
@@ -73,6 +76,7 @@ def main():
     for filename in os.listdir(THEMES_DIR):
         if filename.startswith("modus-"):
             patch_theme(filename)
+
 
 if __name__ == "__main__":
     main()
