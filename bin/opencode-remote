@@ -11,7 +11,7 @@ main() {
         exit 1
     fi
 
-    vm_host="$1"  # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
+    vm_host="$1" # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
     port="4096"
     local password="$2"
     local remote_dir="$3"
@@ -20,6 +20,7 @@ main() {
     local args=("$@")
     local remote_opencode_bin='$HOME/.opencode/bin/opencode'
     local local_config="$HOME/.config/opencode/opencode.json"
+    local local_tui="$HOME/.config/opencode/tui.json"
     local SSH_PID=""
 
     function sync_file_to_vm() {
@@ -34,20 +35,21 @@ main() {
         fi
     }
 
-    # 1. Sync local config to remote VM
+    # 1. Sync local files to remote VM
     sync_file_to_vm "$local_config"
+    sync_file_to_vm "$local_tui"
 
     # 2. Pre-emptively clear local and remote processes from previous runs
-    (lsof -ti:"$port" | xargs kill -9 2>/dev/null) || true
-    ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
+    (lsof -ti:"$port" | xargs kill -9 2> /dev/null) || true
+    ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" > /dev/null 2>&1 || true
 
     # 3. Define cleanup to run automatically on script exit or interrupt (Ctrl+C)
     cleanup() {
         echo -e "\nSession ended. Cleaning up..."
         if [[ -n "${SSH_PID:-}" ]]; then
-            kill "$SSH_PID" 2>/dev/null || true
+            kill "$SSH_PID" 2> /dev/null || true
         fi
-        ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" >/dev/null 2>&1 || true
+        ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" > /dev/null 2>&1 || true
     }
     trap cleanup EXIT INT
 
@@ -56,7 +58,7 @@ main() {
     local remote_inject=$(op-env)
 
     # ShellCheck SC2087: EOF is intentionally unquoted to expand local variables
-    ssh -L "$port":localhost:"$port" "$vm_host" "bash -s" <<EOF &
+    ssh -L "$port":localhost:"$port" "$vm_host" "bash -s" << EOF &
 $remote_inject
 cd $remote_dir
 OPENCODE_SERVER_PASSWORD="$password" $remote_opencode_bin serve --port "$port"
