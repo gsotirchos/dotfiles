@@ -73,8 +73,3 @@ unfixable = [  # ignored rules for fixing:
 [tool.ruff.lint.mccabe]
 max-complexity = 15
 
-
-# TODO: remove
-[tool.autopep8]
-max-line-length = 100
-max-complexity = 15
