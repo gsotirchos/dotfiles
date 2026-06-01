@@ -280,6 +280,46 @@ PATH should be in the format `op://Vault/Item/Field'."
     (add-to-list 'frameset-filter-alist (cons filter :never)))
   :config (desktop-save-mode 1))
 
+(use-package project
+  :ensure nil
+  :preface
+  (defun my/project-query-replace-ignore-binaries (orig-fun &rest args)
+    "Temporarily ignore binary files during project-wide query-replace."
+    (let ((project-vc-ignores
+           (append '("*.png" "*.pdf" "*.jpg" "*.jpeg" "*.gif" "*.zip" "*.gz" "*.tar" "*.mp4")
+                   project-vc-ignores)))
+      (apply orig-fun args)))
+  :config
+  ;; Prevent file-loop and query-replace crashes by filtering out directories
+  (advice-add 'project-files :filter-return
+              (lambda (files)
+                (seq-filter (lambda (f) (not (file-directory-p f))) files)))
+
+  ;; Ignore binaries ONLY during query-replace (so they stay findable in C-x p f)
+  (advice-add 'project-query-replace-regexp :around #'my/project-query-replace-ignore-binaries))
+
+(use-package xref
+  :ensure nil
+  :custom (xref-search-program 'ripgrep))
+
+(use-package isearch
+  :ensure nil
+  :preface
+  (defun my/isearch-filter-opened-overlays (&rest _)
+    "Remove deleted overlays from `isearch-opened-overlays'."
+    (setq isearch-opened-overlays
+          (seq-filter #'overlay-buffer isearch-opened-overlays)))
+  (defun my/isearch-open-necessary-overlays-advice (orig-fun ov &rest args)
+    "Only call ORIG-FUN if OV is a valid, live overlay."
+    (when (overlay-buffer ov)
+      (apply orig-fun ov args)))
+  :config
+  ;; Prevent query-replace and isearch clean-up errors when overlays
+  ;; are deleted or buffer is killed.
+  (advice-add 'isearch-clean-overlays :before #'my/isearch-filter-opened-overlays)
+  (advice-add 'isearch-close-unnecessary-overlays :before #'my/isearch-filter-opened-overlays)
+  (advice-add 'isearch-open-necessary-overlays :around #'my/isearch-open-necessary-overlays-advice))
+
 (use-package uniquify
   :ensure nil
   :custom
@@ -1039,7 +1079,7 @@ If USE-3D is \\='toggle, toggle the current style."
   (indent-bars-display-on-blank-lines nil))
 
 (use-package adaptive-wrap
-  :hook ((prog-mode magit-status-mode markdown-mode) . adaptive-wrap-prefix-mode)
+  :hook ((prog-mode compilation-mode magit-status-mode markdown-mode) . adaptive-wrap-prefix-mode)
   :bind (:map my/toggles-map ("a" . adaptive-wrap-prefix-mode))
   :custom (adaptive-wrap-extra-indent 2))
 
