@@ -504,7 +504,7 @@ If USE-3D is \\='toggle, toggle the current style."
   :custom
   (stripes-unit 1)
   (stripes-overlay-priority -100)
- :preface
+  :preface
   (defun my/customize-stripes ()
     (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim)))
   (when (fboundp 'modus-themes-get-color-value)
@@ -995,11 +995,29 @@ If USE-3D is \\='toggle, toggle the current style."
     (modify-syntax-entry ?_ "w"))
   (add-hook 'prog-mode-hook #'my/prog-mode-hook))
 
+(use-package apheleia
+  :preface
+  (add-hook 'python-base-mode-hook
+            (lambda () (setq-local apheleia-formatter '(ruff-isort ruff))))
+  (add-hook 'sh-base-mode-hook
+            (lambda () (setq-local apheleia-formatter 'shfmt)))
+  :config
+  (setf (alist-get 'shfmt apheleia-formatters)
+        '("shfmt" "-ln" "bash" "-i" "2" "-ci" "-bn" "-sr"))
+  (setf (alist-get 'latexindent apheleia-formatters)
+        '("latexindent" "--logfile=/dev/null" "-m" "-rv"))
+  (let ((config-path (expand-file-name "pyproject.toml" (or (getenv "MACOS_DOTFILES") "~/.dotfiles"))))
+    (setf (alist-get 'ruff apheleia-formatters)
+          `("ruff" "format" "--config" ,config-path "--silent" "--stdin-filename" filepath "-"))
+    (setf (alist-get 'ruff-isort apheleia-formatters)
+          `("ruff" "check" "--select" "I" "--fix" "--config" ,config-path "--silent" "--stdin-filename" filepath "-")))
+  :init (apheleia-global-mode 1))
+
 (use-package outline
   :ensure nil
   :no-require t
   :preface
-  (defun my/outline-toggle-children-advice (orig-fun &rest args)
+  (defun my/outline-toggle-children-advice (_orig-fun &rest _args)
     "Fix `outline-toggle-children` for multi-line headings."
     (save-excursion
       (outline-back-to-heading)
