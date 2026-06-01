@@ -63,6 +63,11 @@ if [[ "$OS" == "linux" ]]; then
     export TMPDIR="${HOME}/.tmp"
 fi
 
+if [[ "$OS" == "macos" ]]; then
+    # increase max. open files limit
+    ulimit -n 1024
+fi
+
 # set cmake makefile generator, compiler, and standard
 export CC="$(command -v gcc-11 || command -v clang)"
 export CXX="$(command -v g++-11 || command -v clang++)"
