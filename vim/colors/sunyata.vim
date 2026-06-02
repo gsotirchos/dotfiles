@@ -55,6 +55,7 @@ endif
 "   HilightName |   cterm=...   |   |   |   ctermfg=... |   ctermbg=... |   |
 "   link ThisHilightName    ThatHilightName |   |   |   |   |   |   |   |   |
 
+" check default groups with `:help highlight-groups`
 hi! Normal          cterm=none              ctermfg=none    ctermbg=none
 hi! Comment         cterm=none  term=none   ctermfg=2       ctermbg=none
 
@@ -112,10 +113,11 @@ else
     hi! Dimmed          cterm=none              ctermfg=8       ctermbg=none
     hi! MyStrikethrough cterm=strikethrough     ctermfg=8       ctermbg=none
 endif
-hi! Done            cterm=bold              ctermfg=2       ctermbg=none
+hi! Todo            cterm=bold              ctermfg=11      ctermbg=none
 hi! Debug           cterm=bold              ctermfg=11      ctermbg=none
+hi! MyDone          cterm=bold              ctermfg=10       ctermbg=none
+hi! MyNote          cterm=bold              ctermfg=12       ctermbg=none
 hi! link MyParens   Dimmed
-hi! link MyNote     Normal
 hi! link MyTagMark  SpecialComment
 hi! link MyUrl      Underlined
 hi! link MyEquals   Statement
@@ -128,7 +130,6 @@ hi! ErrorMsg        cterm=none              ctermfg=1       ctermbg=none
 hi! Warning         cterm=bold              ctermfg=3       ctermbg=none
 hi! WarningMsg      cterm=none              ctermfg=3       ctermbg=none
 hi! HintMsg         cterm=none              ctermfg=12      ctermbg=none
-hi! Todo            cterm=bold              ctermfg=11      ctermbg=none
 hi! SpellBad        cterm=underline         ctermfg=1       ctermbg=none
 hi! SpellCap        cterm=underline         ctermfg=3       ctermbg=none
 hi! SpellLocal      cterm=none              ctermfg=3       ctermbg=none

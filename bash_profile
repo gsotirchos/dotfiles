@@ -2,7 +2,7 @@
 # ~/.bash_profile
 #
 
-# shellcheck shell=bash disable=SC1090
+# shellcheck shell=bash disable=SC1090,SC1091
 
 # env_before="$(env)"
 # echo "SOURCED ~/.bash_profile"
@@ -35,6 +35,15 @@ case "$(uname -s)" in
         ;;
 esac
 
+if [[ "$OS" == "linux" ]]; then
+    export TMPDIR="${HOME}/.tmp"
+fi
+
+if [[ "$OS" == "macos" ]]; then
+    # increase max. open files limit
+    ulimit -n 1024
+fi
+
 # homebrew
 if [[ -x /opt/homebrew/bin/brew ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -53,19 +62,16 @@ if [[ -d "${DOTFILES}"/extra_paths ]]; then
     source "${MACOS_DOTFILES}/etc/append_to_paths.sh" "${DOTFILES}/extra_paths"
 fi
 
+# NOTE: must be ran after appending the extra paths
 export SHELL="$(which bash)"
-export EDITOR="emacsclient -cn"
-export GIT_EDITOR="emacsclient -c"
-export VISUAL="emacsclient -c"
-
-if [[ "$OS" == "linux" ]]; then
-    # export LD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}"
-    export TMPDIR="${HOME}/.tmp"
-fi
-
-if [[ "$OS" == "macos" ]]; then
-    # increase max. open files limit
-    ulimit -n 1024
+if command -v "emacsclient" &> /dev/null; then
+    export EDITOR="emacsclient --no-wait --create-frame --alternate-editor="
+    export GIT_EDITOR="emacsclient --create-frame --alternate-editor="
+    export VISUAL="emacsclient --create-frame --alternate-editor="
+else
+    export EDITOR="vim"
+    export GIT_EDITOR="vim"
+    export VISUAL="vim"
 fi
 
 # set cmake makefile generator, compiler, and standard
