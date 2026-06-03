@@ -5,21 +5,40 @@ set -euo pipefail
 if ! command -v "tlmgr" &> /dev/null; then
     if [[ "$OS" == "macos" ]]; then
         brew install basictex
-        mkdir -p "${HOME}/Library/texmf/tlpkg/backups"
     else
         apt install texlive-base
     fi
     eval "$(/usr/libexec/path_helper)"
-    tlmgr init-usertree
 fi
 
-# update basictex and packages
-tlmgr --usermode update --self
-tlmgr --usermode update --all
+if [[ "$OS" == "macos" && -z "${TEXMFHOME:-}" ]]; then
+    export TEXMFHOME="${HOME}/Library/texmf"
+fi
+
+if [[ ! -f "${TEXMFHOME}/tlpkg/texlive.tlpdb" ]]; then
+    env tlmgr init-usertree
+    mkdir -p "${TEXMFHOME}/tlpkg/backups"
+fi
+
+# update tlmgr and packages
+if [[ "$OS" == "macos" ]]; then
+    sudo env tlmgr update --self
+    sudo env tlmgr update --all
+else
+    env tlmgr --usermode update --self
+    env tlmgr --usermode update --all
+fi
+
+# NOTE: dvisvmg is needed for Org mode LaTeX fragments
+if [[ "$OS" == "macos" ]]; then
+    sudo env tlmgr install latexmk dvisvgm
+else
+    sudo apt install dvisvgm latexmk
+    #sudo apt install ghostscript  # recommended for dvisvgm
+fi
 
 # install basic packages
-tlmgr --usermode install \
-    latexmk \
+env tlmgr --usermode install \
     babel-greek \
     greek-fontenc \
     cbfonts \
