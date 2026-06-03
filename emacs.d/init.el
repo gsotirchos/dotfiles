@@ -1363,7 +1363,7 @@ If USE-3D is \\='toggle, toggle the current style."
   (org-archive-location ".archive/%s_archive::")
   (org-directory "~/Documents/org")
   (org-agenda-files (list org-directory "~/Desktop"))
-  (org-todo-keywords '((sequence "TODO" "WIP" "WAIT" "|" "DONE" "SKIP" "FAIL")))
+  (org-todo-keywords '((sequence "TODO" "NEXT" "WIP" "WAIT" "|" "DONE" "SKIP" "FAIL")))
   (org-enforce-todo-dependencies t)
   (org-agenda-dim-blocked-tasks t)
   (org-log-done 'time)
@@ -1411,7 +1411,8 @@ If USE-3D is \\='toggle, toggle the current style."
   (defun my/customize-org-mode ()
     "Apply my tweaks to theme-controlled settings."
     (setq org-todo-keyword-faces
-          `(("WIP" . ,(modus-themes-get-color-value 'blue))
+          `(("NEXT" . ,(modus-themes-get-color-value 'green-intense))
+            ("WIP" . ,(modus-themes-get-color-value 'blue))
             ("WAIT" . ,(modus-themes-get-color-value 'red))
             ("FAIL" . ,(modus-themes-get-color-value 'red-intense))))
     (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
