@@ -224,17 +224,20 @@ hi! clear DiffAdd
 hi! clear DiffChange
 hi! clear DiffDelete
 hi! clear DiffText
-hi! DiffAdd                                 ctermfg=10      ctermbg=none
-hi! DiffChange                              ctermfg=none    ctermbg=none
-hi! DiffDelete                              ctermfg=9       ctermbg=none
-hi! DiffText                                ctermfg=11      ctermbg=none
-hi! DiffAdded                               ctermfg=2       ctermbg=none
-hi! DiffChanged                             ctermfg=none    ctermbg=none
-hi! DiffRemoved                             ctermfg=1       ctermbg=none
+hi! DiffAdd                                 ctermfg=2       ctermbg=none
+hi! DiffChange                              ctermfg=3       ctermbg=none
+hi! DiffDelete                              ctermfg=1       ctermbg=none
+hi! DiffText        cterm=underline         ctermfg=3       ctermbg=none
+hi! link DiffAdded      DiffAdd
+hi! link DiffChanged    DiffChange
+hi! link DiffRemoved    DiffDelete
 hi! link diffNewFile    SpecialComment
 hi! link diffFile       SpecialComment
 hi! link diffLine       SpecialComment
 hi! link diffSubname    SpecialComment
+hi! link GitGutterAdd       DiffAdd
+hi! link GitGutterChange    DiffChange
+hi! link GitGutterDelete    DiffDelete
 
 " ALE
 hi! link ALEVirtualTextError        ErrorMsg
