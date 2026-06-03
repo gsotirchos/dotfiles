@@ -148,6 +148,10 @@ if command -v "opencode" &> /dev/null; then
     alias oc="opencode"
 fi
 
+if ! command -v "tlmgr" &> /dev/null; then
+    alias tlmgr="tlmgr --usermode"
+fi
+
 # lazy Conda
 if [[ -f ~/.conda/conda_init.sh ]]; then
     # lazy conda initialization
