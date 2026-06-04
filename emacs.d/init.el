@@ -1411,10 +1411,10 @@ If USE-3D is \\='toggle, toggle the current style."
   (defun my/customize-org-mode ()
     "Apply my tweaks to theme-controlled settings."
     (setq org-todo-keyword-faces
-          `(("NEXT" . ,(modus-themes-get-color-value 'green-intense))
+          `(("NEXT" . ,(modus-themes-get-color-value 'green))
             ("WIP" . ,(modus-themes-get-color-value 'blue))
-            ("WAIT" . ,(modus-themes-get-color-value 'red))
-            ("FAIL" . ,(modus-themes-get-color-value 'red-intense))))
+            ("WAIT" . ,(modus-themes-get-color-value 'red-faint))
+            ("FAIL" . ,(modus-themes-get-color-value 'red))))
     (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
     (set-face-bold 'org-checkbox t)
     (let ((bg-color (face-background 'org-agenda-clocking)))
