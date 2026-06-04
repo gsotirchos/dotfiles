@@ -17,8 +17,8 @@ default_ratio = 5.0
 default_file = "~/.worktimer"
 
 
-class Timer():
-    """ Timer class to operate the stopwatches """
+class Timer:
+    """Timer class to operate the stopwatches"""
 
     def __init__(self, args, interval=0.25):
         self._keep_running = threading.Event()
@@ -51,15 +51,15 @@ class Timer():
         self._update_values()
 
     def _input_monitor(self):
-        """ Handle keyboard input """
+        """Handle keyboard input"""
         # retrieve the current settings of the input stream (stdin)
         filedescriptors = termios.tcgetattr(sys.stdin)
 
         # set input stream to 'raw mode' (stop buffering, don't wait for \n)
         tty.setcbreak(sys.stdin)
 
-        while self._keep_running.is_set():
-            try:
+        try:
+            while self._keep_running.is_set():
                 # read and retrieve a single character from input stream
                 key = sys.stdin.read(1)[0]
                 if key == "w" and self._mode is not TimerMode.WORK:
@@ -70,16 +70,16 @@ class Timer():
                     self._toggle_pause()
                 elif key == "":
                     self._toggle_pause()
-            except KeyboardInterrupt:
-                # signal program termination
-                self._keep_running.clear()
+        except KeyboardInterrupt:
+            # signal program termination
+            self._keep_running.clear()
 
         # revert the input stream (stdin) to 'cooked mode'
         # after all queued output has been written
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, filedescriptors)
 
     def _update_view(self):
-        """ Print the timers at regular interfals """
+        """Print the timers at regular interfals"""
         self._update_values()
         self._print()
         while self._keep_running.is_set():
@@ -88,7 +88,7 @@ class Timer():
             time.sleep(self._interval)
 
     def _print(self):
-        """ Print times """
+        """Print times"""
         work_time, break_time = self._get_times()
 
         # prepare printed text
@@ -119,12 +119,12 @@ class Timer():
                     sys.stdout.flush()
                     self._ring_bell = False
 
-        os.system('clear')
-        print("\n   " + work_title + "       " + break_title)
+        os.system("clear")
+        print("\n   " + work_title + "        " + break_title)
         print(" " + work_time + "   " + break_time)
 
     def _load_data(self):
-        """ Check whether an existing file's contents are properly formated """
+        """Check whether an existing file's contents are properly formated"""
         try:
             with open(self._file, "r") as rfh:
                 # read up to 4 lines
@@ -141,8 +141,8 @@ class Timer():
         if len(lines) != 0 and len(lines) != 3:
             # wrong line count
             raise FileContentsError(
-                "The specified file '" + self._file
-                + "' has wrong line count (not 3).")
+                "The specified file '" + self._file + "' has wrong line count (not 3)."
+            )
         elif len(lines) == 3:
             # attempt to load data
             try:
@@ -162,14 +162,14 @@ class Timer():
             except argparse.ArgumentTypeError as e:
                 # correct line count but wrong contents
                 raise FileContentsError(
-                    "The specified file '" + self._file
-                    + "' is not properly formatted: " + str(e))
+                    "The specified file '" + self._file + "' is not properly formatted: " + str(e)
+                ) from e
 
         # a successful load or an empty file, either is fine
         return
 
     def _update_values(self):
-        """ Update internal values and write to file """
+        """Update internal values and write to file"""
         if not self._paused:
             # calculate times
             self._work_time, self._break_time = self._get_times()
@@ -178,9 +178,12 @@ class Timer():
             if self._file is not None:
                 with open(self._file, "w") as wfh:
                     wfh.write(
-                        sec_to_str(self._work_time).strip() + "\n"
-                        + signed_sec_to_str(self._break_time).lstrip() + "\n"
-                        + str(self._ratio))
+                        sec_to_str(self._work_time).strip()
+                        + "\n"
+                        + signed_sec_to_str(self._break_time).lstrip()
+                        + "\n"
+                        + str(self._ratio)
+                    )
 
         # reset the bell
         if self._break_time >= 1:
@@ -192,15 +195,14 @@ class Timer():
         self._stopwatch.reset()
 
     def _get_times(self):
-        """ Calculate current time values """
+        """Calculate current time values"""
         time_elapsed = self._stopwatch.time_elapsed()
         work_time = self._work_time
         break_time = self._break_time
 
         if self._mode is TimerMode.WORK:
             work_time += floor(time_elapsed)
-            break_time += \
-                floor(time_elapsed / self._ratio if self._ratio else 0)
+            break_time += floor(time_elapsed / self._ratio if self._ratio else 0)
         elif self._mode is TimerMode.BREAK:
             break_time -= floor(time_elapsed)
 
@@ -222,30 +224,32 @@ class Timer():
         self._print()
 
 
-class StopWatch():
-    """ Simple stopwatch class """
+class StopWatch:
+    """Simple stopwatch class"""
 
     def __init__(self):
-        """ Initialize a new 'stopwatch' and start timing """
+        """Initialize a new 'stopwatch' and start timing"""
         self.reset()
 
     def reset(self):
-        """ Reset the stopwatch """
+        """Reset the stopwatch"""
         self._start_time = time.time()
 
     def time_elapsed(self):
-        """ Return the number of seconds elapsed """
+        """Return the number of seconds elapsed"""
         return time.time() - self._start_time
 
 
 class TimerMode(Enum):
-    """ Enumerator for timer modes """
+    """Enumerator for timer modes"""
+
     WORK = 0
     BREAK = 1
 
 
 class TextStyle:
-    """ Class for formatting printed text """
+    """Class for formatting printed text"""
+
     def title(string):
         return "\033[0;4m" + string[0] + "\033[0m" + string[1:]
 
@@ -266,40 +270,42 @@ class TextStyle:
 
 
 class FileContentsError(Exception):
-    """ A custom error for when failing to load data from file """
+    """A custom error for when failing to load data from file"""
+
     pass
 
 
 def signed_str_to_sec(time_str):
-    """ Convert a signed time string to seconds """
+    """Convert a signed time string to seconds"""
     sign, time_str = get_str_sign(time_str)
     return int(sign + str(str_to_sec(time_str)))
 
 
 def signed_sec_to_str(time_sec):
-    """ Convert signed seconds to a time string """
+    """Convert signed seconds to a time string"""
     sign, time_str = get_str_sign(str(time_sec))
     return sign + sec_to_str(float(time_str))
 
 
 def str_to_sec(time_str):
-    """ Convert a time string to seconds """
+    """Convert a time string to seconds"""
     if not re.match("^[0-9][0-9]:[0-5][0-9]:[0-5][0-9]$", time_str):
         """ Check the time string's format """
         raise argparse.ArgumentTypeError(
-            "input '" + time_str + "' is not formatted as 'hh:mm:ss' time.")
+            "input '" + time_str + "' is not formatted as 'hh:mm:ss' time."
+        )
 
-    h, m, s = time_str.split(':')
+    h, m, s = time_str.split(":")
     return int(h) * 3600 + int(m) * 60 + int(s)
 
 
 def sec_to_str(time_sec):
-    """ Convert seconds to a time string """
+    """Convert seconds to a time string"""
     return time.strftime("%H:%M:%S", time.gmtime(time_sec))
 
 
 def get_str_sign(string):
-    """ Separate sign from string number """
+    """Separate sign from string number"""
     sign = " "
     if string[0] == "-":
         string = string[1:]
@@ -311,36 +317,34 @@ def get_str_sign(string):
 
 
 def str_to_nonnegative_float(string):
-    """ Check if a string is a nonnegative float """
+    """Check if a string is a nonnegative float"""
     if float(string) < 0:
-        raise argparse.ArgumentTypeError(
-            "input '" + string + "' is not a nonnegative float.")
+        raise argparse.ArgumentTypeError("input '" + string + "' is not a nonnegative float.")
 
     return float(string)
 
 
 def check_file(file):
-    """ Check if a file exists/can be created/can be read & written """
+    """Check if a file exists/can be created/can be read & written"""
     file = os.path.realpath(os.path.expanduser(file))
     if os.path.exists(file):
         if os.path.isfile(file):
             if not os.access(file, os.R_OK):
                 raise argparse.ArgumentTypeError(
-                    "The specified file '" + file + "' exists "
-                    + "and is not readable.")
+                    "The specified file '" + file + "' exists " + "and is not readable."
+                )
 
             if not os.access(file, os.W_OK):
                 raise argparse.ArgumentTypeError(
-                    "The specified file '" + file + "' exists "
-                    + "and is not writeable.")
+                    "The specified file '" + file + "' exists " + "and is not writeable."
+                )
         else:
-            raise argparse.ArgumentTypeError(
-                "The specified path '" + file + "' is not a file.")
+            raise argparse.ArgumentTypeError("The specified path '" + file + "' is not a file.")
     else:
         if not os.access(os.path.dirname(file), os.W_OK):
             raise argparse.ArgumentTypeError(
-                "The specified file '" + file + "' doesn't exist "
-                + "and can not be created.")
+                "The specified file '" + file + "' doesn't exist " + "and can not be created."
+            )
 
     return file
 
@@ -355,49 +359,54 @@ if __name__ == "__main__":
         The progress can be saved and loaded from a
         specified file.
         Argument specified values override those from file.""",
-        allow_abbrev=False)
+        allow_abbrev=False,
+    )
 
     """ Arg: initial work time """
     parser.add_argument(
-        "-w", "--work_time",
+        "-w",
+        "--work_time",
         type=str_to_sec,
         default="00:00:00",
         metavar="hh:mm:ss",
-        help="set the initial work time value (default: "
-             + default_work_time + ")")
+        help="set the initial work time value (default: " + default_work_time + ")",
+    )
 
     """ Arg: initial break time """
     parser.add_argument(
-        "-b", "--break_time",
+        "-b",
+        "--break_time",
         type=signed_str_to_sec,
         default="00:00:00",
         metavar="[-]hh:mm:ss",
-        help="set the initial break time value (default: "
-             + default_break_time + ")")
+        help="set the initial break time value (default: " + default_break_time + ")",
+    )
 
     """ Arg: work/break ratio """
     parser.add_argument(
-        "-r", "--ratio",
+        "-r",
+        "--ratio",
         type=str_to_nonnegative_float,
         default=5.0,
         help="set the work/break time ratio as a nonnegative float, "
-             + "if 0 then the break time won't increase while working "
-             + "(default: " + str(default_ratio) + ")")
+        + "if 0 then the break time won't increase while working "
+        + "(default: "
+        + str(default_ratio)
+        + ")",
+    )
 
     """ Arg: start paused """
-    parser.add_argument(
-        "-p", "--pause",
-        action="store_true",
-        help="start paused (default: off)")
+    parser.add_argument("-p", "--pause", action="store_true", help="start paused (default: off)")
 
     """ Arg: data file """
     parser.add_argument(
-        "-f", "--file",
+        "-f",
+        "--file",
         type=check_file,
         const="~/.worktimer",
         nargs="?",
-        help="specify a file to save/load progress (default: "
-             + default_file + ")")
+        help="specify a file to save/load progress (default: " + default_file + ")",
+    )
 
     # parse arguments
     args = parser.parse_args()
