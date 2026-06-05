@@ -797,8 +797,10 @@ If USE-3D is \\='toggle, toggle the current style."
     (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
     (seq-mapn
      (lambda (diff-hl-face diff-face)
-       (face-remap-add-relative diff-hl-face diff-face)
        (set-face-attribute diff-hl-face nil
+                           :inherit diff-face
+                           :foreground 'unspecified
+                           :background 'unspecified
                            :italic nil :bold nil
                            :height (round (* 0.92 (face-attribute 'default :height)))))
      '(diff-hl-change
@@ -1367,6 +1369,7 @@ If USE-3D is \\='toggle, toggle the current style."
   (org-enforce-todo-dependencies t)
   (org-agenda-dim-blocked-tasks t)
   (org-log-done 'time)
+  (org-log-into-drawer t)
   (org-tags-column 0)
   (org-catch-invisible-edits 'error)
   (org-hide-emphasis-markers t)
