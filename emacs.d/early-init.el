@@ -8,8 +8,19 @@
 ;; (add-to-list 'default-frame-alist '(undecorated-round . t))
 
 ;; Less aggressive garbage collection on startup
-(setq gc-cons-threshold (* 1024 1024 100)) ;; 100 MB
-(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold (* 1024 1024 20))))
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 1024 1024 20)
+                  gc-cons-percentage 0.1)))
+
+;; Temporarily disable file name handler during startup
+(defvar my/saved-file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq file-name-handler-alist my/saved-file-name-handler-alist)))
 
 ;; Make things a little quieter
 (setq byte-compile-warnings '(not obsolete)
@@ -79,7 +90,7 @@
 (column-number-mode 1)
 (pixel-scroll-precision-mode 1)
 (setq frame-resize-pixelwise t
-      ;; frame-inhibit-implied-resize t
+      frame-inhibit-implied-resize t
       use-dialog-box nil)
 
   ;; Basic fonts
@@ -97,7 +108,8 @@
                           ("org" . "https://orgmode.org/elpa/")
                           ("elpa" . "https://elpa.gnu.org/packages/")))
 
-(unless (package-installed-p 'use-package)
+(unless (or (version<= "29" emacs-version)
+            (package-installed-p 'use-package))
   (package-initialize)
   (unless package-archive-contents
     (setq package-check-signature nil)
