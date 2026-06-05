@@ -103,54 +103,14 @@ function! s:UpdateParentPathCache(...)
     endif
 endfunction
 
-" Function to actually fetch all Git info for the current file
-function! s:UpdateGitInfoCache(bufnr)
-    if !get(g:, 'statusline_git_enabled', 1)
+" Function to parse git status command output lines and cache the result
+function! s:ParseGitStatusOutput(bufnr, lines)
+    if empty(a:lines)
         call setbufvar(a:bufnr, 'git_info_cached', '')
         return
     endif
 
-    " Only run on loaded files with valid paths
-    let l:filepath = resolve(expand('#' . a:bufnr . ':p'))
-    if l:filepath ==# ''
-        call setbufvar(a:bufnr, 'git_info_cached', '')
-        call setbufvar(a:bufnr, 'is_git_repo', 0)
-        return
-    endif
-
-    let l:filedir = fnamemodify(l:filepath, ':h')
-
-    " Check and cache if we are inside a Git repo (Performance Optimization #1)
-    if getbufvar(a:bufnr, 'is_git_repo', -1) == 0
-        call setbufvar(a:bufnr, 'git_info_cached', '')
-        return
-    endif
-
-    let l:git_command_prefix = 'git -C "' . escape(l:filedir, '"') . '" '
-    let l:upstream_flag = get(g:, 'statusline_git_upstream_enabled', 0) ? '' : ' --no-ahead-behind'
-
-    let l:start_time = reltime()
-    let l:status_output = system(l:git_command_prefix . 'status --porcelain --branch' . l:upstream_flag . ' 2> /dev/null')
-    let l:elapsed = reltimestr(reltime(l:start_time))
-    
-    if get(g:, 'statusline_git_profile', 0)
-        echom '[Git Status Profile] bufnr=' . a:bufnr . ' took ' . trim(l:elapsed) . 's to execute git status'
-    endif
-
-    if v:shell_error != 0
-        call setbufvar(a:bufnr, 'is_git_repo', 0)
-        call setbufvar(a:bufnr, 'git_info_cached', '')
-        return
-    endif
-    call setbufvar(a:bufnr, 'is_git_repo', 1)
-
-    let l:lines = split(l:status_output, '\n')
-    if empty(l:lines)
-        call setbufvar(a:bufnr, 'git_info_cached', '')
-        return
-    endif
-
-    let l:branch_line = l:lines[0]
+    let l:branch_line = a:lines[0]
     " Check if the first line starts with '## '
     if l:branch_line !~# '^##'
         call setbufvar(a:bufnr, 'git_info_cached', '')
@@ -219,7 +179,7 @@ function! s:UpdateGitInfoCache(bufnr)
     let l:staged_changes = 0
     let l:unstaged_changes = 0
     let l:untracked_files = 0
-    for l:line in l:lines[1:]
+    for l:line in a:lines[1:]
         if l:line =~# '^[MADRC]'
             let l:staged_changes += 1
         elseif l:line =~# '^.[MD]'
@@ -250,12 +210,133 @@ function! s:UpdateGitInfoCache(bufnr)
     call setbufvar(a:bufnr, 'git_info_cached', l:git_info)
 endfunction
 
+" Callbacks for Neovim jobs
+function! s:NeovimGitCallback(job_id, data, event) dict
+    if a:event ==# 'stdout'
+        call extend(self.stdout, a:data)
+    elseif a:event ==# 'exit'
+        let l:lines = self.stdout
+        " Clean up empty lines at the end
+        while !empty(l:lines) && l:lines[-1] ==# ''
+            call remove(l:lines, -1)
+        endwhile
+        
+        if a:data == 0 " exit code is 0 (is a git repo)
+            call setbufvar(self.bufnr, 'is_git_repo', 1)
+            call s:ParseGitStatusOutput(self.bufnr, l:lines)
+        else
+            call setbufvar(self.bufnr, 'is_git_repo', 0)
+            call setbufvar(self.bufnr, 'git_info_cached', '')
+        endif
+        execute 'redrawstatus!'
+    endif
+endfunction
+
+" Callbacks for Vim 8 jobs
+function! s:Vim8OutCallback(channel, msg) dict
+    call add(self.stdout, a:msg)
+endfunction
+
+function! s:Vim8ExitCallback(job, status) dict
+    if a:status == 0
+        call setbufvar(self.bufnr, 'is_git_repo', 1)
+        call s:ParseGitStatusOutput(self.bufnr, self.stdout)
+    else
+        call setbufvar(self.bufnr, 'is_git_repo', 0)
+        call setbufvar(self.bufnr, 'git_info_cached', '')
+    endif
+    execute 'redrawstatus!'
+endfunction
+
+" Function to actually fetch all Git info for the current file asynchronously
+function! s:UpdateGitInfoCache(bufnr)
+    if !get(g:, 'statusline_git_enabled', 1)
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        return
+    endif
+
+    " Only run on loaded files with valid paths
+    let l:filepath = resolve(expand('#' . a:bufnr . ':p'))
+    if l:filepath ==# ''
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        call setbufvar(a:bufnr, 'is_git_repo', 0)
+        return
+    endif
+
+    let l:filedir = fnamemodify(l:filepath, ':h')
+
+    " Check and cache if we are inside a Git repo (Performance Optimization #1)
+    if getbufvar(a:bufnr, 'is_git_repo', -1) == 0
+        call setbufvar(a:bufnr, 'git_info_cached', '')
+        return
+    endif
+
+    let l:upstream_flag = get(g:, 'statusline_git_upstream_enabled', 0) ? '' : ' --no-ahead-behind'
+    let l:cmd = ['git', '-C', l:filedir, 'status', '--porcelain', '--branch']
+    if !get(g:, 'statusline_git_upstream_enabled', 0)
+        call add(l:cmd, '--no-ahead-behind')
+    endif
+
+    " Cancel existing job if running
+    let l:old_job = getbufvar(a:bufnr, 'git_job', '')
+    if !empty(l:old_job)
+        if has('nvim')
+            silent! call jobstop(l:old_job)
+        else
+            silent! call job_stop(l:old_job)
+        endif
+        call setbufvar(a:bufnr, 'git_job', '')
+    endif
+
+    if has('nvim')
+        let l:callbacks = {
+            \ 'bufnr': a:bufnr,
+            \ 'stdout': [],
+            \ 'on_stdout': function('s:NeovimGitCallback'),
+            \ 'on_stderr': function('s:NeovimGitCallback'),
+            \ 'on_exit': function('s:NeovimGitCallback'),
+            \ 'stdout_buffered': 1,
+            \ 'stderr_buffered': 1,
+            \ }
+        let l:job = jobstart(l:cmd, l:callbacks)
+        if l:job > 0
+            call setbufvar(a:bufnr, 'git_job', l:job)
+        endif
+    elseif has('job') && has('channel')
+        let l:ctx = {
+            \ 'bufnr': a:bufnr,
+            \ 'stdout': [],
+            \ }
+        let l:job = job_start(l:cmd, {
+            \ 'out_cb': function('s:Vim8OutCallback', l:ctx),
+            \ 'exit_cb': function('s:Vim8ExitCallback', l:ctx),
+            \ })
+        if job_status(l:job) ==# 'run'
+            call setbufvar(a:bufnr, 'git_job', l:job)
+        endif
+    else
+        " Fallback for older Vim versions without async support
+        let l:git_command_prefix = 'git -C "' . escape(l:filedir, '"') . '" '
+        let l:status_output = system(l:git_command_prefix . 'status --porcelain --branch' . l:upstream_flag . ' 2> /dev/null')
+        if v:shell_error != 0
+            call setbufvar(a:bufnr, 'is_git_repo', 0)
+            call setbufvar(a:bufnr, 'git_info_cached', '')
+            return
+        endif
+        call setbufvar(a:bufnr, 'is_git_repo', 1)
+        let l:lines = split(l:status_output, '\n')
+        call s:ParseGitStatusOutput(a:bufnr, l:lines)
+    endif
+endfunction
+
 " Function to get the cached Git info for the current file
 function! s:GetGitInfoField(bufnr)
     let l:cached = getbufvar(a:bufnr, 'git_info_cached', -1)
     if l:cached is -1
+        " Set it to empty string first to avoid infinite recursion / repeated calls
+        call setbufvar(a:bufnr, 'git_info_cached', '')
         call s:UpdateGitInfoCache(a:bufnr)
-        return getbufvar(a:bufnr, 'git_info_cached', '')
+        return ''
     endif
     return l:cached
 endfunction
@@ -293,7 +374,6 @@ augroup statusline
     autocmd! BufLeave,FocusLost *
         \ call s:SetUnfocusedColors()
         \|setlocal statusline=%!MyStatusLine()
-        \|call s:UpdateGitInfoCache(str2nr(expand('<abuf>')))
 augroup END
 
 if !exists('g:statusline_git_enabled')
