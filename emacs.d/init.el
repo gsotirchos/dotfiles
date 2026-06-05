@@ -1351,12 +1351,11 @@ If USE-3D is \\='toggle, toggle the current style."
 (use-package org
   :ensure nil
   :no-require t
-  :after modus-themes
   :custom
   (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
   (org-startup-truncated nil)
-  (org-startup-folded 'content)
+  (org-startup-folded 'show2levels)
   (org-startup-indented t)
   (org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
   (org-cycle-separator-lines 1)
@@ -1382,89 +1381,12 @@ If USE-3D is \\='toggle, toggle the current style."
    (list (concat "\\input{" (expand-file-name "etc/math_commands.tex" dotfiles-dir) "}")))
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
-  (org-special-ctrl-o t)
-  :preface
-  (defun my/org-create-archive-dir (&rest _)
-    "Automatically create the .archive directory if it doesn't exist."
-    (let* ((location (org-archive--compute-location
-                      (or (org-entry-get nil "ARCHIVE" 'inherit) org-archive-location)))
-           (afile (car location))
-           (dir (when afile (file-name-directory afile))))
-      (when (and dir (not (file-exists-p dir)))
-        (make-directory dir t))))
-  (advice-add 'org-archive-subtree :before #'my/org-create-archive-dir)
-  (defun my/unlimited-fill-column-advice (fn &rest args)
-    "Execute FN with ARGS with `fill-column' set to the maximum possible value."
-    (let ((fill-column most-positive-fixnum))
-      (apply fn args)))
-  (advice-add 'org-fill-paragraph :around #'my/unlimited-fill-column-advice)
-  (defun my/org-mac-mail-link-open-link (mid _)
-    (start-process "open-link" nil "open" (format "message://%%3C%s%%3E" mid)))
-  (defun my/adjust-preview-latex-scale ()
-    (let* ((step (if (boundp 'text-scale-mode-step) text-scale-mode-step 1.2))
-           (amount (if (boundp 'text-scale-mode-amount)
-                       (or text-scale-mode-amount 0)
-                     0))
-           (text-scaling (expt step amount))
-           (monitor-attrs (car (display-monitor-attributes-list)))
-           (monitor-scale-pair (assoc 'scale-factor monitor-attrs))
-           (monitor-scaling (if monitor-scale-pair (cdr monitor-scale-pair) 1.0))
-           (scaling-fn (lambda (_) (/ text-scaling monitor-scaling))))
-      (my/update-plist-property org-format-latex-options :scale scaling-fn)))
-  (defun my/customize-org-mode ()
-    "Apply my tweaks to theme-controlled settings."
-    (setq org-todo-keyword-faces
-          `(("NEXT" . ,(modus-themes-get-color-value 'green))
-            ("WIP" . ,(modus-themes-get-color-value 'blue))
-            ("WAIT" . ,(modus-themes-get-color-value 'red-faint))
-            ("FAIL" . ,(modus-themes-get-color-value 'red))))
-    (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
-    (set-face-bold 'org-checkbox t)
-    (let ((bg-color (face-background 'org-agenda-clocking)))
-      (setf (alist-get "_" org-emphasis-alist nil nil #'equal) `((:background ,bg-color))))
-    (dolist (face
-             '(org-hide
-               org-table
-               org-todo
-               org-done
-               org-checkbox))
-      (set-face-attribute face nil :family nil :inherit 'fixed-pitch))
-    (font-lock-update))
-  (defun my/org-mode-hook ()
-    ;; (setq fill-column most-positive-fixnum)
-    (visual-line-mode 1)
-    (my/customize-org-mode)
-    (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
-    (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
-    (advice-add 'org-latex-preview :after #'my/text-scale-adjust-latex-previews)
-    (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t)
-    (dolist (hook
-             '(after-load-theme-hook
-               ;; text-scale-mode-hook
-               auto-save-hook
-               after-save-hook))
-      (add-hook hook #'my/org-latex-preview-buffer nil t)))
-  (add-hook 'org-mode-hook #'my/org-mode-hook)
-  (advice-add 'my/org-latex-preview-buffer :around #'my/silence-advice)
-  :config
-  (my/adjust-preview-latex-scale)
-  (plist-put org-format-latex-options :background "Transparent")
-  (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
-  (font-lock-add-keywords 'org-mode
-                          '(;; Org headings (e.g., "* ", "** ")
-                            ("^\\*+ " 0 'fixed-pitch prepend)
-                            ;; Any leading whitespace (aligns descriptions)
-                            ("^[ \t]+" 0 'fixed-pitch prepend)
-                            ;; Unordered list items (e.g., "- ", "+ ", "* ")
-                            ("^[ \t]*[-+*][ \t]+" 0 'fixed-pitch prepend)
-                            ;; Ordered list items (e.g., "1. ", "a) ")
-                            ("^[ \t]*[a-zA-Z0-9]+[.)][ \t]+" 0 'fixed-pitch prepend))
-                          'append))
+  (org-special-ctrl-o t))
 
-(use-package my-org-utils
+(use-package my-org
   :ensure nil
   :load-path "site-lisp/"
-  :hook org-mode)
+  :hook (org-mode . my-org-mode))
 
 (use-package org-indent
   :ensure nil
