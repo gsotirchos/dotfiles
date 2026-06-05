@@ -146,10 +146,68 @@ augroup vimrc
 augroup END
 
 
-function! s:CheckSystemTheme() abort
-    let l:is_dark = 0 " Default
+" Callbacks for Theme check jobs
+function! s:ThemeOutCallback(channel, msg) dict
+    call add(self.stdout, a:msg)
+endfunction
 
-    if !has('gui_running')
+function! s:ThemeExitCallback(job, status) dict
+    let l:is_dark = 0
+
+    if has('macunix')
+        " On macOS, exit code 0 means dark mode, non-zero means light mode
+        let l:is_dark = (a:status == 0)
+    else
+        " On generic Unix, we check the captured stdout
+        let l:output = join(self.stdout, "\n")
+        if l:output =~? 'dark' || l:output =~? '1'
+            let l:is_dark = 1
+        else
+            let l:is_dark = 0
+        endif
+    endif
+
+    let l:current_mode = l:is_dark ? 'dark' : 'light'
+    if &background !=# l:current_mode || !exists('g:syntax_on')
+        let &background = l:current_mode
+        colorscheme sunyata
+    endif
+endfunction
+
+function! s:CheckSystemTheme() abort
+    if has('gui_running')
+        return
+    endif
+
+    " Cancel existing theme check job if running
+    let l:old_job = get(s:, 'theme_job', '')
+    if !empty(l:old_job)
+        silent! call job_stop(l:old_job)
+        let s:theme_job = ''
+    endif
+
+    if has('job') && has('channel')
+        if has('macunix')
+            let l:cmd = ['defaults', 'read', '-g', 'AppleInterfaceStyle']
+        elseif has('unix')
+            let l:cmd = ['/bin/sh', '-c', 'gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null || dbus-send --print-reply --dest=org.freedesktop.portal.Desktop /org/freedesktop/portal/desktop org.freedesktop.portal.Settings.Read string:"org.freedesktop.appearance" string:"color-scheme" 2>/dev/null']
+        else
+            return
+        endif
+
+        let l:ctx = {
+            \ 'stdout': [],
+            \ }
+        let l:job = job_start(l:cmd, {
+            \ 'out_cb': function('s:ThemeOutCallback', l:ctx),
+            \ 'exit_cb': function('s:ThemeExitCallback', l:ctx),
+            \ })
+        if job_status(l:job) ==# 'run'
+            let s:theme_job = l:job
+        endif
+    else
+        " Fallback for older Vim versions without async support
+        let l:is_dark = 0
         if has('macunix')
             let l:mode = system('defaults read -g AppleInterfaceStyle 2>/dev/null')
             let l:is_dark = (v:shell_error == 0)
@@ -164,12 +222,12 @@ function! s:CheckSystemTheme() abort
                 let l:is_dark = 0
             endif
         endif
-    endif
 
-    let l:current_mode = l:is_dark ? 'dark' : 'light'
-    if &background !=# l:current_mode || !exists('g:syntax_on')
-        let &background = l:current_mode
-        colorscheme sunyata
+        let l:current_mode = l:is_dark ? 'dark' : 'light'
+        if &background !=# l:current_mode || !exists('g:syntax_on')
+            let &background = l:current_mode
+            colorscheme sunyata
+        endif
     endif
 endfunction
 
@@ -177,3 +235,6 @@ endfunction
 if has('timers') && !exists('s:theme_timer_id')
     let s:theme_timer_id = timer_start(5000, {-> s:CheckSystemTheme()}, {'repeat': -1})
 endif
+
+" Run theme check immediately on startup
+call s:CheckSystemTheme()
