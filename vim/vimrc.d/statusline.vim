@@ -210,35 +210,22 @@ function! s:ParseGitStatusOutput(bufnr, lines)
     call setbufvar(a:bufnr, 'git_info_cached', l:git_info)
 endfunction
 
-" Callbacks for Neovim jobs
-function! s:NeovimGitCallback(job_id, data, event) dict
-    if a:event ==# 'stdout'
-        call extend(self.stdout, a:data)
-    elseif a:event ==# 'exit'
-        let l:lines = self.stdout
-        " Clean up empty lines at the end
-        while !empty(l:lines) && l:lines[-1] ==# ''
-            call remove(l:lines, -1)
-        endwhile
-        
-        if a:data == 0 " exit code is 0 (is a git repo)
-            call setbufvar(self.bufnr, 'is_git_repo', 1)
-            call s:ParseGitStatusOutput(self.bufnr, l:lines)
-        else
-            call setbufvar(self.bufnr, 'is_git_repo', 0)
-            call setbufvar(self.bufnr, 'git_info_cached', '')
-        endif
-        execute 'redrawstatus!'
-    endif
-endfunction
-
-" Callbacks for Vim 8 jobs
-function! s:Vim8OutCallback(channel, msg) dict
+" Callbacks for Vim jobs
+function! s:VimOutCallback(channel, msg) dict
     call add(self.stdout, a:msg)
 endfunction
 
-function! s:Vim8ExitCallback(job, status) dict
-    if a:status == 0
+function! s:VimCloseCallback(channel) dict
+    let l:job = ch_getjob(a:channel)
+    " Ensure the job has finished exiting so we can read its exit code
+    let l:limit = 50
+    while job_status(l:job) !=# 'dead' && l:limit > 0
+        sleep 5m
+        let l:limit -= 1
+    endwhile
+    let l:exitval = job_info(l:job).exitval
+
+    if l:exitval == 0
         call setbufvar(self.bufnr, 'is_git_repo', 1)
         call s:ParseGitStatusOutput(self.bufnr, self.stdout)
     else
@@ -280,36 +267,18 @@ function! s:UpdateGitInfoCache(bufnr)
     " Cancel existing job if running
     let l:old_job = getbufvar(a:bufnr, 'git_job', '')
     if !empty(l:old_job)
-        if has('nvim')
-            silent! call jobstop(l:old_job)
-        else
-            silent! call job_stop(l:old_job)
-        endif
+        silent! call job_stop(l:old_job)
         call setbufvar(a:bufnr, 'git_job', '')
     endif
 
-    if has('nvim')
-        let l:callbacks = {
-            \ 'bufnr': a:bufnr,
-            \ 'stdout': [],
-            \ 'on_stdout': function('s:NeovimGitCallback'),
-            \ 'on_stderr': function('s:NeovimGitCallback'),
-            \ 'on_exit': function('s:NeovimGitCallback'),
-            \ 'stdout_buffered': 1,
-            \ 'stderr_buffered': 1,
-            \ }
-        let l:job = jobstart(l:cmd, l:callbacks)
-        if l:job > 0
-            call setbufvar(a:bufnr, 'git_job', l:job)
-        endif
-    elseif has('job') && has('channel')
+    if has('job') && has('channel')
         let l:ctx = {
             \ 'bufnr': a:bufnr,
             \ 'stdout': [],
             \ }
         let l:job = job_start(l:cmd, {
-            \ 'out_cb': function('s:Vim8OutCallback', l:ctx),
-            \ 'exit_cb': function('s:Vim8ExitCallback', l:ctx),
+            \ 'out_cb': function('s:VimOutCallback', l:ctx),
+            \ 'close_cb': function('s:VimCloseCallback', l:ctx),
             \ })
         if job_status(l:job) ==# 'run'
             call setbufvar(a:bufnr, 'git_job', l:job)
