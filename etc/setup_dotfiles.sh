@@ -75,19 +75,6 @@ main() {
         "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents" ~/Library/LaunchAgents
     fi
 
-    # setup vundle
-    if [[ ! -d ~/.vim/bundle/Vundle.vim ]]; then
-        echo -e "${bright_style}\n- Couldn't locate ~/.vim/bundle/Vundle.vim, setting up...${normal_style}"
-        git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-        vim +PluginInstall +qall
-    fi
-
-    # setup julia
-    if command -v "julia" &> /dev/null; then
-        echo -e "- Setting up Julia"
-        "${dotfiles}"/julia/setup-julia
-    fi
-
     # setup git hooks
     echo -e "${bright_style}\n- Setting up Git hook${normal_style}"
     git -C "${dotfiles}" config core.hooksPath etc/hooks
