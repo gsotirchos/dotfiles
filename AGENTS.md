@@ -6,7 +6,7 @@ This document provides compact, high-signal guidance to help AI agents working i
 
 * **Do NOT Edit Home Directory Files:** This repository is a dotfiles manager. The files in `~/.bashrc`, `~/.vim/`, etc., are symlinked from here (via `etc/setup_dotfiles.sh`). **Always make edits to the files inside this repository** (e.g., `/Users/george/.dotfiles/bashrc`), never directly in `$HOME`.
 * **Git Post-Checkout Hook:** The repository has a git post-checkout hook (`etc/hooks/post-checkout`) that automatically runs `etc/patch_modus.py`. This script reads Ghostty Modus themes from the submodule and outputs patched themes to `config/ghostty/themes/`.
-* **Suggest commit messages:** Any time you implement a (meaningful) fix after my request, for an issue we troubleshooted together, at the very end of that answer accompanying your code changes you will provide me with a *concise yet informative commit message* in case I want to commit those changes myself later.
+* **Suggest commit messages:** Any time you implement a (meaningful) fix after my request, for an issue we troubleshooted together, at the very end of that answer accompanying your code changes you will provide me with a *concise (max. 65 chars) yet informative commit message* in case I want to commit those changes myself later.
 
 ## Linting and Verification
 
