@@ -225,22 +225,25 @@ PATH should be in the format `op://Vault/Item/Field'."
   :after no-littering
   :ensure nil
   :no-require t
+  :defer 1
   :custom
   (global-auto-revert-non-file-buffers t)
   (auto-revert-remote-files t)
   ;; (auto-revert-verbose nil)
-  :init (global-auto-revert-mode 1))
+  :config (global-auto-revert-mode 1))
 
 (use-package saveplace
   :after no-littering
   :ensure nil
   :no-require t
-  :init (save-place-mode 1))
+  :defer 1
+  :config (save-place-mode 1))
 
 (use-package savehist
   :after no-littering
   :ensure nil
   :no-require t
+  :defer 1
   :custom
   (history-length 100)
   (savehist-autosave-interval 30)
@@ -250,15 +253,16 @@ PATH should be in the format `op://Vault/Item/Field'."
    '(kill-ring
      search-ring
      regexp-search-ring))
-  :init (savehist-mode 1))
+  :config (savehist-mode 1))
 
 (use-package recentf
   :after no-littering
   :ensure nil
   :no-require t
+  :defer 1
   :custom (recentf-auto-cleanup 'never)
-  :init (recentf-mode 1)
   :config
+  (recentf-mode 1)
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-var-directory))
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
 
@@ -652,7 +656,8 @@ If USE-3D is \\='toggle, toggle the current style."
   (corfu-cycle t)
   ;; (global-corfu-minibuffer t)
   (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
-  :init
+  :defer 1
+  :config
   (global-corfu-mode)
   (corfu-popupinfo-mode)
   (corfu-history-mode))
@@ -678,10 +683,12 @@ If USE-3D is \\='toggle, toggle the current style."
   :custom (marginalia-field-width 180)
   :preface
   (defun my/marginalia-mode-hook ()
-    (set-face-attribute 'marginalia-documentation nil
-                        :italic t :family nil :inherit 'variable-pitch))
+    (when (facep 'marginalia-documentation)
+      (set-face-attribute 'marginalia-documentation nil
+                          :italic t :family nil :inherit 'variable-pitch)))
   (add-hook 'after-load-theme-hook #'my/marginalia-mode-hook)
-  :init
+  :defer 1
+  :config
   (marginalia-mode)
   (my/marginalia-mode-hook))
 
@@ -776,8 +783,9 @@ If USE-3D is \\='toggle, toggle the current style."
 
 (use-package which-key
   :ensure nil
+  :defer 1
   :custom (which-key-idle-delay 1)
-  :init (which-key-mode))
+  :config (which-key-mode))
 
 (use-package eldoc-box
   :hook (prog-mode . eldoc-box-hover-at-point-mode))
@@ -992,13 +1000,14 @@ If USE-3D is \\='toggle, toggle the current style."
                        `(python-base-mode . ("pyright-langserver" "--stdio"))))
 
 (use-package apheleia
+  :defer 1
   :preface
   (add-hook 'python-base-mode-hook
             (lambda () (setq-local apheleia-formatter '(ruff-isort ruff))))
   (add-hook 'sh-base-mode-hook
             (lambda () (setq-local apheleia-formatter 'shfmt)))
-  :init (apheleia-global-mode 1)
   :config
+  (apheleia-global-mode 1)
   (let ((config-path (expand-file-name "pyproject.toml" dotfiles-dir)))
     (setf (alist-get 'ruff apheleia-formatters)
           `("ruff" "format" "--config" ,config-path "--silent" "--stdin-filename" filepath "-"))
