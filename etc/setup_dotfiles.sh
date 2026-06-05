@@ -21,13 +21,29 @@ main() {
         )" > /dev/null && pwd
     )"
 
-    # prepare user folder
+    # Determine OS
+    local os="linux"
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+        os="macos"
+    fi
+
+    # prepare common folders
     mkdir -vp \
         ~/.local/bin \
         ~/.vim/{undo,spell,tags} \
         ~/.config/{ghostty,opencode} \
         ~/.conda \
         ~/Zotero/translators
+
+    # prepare OS-specific folders
+    if [[ "${os}" == "macos" ]]; then
+        echo -n
+    elif [[ "${os}" == "linux" ]]; then
+        mkdir -vp \
+            ~/.config/gtk-3.0 \
+            ~/.config/autostart \
+            ~/.local/share/fonts
+    fi
     touch ~/.hushlogin
 
     # make soft symlinks
@@ -42,8 +58,18 @@ main() {
     ln -sfv "${dotfiles}"/config/opencode/* ~/.config/opencode
     ln -sfv "${dotfiles}"/Zotero/translators/* ~/Zotero/translators
 
+    # OS-specific symlinks
+    if [[ "${os}" == "macos" ]]; then
+        echo -n
+    elif [[ "${os}" == "linux" ]]; then
+        ln -sfv "${dotfiles}/config/redshift.conf" ~/.config/redshift.conf
+        # ln -sfv "${dotfiles}/config/gtk-3.0/gtk.css" ~/.config/gtk-3.0/gtk.css
+        # ln -sfv "${dotfiles}/config/autostart/"* ~/.config/autostart
+        # ln -sfv "${dotfiles}/fonts/"*/*.otb ~/.local/share/fonts
+    fi
+
     # setup launch daemons and launch agents
-    if command -v "launchctl" &> /dev/null; then
+    if [[ "${os}" == "macos" ]] && command -v "launchctl" &> /dev/null; then
         echo -e "${bright_style}\n- Setting up LaunchDaemons and LaunchAgents${normal_style}"
         "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchDaemons" /Library/LaunchDaemons
         "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents" ~/Library/LaunchAgents
@@ -67,7 +93,9 @@ main() {
     git -C "${dotfiles}" config core.hooksPath etc/hooks
 
     # patch Ghostty Modus themes
-    "${dotfiles}/etc/patch_modus.py"
+    if [[ "${os}" == "macos" ]] && [[ -x "${dotfiles}/etc/patch_modus.py" ]]; then
+        "${dotfiles}/etc/patch_modus.py"
+    fi
 }
 
 main "$@"

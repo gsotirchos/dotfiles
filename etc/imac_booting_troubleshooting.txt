@@ -1,0 +1,37 @@
+# vim: set syntax=sh:
+
+## Fix MOKList error on apple hardware by removing shim
+sudo apt purge shim shim-signed
+sudo rm /boot/efi/EFI/ubuntu/shimx64.efi
+sudo grub-install /dev/sda
+efibootmgr -v  # check changes (should be \EFI\ubuntu\grubx64.efi)
+sudo update-grub  # update grub
+
+## Cleaning up boot entries
+sudo efibootmgr -Bb FFFF  # remove older entries if needed
+sudo efibootmgr -t 0  # remove delay
+sudo update-grub  # always update grub
+
+## IMPORTANT: fix windows partition table from "MBR: hybrid"
+## to "MBR: protective
+## source: https://superuser.com/a/1536253"
+sudo gdisk
+# enter disk name (/dev/sda)
+# something like the following should be output:
+#       ...
+# MBR: hybrid
+# BSD: not present
+# APM: not present
+# GPT: present
+#       ...
+# enter the following commands, still in gdisk:
+x  # expert
+n  # create a new protective MBR
+w  # write table to disk and exit (accept with "y")
+# now it should be something like this:
+#       ...
+# MBR: protective
+# BSD: not present
+# APM: not present
+# GPT: present
+#       ...

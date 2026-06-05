@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=set-resolution-remote
+Exec=bash -c "~/.dotfiles/bin/set-resolution-remote &> /dev/null"
+Type=Application

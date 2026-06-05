@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=auto-brightness
+Exec=bash -c "~/.dotfiles/bin/auto-brightness &> /dev/null"
+Type=Application
