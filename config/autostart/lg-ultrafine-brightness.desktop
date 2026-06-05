@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=lg-ultrafine-brightness
+Exec=bash -c "sleep 5 && gnome-terminal --geometry=42x6+1480+850 -- sudo ~/.bin/LG_ultrafine_brightness"
+Type=Application

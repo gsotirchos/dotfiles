@@ -1,0 +1,12 @@
+# vim: set syntax=sh:
+
+## Setup libsecret keyring with git
+## source: https://askubuntu.com/a/959662
+
+sudo apt-get install build-essential libsecret-1-0 libsecret-1-dev
+
+# Build the credential helper binary
+sudo make --directory=/usr/share/doc/git/contrib/credential/libsecret
+
+# Simplified configuration syntax
+git config --global credential.helper libsecret

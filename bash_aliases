@@ -139,8 +139,8 @@ fi
 
 if [[ "$OS" == "macos" ]]; then
     alias update="brew update && brew upgrade && brew autoremove && brew cleanup --prune=all"
-# else
-#     ...
+else
+    alias update="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y"
 fi
 
 if command -v "opencode" &> /dev/null; then

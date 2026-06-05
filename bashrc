@@ -14,7 +14,9 @@ if ! [[ "${PROMPT_COMMAND}" == *"history -a"* ]]; then
 fi
 
 # populate LS_COLORS
-eval "$(dircolors -b)"
+if command -v "dircolors" &> /dev/null; then
+    eval "$(dircolors -b)"
+fi
 
 # ignore certain filenames when auto-completing
 export FIGNORE=".DS_Store:"

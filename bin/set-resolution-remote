@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+main() {
+    if [[ "${DISPLAY}" =~ :2[0-9]\.0 ]]; then
+        xrandr --newmode "1440x900_60.00"  \
+            106.50  1440 1528 1672 1904  900 903 909 934 -hsync +vsync
+        xrandr --addmode screen 1440x900_60.00
+        xrandr --output screen --mode "1440x900_60.00"
+
+        systemctl --user stop pulseaudio
+        /usr/bin/pulseaudio --start
+    fi
+}
+
+main
+unset main

@@ -1,0 +1,15 @@
+# /etc/systemd/system/ssh-inhibit-sleep.service
+# A simple systemd unit to prevent sleep when there are active ssh 
+# connections. Don't forget to activate it with:
+# sudo systemctl enable ssh-inhibt-sleep.service
+
+[Unit]
+Description=Check for running SSH sessions and, if any, inhibit sleep
+Before=sleep.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c '! who | grep -qv "\(:0\)"'
+
+[Install]
+RequiredBy=sleep.target

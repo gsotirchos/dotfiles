@@ -51,15 +51,17 @@ fi
 
 # set dotfiles path
 export DOTFILES="${HOME}/.dotfiles"
-export MACOS_DOTFILES="${HOME}/.macos-dotfiles"
-if [[ ! -d "${MACOS_DOTFILES}" ]]; then
-    export MACOS_DOTFILES="${DOTFILES}"
-fi
+export MACOS_DOTFILES="${DOTFILES}"
 
 # TIME ~60ms
 # append extra paths from files to $PATH, $LIBRARY_PATH, etc.
 if [[ -d "${DOTFILES}"/extra_paths ]]; then
-    source "${MACOS_DOTFILES}/etc/append_to_paths.sh" "${DOTFILES}/extra_paths"
+    if [[ -d "${DOTFILES}"/extra_paths/common ]]; then
+        source "${MACOS_DOTFILES}/etc/append_to_paths.sh" "${DOTFILES}/extra_paths/common"
+    fi
+    if [[ -d "${DOTFILES}/extra_paths/${OS}" ]]; then
+        source "${MACOS_DOTFILES}/etc/append_to_paths.sh" "${DOTFILES}/extra_paths/${OS}"
+    fi
 fi
 
 # NOTE: must be ran after appending the extra paths

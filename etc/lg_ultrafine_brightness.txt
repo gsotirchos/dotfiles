@@ -1,0 +1,6 @@
+# iMac ambient light sensor
+/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A08:00/device:0d/ACPI0008:00/iio:device0/in_illuminance_raw
+
+# examples
+https://github.com/ycsos/LG-ultrafine-brightness
+https://github.com/velum/lguf-brightness
