@@ -475,9 +475,9 @@ PATH should be in the format `op://Vault/Item/Field'."
   (stripes-overlay-priority -100)
   :preface
   (defun my/customize-stripes ()
-    (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim t)))
-  (when (fboundp 'modus-themes-get-color-value)
-    (add-hook 'stripes-mode-hook #'my/customize-stripes)))
+    (when (fboundp 'modus-themes-get-color-value)
+      (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim t))))
+  (add-hook 'stripes-mode-hook #'my/customize-stripes))
 
 (use-package files
   :ensure nil
