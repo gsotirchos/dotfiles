@@ -469,18 +469,18 @@ If STYLE is \\='cycle, cycle the current style."
           (progn
             ;; Minimal Mode Line Active
             (set-face-attribute 'mode-line nil
-                                :box nil
+                                :box (list :line-width 2 :color bg-main)
                                 :background bg-main
                                 :overline bg-inactive
                                 :underline nil)
             (set-face-attribute 'mode-line-active nil
-                                :box nil
+                                :box (list :line-width 2 :color bg-main)
                                 :background bg-main
                                 :overline bg-inactive
                                 :underline nil)
             ;; Minimal Mode Line Inactive
             (set-face-attribute 'mode-line-inactive nil
-                                :box nil
+                                :box (list :line-width 2 :color bg-main)
                                 :background bg-main
                                 :overline bg-dim
                                 :underline nil)
@@ -599,7 +599,7 @@ If STYLE is \\='cycle, cycle the current style."
   (tab-bar-show 1)
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
-  (tab-bar-separator "")
+  (tab-bar-separator "  ")
   (tab-bar-auto-width nil)
   (tab-bar-tab-name-truncated-max 25)
   (tab-bar-format
@@ -610,11 +610,11 @@ If STYLE is \\='cycle, cycle the current style."
   :preface
   (defun my/format-tab-spacing (string _ _)
     "Add spacing for Emacs 30+ format-functions."
-    (concat " " string " "))
+    (concat "" string ""))
   (defun my/tab-name-padded-and-truncated ()
     "Calculate the truncated tab name, then add padding (Emacs 29)."
     (let ((name (tab-bar-tab-name-truncated)))
-      (concat "  " name "  ")))
+      (concat "" name "")))
   :config
   (if (boundp 'tab-bar-tab-name-format-functions)
       (progn
