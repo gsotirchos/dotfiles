@@ -49,6 +49,16 @@ If STYLE is \\='cycle, cycle the current style."
                              (when button-style (list :style button-style))))
          (box-inactive (append (list :line-width width :color color-inactive)
                                (when button-style (list :style button-style)))))
+    ;;;;; In ordered of increasing intensity:
+    ;; 1. bg-main
+    ;; 2. bg-dim
+    ;; 3. bg-inactive (same as macOS separator line)
+    ;; 4. bg-active
+    ;; 5. border-inactive
+    ;; 6. border-active (very close to fg-inactive)
+    ;; 7. fg-inactive
+    ;; 8. fg-active
+    ;;;;;
     (dolist (face
              '(tab-bar
                tab-bar-tab
