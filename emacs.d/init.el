@@ -168,6 +168,8 @@ PATH should be in the format `op://Vault/Item/Field'."
 
   :custom
   (inhibit-startup-message t)
+  (underline-minimum-offset 6)
+  (x-use-underline-position-properties nil)
   (initial-scratch-message nil)
   (initial-major-mode 'fundamental-mode)
   (auto-save-visited-file-name t)
@@ -369,7 +371,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (nil
    :map my/toggles-map
    ("t" . modus-themes-toggle)
-   ("3" . my/modus-themes/toggle-3d-style))
+   ("c" . my/modus-themes/cycle-style))
   :custom
   (modus-themes-mixed-fonts t)
   (modus-themes-bold-constructs t)
@@ -415,52 +417,151 @@ PATH should be in the format `op://Vault/Item/Field'."
       ('light (modus-themes-load-theme (nth 0 modus-themes-to-toggle)))
       ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
   (defvar my/modus-themes/3d-style nil
-    "Non-nil if the mode-line should have a 3D released-button style.")
-  (defun my/modus-themes/3d-style (&optional use-3d)
-    "Activate 3D style theme (mode-line, buttons, etc.).
-If USE-3D is \\='toggle, toggle the current style."
+    "The current style of the mode-line, tab-bar, and buttons.
+Can be `flat' (or nil), `3d' (or t), or `minimal'.")
+  (defun my/modus-themes/3d-style (&optional style)
+    "Activate style theme (mode-line, buttons, etc.).
+STYLE can be `flat' (or nil), `3d' (or t), or `minimal'.
+If STYLE is \\='toggle, cycle the current style."
     (interactive "P")
-    (if (or (eq use-3d 'toggle))
-        (setq my/modus-themes/3d-style (not my/modus-themes/3d-style))
-      (setq my/modus-themes/3d-style use-3d))
-    (let* ((style (if my/modus-themes/3d-style 'released-button nil))
-           (width (if my/modus-themes/3d-style 2 1))
+    (cond
+     ((eq style 'toggle)
+      (setq my/modus-themes/3d-style
+            (pcase my/modus-themes/3d-style
+              ('nil '3d)
+              ('flat '3d)
+              ('t 'minimal)
+              ('3d 'minimal)
+              ('minimal 'flat)
+              (_ 'flat))))
+     ((member style '(flat 3d minimal nil t))
+      (setq my/modus-themes/3d-style style))
+     (t
+      (setq my/modus-themes/3d-style style)))
+    (let* ((is-3d (memq my/modus-themes/3d-style '(3d t)))
+           (is-minimal (eq my/modus-themes/3d-style 'minimal))
+           (style (when is-3d 'released-button))
+           (width (if is-3d 2 1))
+           (bg-main (modus-themes-get-color-value 'bg-main))
            (bg-active (modus-themes-get-color-value 'bg-mode-line-active))
            (bg-inactive (modus-themes-get-color-value 'bg-mode-line-inactive))
            (flat-border-active (modus-themes-get-color-value 'border-mode-line-active))
            (flat-border-inactive (modus-themes-get-color-value 'border-mode-line-inactive))
-           (color-active (if my/modus-themes/3d-style bg-active flat-border-active))
-           (color-inactive (if my/modus-themes/3d-style bg-inactive flat-border-inactive))
-           (box-active (append (list :line-width width :color color-active)
-                               (when style (list :style style))))
-           (box-inactive (append (list :line-width width :color color-inactive)
+           (color-active (if is-3d bg-active flat-border-active))
+           (color-inactive (if is-3d bg-inactive flat-border-inactive))
+           (box-active (unless is-minimal
+                         (append (list :line-width width :color color-active)
                                  (when style (list :style style)))))
-      (dolist (face '(mode-line
-                      mode-line-active
-                      tab-bar-tab
-                      modus-themes-button))
-        (set-face-attribute face nil :box box-active))
-      (dolist (face '(header-line
-                      mode-line-inactive
-                      tab-bar-tab-inactive))
-        (set-face-attribute face nil :box box-inactive))
-      (dolist (face '(mode-line-highlight
-                      header-line-highlight))
-        (set-face-attribute face nil :box
-                            (append (list :line-width (cons 1 width) :color color-active)
-                                    (when style (list :style style))))))
+           (box-inactive (unless is-minimal
+                           (append (list :line-width width :color color-inactive)
+                                   (when style (list :style style))))))
+      (if is-minimal
+          (progn
+            ;; Minimal Mode Line Active
+            (set-face-attribute 'mode-line nil
+                                :box nil :background bg-main
+                                :overline flat-border-active :underline nil)
+            (set-face-attribute 'mode-line-active nil
+                                :box nil :background bg-main
+                                :overline flat-border-active :underline nil)
+            ;; Minimal Mode Line Inactive
+            (set-face-attribute 'mode-line-inactive nil
+                                :box nil :background bg-main
+                                :overline flat-border-inactive :underline nil)
+            ;; Minimal Header Line
+            (set-face-attribute 'header-line nil
+                                :box nil :background bg-main
+                                :overline nil :underline flat-border-inactive)
+            ;; Minimal Tab Bar
+            (set-face-attribute 'tab-bar nil
+                                :box nil :background bg-main
+                                :overline nil :underline nil)
+            ;; Minimal Tab Bar Active Tab
+            (set-face-attribute 'tab-bar-tab nil
+                                :box nil :background 'unspecified
+                                :overline nil :underline (list :color flat-border-active :position 8))
+            ;; Minimal Tab Bar Inactive Tab
+            (set-face-attribute 'tab-bar-tab-inactive nil
+                                :box nil :background 'unspecified
+                                :overline nil :underline (list :color flat-border-inactive :position 8))
+            ;; Minimal Highlights
+            (set-face-attribute 'mode-line-highlight nil
+                                :box nil
+                                :overline flat-border-active :underline nil)
+            (set-face-attribute 'header-line-highlight nil
+                                :box nil
+                                :overline nil :underline flat-border-inactive)
+            ;; Minimal Modus Themes Button (flat background, padded using a border matching its bg)
+            (let* ((btn-bg (or (let ((bg (face-attribute 'modus-themes-button :background nil t)))
+                                 (if (or (eq bg 'unspecified) (null bg)) nil bg))
+                               (modus-themes-get-color-value 'bg-mode-line-inactive))))
+              (set-face-attribute 'modus-themes-button nil
+                                  :box (list :line-width (cons 4 2) :color btn-bg)
+                                  :overline nil :underline nil)))
+        ;; Else: non-minimal (3D or Flat) style
+        (progn
+          (setq x-use-underline-position-properties t)
+          (setq underline-minimum-offset 1)
+          (set-face-attribute 'tab-bar nil
+                              :box nil
+                              :overline 'unspecified
+                              :underline 'unspecified
+                              :background 'unspecified)
+          (dolist (face
+                   '(mode-line
+                     mode-line-active
+                     tab-bar-tab
+                     modus-themes-button))
+            (set-face-attribute face nil
+                                :box box-active
+                                :overline 'unspecified
+                                :underline 'unspecified
+                                ;; :background 'unspecified TODO
+                                ))
+          (dolist (face
+                   '(header-line
+                     mode-line-inactive
+                     tab-bar-tab-inactive))
+            (set-face-attribute face nil
+                                :box box-inactive
+                                :overline 'unspecified
+                                :underline 'unspecified
+                                :background 'unspecified))
+          (dolist (face
+                   '(mode-line-highlight
+                     header-line-highlight))
+            (set-face-attribute face nil
+                                :box (append (list :line-width (cons 1 width) :color color-active)
+                                             (when style (list :style style)))
+                                :overline 'unspecified :underline 'unspecified :background 'unspecified))
+          ;; Ensure non-minimal header line has its standard background
+          (set-face-background 'header-line bg-inactive))))
     (my/customize-buttons-faces))
-  (defun my/modus-themes/toggle-3d-style ()
-    "Toggle the theme style between 3D and Flat"
+  (defun my/modus-themes/cycle-style ()
+    "Cycle the theme style between Flat, 3D, and Minimal."
     (interactive)
-    (my/modus-themes/3d-style 'toggle))
+    (my/modus-themes/3d-style 'toggle)
+    (message "Modus theme style set to: %s" my/modus-themes/3d-style))
   (defun my/customize-buttons-faces ()
+    (require 'wid-edit nil t)
     (dolist (face
              '(custom-button
                custom-button-mouse
-               custom-button-pressed))
+               custom-button-pressed
+               custom-button-unraised
+               custom-button-pressed-unraised
+               widget-button
+               modus-themes-button))
       (when (facep face)
-        (set-face-attribute face nil :box (face-attribute 'modus-themes-button :box)))))
+        (let* ((bg (face-attribute face :background nil t))
+               (bg-color (if (or (eq bg 'unspecified) (null bg))
+                             (modus-themes-get-color-value 'bg-mode-line-inactive)
+                           bg)))
+          (if (eq my/modus-themes/3d-style 'minimal)
+              (set-face-attribute face nil :box (list :line-width (cons 4 2) :color bg-color))
+            (set-face-attribute face nil :box (face-attribute 'modus-themes-button :box))))))
+    (when (facep 'widget-inactive)
+      (set-face-attribute 'widget-inactive nil :box nil)))
   (defun my/customize-modus-themes ()
     (my/modus-themes/3d-style my/modus-themes/3d-style)
     (set-face-background 'header-line (modus-themes-get-color-value 'bg-mode-line-inactive))
