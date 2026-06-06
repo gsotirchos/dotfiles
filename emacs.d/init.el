@@ -576,7 +576,6 @@ If STYLE is \\='cycle, cycle the current style."
                custom-button-pressed
                custom-button-unraised
                custom-button-pressed-unraised
-               widget-button
                modus-themes-button))
       (when (facep face)
         (let* ((bg (face-attribute face :background nil t))
@@ -584,7 +583,7 @@ If STYLE is \\='cycle, cycle the current style."
                              (modus-themes-get-color-value 'bg-mode-line-inactive)
                            bg)))
           (if (eq my/modus-themes/ui-style 'minimal)
-              (set-face-attribute face nil :box (list :line-width (cons 4 2) :color bg-color))
+              (set-face-attribute face nil :box (list :line-width (cons 2 1) :color bg-color))
             (set-face-attribute face nil :box (face-attribute 'modus-themes-button :box))))))
     (when (facep 'widget-inactive)
       (set-face-attribute 'widget-inactive nil :box nil)))
