@@ -5,7 +5,7 @@
 ;; Hide modeline on startup
 (setq mode-line-format nil)
 
-;; (add-to-list 'default-frame-alist '(undecorated-round . t))
+(add-to-list 'default-frame-alist '(undecorated-round . t))
 
 ;; Less aggressive garbage collection on startup
 (setq gc-cons-threshold most-positive-fixnum
@@ -93,7 +93,7 @@
       frame-inhibit-implied-resize t
       use-dialog-box nil)
 
-  ;; Basic fonts
+;; Basic fonts
 (when (eq system-type 'darwin)
   (set-face-attribute 'fixed-pitch nil :family "Menlo")  ;; :height 130
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande"))  ;; :height 130
@@ -105,8 +105,8 @@
 ;; Initialize package sources and set up `use-package'
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                          ("org" . "https://orgmode.org/elpa/")
-                          ("elpa" . "https://elpa.gnu.org/packages/")))
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (unless (or (version<= "29" emacs-version)
             (package-installed-p 'use-package))

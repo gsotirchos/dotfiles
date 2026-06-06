@@ -32,7 +32,7 @@ If STYLE is \\='cycle, cycle the current style."
          (is-minimal (eq my/modus-themes/ui-style 'minimal))
          (button-style (when is-3d 'released-button))
          (width (if is-3d 2 1))
-         (bold-tab-faces-p nil)
+         (bold-tab-faces-p t)
          (bg-main (modus-themes-get-color-value 'bg-main))
          (bg-dim (modus-themes-get-color-value 'bg-dim))
          (fg-active (modus-themes-get-color-value 'fg-mode-line-active))
@@ -43,31 +43,30 @@ If STYLE is \\='cycle, cycle the current style."
          (border-inactive (modus-themes-get-color-value 'border-mode-line-inactive))
          (color-active (if is-3d bg-active border-active))
          (color-inactive (if is-3d bg-inactive border-inactive))
-         (box-minimal (list :line-width 2 :color bg-main))
-         (box-active (if is-minimal
-                         box-minimal
-                       (append (list :line-width width :color color-active)
+         (box-minimal (list :line-width 8 :color bg-main))
+         (box-minimal-thin (list :line-width 6 :color bg-main))
+         (box-active (append (list :line-width width :color color-active)
+                             (when button-style (list :style button-style))))
+         (box-inactive (append (list :line-width width :color color-inactive)
                                (when button-style (list :style button-style)))))
-         (box-inactive (if is-minimal
-                           box-minimal
-                         (append (list :line-width width :color color-inactive)
-                                 (when button-style (list :style button-style))))))
-    (set-face-bold 'tab-bar bold-tab-faces-p)
-    (set-face-bold 'tab-bar-tab bold-tab-faces-p)
-    (set-face-bold 'tab-bar-tab-inactive bold-tab-faces-p)
+    (dolist (face
+             '(tab-bar
+               tab-bar-tab
+               tab-bar-tab-inactive))
+      (set-face-bold face bold-tab-faces-p))
     (if is-minimal
         (progn
           (pcase-dolist
-              (`(,face ,fg ,ol ,ul)
-               `((mode-line            unspecified  ,bg-inactive nil)
-                 (mode-line-active     unspecified  ,bg-inactive nil)
-                 (mode-line-inactive   unspecified  ,bg-dim      nil)
-                 (header-line          unspecified  nil          (:color ,bg-dim :position 0))
-                 (tab-bar              ,fg-inactive nil          (:color ,bg-inactive :position 0))
-                 (tab-bar-tab          ,fg-active   nil          (:color ,bg-inactive :position 0))
-                 (tab-bar-tab-inactive ,fg-inactive nil          (:color ,bg-inactive :position 0))))
+              (`(,face ,box ,fg ,ol ,ul)
+               `((mode-line            nil               unspecified  ,bg-inactive nil)
+                 (mode-line-active     nil               unspecified  ,bg-inactive nil)
+                 (mode-line-inactive   nil               unspecified  ,bg-dim      nil)
+                 (header-line          ,box-minimal-thin unspecified  nil          (:color ,bg-dim :position 0))
+                 (tab-bar              ,box-minimal      ,fg-inactive nil          (:color ,bg-inactive :position 0))
+                 (tab-bar-tab          ,box-minimal      ,fg-active   nil          (:color ,bg-inactive :position 0))
+                 (tab-bar-tab-inactive ,box-minimal      ,fg-inactive nil          (:color ,bg-inactive :position 0))))
             (set-face-attribute face nil
-                                :box box-active
+                                :box box
                                 :foreground fg
                                 :background bg-main
                                 :overline ol

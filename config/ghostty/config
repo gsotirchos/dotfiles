@@ -13,7 +13,7 @@ window-height = 24
 window-vsync = true
 
 macos-titlebar-style = transparent
-#macos-window-buttons = hidden
+macos-window-buttons = hidden
 macos-option-as-alt = true
 
 quit-after-last-window-closed = true

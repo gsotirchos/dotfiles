@@ -423,7 +423,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :ensure nil
   :no-require t
   :custom
-  (tab-bar-show 1)
+  (tab-bar-show t)
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
   (tab-bar-separator "")
