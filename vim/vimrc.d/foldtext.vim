@@ -1,8 +1,24 @@
 scriptencoding utf-8
 
 function! s:FoldText()
-    let l:fold_left = substitute(getline(v:foldstart), '\%(^\s*\)\=\(\S.\{,50}\)\%(\s.\{-}\)\=$', '\1', 'g')
-    let l:fold_right = substitute(getline(v:foldend), '^\%(.\{-}\s*\)\=\(\S.\{,25}\)$', '\1', 'g')
+    let l:line_start = substitute(getline(v:foldstart), '^\s*\(.\{-}\)\s*$', '\1', '')
+    let l:fold_left = l:line_start
+    if strwidth(l:fold_left) > 50
+        let l:fold_left = substitute(l:line_start, '^\(.\{,50}\)\s.*$', '\1', '')
+        if strwidth(l:fold_left) > 50
+            let l:fold_left = strpart(l:fold_left, 0, 50, v:true)
+        endif
+    endif
+
+    let l:line_end = substitute(getline(v:foldend), '^\s*\(.\{-}\)\s*$', '\1', '')
+    let l:fold_right = l:line_end
+    if strwidth(l:fold_right) > 25
+        let l:fold_right = substitute(l:line_end, '^.\{-}\s\(.\{,25}\)$', '\1', '')
+        if strwidth(l:fold_right) > 25
+            let l:fold_right = strpart(l:fold_right, strwidth(l:fold_right) - 25, 25, v:true)
+        endif
+    endif
+
     let l:fold_prefix = s:GetFoldPrefix()
     let l:folded_lines_count = (v:foldend - v:foldstart + 1)
     return l:fold_prefix . l:fold_left . ' ... ' . l:fold_right . '  (' . l:folded_lines_count . ' lines)'
