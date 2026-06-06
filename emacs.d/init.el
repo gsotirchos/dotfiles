@@ -119,8 +119,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
   ;; Custom after theme load hook
   (defvar after-load-theme-hook nil
-    "Hook that runs after a color theme is loaded using `load-theme'."
-    )
+    "Hook that runs after a color theme is loaded using `load-theme'.")
 
   (defun my/run-after-load-theme-hook (&rest _)
     "Run `after-load-theme-hook`."
