@@ -33,14 +33,15 @@ If STYLE is \\='cycle, cycle the current style."
          (button-style (when is-3d 'released-button))
          (width (if is-3d 2 1))
          (bold-tab-faces-p t)
-         (bg-main (modus-themes-get-color-value 'bg-main))
-         (bg-dim (modus-themes-get-color-value 'bg-dim))
-         (fg-active (modus-themes-get-color-value 'fg-mode-line-active))
-         (fg-inactive (modus-themes-get-color-value 'fg-mode-line-inactive))
-         (bg-active (modus-themes-get-color-value 'bg-mode-line-active))
-         (bg-inactive (modus-themes-get-color-value 'bg-mode-line-inactive))
-         (border-active (modus-themes-get-color-value 'border-mode-line-active))
-         (border-inactive (modus-themes-get-color-value 'border-mode-line-inactive))
+         (bg-main (modus-themes-get-color-value 'bg-main t))
+         (bg-dim (modus-themes-get-color-value 'bg-dim t))
+         (fg-vertical-border (modus-themes-get-color-value 'fg-vertical-border t))
+         (fg-active (modus-themes-get-color-value 'fg-mode-line-active t))
+         (fg-inactive (modus-themes-get-color-value 'fg-mode-line-inactive t))
+         (bg-active (modus-themes-get-color-value 'bg-mode-line-active t))
+         (bg-inactive (modus-themes-get-color-value 'bg-mode-line-inactive t))
+         (border-active (modus-themes-get-color-value 'border-mode-line-active t))
+         (border-inactive (modus-themes-get-color-value 'border-mode-line-inactive t))
          (color-active (if is-3d bg-active border-active))
          (color-inactive (if is-3d bg-inactive border-inactive))
          (box-minimal (list :line-width 8 :color bg-main))
@@ -68,7 +69,8 @@ If STYLE is \\='cycle, cycle the current style."
         (progn
           (pcase-dolist
               (`(,face ,box ,fg ,ol ,ul)
-               `((mode-line            nil               unspecified  ,bg-inactive nil)
+               `((vertical-border      nil       ,fg-vertical-border  nil          nil)
+                 (mode-line            nil               unspecified  ,bg-inactive nil)
                  (mode-line-active     nil               unspecified  ,bg-inactive nil)
                  (mode-line-inactive   nil               unspecified  ,bg-dim      nil)
                  (header-line          ,box-minimal-thin unspecified  nil          (:color ,bg-dim :position 0))
@@ -78,7 +80,7 @@ If STYLE is \\='cycle, cycle the current style."
             (set-face-attribute face nil
                                 :box box
                                 :foreground fg
-                                :background bg-main
+                                :background 'unspecified
                                 :overline ol
                                 :underline ul))
           (pcase-dolist
@@ -147,7 +149,7 @@ If STYLE is \\='cycle, cycle the current style."
       (if (eq my/modus-themes/ui-style 'minimal)
           (let* ((bg (face-attribute face :background nil t))
                  (bg-color (if (or (eq bg 'unspecified) (null bg))
-                               (modus-themes-get-color-value 'bg-mode-line-inactive)
+                               (modus-themes-get-color-value 'bg-mode-line-inactive t)
                              bg)))
             (set-face-attribute face nil :box (list :line-width '(4 . 2) :color bg-color)))
         (set-face-attribute face nil :box (face-attribute 'modus-themes-button :box)))))
