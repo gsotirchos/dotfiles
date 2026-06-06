@@ -155,6 +155,18 @@ PATH should be in the format `op://Vault/Item/Field'."
   ;; (add-hook 'text-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
 
+  ;; Pad the echo area and command entry minibuffer to avoid rounded corner obstruction
+  (dolist (buf '(" *Echo Area 0*" " *Echo Area 1*"))
+    (with-current-buffer (get-buffer-create buf)
+      (setq-local line-prefix " ")))
+
+  (defun my/pad-minibuffer-prompt ()
+    "Add a prefix to the minibuffer prompt to prevent rounded corner obstruction."
+    (let ((inhibit-read-only t))
+      (put-text-property (point-min) (minibuffer-prompt-end) 'line-prefix " ")
+      (put-text-property (point-min) (minibuffer-prompt-end) 'wrap-prefix " ")))
+  (add-hook 'minibuffer-setup-hook #'my/pad-minibuffer-prompt)
+
   ;; Startup time
   (defun my/display-startup-stats ()
     "Display startup stats."
