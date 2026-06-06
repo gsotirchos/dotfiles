@@ -392,6 +392,7 @@ PATH should be in the format `op://Vault/Item/Field'."
      (bg-tab-bar bg-main)
      (bg-tab-current bg-mode-line-active)
      (bg-tab-other bg-mode-line-inactive)
+     (fg-vertical-border bg-mode-line-inactive)
      (fg-heading-1 fg-main)
      (fg-heading-2 fg-main)
      (fg-heading-3 fg-main)
@@ -411,6 +412,10 @@ PATH should be in the format `op://Vault/Item/Field'."
      (type magenta-cooler)
      (fnname blue-faint)
      (variable cyan)))
+  (modus-vivendi-palette-overrides
+   '((bg-main "#1e1e1e")
+     (bg-dim "#292929")
+     (fg-vertical-border bg-popup)))
   (modus-themes-headings
    '((1 . (1.06666))
      (2 . (1.06666))
@@ -470,7 +475,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (stripes-overlay-priority -100)
   :preface
   (defun my/customize-stripes ()
-    (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim)))
+    (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim t)))
   (when (fboundp 'modus-themes-get-color-value)
     (add-hook 'stripes-mode-hook #'my/customize-stripes)))
 
@@ -1020,7 +1025,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (defun my/customize-rainbow-delimiters ()
     (seq-mapn
      (lambda (face color)
-       (set-face-foreground face (modus-themes-get-color-value color)))
+       (set-face-foreground face (modus-themes-get-color-value color t)))
      '(rainbow-delimiters-depth-1-face
        rainbow-delimiters-depth-2-face
        rainbow-delimiters-depth-3-face
@@ -1091,7 +1096,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (defun my/customize-flymake ()
     (when (facep 'flymake-end-of-line-diagnostics-face)
       (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
-                          :foreground (modus-themes-get-color-value 'fg-dim)
+                          :foreground (modus-themes-get-color-value 'fg-dim t)
                           :box '(:line-width (5 . -1) :style flat-button)
                           :height (round (* 0.92 (face-attribute 'default :height)))
                           :italic t
@@ -1116,8 +1121,8 @@ PATH should be in the format `op://Vault/Item/Field'."
            (when (facep face)
              (set-face-attribute face nil
                                  :extend t :inherit 'flymake-end-of-line-diagnostics-face
-                                 :foreground (modus-themes-get-color-value fg-color)
-                                 :background (modus-themes-get-color-value bg-color))))
+                                 :foreground (modus-themes-get-color-value fg-color t)
+                                 :background (modus-themes-get-color-value bg-color t))))
          faces fg-colors bg-colors))))
   (defun my/flymake-hook ()
     (when (fboundp 'modus-themes-get-color-value)
@@ -1320,7 +1325,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
   (org-startup-truncated nil)
-  (org-startup-folded 'show2levels)
+  (org-startup-folded 'fold)
   (org-startup-indented t)
   (org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
   (org-cycle-separator-lines 1)

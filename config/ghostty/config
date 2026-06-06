@@ -12,7 +12,7 @@ window-width = 80
 window-height = 24
 window-vsync = true
 
-macos-titlebar-style = transparent
+macos-titlebar-style = native
 macos-window-buttons = hidden
 macos-option-as-alt = true
 
@@ -23,7 +23,7 @@ mouse-hide-while-typing = true
 cursor-opacity = 1.0
 
 
-theme = light:patched-modus-operandi, dark:patched-modus-vivendi
+theme = light:patched-modus-operandi, dark:custom-modus-vivendi
 
 keybind = shift+escape=text:~
 keybind = option+delete=esc:d
