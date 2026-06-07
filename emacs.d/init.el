@@ -863,6 +863,7 @@ PATH should be in the format `op://Vault/Item/Field'."
                                   (markdown-display-inline-images))))
 
 (use-package gptel
+  :after my-keybindings
   :bind
   (nil
    :map my/personal-map
@@ -925,13 +926,6 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package gptel-agent
   :after gptel
   :config (gptel-agent-update))
-
-;; (use-package my-gptel-tools
-;;   :ensure nil
-;;   :demand t
-;;   :after gptel
-;;   :load-path "site-lisp/"
-;;   :config (my/gptel-tools-add-tools))
 
 
 ;; Programming
