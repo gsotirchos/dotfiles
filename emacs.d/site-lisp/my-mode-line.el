@@ -55,6 +55,15 @@ mouse-3: Toggle minor modes"
              flymake-mode-line-counters))))
 (put 'my/mode-line-flymake-info 'risky-local-variable t)
 
+(defun my/mode-line-reset-local-buffers ()
+  "Reset `mode-line-format' to the global default in all buffers.
+Protects buffers where it is explicitly set to nil (e.g., `pdf-view-mode')."
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (when (and (local-variable-p 'mode-line-format)
+                 mode-line-format)
+        (kill-local-variable 'mode-line-format)))))
+
 (defvar my/mode-line-format
   '("%e"
     mode-line-front-space
@@ -88,12 +97,16 @@ mouse-3: Toggle minor modes"
   :group 'mode-line
   (if my-mode-line-mode
       (progn
-        ;; Enable: Save old format and set new one
-        (setq my/original-mode-line-format (default-value 'mode-line-format))
-        (setq-default mode-line-format my/mode-line-format))
-    ;; Disable: Restore old format
+        ;; Capture original format if we don't have a backup yet
+        (unless my/original-mode-line-format
+          (setq my/original-mode-line-format (default-value 'mode-line-format)))
+        (setq-default mode-line-format my/mode-line-format)
+        (my/mode-line-reset-local-buffers))
+    ;; Restore original format and clear the backup
     (when my/original-mode-line-format
-      (setq-default mode-line-format my/original-mode-line-format))))
+      (setq-default mode-line-format my/original-mode-line-format)
+      (setq my/original-mode-line-format nil)
+      (my/mode-line-reset-local-buffers))))
 
 (provide 'my-mode-line)
 ;;; my-mode-line.el ends here
