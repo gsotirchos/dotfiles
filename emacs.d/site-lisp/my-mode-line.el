@@ -40,7 +40,7 @@ mouse-3: Toggle minor modes"
 (put 'my/mode-line-minor-modes 'risky-local-variable t)
 
 (defvar my/mode-line-spacer
-  '(:propertize (" ") display (min-width (2.0))))
+  '(:propertize (" ") display (min-width (1.0))))
 (put 'my/mode-line-spacer 'risky-local-variable t)
 
 (defvar my/mode-line-vc-info
@@ -79,10 +79,10 @@ Protects buffers where it is explicitly set to nil (e.g., `pdf-view-mode')."
     mode-line-buffer-identification
     my/mode-line-spacer
     mode-line-position
-    my/mode-line-spacer
     my/mode-line-vc-info
     my/mode-line-major-modes
     my/mode-line-flymake-info
+    my/mode-line-spacer
     mode-line-misc-info
     mode-line-end-spaces))
 

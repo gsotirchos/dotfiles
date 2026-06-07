@@ -991,6 +991,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :preface
   (defun my/prog-mode-hook ()
     (hs-minor-mode 1)
+    (which-function-mode 1)
     (setq show-trailing-whitespace t)
     ;; (modify-syntax-entry ?- "w")
     (modify-syntax-entry ?_ "w"))
