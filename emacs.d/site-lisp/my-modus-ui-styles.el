@@ -73,10 +73,10 @@ If STYLE is \\='cycle, cycle the current style."
                  (mode-line            nil               unspecified  ,bg-inactive nil)
                  (mode-line-active     nil               ,fg-active   ,bg-inactive nil)
                  (mode-line-inactive   nil               ,fg-inactive ,bg-dim      nil)
-                 (header-line          ,box-minimal-thin unspecified  nil          (:color ,bg-dim :position 0))
-                 (tab-bar              ,box-minimal      ,fg-inactive nil          (:color ,bg-inactive :position 0))
+                 (tab-bar              ,box-minimal      unspecified  nil          (:color ,bg-inactive :position 0))
                  (tab-bar-tab          ,box-minimal      ,fg-active   nil          (:color ,bg-inactive :position 0))
-                 (tab-bar-tab-inactive ,box-minimal      ,fg-inactive nil          (:color ,bg-inactive :position 0))))
+                 (tab-bar-tab-inactive ,box-minimal      ,fg-inactive nil          (:color ,bg-inactive :position 0))
+                 (header-line          ,box-minimal-thin unspecified  nil          (:color ,bg-dim :position 0))))
             (set-face-attribute face nil
                                 :box box
                                 :foreground fg
