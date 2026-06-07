@@ -29,10 +29,10 @@
     },
     "agent": {
         "plan": {
-            "model": "google/gemini-flash-latest"
+            "model": "google/gemini-3-flash-preview"
         },
         "build": {
-            "model": "google/gemini-flash-latest"
+            "model": "google/gemini-3-flash-preview"
         }
     }
 }
