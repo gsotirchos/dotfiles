@@ -770,7 +770,8 @@ PATH should be in the format `op://Vault/Item/Field'."
              after-save-hook))
     (add-hook hook #'my/diff-hl-mode-if-vc))
   (defun my/customize-diff-hl ()
-    (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
+    (when (boundp 'diff-hl-margin-symbols-alist)
+      (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~"))
     (pcase-dolist (`(,diff-hl-face ,diff-face)
                    '((diff-hl-change diff-changed)
                      (diff-hl-insert diff-added)
@@ -785,7 +786,7 @@ PATH should be in the format `op://Vault/Item/Field'."
     (my/customize-diff-hl)
     (add-hook 'auto-save-hook 'diff-hl-update nil t)
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
-    (add-hook 'after-load-theme-hook #'my/customize-diff-hl))
+    (add-hook 'after-load-theme-hook #'my/customize-diff-hl nil t))
   (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
   :config (diff-hl-margin-mode 1))
 
