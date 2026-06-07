@@ -759,11 +759,14 @@ PATH should be in the format `op://Vault/Item/Field'."
   :hook (prog-mode . eldoc-box-hover-at-point-mode))
 
 (use-package diff-hl
-  :custom (diff-hl-draw-borders nil)
+  :custom
+  (diff-hl-draw-borders nil)
+  (diff-hl-autohide-margin t)
   :preface
   (defun my/diff-hl-mode-if-vc ()
     (when (and (buffer-file-name) (vc-registered (buffer-file-name)))
-      (diff-hl-mode 1)))
+      (diff-hl-mode 1)
+      (diff-hl-margin-mode 1)))
   (add-hook 'find-file-hook #'my/diff-hl-mode-if-vc)
   (defun my/customize-diff-hl ()
     (when (boundp 'diff-hl-margin-symbols-alist)
@@ -783,8 +786,7 @@ PATH should be in the format `op://Vault/Item/Field'."
     (add-hook 'after-load-theme-hook #'my/customize-diff-hl nil t)
     (add-hook 'auto-save-hook 'diff-hl-update nil t)
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t))
-  (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
-  :config (diff-hl-margin-mode 1))
+  (add-hook 'diff-hl-margin-local-mode-hook #'my/diff-hl-hook))
 
 (use-package ediff
   :ensure nil
@@ -1018,21 +1020,21 @@ PATH should be in the format `op://Vault/Item/Field'."
   :hook (prog-mode minibuffer-setup)
   :preface
   (defun my/customize-rainbow-delimiters ()
-    (pcase-dolist (`(,face . ,color)
-                   '((rainbow-delimiters-depth-1-face fg-dim)
-                     (rainbow-delimiters-depth-2-face magenta-faint)
-                     (rainbow-delimiters-depth-3-face cyan-faint)
-                     (rainbow-delimiters-depth-4-face red-faint)
-                     (rainbow-delimiters-depth-5-face yellow-faint)
-                     (rainbow-delimiters-depth-6-face indigo)
-                     (rainbow-delimiters-depth-7-face green-faint)
-                     (rainbow-delimiters-depth-8-face blue-faint)
-                     (rainbow-delimiters-depth-9-face rust)))
-      (set-face-foreground face (modus-themes-get-color-value color t))))
+    (when (fboundp 'modus-themes-get-color-value)
+      (pcase-dolist (`(,face . ,color)
+                     '((rainbow-delimiters-depth-1-face fg-dim)
+                       (rainbow-delimiters-depth-2-face magenta-faint)
+                       (rainbow-delimiters-depth-3-face cyan-faint)
+                       (rainbow-delimiters-depth-4-face red-faint)
+                       (rainbow-delimiters-depth-5-face yellow-faint)
+                       (rainbow-delimiters-depth-6-face indigo)
+                       (rainbow-delimiters-depth-7-face green-faint)
+                       (rainbow-delimiters-depth-8-face blue-faint)
+                       (rainbow-delimiters-depth-9-face rust)))
+        (set-face-foreground face (modus-themes-get-color-value color t)))))
   (defun my/rainbow-delimiters-hook ()
     (my/customize-rainbow-delimiters)
-    (when (fboundp 'modus-themes-get-color-value)
-      (add-hook 'after-load-theme-hook #'my/customize-rainbow-delimiters nil t)))
+    (add-hook 'after-load-theme-hook #'my/customize-rainbow-delimiters nil t))
   (add-hook 'rainbow-delimiters-mode-hook #'my/rainbow-delimiters-hook))
 
 (use-package indent-bars
@@ -1080,22 +1082,16 @@ PATH should be in the format `op://Vault/Item/Field'."
   :preface
   (defun my/flymake-auto-adjust-margins (&rest _)
     "Dynamically resize the left margin based on the presence of diagnostics."
-    (when flymake-mode
-      (let ((new-width (if (flymake-diagnostics) 2 0)))
-        (unless (eq left-margin-width new-width)
-          (setq left-margin-width new-width)
-          (dolist (win (get-buffer-window-list (current-buffer) nil t))
-            (set-window-margins win left-margin-width))))))
+    (if flymake-mode
+        (let ((new-width (if (flymake-diagnostics) 2 0)))
+          (setq left-margin-width new-width))
+      (setq left-margin-width 0))
+    (dolist (win (get-buffer-window-list (current-buffer) nil t))
+      (set-window-margins win left-margin-width)))
   (advice-add 'flymake--handle-report :after #'my/flymake-auto-adjust-margins)
-  (defun my/flymake-reset-margins ()
-    "Reset the margin to 0 if flymake-mode is toggled off manually."
-    (unless flymake-mode
-      (setq left-margin-width 0)
-      (dolist (win (get-buffer-window-list (current-buffer) nil t))
-        (set-window-margins win left-margin-width))))
-  (add-hook 'flymake-mode-hook #'my/flymake-reset-margins)
   (defun my/customize-flymake ()
-    (when (facep 'flymake-end-of-line-diagnostics-face)
+    (when (and (fboundp 'modus-themes-get-color-value)
+               (facep 'flymake-end-of-line-diagnostics-face))
       (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
                           :foreground (modus-themes-get-color-value 'fg-dim t)
                           :box '(:line-width (5 . -1) :style flat-button)
@@ -1114,9 +1110,8 @@ PATH should be in the format `op://Vault/Item/Field'."
                               :foreground (modus-themes-get-color-value fg-color t)
                               :background (modus-themes-get-color-value bg-color t))))))
   (defun my/flymake-hook ()
-    (when (fboundp 'modus-themes-get-color-value)
-      (my/customize-flymake)
-      (add-hook 'after-load-theme-hook #'my/customize-flymake nil t)))
+    (my/customize-flymake)
+    (add-hook 'after-load-theme-hook #'my/customize-flymake nil t))
   (add-hook 'flymake-mode-hook #'my/flymake-hook))
 
 (use-package flyspell
