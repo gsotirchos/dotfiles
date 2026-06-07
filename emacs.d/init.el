@@ -1075,12 +1075,28 @@ PATH should be in the format `op://Vault/Item/Field'."
   (flymake-no-changes-timeout 1)
   (flymake-show-diagnostics-at-end-of-line t)
   (flymake-indicator-type 'margins)
-  ;; (flymake-autoresize-margins nil)
+  (flymake-autoresize-margins nil)
   (flymake-margin-indicators-string
    '((note "●" flymake-note-echo)  ;; •
      (warning "▲" flymake-warning-echo)
      (error "◼" flymake-error-echo)))
   :preface
+  (defun my/flymake-auto-adjust-margins (&rest _)
+    "Dynamically resize the left margin based on the presence of diagnostics."
+    (when flymake-mode
+      (let ((new-width (if (flymake-diagnostics) 2 0)))
+        (unless (eq left-margin-width new-width)
+          (setq left-margin-width new-width)
+          (dolist (win (get-buffer-window-list (current-buffer) nil t))
+            (set-window-margins win left-margin-width))))))
+  (advice-add 'flymake--handle-report :after #'my/flymake-auto-adjust-margins)
+  (defun my/flymake-reset-margins ()
+    "Reset the margin to 0 if flymake-mode is toggled off manually."
+    (unless flymake-mode
+      (setq left-margin-width 0)
+      (dolist (win (get-buffer-window-list (current-buffer) nil t))
+        (set-window-margins win left-margin-width))))
+  (add-hook 'flymake-mode-hook #'my/flymake-reset-margins)
   (defun my/customize-flymake ()
     (when (facep 'flymake-end-of-line-diagnostics-face)
       (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
