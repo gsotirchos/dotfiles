@@ -166,6 +166,13 @@ PATH should be in the format `op://Vault/Item/Field'."
       (put-text-property (point-min) (minibuffer-prompt-end) 'wrap-prefix " ")))
   (add-hook 'minibuffer-setup-hook #'my/pad-minibuffer-prompt)
 
+  ;; Suppress blank tooltips
+  (defun my-suppress-blank-tooltips (str &rest _)
+    "Suppress tooltips with nil, empty, or all-whitespace STR."
+    (or (null str) (string-blank-p (string-trim str))))
+
+  (advice-add #'x-show-tip :before-until #'my-suppress-blank-tooltips)
+
   ;; Startup time
   (defun my/display-startup-stats ()
     "Display startup stats."
@@ -444,7 +451,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (tab-bar-close-button-show nil)
   (tab-bar-separator "")
   (tab-bar-auto-width nil)
-  (tab-bar-tab-name-truncated-max 25)
+  (tab-bar-tab-name-truncated-max 100)
   (tab-bar-format
    '(tab-bar-format-tabs
      tab-bar-separator
