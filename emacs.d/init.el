@@ -771,20 +771,16 @@ PATH should be in the format `op://Vault/Item/Field'."
     (add-hook hook #'my/diff-hl-mode-if-vc))
   (defun my/customize-diff-hl ()
     (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~")
-    (seq-mapn
-     (lambda (diff-hl-face diff-face)
-       (set-face-attribute diff-hl-face nil
-                           :inherit diff-face
-                           :foreground 'unspecified
-                           :background 'unspecified
-                           :italic nil :bold nil
-                           :height (round (* 0.92 (face-attribute 'default :height)))))
-     '(diff-hl-change
-       diff-hl-insert
-       diff-hl-delete)
-     '(diff-changed
-       diff-added
-       diff-removed)))
+    (pcase-dolist (`(,diff-hl-face ,diff-face)
+                   '((diff-hl-change diff-changed)
+                     (diff-hl-insert diff-added)
+                     (diff-hl-delete diff-removed)))
+      (set-face-attribute diff-hl-face nil
+                          :inherit diff-face
+                          :foreground 'unspecified
+                          :background 'unspecified
+                          :italic nil :bold nil
+                          :height (round (* 0.92 (face-attribute 'default :height))))))
   (defun my/diff-hl-hook ()
     (my/customize-diff-hl)
     (add-hook 'auto-save-hook 'diff-hl-update nil t)
@@ -1031,27 +1027,17 @@ PATH should be in the format `op://Vault/Item/Field'."
   :hook (prog-mode minibuffer-setup)
   :preface
   (defun my/customize-rainbow-delimiters ()
-    (seq-mapn
-     (lambda (face color)
-       (set-face-foreground face (modus-themes-get-color-value color t)))
-     '(rainbow-delimiters-depth-1-face
-       rainbow-delimiters-depth-2-face
-       rainbow-delimiters-depth-3-face
-       rainbow-delimiters-depth-4-face
-       rainbow-delimiters-depth-5-face
-       rainbow-delimiters-depth-6-face
-       rainbow-delimiters-depth-7-face
-       rainbow-delimiters-depth-8-face
-       rainbow-delimiters-depth-9-face)
-     '(fg-dim
-       magenta-faint
-       cyan-faint
-       red-faint
-       yellow-faint
-       indigo
-       green-faint
-       blue-faint
-       rust)))
+    (pcase-dolist (`(,face . ,color)
+                   '((rainbow-delimiters-depth-1-face fg-dim)
+                     (rainbow-delimiters-depth-2-face magenta-faint)
+                     (rainbow-delimiters-depth-3-face cyan-faint)
+                     (rainbow-delimiters-depth-4-face red-faint)
+                     (rainbow-delimiters-depth-5-face yellow-faint)
+                     (rainbow-delimiters-depth-6-face indigo)
+                     (rainbow-delimiters-depth-7-face green-faint)
+                     (rainbow-delimiters-depth-8-face blue-faint)
+                     (rainbow-delimiters-depth-9-face rust)))
+      (set-face-foreground face (modus-themes-get-color-value color t))))
   (defun my/rainbow-delimiters-hook ()
     (my/customize-rainbow-delimiters)
     (when (fboundp 'modus-themes-get-color-value)
@@ -1109,29 +1095,17 @@ PATH should be in the format `op://Vault/Item/Field'."
                           :height (round (* 0.92 (face-attribute 'default :height)))
                           :italic t
                           :inherit 'variable-pitch)
-      (let ((faces
-             '(flymake-eol-information-face
-               flymake-note-echo-at-eol
-               flymake-warning-echo-at-eol
-               flymake-error-echo-at-eol))
-            (fg-colors
-             '(blue-faint
-               cyan-faint
-               yellow-faint
-               red-faint))
-            (bg-colors
-             '(bg-blue-nuanced
-               bg-cyan-nuanced
-               bg-yellow-nuanced
-               bg-red-nuanced)))
-        (seq-mapn
-         (lambda (face fg-color bg-color)
-           (when (facep face)
-             (set-face-attribute face nil
-                                 :extend t :inherit 'flymake-end-of-line-diagnostics-face
-                                 :foreground (modus-themes-get-color-value fg-color t)
-                                 :background (modus-themes-get-color-value bg-color t))))
-         faces fg-colors bg-colors))))
+      (pcase-dolist (`(,face ,fg-color ,bg-color)
+                     '((flymake-eol-information-face blue-faint   bg-blue-nuanced)
+                       (flymake-note-echo-at-eol     cyan-faint   bg-cyan-nuanced)
+                       (flymake-warning-echo-at-eol  yellow-faint bg-yellow-nuanced)
+                       (flymake-error-echo-at-eol    red-faint    bg-red-nuanced)))
+        (when (facep face)
+          (set-face-attribute face nil
+                              :extend t
+                              :inherit 'flymake-end-of-line-diagnostics-face
+                              :foreground (modus-themes-get-color-value fg-color t)
+                              :background (modus-themes-get-color-value bg-color t))))))
   (defun my/flymake-hook ()
     (when (fboundp 'modus-themes-get-color-value)
       (my/customize-flymake)
