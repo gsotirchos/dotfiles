@@ -764,11 +764,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (defun my/diff-hl-mode-if-vc ()
     (when (and (buffer-file-name) (vc-registered (buffer-file-name)))
       (diff-hl-mode 1)))
-  (dolist (hook
-           '(find-file-hook
-             ;; auto-save-hook
-             after-save-hook))
-    (add-hook hook #'my/diff-hl-mode-if-vc))
+  (add-hook 'find-file-hook #'my/diff-hl-mode-if-vc)
   (defun my/customize-diff-hl ()
     (when (boundp 'diff-hl-margin-symbols-alist)
       (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~"))
@@ -784,9 +780,9 @@ PATH should be in the format `op://Vault/Item/Field'."
                           :height (round (* 0.92 (face-attribute 'default :height))))))
   (defun my/diff-hl-hook ()
     (my/customize-diff-hl)
+    (add-hook 'after-load-theme-hook #'my/customize-diff-hl nil t)
     (add-hook 'auto-save-hook 'diff-hl-update nil t)
-    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
-    (add-hook 'after-load-theme-hook #'my/customize-diff-hl nil t))
+    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t))
   (add-hook 'diff-hl-mode-hook #'my/diff-hl-hook)
   :config (diff-hl-margin-mode 1))
 
