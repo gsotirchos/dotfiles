@@ -762,10 +762,12 @@ PATH should be in the format `op://Vault/Item/Field'."
   :custom
   (diff-hl-draw-borders nil)
   (diff-hl-autohide-margin t)
+  (diff-hl-update-async t)
   :preface
   (defun my/diff-hl-mode-if-vc ()
     (when (and (buffer-file-name) (vc-registered (buffer-file-name)))
       (diff-hl-mode 1)
+      (diff-hl-flydiff-mode 1)
       (diff-hl-margin-mode 1)))
   (add-hook 'find-file-hook #'my/diff-hl-mode-if-vc)
   (defun my/customize-diff-hl ()
@@ -784,8 +786,8 @@ PATH should be in the format `op://Vault/Item/Field'."
   (defun my/diff-hl-hook ()
     (my/customize-diff-hl)
     (add-hook 'after-load-theme-hook #'my/customize-diff-hl nil t)
-    (add-hook 'auto-save-hook 'diff-hl-update nil t)
-    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t))
+    ;; (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
+    (add-hook 'auto-save-hook 'diff-hl-update nil t))
   (add-hook 'diff-hl-margin-local-mode-hook #'my/diff-hl-hook))
 
 (use-package ediff
