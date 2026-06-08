@@ -41,7 +41,7 @@ fi
 
 if [[ "$OS" == "macos" ]]; then
     # increase max. open files limit
-    ulimit -n 1024
+    ulimit -n 4096
 fi
 
 # homebrew
