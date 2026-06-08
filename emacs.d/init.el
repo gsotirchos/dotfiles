@@ -185,9 +185,11 @@ PATH should be in the format `op://Vault/Item/Field'."
   (add-hook 'emacs-startup-hook #'my/display-startup-stats)
 
   :custom
-  (inhibit-startup-message t)
   (initial-scratch-message nil)
   (initial-major-mode 'fundamental-mode)
+  (fill-column 79)
+  (column-number-mode t)
+  (use-dialog-box nil)
   (auto-save-visited-file-name t)
   (auto-save-timeout 1)
   (make-backup-files nil)
@@ -220,6 +222,10 @@ PATH should be in the format `op://Vault/Item/Field'."
   (delete-by-moving-to-trash t)
 
   :init
+  (xterm-mouse-mode 1)
+  (context-menu-mode 1)
+  (pixel-scroll-precision-mode 1)
+  (global-visual-line-mode -1)
   ;; Display table for wrap prefix
   (set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
   (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix)))
