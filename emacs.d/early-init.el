@@ -26,6 +26,7 @@
 (setq byte-compile-warnings '(not obsolete)
       warning-suppress-log-types '((comp) (bytecomp))
       native-comp-async-report-warnings-errors 'silent
+      inhibit-startup-message t
       inhibit-startup-echo-area-message (user-login-name))
 
 (when (and (fboundp 'native-comp-available-p)
@@ -83,15 +84,8 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (fringe-mode 0)
-(set-fill-column 79)
-(global-visual-line-mode -1)
-(xterm-mouse-mode 1)
-(context-menu-mode 1)
-(column-number-mode 1)
-(pixel-scroll-precision-mode 1)
 (setq frame-resize-pixelwise t
-      frame-inhibit-implied-resize t
-      use-dialog-box nil)
+      frame-inhibit-implied-resize t)
 
 ;; Basic fonts
 (when (eq system-type 'darwin)
