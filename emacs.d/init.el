@@ -262,6 +262,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :ensure nil
   :no-require t
   :defer 1
+  :preface (advice-add 'find-file-noselect :before (lambda (&rest _) (save-place-mode 1)))
   :config (save-place-mode 1))
 
 (use-package savehist
@@ -278,6 +279,7 @@ PATH should be in the format `op://Vault/Item/Field'."
    '(kill-ring
      search-ring
      regexp-search-ring))
+  :preface (advice-add 'completing-read :before (lambda (&rest _) (unless savehist-mode (savehist-mode 1))))
   :config (savehist-mode 1))
 
 (use-package recentf
@@ -715,6 +717,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
+  (advice-add 'consult-recent-file :before (lambda (&rest _) (recentf-mode 1)))
   :config
   ;; The configuration values are evaluated at runtime, just before the
   ;; completion session is started. Therefore you can use for example
