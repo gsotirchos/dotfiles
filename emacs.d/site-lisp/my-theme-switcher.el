@@ -42,7 +42,8 @@ either 'light or 'dark.")
   "Return 'dark if GNOME is in Dark Mode, 'light otherwise."
   (let ((default-directory "/"))
     (if (string-match-p "dark"
-                        (ignore-errors (shell-command-to-string "gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null")))
+                        (or (ignore-errors (shell-command-to-string "gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null"))
+                            ""))
         'dark
       'light)))
 
@@ -72,15 +73,11 @@ If FORCE is non-nil, run hooks even if the appearance hasn't changed."
     (setq my/last-system-appearance appearance)
     (run-hook-with-args 'my-system-appearance-change-functions appearance)))
 
-(defun my/dbus-gnome-theme-handler (namespace key value)
-  "Handler for D-Bus SettingChanged signals (NAMESPACE KEY VALUE)."
+(defun my/dbus-gnome-theme-handler (namespace key _value)
+  "Handler for D-Bus SettingChanged signals (NAMESPACE KEY _VALUE)."
   (when (and (string-equal namespace "org.freedesktop.appearance")
              (string-equal key "color-scheme"))
-    ;; 0 = Default, 1 = Prefer Dark, 2 = Prefer Light
-    (let ((appearance (if (equal (car value) 1) 'dark 'light)))
-      (unless (eq appearance my/last-system-appearance)
-        (setq my/last-system-appearance appearance)
-        (run-hook-with-args 'my-system-appearance-change-functions appearance)))))
+    (my/check-system-appearance)))
 
 (defvar my/dbus-theme-signal nil
   "D-Bus signal object for theme changes.")

@@ -387,7 +387,8 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package my-keybindings
   :ensure nil
   :load-path "site-lisp/"
-  :hook (after-init . my-keybindings-mode))
+  :demand t
+  :config (my-keybindings-mode 1))
 
 (use-package modus-themes
   :defer nil
@@ -441,8 +442,7 @@ PATH should be in the format `op://Vault/Item/Field'."
      (7 . (1.0))
      (8 . (1.0))))
   :preface
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi))
-  :init (add-hook 'my-system-appearance-change-functions #'my/apply-theme))
+  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)))
 
 (use-package my-modus-ui-styles
   :ensure nil

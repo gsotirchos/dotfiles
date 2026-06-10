@@ -5,7 +5,8 @@
 ;; Hide modeline on startup
 (setq mode-line-format nil)
 
-(add-to-list 'default-frame-alist '(undecorated-round . t))
+(when (eq system-type 'darwin)
+ (add-to-list 'default-frame-alist '(undecorated-round . t)))
 
 ;; Less aggressive garbage collection on startup
 (setq gc-cons-threshold most-positive-fixnum
@@ -101,6 +102,18 @@
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
+
+;; Regenerate missing autoload files before package activation
+(let ((elpa-dir (expand-file-name "elpa" user-emacs-directory)))
+  (when (file-directory-p elpa-dir)
+    (dolist (pkg-dir (directory-files elpa-dir t "^[^.]"))
+      (when (file-directory-p pkg-dir)
+        (let* ((pkg-name (replace-regexp-in-string "-[0-9][0-9.]*\\'" ""
+                                                   (file-name-nondirectory pkg-dir)))
+               (autoloads-file (expand-file-name
+                                (concat pkg-name "-autoloads.el") pkg-dir)))
+          (unless (file-exists-p autoloads-file)
+            (package-generate-autoloads pkg-name pkg-dir)))))))
 
 (unless (or (version<= "29" emacs-version)
             (package-installed-p 'use-package))
