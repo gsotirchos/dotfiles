@@ -1173,8 +1173,9 @@ PATH should be in the format `op://Vault/Item/Field'."
   (add-hook 'inferior-python-mode-hook
             (lambda () (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer)))
   :config
+  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 29.3 max); master is ABI 15.
   (add-to-list 'treesit-language-source-alist
-               '(python "https://github.com/tree-sitter/tree-sitter-python"))
+               '(python "https://github.com/tree-sitter/tree-sitter-python" "v0.23.6"))
   (unless (treesit-language-available-p 'python)
     (treesit-install-language-grammar 'python)))
 
@@ -1217,8 +1218,9 @@ PATH should be in the format `op://Vault/Item/Field'."
   ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
   (add-hook 'sh-base-mode-hook (lambda () (hs-minor-mode -1)))
   :config
+  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 29.3 max); master is ABI 15.
   (add-to-list 'treesit-language-source-alist
-               '(bash "https://github.com/tree-sitter/tree-sitter-bash"))
+               '(bash "https://github.com/tree-sitter/tree-sitter-bash" "v0.23.3"))
   (unless (treesit-language-available-p 'bash)
     (treesit-install-language-grammar 'bash)))
 
@@ -1239,8 +1241,9 @@ PATH should be in the format `op://Vault/Item/Field'."
     (flyspell-mode -1))
   (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook)
   :config
+  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 29.3 max); master is ABI 15.
   (add-to-list 'treesit-language-source-alist
-               '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml"))
+               '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml" "v0.7.0"))
   (unless (treesit-language-available-p 'yaml)
     (treesit-install-language-grammar 'yaml)))
 
