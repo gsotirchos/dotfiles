@@ -454,7 +454,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :ensure nil
   :no-require t
   :custom
-  (tab-bar-show t)
+  (tab-bar-show (if (eq system-type 'darwin) t 1))
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
   (tab-bar-separator "")
