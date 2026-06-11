@@ -391,7 +391,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :config (my-keybindings-mode 1))
 
 (use-package modus-themes
-  :defer nil
+  :demand t
   :after my-keybindings
   :bind
   (nil
