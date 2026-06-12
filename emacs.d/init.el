@@ -638,6 +638,12 @@ PATH should be in the format `op://Vault/Item/Field'."
   (corfu-popupinfo-mode)
   (corfu-history-mode))
 
+(use-package dabbrev
+  :ensure nil
+  :no-require t
+  :custom
+  (dabbrev-check-all-buffers nil))
+
 (use-package vertico
   :defer nil
   :custom
