@@ -81,6 +81,7 @@ elif [[ -n "$GHOSTTY_RESOURCES_DIR" ]]; then
     source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
 fi
 
+export CLAUDE_CODE_NO_FLICKER=1
 export BASHRC_SOURCED=1
 
 # configure or start prompt

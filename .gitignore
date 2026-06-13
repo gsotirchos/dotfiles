@@ -53,3 +53,5 @@ __pycache__/
 .Python
 .pixi
 
+
+**/.claude/settings.local.json

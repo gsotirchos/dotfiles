@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC2155
-# shellcheck source-path=.dotfiles
+# shellcheck disable=SC2155
 set -euo pipefail
 
 main() {
@@ -8,13 +7,15 @@ main() {
     local bright_style='\033[1m'
     local normal_style='\033[0m'
 
-    # check for `realpath` command
-    if ! command -v "realpath" &> /dev/null; then
-        echo -e "${bright_style}Error: \`realpath\` command could not be found. Aborted${normal_style}"
-        exit 1
-    fi
+    # check for required commands
+    for cmd in realpath stow; do
+        if ! command -v "${cmd}" &> /dev/null; then
+            echo -e "${bright_style}Error: \`${cmd}\` command could not be found. Aborted${normal_style}" >&2
+            exit 1
+        fi
+    done
 
-    # dotfiles path (directory containing this sourced script)
+    # dotfiles path (directory containing this script)
     local dotfiles="$(
         builtin cd "$(
             realpath "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.."
@@ -27,62 +28,76 @@ main() {
         os="macos"
     fi
 
-    # prepare common folders
-    mkdir -vp \
+    # init submodules (ghostty-themes + vim plugins)
+    echo -e "${bright_style}- Initializing submodules${normal_style}"
+    git -C "${dotfiles}" submodule update --init --recursive
+
+    # prepare parent dirs that Stow won't auto-create outside its tree
+    mkdir -p \
         ~/.local/bin \
         ~/.vim/{undo,spell,tags} \
-        ~/.config/{ghostty,opencode} \
+        ~/.config \
         ~/.conda \
-        ~/Zotero/translators
-
-    # prepare OS-specific folders
-    if [[ "${os}" == "macos" ]]; then
-        echo -n
-    elif [[ "${os}" == "linux" ]]; then
-        mkdir -vp \
-            ~/.config/gtk-3.0 \
-            ~/.config/autostart \
-            ~/.local/share/fonts
+        ~/Zotero
+    if [[ "${os}" == "linux" ]]; then
+        mkdir -p ~/.local/share/fonts
     fi
     touch ~/.hushlogin
 
-    # make soft symlinks
-    echo -e "${bright_style}- Symlinking dotfiles (${dotfiles})${normal_style}"
-    "${dotfiles}/etc/symlink_files.sh" "${dotfiles}" "${HOME}/." # ~/.dotfiles/* -> ~/.*
-    ln -sfv "${dotfiles}"/.gitignore ~/.gitignore
-    ln -sfv "${dotfiles}"/emacs.d/* ~/.emacs.d
-    ln -sfv "${dotfiles}"/vim/* ~/.vim
-    ln -sfv "${dotfiles}"/conda/* ~/.conda
-    ln -sfv "${dotfiles}"/config/starship.toml ~/.config/starship.toml
-    ln -sfv "${dotfiles}"/config/ghostty/* ~/.config/ghostty
-    ln -sfv "${dotfiles}"/config/opencode/* ~/.config/opencode
-    ln -sfv "${dotfiles}"/Zotero/translators/* ~/Zotero/translators
-
-    # OS-specific symlinks
-    if [[ "${os}" == "macos" ]]; then
-        echo -n
-    elif [[ "${os}" == "linux" ]]; then
-        ln -sfv "${dotfiles}/config/redshift.conf" ~/.config/redshift.conf
-        # ln -sfv "${dotfiles}/config/gtk-3.0/gtk.css" ~/.config/gtk-3.0/gtk.css
-        # ln -sfv "${dotfiles}/config/autostart/"* ~/.config/autostart
-        # ln -sfv "${dotfiles}/fonts/"*/*.otb ~/.local/share/fonts
-    fi
-
-    # setup launch daemons and launch agents
-    if [[ "${os}" == "macos" ]] && command -v "launchctl" &> /dev/null; then
-        echo -e "${bright_style}\n- Setting up LaunchDaemons and LaunchAgents${normal_style}"
-        "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchDaemons" /Library/LaunchDaemons
-        "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents" ~/Library/LaunchAgents
-    fi
-
-    # setup git hooks
-    echo -e "${bright_style}\n- Setting up Git hook${normal_style}"
-    git -C "${dotfiles}" config core.hooksPath etc/hooks
-
-    # patch Ghostty Modus themes
+    # regenerate Ghostty patched themes BEFORE stowing the ghostty package
     if [[ "${os}" == "macos" ]] && [[ -x "${dotfiles}/etc/patch_modus.py" ]]; then
+        echo -e "${bright_style}- Patching Ghostty Modus themes${normal_style}"
         "${dotfiles}/etc/patch_modus.py"
     fi
+
+    # remove any leftover symlinks from the previous (symlink_files.sh-based) setup
+    # so that stow has a clean target on machines being migrated.
+    echo -e "${bright_style}- Cleaning up legacy symlinks${normal_style}"
+    local legacy=(
+        ~/.bashrc ~/.bash_aliases ~/.bash_profile ~/.inputrc ~/.completion_dirs
+        ~/.gitconfig ~/.gitignore
+        ~/.vim ~/.emacs.d ~/.conda
+        ~/.config/starship.toml ~/.config/ghostty ~/.config/opencode
+        ~/.config/redshift.conf
+        ~/.clang-format ~/.clang-tidy ~/.clangd ~/.cmake-format.yaml
+        ~/.chktexrc ~/.latexindent.yaml ~/.indentconfig.yaml
+        ~/.shellcheckrc ~/.markdownlint.json ~/.proselintrc ~/.pyproject.toml
+        ~/.op_secrets
+        ~/.README.md ~/.AGENTS.md ~/.CLAUDE.md ~/.LICENSE ~/.Doxyfile ~/.PlatformIO_Makefile
+    )
+    local f
+    for f in "${legacy[@]}"; do
+        [[ -L "${f}" ]] && rm -v "${f}"
+    done
+    unset f
+
+    # stow the common packages
+    echo -e "${bright_style}- Stowing dotfiles${normal_style}"
+    local common=(
+        bash git vim emacs conda starship ghostty opencode zotero
+        clang cmake latex linters op
+    )
+    stow -d "${dotfiles}/packages" -t "${HOME}" -R "${common[@]}"
+
+    # OS-specific
+    if [[ "${os}" == "linux" ]]; then
+        stow -d "${dotfiles}/packages" -t "${HOME}" -R redshift
+        # autostart and gtk packages exist but are opt-in:
+        #   stow -d "${dotfiles}/packages" -t "${HOME}" -R autostart gtk
+    fi
+
+    # LaunchDaemons / LaunchAgents (macOS) — kept separate from Stow because
+    # launchd expects copied (not symlinked) system daemons and needs sudo +
+    # launchctl bootstrap to activate them.
+    if [[ "${os}" == "macos" ]] && command -v launchctl &> /dev/null; then
+        echo -e "${bright_style}- Setting up LaunchDaemons and LaunchAgents${normal_style}"
+        "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchDaemons" /Library/LaunchDaemons
+        "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents"  ~/Library/LaunchAgents
+    fi
+
+    # point Git at the in-repo hooks
+    echo -e "${bright_style}- Setting up Git hook${normal_style}"
+    git -C "${dotfiles}" config core.hooksPath etc/hooks
 }
 
 main "$@"

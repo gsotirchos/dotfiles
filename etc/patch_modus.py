@@ -5,8 +5,8 @@ import re
 # Paths relative to the script's location (${dotfiles}/etc/patch_modus.py)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DOTFILES_DIR = os.path.dirname(SCRIPT_DIR)
-THEMES_DIR = os.path.join(DOTFILES_DIR, "config/ghostty/ghostty-themes/themes")
-OUTPUT_DIR = os.path.join(DOTFILES_DIR, "config/ghostty/themes")
+THEMES_DIR = os.path.join(DOTFILES_DIR, "packages/ghostty/.config/ghostty/ghostty-themes/themes")
+OUTPUT_DIR = os.path.join(DOTFILES_DIR, "packages/ghostty/.config/ghostty/themes")
 
 
 def get_brightness(hex_color):
