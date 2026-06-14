@@ -538,11 +538,19 @@ PATH should be in the format `op://Vault/Item/Field'."
   :ensure nil
   :no-require t
   :preface
-  (when (executable-find "starship")
+  (cond
+   ((executable-find "prmt")
+    (defun my/eshell-custom-prompt ()
+      (let* ((prmt-cmd "env TERM=xterm-256color prmt --code $? \"{path:cyan.bold} {git:magenta.bold}\n{ok:bold:>}{fail:red.bold:>} \"")
+             (raw-string (shell-command-to-string prmt-cmd))
+             (stripped-string (replace-regexp-in-string "[\x01\x02]" "" raw-string)))
+        (ansi-color-apply stripped-string))))
+   ((executable-find "starship")
     (defun my/eshell-custom-prompt ()
       (let* ((status (or (bound-and-true-p eshell-last-command-status) 0))
              (starship-cmd (format "env TERM=xterm-256color starship prompt --status %d" status)))
-        (ansi-color-apply (shell-command-to-string starship-cmd))))
+        (ansi-color-apply (shell-command-to-string starship-cmd))))))
+  (when (fboundp 'my/eshell-custom-prompt)
     (setq eshell-prompt-function #'my/eshell-custom-prompt
           eshell-highlight-prompt nil
           eshell-prompt-regexp "^[^#$\n]* [#>❯(?:graph)] "))
