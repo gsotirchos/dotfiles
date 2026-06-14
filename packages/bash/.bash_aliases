@@ -19,13 +19,13 @@ trash() {
 
     local flags=()
     for arg in "$@"; do
-        if [[ ${arg} == -* ]]; then
+        if [[ "${arg}" == -* ]]; then
             flags=("${flags[@]}" "${arg}")
             continue
         fi
 
         # move file to trash folder, or delete /tmp/* files
-        if [[ ${arg} == "/tmp/"* ]]; then
+        if [[ "${arg}" == "/tmp/"* ]]; then
             #echo "rm -r ${arg%/}"
             env rm -r "${arg%/}"
         else

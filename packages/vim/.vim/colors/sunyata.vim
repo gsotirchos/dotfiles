@@ -60,7 +60,7 @@ hi! Normal          cterm=none              ctermfg=none    ctermbg=none
 hi! Comment         cterm=none  term=none   ctermfg=2       ctermbg=none
 
 " generic Preprocessor
-hi! PreProc         cterm=none              ctermfg=3       ctermbg=none
+hi! PreProc         cterm=none              ctermfg=11      ctermbg=none
 hi! link Include    PreProc
 hi! link Define     PreProc
 hi! link Macro      PreProc
@@ -83,24 +83,28 @@ hi! link Operator       Statement
 
 " variable names
 hi! Function        cterm=none              ctermfg=4       ctermbg=none
-hi! Identifier      cterm=none              ctermfg=12      ctermbg=none
+hi! Identifier      cterm=none              ctermfg=14      ctermbg=none
 
 " constants
-hi! String          cterm=none              ctermfg=9       ctermbg=none
-hi! Character       cterm=none              ctermfg=11      ctermbg=none
+hi! String          cterm=none              ctermfg=1       ctermbg=none
+hi! Character       cterm=none              ctermfg=3       ctermbg=none
 hi! link Constant   Character"
 hi! link Number     Character
 hi! link Float      Number
 hi! link Boolean    Character
 
 " special symbols
-hi! Delimiter       cterm=none              ctermfg=2       ctermbg=none
+if s:is_dark
+    hi! Delimiter       cterm=none              ctermfg=7       ctermbg=none
+else
+    hi! Delimiter       cterm=none              ctermfg=8       ctermbg=none
+endif
 hi! link Tag            Delimiter
 hi! link Special        Character
 hi! link SpecialChar    Character
 
 " my custom groups
-hi! OtherType       cterm=none              ctermfg=12      ctermbg=none
+hi! OtherType       cterm=none              ctermfg=6       ctermbg=none
 hi! SpecialComment  cterm=bold              ctermfg=none    ctermbg=none
 if s:is_dark
     hi! DocComment      cterm=italic            ctermfg=8       ctermbg=none
@@ -127,12 +131,12 @@ hi! link MyOperator OtherType
 hi! MatchParen      cterm=underline         ctermfg=none    ctermbg=none
 hi! Error           cterm=bold              ctermfg=1       ctermbg=none
 hi! ErrorMsg        cterm=none              ctermfg=1       ctermbg=none
-hi! Warning         cterm=bold              ctermfg=3       ctermbg=none
-hi! WarningMsg      cterm=none              ctermfg=3       ctermbg=none
+hi! Warning         cterm=bold              ctermfg=11      ctermbg=none
+hi! WarningMsg      cterm=none              ctermfg=11      ctermbg=none
 hi! HintMsg         cterm=none              ctermfg=12      ctermbg=none
 hi! SpellBad        cterm=underline         ctermfg=1       ctermbg=none
-hi! SpellCap        cterm=underline         ctermfg=3       ctermbg=none
-hi! SpellLocal      cterm=none              ctermfg=3       ctermbg=none
+hi! SpellCap        cterm=underline         ctermfg=11      ctermbg=none
+hi! SpellLocal      cterm=none              ctermfg=11      ctermbg=none
 hi! link SpellRare  SpellLocal
 hi! link InfoMsg    Dimmed
 
@@ -142,7 +146,7 @@ hi! clear Search
 hi! clear IncSearch
 hi! clear Visual
 hi! clear SignColumn
-hi! ColorColumn     cterm=none              ctermfg=3       ctermbg=none
+hi! ColorColumn     cterm=none              ctermfg=11      ctermbg=none
 if s:is_dark
     hi! Search          cterm=none              ctermfg=none    ctermbg=0
     hi! IncSearch       cterm=bold              ctermfg=none    ctermbg=0
@@ -224,10 +228,10 @@ hi! clear DiffAdd
 hi! clear DiffChange
 hi! clear DiffDelete
 hi! clear DiffText
-hi! DiffAdd                                 ctermfg=2       ctermbg=none
-hi! DiffChange                              ctermfg=3       ctermbg=none
-hi! DiffDelete                              ctermfg=1       ctermbg=none
-hi! DiffText        cterm=underline         ctermfg=3       ctermbg=none
+hi! DiffAdd                                 ctermfg=10      ctermbg=none
+hi! DiffChange                              ctermfg=11      ctermbg=none
+hi! DiffDelete                              ctermfg=9       ctermbg=none
+hi! DiffText        cterm=underline         ctermfg=11      ctermbg=none
 hi! link DiffAdded      DiffAdd
 hi! link DiffChanged    DiffChange
 hi! link DiffRemoved    DiffDelete

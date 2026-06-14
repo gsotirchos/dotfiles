@@ -28,7 +28,7 @@ main() {
         os="macos"
     fi
 
-    # init submodules (ghostty-themes + vim plugins)
+    # init submodules (vim plugins)
     echo -e "${bright_style}- Initializing submodules${normal_style}"
     git -C "${dotfiles}" submodule update --init --recursive
 
@@ -43,12 +43,6 @@ main() {
         mkdir -p ~/.local/share/fonts
     fi
     touch ~/.hushlogin
-
-    # regenerate Ghostty patched themes BEFORE stowing the ghostty package
-    if [[ "${os}" == "macos" ]] && [[ -x "${dotfiles}/etc/patch_modus.py" ]]; then
-        echo -e "${bright_style}- Patching Ghostty Modus themes${normal_style}"
-        "${dotfiles}/etc/patch_modus.py"
-    fi
 
     # remove any leftover symlinks from the previous (symlink_files.sh-based) setup
     # so that stow has a clean target on machines being migrated.
@@ -94,10 +88,6 @@ main() {
         "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchDaemons" /Library/LaunchDaemons
         "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents"  ~/Library/LaunchAgents
     fi
-
-    # point Git at the in-repo hooks
-    echo -e "${bright_style}- Setting up Git hook${normal_style}"
-    git -C "${dotfiles}" config core.hooksPath etc/hooks
 }
 
 main "$@"

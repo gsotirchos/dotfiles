@@ -1,6 +1,3 @@
-[submodule "config/ghostty/ghostty-themes"]
-	path = packages/ghostty/.config/ghostty/ghostty-themes
-    url = https://github.com/anhsirk0/ghostty-themes.git
 [submodule "vim/pack/plugins/start/vim-polyglot"]
 	path = packages/vim/.vim/pack/plugins/start/vim-polyglot
     url = https://github.com/sheerun/vim-polyglot.git
