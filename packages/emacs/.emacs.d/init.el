@@ -431,6 +431,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (modus-vivendi-palette-overrides
    '((bg-main "#1e1e1e")
      (bg-dim "#292929")
+     (bg-inactive "#424242")
      (fg-vertical-border bg-popup)))
   (modus-themes-headings
    '((1 . (1.06666))
@@ -538,11 +539,11 @@ PATH should be in the format `op://Vault/Item/Field'."
   :no-require t
   :preface
   (when (executable-find "starship")
-    (defun my/eshell-starship-prompt ()
+    (defun my/eshell-custom-prompt ()
       (let* ((status (or (bound-and-true-p eshell-last-command-status) 0))
              (starship-cmd (format "env TERM=xterm-256color starship prompt --status %d" status)))
         (ansi-color-apply (shell-command-to-string starship-cmd))))
-    (setq eshell-prompt-function #'my/eshell-starship-prompt
+    (setq eshell-prompt-function #'my/eshell-custom-prompt
           eshell-highlight-prompt nil
           eshell-prompt-regexp "^[^#$\n]* [#>❯(?:graph)] "))
   (defun my/eshell-mode-hook ()

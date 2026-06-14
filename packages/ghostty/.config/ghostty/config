@@ -23,7 +23,7 @@ mouse-hide-while-typing = true
 cursor-opacity = 1.0
 
 
-theme = light:patched-modus-operandi, dark:custom-modus-vivendi
+theme = light:custom-modus-operandi, dark:custom-modus-vivendi
 
 keybind = shift+escape=text:~
 keybind = option+delete=esc:d
