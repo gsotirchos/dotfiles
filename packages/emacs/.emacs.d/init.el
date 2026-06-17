@@ -155,9 +155,18 @@ PATH should be in the format `op://Vault/Item/Field'."
   ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
 
   ;; Pad the echo area and command entry minibuffer to avoid rounded corner obstruction
+  (defface my/echo-area-default-face nil "Remapped default face for echo area text.")
   (dolist (buf '(" *Echo Area 0*" " *Echo Area 1*"))
     (with-current-buffer (get-buffer-create buf)
-      (setq-local line-prefix " ")))
+      (setq-local line-prefix " ")
+      (face-remap-add-relative 'default 'my/echo-area-default-face)))
+
+  (defun my/customize-echo-area-face ()
+    "Color echo area text with modus-themes fg-dim."
+    (when (fboundp 'modus-themes-get-color-value)
+      (set-face-attribute 'my/echo-area-default-face nil
+                          :foreground (modus-themes-get-color-value 'fg-dim t))))
+  (add-hook 'after-load-theme-hook #'my/customize-echo-area-face)
 
   (defun my/pad-minibuffer-prompt ()
     "Add a prefix to the minibuffer prompt to prevent rounded corner obstruction."
