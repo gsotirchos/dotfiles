@@ -10,10 +10,10 @@ main() {
     local dotfiles="$(
         builtin cd "$(
             realpath "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.."
-        )" >/dev/null && pwd
+        )" > /dev/null && pwd
     )"
 
-    header()    { echo -e "\n${bright}- ${1}${reset}"; }
+    header() { echo -e "\n${bright}- ${1}${reset}"; }
     prompt_yn() {
         local _ans=""
         echo -en "\n${bright}${1} [y/N]${reset} "
@@ -22,7 +22,7 @@ main() {
     }
 
     # --- validate -------------------------------------------------------
-    if ! command -v lsb_release &>/dev/null || [[ "$(lsb_release -si)" != "Ubuntu" ]]; then
+    if ! command -v lsb_release &> /dev/null || [[ "$(lsb_release -si)" != "Ubuntu" ]]; then
         echo -e "${bright}Error: This script is intended for Ubuntu.${reset}" >&2
         exit 1
     fi
@@ -46,6 +46,7 @@ main() {
     # --- general system packages ----------------------------------------
     header "Installing general system packages"
     sudo apt install -y \
+        util-linux-extra \
         ubuntu-restricted-extras \
         build-essential \
         cmake \
@@ -67,8 +68,16 @@ main() {
         pipx \
         python3-pip \
         python3-bashate \
-	gnome-tweaks \
-	dconf-editor
+        light \
+        gnome-tweaks \
+        dconf-editor
+
+    # --- backlight permissions (for light utility) ----------------------
+    header "Configuring backlight permissions"
+    sudo usermod -aG video "${USER}"
+    sudo udevadm trigger --action=add --subsystem-match=backlight
+    newgrp video
+    echo "  Note: log out and back in for the video group to take effect."
 
     # --- miniforge (conda/mamba) ----------------------------------------
     local conda_dir="/opt/miniforge"
@@ -93,7 +102,7 @@ main() {
     fi
 
     # --- llvm/clang 17 --------------------------------------------------
-    if command -v clangd &>/dev/null; then
+    if command -v clangd &> /dev/null; then
         header "Clangd already in PATH — skipping."
     elif prompt_yn "Install LLVM/Clang 17?"; then
         header "Installing LLVM/Clang 17"
@@ -114,7 +123,7 @@ main() {
         rm -f "${llvm_sh}"
         for tool in clang clangd clang-format clang-tidy; do
             if [[ ! -e "/usr/bin/${tool}" ]] \
-                    && command -v "${tool}-${clang_ver}" &>/dev/null; then
+                && command -v "${tool}-${clang_ver}" &> /dev/null; then
                 echo -n "  Adding symlink: "
                 sudo ln -sv "/usr/bin/${tool}-${clang_ver}" "/usr/bin/${tool}"
             fi
@@ -123,7 +132,7 @@ main() {
 
     # --- shell linters / formatters -------------------------------------
     header "Installing shell linters and formatters"
-    if command -v snap &>/dev/null; then
+    if command -v snap &> /dev/null; then
         sudo snap install shellcheck
         sudo snap install shfmt
         sudo snap install universal-ctags --classic
@@ -155,7 +164,7 @@ main() {
     fi
 
     # --- ghostty terminal -----------------------------------------------
-    if command -v ghostty &>/dev/null; then
+    if command -v ghostty &> /dev/null; then
         header "Ghostty already installed — skipping."
     elif prompt_yn "Install Ghostty terminal?"; then
         header "Installing Ghostty"
@@ -169,7 +178,7 @@ main() {
         || sudo apt install -y vim
 
     # --- emacs (graphical) ---------------------------------------------
-    if command -v emacs &>/dev/null; then
+    if command -v emacs &> /dev/null; then
         header "Emacs already installed — skipping."
     elif prompt_yn "Install Emacs (GTK graphical)?"; then
         header "Installing Emacs (GTK graphical)"
@@ -177,7 +186,7 @@ main() {
     fi
 
     # --- 1password cli -------------------------------------------------
-    if command -v op &>/dev/null; then
+    if command -v op &> /dev/null; then
         header "OP already installed — skipping."
     elif prompt_yn "Install 1Password CLI (op)?"; then
         header "Installing 1Password CLI"
@@ -188,10 +197,10 @@ main() {
                 --output /usr/share/keyrings/1password-archive-keyring.gpg
         echo "deb [arch=${arch} signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] \
 https://downloads.1password.com/linux/debian/${arch} stable main" \
-            | sudo tee /etc/apt/sources.list.d/1password.list >/dev/null
+            | sudo tee /etc/apt/sources.list.d/1password.list > /dev/null
         sudo mkdir -p /etc/debsig/policies/AC2D62742012EA22/
         curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol \
-            | sudo tee /etc/debsig/policies/AC2D62742012EA22/1password.pol >/dev/null
+            | sudo tee /etc/debsig/policies/AC2D62742012EA22/1password.pol > /dev/null
         sudo mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
         curl -sS https://downloads.1password.com/linux/keys/1password.asc \
             | sudo gpg --dearmor \
@@ -201,7 +210,7 @@ https://downloads.1password.com/linux/debian/${arch} stable main" \
     fi
 
     # --- starship prompt -----------------------------------------------
-    if command -v starship &>/dev/null; then
+    if command -v starship &> /dev/null; then
         header "Starship already installed — skipping."
     elif prompt_yn "Install Starship prompt?"; then
         header "Installing Starship"
@@ -209,7 +218,7 @@ https://downloads.1password.com/linux/debian/${arch} stable main" \
     fi
 
     # --- claude code ---------------------------------------------------
-    if command -v claude &>/dev/null; then
+    if command -v claude &> /dev/null; then
         header "Claude Code already installed — skipping."
     elif prompt_yn "Install Claude Code?"; then
         header "Installing Claude Code"
