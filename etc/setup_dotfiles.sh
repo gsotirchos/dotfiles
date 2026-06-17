@@ -75,9 +75,13 @@ main() {
 
     # OS-specific
     if [[ "${os}" == "linux" ]]; then
-        stow -d "${dotfiles}/packages" -t "${HOME}" -R redshift
-        # autostart and gtk packages exist but are opt-in:
-        #   stow -d "${dotfiles}/packages" -t "${HOME}" -R autostart gtk
+        local dmi_product
+        dmi_product=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null)
+        if [[ "${dmi_product}" == "iMac14,1" ]]; then
+            stow -d "${dotfiles}/packages" -t "${HOME}" -R autostart
+        fi
+        # gtk and redshift packages exist but are opt-in:
+        # stow -d "${dotfiles}/packages" -t "${HOME}" -R gtk redshift
     fi
 
     # LaunchDaemons / LaunchAgents (macOS) — kept separate from Stow because
