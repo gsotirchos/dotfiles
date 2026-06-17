@@ -185,11 +185,11 @@ main() {
         sudo apt install -y emacs-gtk
     fi
 
-    # --- 1password cli -------------------------------------------------
-    if command -v op &> /dev/null; then
-        header "OP already installed — skipping."
-    elif prompt_yn "Install 1Password CLI (op)?"; then
-        header "Installing 1Password CLI"
+    # --- 1password (desktop app + cli) ---------------------------------
+    if command -v op &> /dev/null && command -v 1password &> /dev/null; then
+        header "1Password already installed — skipping."
+    elif prompt_yn "Install 1Password (desktop app + CLI)?"; then
+        header "Installing 1Password (desktop app + CLI)"
         local arch
         arch="$(dpkg --print-architecture)"
         curl -sS https://downloads.1password.com/linux/keys/1password.asc \
@@ -206,7 +206,7 @@ https://downloads.1password.com/linux/debian/${arch} stable main" \
             | sudo gpg --dearmor \
                 --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
         sudo apt update
-        sudo apt install -y 1password-cli
+        sudo apt install -y 1password 1password-cli
     fi
 
     # --- starship prompt -----------------------------------------------
