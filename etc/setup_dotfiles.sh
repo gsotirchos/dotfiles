@@ -31,6 +31,7 @@ main() {
     mkdir -vp \
         ~/.local/bin \
         ~/.vim/{undo,spell,tags} \
+        ~/.emacs.d \
         ~/.config/{ghostty,opencode} \
         ~/.conda \
         ~/Zotero/translators
