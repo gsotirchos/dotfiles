@@ -33,7 +33,6 @@ main() {
         ~/.vim/{undo,spell,tags} \
         ~/.config/{ghostty,opencode} \
         ~/.conda \
-<<<<<<< Updated upstream
         ~/Zotero/translators
 
     # prepare OS-specific folders
@@ -41,13 +40,11 @@ main() {
         echo -n
     elif [[ "${os}" == "linux" ]]; then
         mkdir -vp \
+            ~/.config/dconf \
             ~/.config/gtk-3.0 \
             ~/.config/autostart \
             ~/.local/share/fonts
     fi
-=======
-        ~/Zotero
->>>>>>> Stashed changes
     touch ~/.hushlogin
 
     # make soft symlinks
@@ -66,10 +63,10 @@ main() {
     if [[ "${os}" == "macos" ]]; then
         echo -n
     elif [[ "${os}" == "linux" ]]; then
-        ln -sfv "${dotfiles}/config/redshift.conf" ~/.config/redshift.conf
+        # ln -sfv "${dotfiles}/config/redshift.conf" ~/.config/redshift.conf
         # ln -sfv "${dotfiles}/config/gtk-3.0/gtk.css" ~/.config/gtk-3.0/gtk.css
-        # ln -sfv "${dotfiles}/config/autostart/"* ~/.config/autostart
-        # ln -sfv "${dotfiles}/fonts/"*/*.otb ~/.local/share/fonts
+        ln -sfv "${dotfiles}/config/autostart/"* ~/.config/autostart
+        ln -sfv "${dotfiles}/config/dconf/user" "${HOME}/.config/dconf/user"
     fi
 
     # setup launch daemons and launch agents
