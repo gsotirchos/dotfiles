@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+main() {
+    local dotfiles
+    dotfiles="$(builtin cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.." >/dev/null && pwd)"
+    local outfile="${dotfiles}/config/dconf/user.conf"
+    mkdir -p "$(dirname "${outfile}")"
+    dconf dump / > "${outfile}"
+    echo "Exported dconf → config/dconf/user.conf"
+    echo "Review with: git -C '${dotfiles}' diff config/dconf/user.conf"
+}
+
+main "$@"
