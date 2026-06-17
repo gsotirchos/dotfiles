@@ -1,0 +1,46 @@
+# Modus-Operandi Colors
+background = #ffffff
+foreground = #000000
+selection-background = #bdbdbd
+selection-foreground = #000000
+cursor-color = #000000
+
+# fg-main
+palette = 0=#000000
+# fg-dim
+palette = 8=#595959
+
+# red-faint
+palette = 1=#7f0000
+# red-intense
+palette = 9=#d00000
+
+# green
+palette = 2=#006800
+# green-intense
+palette = 10=#008900
+
+# yellow
+palette = 3=#6f5500
+# yellow-intense
+palette = 11=#808000
+
+# blue-faint
+palette = 4=#003497
+# blue-intense
+palette = 12=#0000ff
+
+# magenta-warmer
+palette = 5=#8f0075
+# magenta-faint
+palette = 13=#7c318f
+
+# slate
+palette = 6=#2f3f83
+# cyan
+palette = 14=#005e8b
+ 
+# bg-active
+palette = 7=#c4c4c4
+# bg-dim
+palette = 15=#f2f2f2

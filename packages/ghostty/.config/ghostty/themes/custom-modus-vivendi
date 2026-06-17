@@ -1,0 +1,46 @@
+# Modus-Vivendi Colors
+background = #1e1e1e
+foreground = #ffffff
+selection-background = #5a5a5a
+selection-foreground = #ffffff
+cursor-color = #ffffff
+
+# bg-dim
+palette = 0=#292929
+# bg-active
+palette = 8=#535353
+
+# red-faint
+palette = 1=#ff9580
+# red-intense
+palette = 9=#ff5f5f
+
+# green
+palette = 2=#44bc44
+# green-intense
+palette = 10=#44df44
+
+# yellow
+palette = 3=#d0bc00
+# yellow-intense
+palette = 11=#efef00
+
+# blue-faint
+palette = 4=#82b0ec
+# blue-intense
+palette = 12=#338fff
+
+# magenta-warmer
+palette = 5=#feacd0
+# magenta-faint
+palette = 13=#caa6df
+
+# slate
+palette = 6=#76afbf
+# cyan
+palette = 14=#00d3d0
+
+# fg-dim
+palette = 7=#989898
+# fg-main
+palette = 15=#ffffff
