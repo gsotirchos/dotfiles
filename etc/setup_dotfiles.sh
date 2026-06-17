@@ -76,7 +76,7 @@ main() {
     # OS-specific
     if [[ "${os}" == "linux" ]]; then
         local dmi_product
-        dmi_product=$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null)
+        dmi_product=$(cat /sys/devices/virtual/dmi/id/product_name 2> /dev/null)
         if [[ "${dmi_product}" == "iMac14,1" ]]; then
             stow -d "${dotfiles}/packages" -t "${HOME}" -R autostart
         fi
@@ -84,7 +84,7 @@ main() {
         # stow -d "${dotfiles}/packages" -t "${HOME}" -R gtk redshift
 
         if [[ -f "${dotfiles}/config/dconf/user.conf" ]] \
-                && { [[ -n "${DISPLAY:-}" ]] || [[ -n "${WAYLAND_DISPLAY:-}" ]]; }; then
+            && { [[ -n "${DISPLAY:-}" ]] || [[ -n "${WAYLAND_DISPLAY:-}" ]]; }; then
             echo -e "${bright_style}- Importing GNOME dconf settings${normal_style}"
             bash "${dotfiles}/bin/dconf-import"
         fi
@@ -96,7 +96,7 @@ main() {
     if [[ "${os}" == "macos" ]] && command -v launchctl &> /dev/null; then
         echo -e "${bright_style}- Setting up LaunchDaemons and LaunchAgents${normal_style}"
         "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchDaemons" /Library/LaunchDaemons
-        "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents"  ~/Library/LaunchAgents
+        "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents" ~/Library/LaunchAgents
     fi
 }
 
