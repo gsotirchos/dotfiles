@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Get the directory of the script
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES_ROOT="$(cd "$DIR/../.." && pwd)"
-
-# Run the patching script
-echo "Running Ghostty theme patcher..."
-"$DOTFILES_ROOT/etc/patch_modus.py"
