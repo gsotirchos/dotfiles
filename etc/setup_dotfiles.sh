@@ -33,6 +33,7 @@ main() {
         ~/.vim/{undo,spell,tags} \
         ~/.config/{ghostty,opencode} \
         ~/.conda \
+<<<<<<< Updated upstream
         ~/Zotero/translators
 
     # prepare OS-specific folders
@@ -44,6 +45,9 @@ main() {
             ~/.config/autostart \
             ~/.local/share/fonts
     fi
+=======
+        ~/Zotero
+>>>>>>> Stashed changes
     touch ~/.hushlogin
 
     # make soft symlinks
