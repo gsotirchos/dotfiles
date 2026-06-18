@@ -503,6 +503,7 @@ PATH should be in the format `op://Vault/Item/Field'."
     (when (fboundp 'modus-themes-get-color-value)
       (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim t))))
   (add-hook 'stripes-mode-hook #'my/customize-stripes)
+  :config
   (add-hook 'after-load-theme-hook #'my/customize-stripes))
 
 (use-package files
@@ -892,6 +893,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (markdown-list-indent-width 2)
   (standard-indent 2)
   (evil-shift-width 2)
+  (markdown-blockquote-display-char '(">"))
   :preface
   (add-hook 'markdown-mode-hook (lambda ()
                                   (visual-line-mode 1)
