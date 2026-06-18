@@ -42,6 +42,7 @@ env tlmgr --usermode install \
     babel-greek \
     greek-fontenc \
     cbfonts \
+    collection-fontsrecommended \
     subfiles \
     appendix \
     siunitx \
@@ -57,4 +58,21 @@ env tlmgr --usermode install \
     titlesec \
     xhfill \
     xcharter \
-    xstring
+    xstring \
+    sttools \
+    threeparttable \
+    wrapfig \
+    multirow \
+    ncctools \
+    algorithms \
+    algorithmicx \
+    svg \
+    catchfile \
+    transparent \
+    adjustbox \
+    relsize \
+    makecell \
+    comment \
+    trimspaces \
+    collectbox \
+    soul
