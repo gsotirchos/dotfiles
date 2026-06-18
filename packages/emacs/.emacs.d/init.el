@@ -502,7 +502,8 @@ PATH should be in the format `op://Vault/Item/Field'."
   (defun my/customize-stripes ()
     (when (fboundp 'modus-themes-get-color-value)
       (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim t))))
-  (add-hook 'stripes-mode-hook #'my/customize-stripes))
+  (add-hook 'stripes-mode-hook #'my/customize-stripes)
+  (add-hook 'after-load-theme-hook #'my/customize-stripes))
 
 (use-package files
   :ensure nil
@@ -1095,7 +1096,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (indent-bars-display-on-blank-lines nil))
 
 (use-package adaptive-wrap
-  :hook ((prog-mode compilation-mode magit-status-mode markdown-mode) . adaptive-wrap-prefix-mode)
+  :hook ((prog-mode compilation-mode magit-status-mode text-mode) . adaptive-wrap-prefix-mode)
   :bind (:map my/toggles-map ("a" . adaptive-wrap-prefix-mode))
   :custom (adaptive-wrap-extra-indent 2))
 
@@ -1320,6 +1321,8 @@ PATH should be in the format `op://Vault/Item/Field'."
   (preview-scale-function (/ 1 my/scale-factor))
   :preface
   (defun my/LaTeX-mode-hook ()
+    (setq-local fill-column most-positive-fixnum)
+    (visual-line-mode 1)
     (outline-minor-mode 1)
     (LaTeX-math-mode 1)
     (turn-on-reftex)
