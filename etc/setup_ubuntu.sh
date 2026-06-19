@@ -125,21 +125,13 @@ main() {
 
     # --- shell linters / formatters -------------------------------------
     header "Installing shell linters and formatters"
+    sudo apt install -y shellcheck
     if command -v snap &> /dev/null; then
-        sudo snap install shellcheck
         sudo snap install shfmt
         sudo snap install universal-ctags --classic
         sudo snap install bash-language-server --classic
     else
-        echo "  snap not found — falling back for shellcheck and universal-ctags."
-        local sc_ver="v0.9.0"
-        local sc_arch
-        sc_arch="$(dpkg --print-architecture)"
-        wget -qO- \
-            "https://github.com/koalaman/shellcheck/releases/download/${sc_ver}/shellcheck-${sc_ver}.linux.${sc_arch}.tar.xz" \
-            | tar -xJv
-        sudo install "shellcheck-${sc_ver}/shellcheck" /usr/local/bin/shellcheck
-        rm -rf "shellcheck-${sc_ver}"
+        echo "  snap not found — falling back for universal-ctags."
         sudo apt install -y universal-ctags
     fi
     pipx install vim-vint
