@@ -80,8 +80,7 @@ main() {
         if [[ "${dmi_product}" == "iMac14,1" ]]; then
             stow -d "${dotfiles}/packages" -t "${HOME}" -R autostart
         fi
-        # gtk and redshift packages exist but are opt-in:
-        # stow -d "${dotfiles}/packages" -t "${HOME}" -R gtk redshift
+        # stow -d "${dotfiles}/packages" -t "${HOME}" -R redshift
 
         if [[ -f "${dotfiles}/config/dconf/user.conf" ]] \
             && { [[ -n "${DISPLAY:-}" ]] || [[ -n "${WAYLAND_DISPLAY:-}" ]]; }; then
