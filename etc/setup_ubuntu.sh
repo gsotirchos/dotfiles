@@ -29,12 +29,10 @@ main() {
     header "Installing core prerequisites"
     sudo apt install -y \
         git \
-        git-lfs \
         stow \
         curl \
         wget \
         software-properties-common
-    git lfs install
 
     # --- general system packages ----------------------------------------
     header "Installing general system packages"
@@ -69,7 +67,6 @@ main() {
     header "Configuring backlight permissions"
     sudo usermod -aG video "${USER}"
     sudo udevadm trigger --action=add --subsystem-match=backlight
-    newgrp video
     echo "  Note: log out and back in for the video group to take effect."
 
     # --- miniforge (conda/mamba) ----------------------------------------
@@ -200,6 +197,18 @@ https://downloads.1password.com/linux/debian/${arch} stable main" \
     elif prompt_yn "Install Starship prompt?"; then
         header "Installing Starship"
         curl -sS https://starship.rs/install.sh | sh -s -- --yes
+    fi
+
+    # --- deskflow (share keyboard/mouse over LAN, Wayland-capable) ------
+    if command -v flatpak &> /dev/null \
+        && flatpak info org.deskflow.deskflow &> /dev/null; then
+        header "Deskflow already installed — skipping."
+    elif prompt_yn "Install Deskflow (share keyboard/mouse over LAN)?"; then
+        header "Installing Deskflow (via Flatpak)"
+        sudo apt install -y flatpak
+        flatpak remote-add --user --if-not-exists flathub \
+            https://flathub.org/repo/flathub.flatpakrepo
+        flatpak install -y --user flathub org.deskflow.deskflow
     fi
 
     # --- claude code ---------------------------------------------------
