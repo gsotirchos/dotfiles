@@ -119,7 +119,7 @@
   ;; Frames/Windows
   "C-z" #'ignore
   "A-<escape>" #'ns-next-frame
-  "A-~" #'ns-prev-frame
+  "A-S-<escape>" #'ns-prev-frame
   "C-M-e" #'ns-do-show-character-palette
   "C-M-f" #'toggle-frame-fullscreen
   "M-u" #'universal-argument
@@ -148,18 +148,18 @@
   (when my-keybindings-mode
     ;; Minibuffer specific maps (cannot be done in the minor mode map)
     (keymap-set minibuffer-mode-map "<escape>" #'abort-recursive-edit)
-        (keymap-set minibuffer-mode-map "C-p" #'previous-line-or-history-element)
-        (keymap-set minibuffer-mode-map "C-n" #'next-line-or-history-element)
-        ;; (keymap-set minibuffer-mode-map "C-u" #'scroll-down-command)
-        ;; (keymap-set minibuffer-mode-map "C-d" #'scroll-up-command)
-        (keymap-set minibuffer-mode-map "<prior>" #'scroll-down-command)
-        (keymap-set minibuffer-mode-map "<next>" #'scroll-up-command)
+    (keymap-set minibuffer-mode-map "C-p" #'previous-line-or-history-element)
+    (keymap-set minibuffer-mode-map "C-n" #'next-line-or-history-element)
+    ;; (keymap-set minibuffer-mode-map "C-u" #'scroll-down-command)
+    ;; (keymap-set minibuffer-mode-map "C-d" #'scroll-up-command)
+    (keymap-set minibuffer-mode-map "<prior>" #'scroll-down-command)
+    (keymap-set minibuffer-mode-map "<next>" #'scroll-up-command)
 
-        (keymap-set isearch-mode-map "C-p" #'isearch-ring-retreat)
-        (keymap-set isearch-mode-map "C-n" #'isearch-ring-advance)
+    (keymap-set isearch-mode-map "C-p" #'isearch-ring-retreat)
+    (keymap-set isearch-mode-map "C-n" #'isearch-ring-advance)
 
-        ;; Help map
-        (keymap-set help-map "=" #'describe-char)))
+    ;; Help map
+    (keymap-set help-map "=" #'describe-char)))
 
 (define-key key-translation-map (kbd "S-<escape>") (kbd "~"))
 
