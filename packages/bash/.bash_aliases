@@ -103,8 +103,11 @@ else
     alias grep2='env grep --color -I -H -E -n -r --exclude-dir={.git,.venv,.conda,.pixi,pack}'
 fi
 
+if command -v "fdfind" &> /dev/null; then
+    alias fd="fdfind"
+fi
 if command -v "fd" &> /dev/null; then
-    alias find='fd -E .git -E .venv -E .conda -E .pixi -E pack'
+    alias find="fd -E .git -E .venv -E .conda -E .pixi -E pack"
 else
     find() {
         local p=() x=(\( -name .git -o -name .venv -o -name .conda -o -name .pixi -o -name pack \) -prune -o)
