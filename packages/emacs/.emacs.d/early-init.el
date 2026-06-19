@@ -6,7 +6,7 @@
 (setq mode-line-format nil)
 
 (when (eq system-type 'darwin)
- (add-to-list 'default-frame-alist '(undecorated-round . t)))
+  (add-to-list 'default-frame-alist '(undecorated-round . t)))
 
 ;; Less aggressive garbage collection on startup
 (setq gc-cons-threshold most-positive-fixnum
@@ -89,12 +89,13 @@
       frame-inhibit-implied-resize t)
 
 ;; Basic fonts
-(when (eq system-type 'darwin)
+(cond
+ ((eq system-type 'darwin)
   (set-face-attribute 'fixed-pitch nil :family "Menlo")  ;; :height 130
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande"))  ;; :height 130
-(when (eq system-type 'gnu/linux)
-  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono")  ;; :height 140
-  (set-face-attribute 'variable-pitch nil :family "Sans"))  ;; :height 130
+ ((eq system-type 'gnu/linux)
+  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono")  ;; :height 140
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu")))  ;; :height 130
 (copy-face 'fixed-pitch 'default)
 
 ;; Initialize package sources and set up `use-package'
