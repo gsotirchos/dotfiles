@@ -73,6 +73,9 @@ main() {
     )
     stow -d "${dotfiles}/packages" -t "${HOME}" -R "${common[@]}"
 
+    # OS-specific overrides layered on top of shared packages (e.g. ghostty)
+    stow -d "${dotfiles}/packages" -t "${HOME}" -R "ghostty-${os}"
+
     # OS-specific
     if [[ "${os}" == "linux" ]]; then
         local dmi_product
