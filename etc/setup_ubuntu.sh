@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2155
+# shellcheck disable=SC2155,SC1091
 set -euo pipefail
 
 main() {
     local bright='\033[1m'
     local reset='\033[0m'
-
-    # dotfiles root (directory containing this script's parent)
-    local dotfiles="$(
-        builtin cd "$(
-            realpath "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.."
-        )" > /dev/null && pwd
-    )"
 
     header() { echo -e "\n${bright}- ${1}${reset}"; }
     prompt_yn() {
