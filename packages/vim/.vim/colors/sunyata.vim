@@ -57,7 +57,7 @@ endif
 
 " check default groups with `:help highlight-groups`
 hi! Normal          cterm=none              ctermfg=none    ctermbg=none
-hi! Comment         cterm=none  term=none   ctermfg=2       ctermbg=none
+hi! Comment         cterm=italic term=none  ctermfg=2       ctermbg=none
 
 " generic Preprocessor
 hi! PreProc         cterm=none              ctermfg=11      ctermbg=none
