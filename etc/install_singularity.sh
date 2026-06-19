@@ -1,4 +1,6 @@
+#!/usr/bin/env bash
 # shellcheck disable=SC1090
+set -euo pipefail
 
 main() {
     local go_install_path="/usr/local/go"
