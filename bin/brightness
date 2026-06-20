@@ -1,0 +1,289 @@
+#!/usr/bin/env bash
+#
+# Unified brightness control for the iMac internal panel and an attached
+# LG UltraFine display (only one is the active output at a time).
+#
+#   brightness get            print effective brightness (0-100)
+#   brightness set <0-100>    set absolute brightness (switches to manual)
+#   brightness up [step]      increase brightness (switches to manual)
+#   brightness down [step]    decrease brightness (switches to manual)
+#   brightness auto           resume sensor-driven auto-adjust
+#   brightness daemon         run the background auto-adjust loop
+#   brightness status         show display, mode, sensor and curve target
+#
+# The active display is detected from the kernel: the internal panel only
+# registers a /sys/class/backlight device when it is the active output, so its
+# presence means "iMac", otherwise the LG is driving. Each display has its own
+# ambient light sensor (exposed via IIO) and its own control path (`light` for
+# the iMac panel, `lg-brightness` for the LG).
+
+set -uo pipefail
+
+# --- configuration ------------------------------------------------------------
+DEFAULT_STEP=5
+SLEEP_DELAY=1
+MAX_CNT=4 # stable loops before an auto adjustment is applied
+MIN_STEP=10 # ignore auto changes smaller than this many points
+
+STATE_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/brightness"
+MODE_FILE="${STATE_DIR}/mode"
+
+# Per-display ambient-light curve (logarithmic). x1/x2 are the sensor's min/max
+# raw readings; y1/y2 the brightness range. The two sensors use different
+# scales, so each display is calibrated separately. Tune to taste.
+IMAC_X1=2
+IMAC_X2=70
+LG_X1=1
+LG_X2=80
+CURVE_Y1=10
+CURVE_Y2=100
+
+# --- display detection --------------------------------------------------------
+# Real panel backlights (exclude LED class devices such as keyboard backlights).
+imac_backlight_dir() {
+    local dir
+    for dir in /sys/class/backlight/*; do
+        [[ -e "${dir}/brightness" ]] || continue
+        case "$(basename "${dir}")" in
+            *backlight* | acpi_video*)
+                echo "${dir}"
+                return 0
+                ;;
+        esac
+    done
+    return 1
+}
+
+detect_display() {
+    if imac_backlight_dir > /dev/null; then
+        echo "imac"
+    else
+        echo "lg"
+    fi
+}
+
+# --- ambient light sensors (resolve IIO device by name, not by index) ---------
+# iMac internal -> name "acpi-als"; LG UltraFine -> name "als". Both expose the
+# reading on in_illuminance_raw.
+sensor_file() {
+    local display="$1" dev name
+    for dev in /sys/bus/iio/devices/iio:device*; do
+        [[ -r "${dev}/name" ]] || continue
+        name="$(cat "${dev}/name")"
+        case "${display}:${name}" in
+            imac:acpi-als | lg:als)
+                echo "${dev}/in_illuminance_raw"
+                return 0
+                ;;
+        esac
+    done
+    return 1
+}
+
+# The LG HID ambient-light sensor powers down when idle and reads 0 until it
+# warms up (runtime PM). Poll briefly and return the last woken reading; a
+# genuinely dark room still falls through to 0 after the poll window.
+sensor_value() {
+    local file value last="0" _
+    file="$(sensor_file "$1")" || return 1
+    [[ -r "${file}" ]] || return 1
+    for _ in $(seq 8); do
+        value="$(cat "${file}" 2> /dev/null)" || return 1
+        if [[ "${value}" =~ ^[0-9]+$ ]]; then
+            last="${value}"
+            [[ "${value}" -gt 0 ]] && break
+        fi
+        sleep 0.15
+    done
+    echo "${last}"
+}
+
+# --- brightness get/set -------------------------------------------------------
+get_brightness() {
+    local display="$1" value
+    if [[ "${display}" == "imac" ]]; then
+        value="$(light -G)"
+        echo "${value%.*}"
+    else
+        lg-brightness get
+    fi
+}
+
+set_brightness() {
+    local display="$1" value="$2"
+    # clamp to 0..100
+    [[ "${value}" -lt 0 ]] && value=0
+    [[ "${value}" -gt 100 ]] && value=100
+    if [[ "${display}" == "imac" ]]; then
+        light -S "${value}"
+    else
+        lg-brightness set "${value}"
+    fi
+}
+
+# --- auto-adjust curve --------------------------------------------------------
+# Map an ambient reading to a brightness level on a logarithmic curve.
+calculate_new_brightness() {
+    local display="$1" measurement="$2" x1 x2 a b new
+
+    if [[ "${display}" == "imac" ]]; then
+        x1="${IMAC_X1}"
+        x2="${IMAC_X2}"
+    else
+        x1="${LG_X1}"
+        x2="${LG_X2}"
+    fi
+
+    if (($(echo "${measurement} <= ${x1}" | bc -l))); then
+        new="${CURVE_Y1}"
+    elif (($(echo "${measurement} >= ${x2}" | bc -l))); then
+        new="${CURVE_Y2}"
+    else
+        a="$(echo \
+            "(${CURVE_Y1} - ${CURVE_Y2}) / (l(${x1}) - l(${x2}))" \
+            | bc -l)"
+        b="$(echo \
+            "(${CURVE_Y2} * l(${x1}) - ${CURVE_Y1} * l(${x2})) \
+                / (l(${x1}) - l(${x2}))" \
+            | bc -l)"
+        new="$(echo "${a} * l(${measurement}) + ${b}" | bc -l)"
+    fi
+
+    printf "%.0f" "${new}"
+}
+
+# --- mode state ---------------------------------------------------------------
+get_mode() {
+    [[ -r "${MODE_FILE}" ]] && cat "${MODE_FILE}" || echo "auto"
+}
+
+set_mode() {
+    mkdir -p "${STATE_DIR}"
+    echo "$1" > "${MODE_FILE}"
+}
+
+# --- commands -----------------------------------------------------------------
+cmd_get() {
+    get_brightness "$(detect_display)"
+}
+
+cmd_set() {
+    local value="$1" display
+    display="$(detect_display)"
+    set_mode "manual"
+    set_brightness "${display}" "${value}"
+}
+
+cmd_step() {
+    local sign="$1" step="${2:-${DEFAULT_STEP}}" display current
+    display="$(detect_display)"
+    current="$(get_brightness "${display}")"
+    set_mode "manual"
+    set_brightness "${display}" "$((current + sign * step))"
+}
+
+cmd_auto() {
+    set_mode "auto"
+}
+
+# Print the live sensor reading and the brightness the curve maps it to, to
+# help calibrate the per-display x1/x2 constants.
+cmd_status() {
+    local display measurement target
+    display="$(detect_display)"
+    printf "display: %s\n" "${display}"
+    printf "mode:    %s\n" "$(get_mode)"
+    printf "daemon:  %s\n" \
+        "$(pgrep -fc "${0##*/} daemon" > /dev/null && echo running || echo stopped)"
+    printf "current: %s\n" "$(get_brightness "${display}")"
+    if measurement="$(sensor_value "${display}")"; then
+        target="$(calculate_new_brightness "${display}" "${measurement}")"
+        printf "sensor:  %s\n" "${measurement}"
+        printf "target:  %s  (auto would aim here)\n" "${target}"
+    else
+        printf "sensor:  (unavailable)\n"
+    fi
+}
+
+# absolute difference of two integers
+abs_diff() {
+    local d=$(($1 - $2))
+    [[ "${d}" -lt 0 ]] && d=$((-d))
+    echo "${d}"
+}
+
+cmd_daemon() {
+    local display measurement new current previous=0 cnt=0
+
+    # singleton: refuse to start a second daemon (e.g. manual launch + autostart)
+    mkdir -p "${STATE_DIR}"
+    exec 9> "${STATE_DIR}/daemon.lock"
+    if ! flock -n 9; then
+        echo "brightness: daemon already running" >&2
+        exit 0
+    fi
+
+    set_mode "auto"
+
+    while true; do
+        if [[ "$(get_mode)" != "auto" ]]; then
+            previous=0
+            cnt=0
+            sleep "${SLEEP_DELAY}"
+            continue
+        fi
+
+        display="$(detect_display)"
+        measurement="$(sensor_value "${display}")" || {
+            sleep "${SLEEP_DELAY}"
+            continue
+        }
+        new="$(calculate_new_brightness "${display}" "${measurement}")"
+        current="$(get_brightness "${display}")"
+
+        # only react to meaningful changes, and only after the target has been
+        # stable for MAX_CNT loops, to avoid flicker.
+        if [[ "$(abs_diff "${new}" "${current}")" -ge "${MIN_STEP}" ]]; then
+            if [[ "$(abs_diff "${new}" "${previous}")" -lt "${MIN_STEP}" ]] \
+                && [[ "${cnt}" -ge "${MAX_CNT}" ]]; then
+                set_brightness "${display}" "${new}"
+                previous=0
+                cnt=0
+                continue
+            fi
+            previous="${new}"
+            cnt=$((cnt + 1))
+        else
+            previous=0
+            cnt=0
+        fi
+
+        sleep "${SLEEP_DELAY}"
+    done
+}
+
+usage() {
+    sed -n '3,18p' "$0" | sed 's/^# \{0,1\}//'
+}
+
+main() {
+    local cmd="${1:-}"
+    [[ $# -gt 0 ]] && shift
+    case "${cmd}" in
+        get) cmd_get ;;
+        set) cmd_set "${1:?usage: brightness set <0-100>}" ;;
+        up) cmd_step 1 "${1:-}" ;;
+        down) cmd_step -1 "${1:-}" ;;
+        auto) cmd_auto ;;
+        daemon) cmd_daemon ;;
+        status) cmd_status ;;
+        -h | --help | help | "") usage ;;
+        *)
+            echo "brightness: unknown command: ${cmd}" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+}
+
+main "$@"

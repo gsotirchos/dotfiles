@@ -1,4 +1,5 @@
 [Desktop Entry]
-Name=lg-ultrafine-brightness
-Exec=bash -c "sleep 5 && ptyxis --geometry=42x6+1480+850 -- sudo ~/.bin/LG_ultrafine_brightness"
+Name=auto-brightness
+Comment=Auto-adjust brightness for the active display (iMac panel or LG UltraFine)
+Exec=/home/george/.dotfiles/bin/brightness daemon
 Type=Application
