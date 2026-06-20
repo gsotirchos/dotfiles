@@ -1059,7 +1059,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :preface
   (defun my/customize-rainbow-delimiters ()
     (when (fboundp 'modus-themes-get-color-value)
-      (pcase-dolist (`(,face . ,color)
+      (pcase-dolist (`(,face ,color)
                      '((rainbow-delimiters-depth-1-face fg-dim)
                        (rainbow-delimiters-depth-2-face magenta-faint)
                        (rainbow-delimiters-depth-3-face cyan-faint)
