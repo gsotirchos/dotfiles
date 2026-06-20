@@ -214,6 +214,15 @@ abs_diff() {
 
 cmd_daemon() {
     local display measurement new current previous=0 cnt=0
+
+    # singleton: refuse to start a second daemon (e.g. manual launch + autostart)
+    mkdir -p "${STATE_DIR}"
+    exec 9> "${STATE_DIR}/daemon.lock"
+    if ! flock -n 9; then
+        echo "brightness: daemon already running" >&2
+        exit 0
+    fi
+
     set_mode "auto"
 
     while true; do
