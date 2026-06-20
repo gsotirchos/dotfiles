@@ -69,6 +69,15 @@ main() {
     sudo udevadm trigger --action=add --subsystem-match=backlight
     echo "  Note: log out and back in for the video group to take effect."
 
+    # --- LG UltraFine brightness access (hidraw, no sudo) ---------------
+    header "Configuring LG UltraFine brightness access"
+    local rules_src
+    rules_src="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/udev/90-lg-ultrafine.rules"
+    sudo cp "${rules_src}" /etc/udev/rules.d/
+    sudo udevadm control --reload
+    sudo udevadm trigger --subsystem-match=hidraw
+    echo "  Note: replug the LG display (or re-login) for access to take effect."
+
     # --- miniforge (conda/mamba) ----------------------------------------
     local conda_dir="/opt/miniforge"
     if [[ -d "${conda_dir}" ]]; then
