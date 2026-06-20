@@ -1,0 +1,236 @@
+#!/usr/bin/env python3
+"""Get/set LG UltraFine display brightness via a hidraw HID feature report.
+
+The LG UltraFine "Display Controls" USB device (043e:9a63) exposes brightness
+through a single 6-byte HID *feature* report (little-endian uint16, raw range
+0..MAX_RAW). This avoids the upstream ncurses/libusb TUIs (ycsos, velum), which
+require sudo and cannot be scripted. Paired with a udev rule granting hidraw
+access, this needs no root.
+
+Usage:
+    lg-brightness get          # print current brightness as 0-100
+    lg-brightness set <0-100>  # set brightness from a 0-100 percentage
+    lg-brightness raw-get      # print the raw 0..MAX_RAW value (debugging)
+    lg-brightness probe        # dump GET bytes for each candidate node (debug)
+"""
+
+from __future__ import annotations
+
+import array
+import fcntl
+import glob
+import os
+import sys
+
+# --- HID device identity ------------------------------------------------------
+VENDOR_ID = "043E"
+PRODUCT_ID = "9A63"
+
+# --- brightness protocol ------------------------------------------------------
+# 6-byte feature report payload, preceded by a report-id byte for the hidraw API.
+REPORT_ID = 0x00
+PAYLOAD_LEN = 6
+BUF_LEN = 1 + PAYLOAD_LEN  # report id + payload
+MAX_RAW = 54000  # raw value corresponding to 100%
+
+# --- hidraw ioctl request codes (linux/hidraw.h, asm-generic ioctl encoding) --
+_IOC_NRBITS = 8
+_IOC_TYPEBITS = 8
+_IOC_SIZEBITS = 14
+_IOC_NRSHIFT = 0
+_IOC_TYPESHIFT = _IOC_NRSHIFT + _IOC_NRBITS
+_IOC_SIZESHIFT = _IOC_TYPESHIFT + _IOC_TYPEBITS
+_IOC_DIRSHIFT = _IOC_SIZESHIFT + _IOC_SIZEBITS
+_IOC_WRITE = 1
+_IOC_READ = 2
+
+
+def _ioc(direction: int, type_: int, nr: int, size: int) -> int:
+    return (
+        (direction << _IOC_DIRSHIFT)
+        | (type_ << _IOC_TYPESHIFT)
+        | (nr << _IOC_NRSHIFT)
+        | (size << _IOC_SIZESHIFT)
+    )
+
+
+def _hidiocsfeature(size: int) -> int:
+    return _ioc(_IOC_WRITE | _IOC_READ, ord("H"), 0x06, size)
+
+
+def _hidiocgfeature(size: int) -> int:
+    return _ioc(_IOC_WRITE | _IOC_READ, ord("H"), 0x07, size)
+
+
+# --- hidraw node resolution ---------------------------------------------------
+def _candidate_nodes() -> list[str]:
+    """Return /dev/hidrawN paths belonging to the LG controls device.
+
+    Several hidraw interfaces share the 043e:9a63 device (brightness, ambient
+    light sensor, ...); we match on HID_ID and let the caller probe which one
+    answers the brightness feature report.
+    """
+    nodes: list[str] = []
+    for uevent in glob.glob("/sys/class/hidraw/hidraw*/device/uevent"):
+        try:
+            with open(uevent, encoding="ascii", errors="replace") as fh:
+                text = fh.read().upper()
+        except OSError:
+            continue
+        if VENDOR_ID in text and PRODUCT_ID in text:
+            name = os.path.basename(os.path.dirname(os.path.dirname(uevent)))
+            nodes.append(f"/dev/{name}")
+    return sorted(nodes)
+
+
+def _cache_path() -> str:
+    base = os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}"
+    return os.path.join(base, "brightness", "lg-hidraw")
+
+
+def _read_raw(fd: int) -> int:
+    buf = array.array("B", [0] * BUF_LEN)
+    buf[0] = REPORT_ID
+    fcntl.ioctl(fd, _hidiocgfeature(BUF_LEN), buf, True)
+    # Value lives in the 2 bytes after the report-id byte.
+    return buf[1] | (buf[2] << 8)
+
+
+def _open_device() -> tuple[int, str]:
+    """Open the hidraw node that answers the brightness feature report.
+
+    Tries a cached path first, then probes all candidates and caches the winner.
+    """
+    cache = _cache_path()
+    tried: list[str] = []
+
+    cached = None
+    try:
+        with open(cache, encoding="ascii") as fh:
+            cached = fh.read().strip()
+    except OSError:
+        pass
+
+    order = ([cached] if cached else []) + [
+        n for n in _candidate_nodes() if n != cached
+    ]
+    if not order:
+        sys.exit(
+            "lg-brightness: no LG UltraFine hidraw device found "
+            f"({VENDOR_ID}:{PRODUCT_ID}); is the LG display the active output?"
+        )
+
+    for node in order:
+        if node is None:
+            continue
+        tried.append(node)
+        try:
+            fd = os.open(node, os.O_RDWR)
+        except OSError:
+            continue
+        try:
+            value = _read_raw(fd)
+        except OSError:
+            os.close(fd)
+            continue
+        if 0 <= value <= MAX_RAW:
+            try:
+                os.makedirs(os.path.dirname(cache), exist_ok=True)
+                with open(cache, "w", encoding="ascii") as fh:
+                    fh.write(node)
+            except OSError:
+                pass
+            return fd, node
+        os.close(fd)
+
+    sys.exit(
+        "lg-brightness: could not read a valid brightness report from any of: "
+        + ", ".join(tried)
+    )
+
+
+# --- public operations --------------------------------------------------------
+def _raw_to_pct(raw: int) -> int:
+    return round(raw / MAX_RAW * 100)
+
+
+def _pct_to_raw(pct: int) -> int:
+    return round(max(0, min(100, pct)) / 100 * MAX_RAW)
+
+
+def get_brightness() -> int:
+    fd, _ = _open_device()
+    try:
+        return _raw_to_pct(_read_raw(fd))
+    finally:
+        os.close(fd)
+
+
+def get_raw() -> int:
+    fd, _ = _open_device()
+    try:
+        return _read_raw(fd)
+    finally:
+        os.close(fd)
+
+
+def set_brightness(pct: int) -> None:
+    raw = _pct_to_raw(pct)
+    buf = array.array(
+        "B",
+        [REPORT_ID, raw & 0xFF, (raw >> 8) & 0xFF, 0x00, 0x00, 0x00, 0x00],
+    )
+    fd, _ = _open_device()
+    try:
+        fcntl.ioctl(fd, _hidiocsfeature(BUF_LEN), buf, True)
+    finally:
+        os.close(fd)
+
+
+def main(argv: list[str]) -> int:
+    if not argv:
+        print(__doc__, file=sys.stderr)
+        return 2
+
+    cmd = argv[0]
+    if cmd == "get":
+        print(get_brightness())
+        return 0
+    if cmd == "raw-get":
+        print(get_raw())
+        return 0
+    if cmd == "probe":
+        nodes = _candidate_nodes()
+        if not nodes:
+            print("no candidate hidraw nodes found", file=sys.stderr)
+            return 1
+        for node in nodes:
+            for length in (7, 6):
+                buf = array.array("B", [0] * length)
+                buf[0] = REPORT_ID
+                try:
+                    fd = os.open(node, os.O_RDWR)
+                    fcntl.ioctl(fd, _hidiocgfeature(length), buf, True)
+                    os.close(fd)
+                    print(f"{node} len={length} bytes={list(buf)}")
+                except OSError as exc:
+                    print(f"{node} len={length} ERR {exc}")
+        return 0
+    if cmd == "set":
+        if len(argv) != 2:
+            print("usage: lg-brightness set <0-100>", file=sys.stderr)
+            return 2
+        try:
+            pct = int(argv[1])
+        except ValueError:
+            print(f"lg-brightness: invalid value: {argv[1]!r}", file=sys.stderr)
+            return 2
+        set_brightness(pct)
+        return 0
+
+    print(f"lg-brightness: unknown command: {cmd!r}", file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
