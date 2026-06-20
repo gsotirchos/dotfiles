@@ -86,18 +86,22 @@
   "S-<wheel-left>" #'ignore
   "M-<wheel-left>" #'ignore
   "A-<wheel-left>" #'ignore
+  "s-<wheel-left>" #'ignore
   "C-<wheel-right>" #'ignore
   "S-<wheel-right>" #'ignore
   "M-<wheel-right>" #'ignore
   "A-<wheel-right>" #'ignore
+  "s-<wheel-right>" #'ignore
   "C-<wheel-up>" #'ignore
   "S-<wheel-up>" #'ignore
   "M-<wheel-up>" #'ignore
   "A-<wheel-up>" #'ignore
+  "s-<wheel-up>" #'ignore
   "C-<wheel-down>" #'ignore
   "S-<wheel-down>" #'ignore
   "M-<wheel-down>" #'ignore
   "A-<wheel-down>" #'ignore
+  "s-<wheel-down>" #'ignore
 
   ;; Navigation/Edit
   "C-<delete>" #'ignore
@@ -115,6 +119,11 @@
   "A-<kp-delete>" #'kill-word
   "A-<right>" #'right-word
   "A-<left>" #'left-word
+  "s-<backspace>" #'backward-kill-word
+  "s-<delete>" #'kill-word
+  "s-<kp-delete>" #'kill-word
+  "s-<right>" #'right-word
+  "s-<left>" #'left-word
 
   ;; Frames/Windows
   "C-z" #'ignore
