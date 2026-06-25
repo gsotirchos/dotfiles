@@ -234,7 +234,6 @@ PATH should be in the format `op://Vault/Item/Field'."
   (xterm-mouse-mode 1)
   (context-menu-mode 1)
   (pixel-scroll-precision-mode 1)
-  (global-visual-line-mode -1)
   ;; Display table for wrap prefix
   (set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
   (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix)))
@@ -753,7 +752,8 @@ PATH should be in the format `op://Vault/Item/Field'."
   (defalias 'consult-line-thing-at-point 'consult-line)
   (consult-customize consult-line-thing-at-point
                      :initial (thing-at-point 'symbol))
-  (add-to-list 'consult-preview-allowed-hooks #'adaptive-wrap-prefix-mode)
+  (add-to-list 'consult-preview-allowed-hooks #'visual-wrap-prefix-mode)
+  (add-to-list 'consult-preview-allowed-hooks #'visual-line-mode)
   (add-to-list 'consult-preview-allowed-hooks #'variable-pitch-mode)
   ;; (add-to-list 'consult-preview-allowed-hooks #'my/fixed-pitch-mode)
   (add-to-list 'consult-preview-allowed-hooks #'my/pdf-view-mode-hook)
@@ -839,7 +839,7 @@ PATH should be in the format `op://Vault/Item/Field'."
    ("<tab>" . magit-section-toggle)
    ("C-<tab>" . nil))
   :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
-  :preface (add-hook 'magit-status-mode-hook (lambda () (visual-line-mode 1)))
+  :preface (add-hook 'magit-status-mode-hook (lambda () (toggle-truncate-lines -1)))
   :config
   (when (bound-and-true-p evil-mode)
     (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
@@ -895,9 +895,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (evil-shift-width 2)
   (markdown-blockquote-display-char '(">"))
   :preface
-  (add-hook 'markdown-mode-hook (lambda ()
-                                  (visual-line-mode 1)
-                                  (markdown-display-inline-images))))
+  (add-hook 'markdown-mode-hook (lambda () (markdown-display-inline-images))))
 
 (use-package gptel
   :after my-keybindings
@@ -968,6 +966,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 ;; Programming
 
 (use-package eglot
+  :after my-keybindings
   :ensure nil
   :no-require t
   :hook ((python-base-mode sh-base-mode LaTeX-mode) . eglot-ensure)
@@ -1097,12 +1096,21 @@ PATH should be in the format `op://Vault/Item/Field'."
   (indent-bars-highlight-current-depth nil)
   (indent-bars-display-on-blank-lines nil))
 
-(use-package adaptive-wrap
-  :hook ((prog-mode compilation-mode magit-status-mode text-mode) . adaptive-wrap-prefix-mode)
-  :bind (:map my/toggles-map ("a" . adaptive-wrap-prefix-mode))
-  :custom (adaptive-wrap-extra-indent 2))
+(use-package simple
+  :ensure nil
+  :no-require t
+  :hook ((text-mode compilation-mode) . visual-line-mode))
+
+(use-package visual-wrap
+  :after my-keybindings
+  :ensure nil
+  :no-require t
+  :hook ((prog-mode compilation-mode magit-status-mode) . visual-wrap-prefix-mode)
+  :bind (:map my/toggles-map ("w" . visual-wrap-prefix-mode))
+  :custom (visual-wrap-extra-indent 2))
 
 (use-package flymake
+  :after my-keybindings
   :ensure nil
   :no-require t
   :after modus-themes
@@ -1324,7 +1332,6 @@ PATH should be in the format `op://Vault/Item/Field'."
   :preface
   (defun my/LaTeX-mode-hook ()
     (setq-local fill-column most-positive-fixnum)
-    (visual-line-mode 1)
     (outline-minor-mode 1)
     (LaTeX-math-mode 1)
     (turn-on-reftex)
