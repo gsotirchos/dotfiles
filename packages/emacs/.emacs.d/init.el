@@ -525,12 +525,25 @@ PATH should be in the format `op://Vault/Item/Field'."
   (add-to-list 'tramp-remote-path "/snap/bin")
   (add-to-list 'tramp-remote-path "~/.local/bin"))
 
+(use-package ls-lisp
+  :ensure nil
+  :demand t
+  :custom
+  (ls-lisp-use-insert-directory-program nil)
+  (ls-lisp-ignore-case t)
+  (ls-lisp-dirs-first t)
+  (ls-lisp-use-string-collate nil))
+
 (use-package dired
   :ensure nil
   :no-require t
-  :bind (:map dired-mode-map ("M-<up>" . dired-up-directory))
+  :bind
+  (nil
+   :map dired-mode-map
+   ("M-<up>" . dired-up-directory)
+   ("M-<down>" . dired-find-file))
   :custom
-  (dired-listing-switches "-alv --group-directories-first")
+  (dired-listing-switches "-alF")
   (dired-omit-files "^\\.[^.].*")
   (dired-mouse-drag-files t)
   (dired-omit-verbose nil)
