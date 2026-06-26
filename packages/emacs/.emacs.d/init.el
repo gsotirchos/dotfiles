@@ -303,6 +303,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package comint
   :ensure nil
+  :no-require t
   :custom (comint-buffer-maximum-size (* 1 1024))
   :config
   ;; (add-to-list 'completion-at-point-functions #'comint-dynamic-complete-filename)
@@ -325,6 +326,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package project
   :ensure nil
+  :no-require t
   :preface
   (defun my/project-query-replace-ignore-binaries (orig-fun &rest args)
     "Temporarily ignore binary files during project-wide query-replace."
@@ -343,10 +345,12 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package xref
   :ensure nil
+  :no-require t
   :custom (xref-search-program 'ripgrep))
 
 (use-package isearch
   :ensure nil
+  :no-require t
   :preface
   (defun my/isearch-filter-opened-overlays (&rest _)
     "Remove deleted overlays from `isearch-opened-overlays'."
@@ -365,6 +369,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package uniquify
   :ensure nil
+  :no-require t
   :custom
   (uniquify-buffer-name-style 'forward)
   (uniquify-separator "/")
@@ -507,6 +512,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package files
   :ensure nil
+  :no-require t
   :preface
   (defun my/revert-buffer-quick-preserve (&optional auto-save)
     "Like `revert-buffer-quick', but preserves modes (accepts AUTO-SAVE)."
@@ -517,6 +523,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package tramp
   :ensure nil
+  :no-require t
   :custom
   (tramp-verbose 2)
   (tramp-use-connection-share nil)  ;; Let ~/.ssh/config handle it
@@ -840,6 +847,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package ediff
   :ensure nil
+  :no-require t
   :custom (ediff-window-setup-function 'ediff-setup-windows-plain))
 
 (use-package magit
@@ -1027,6 +1035,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package prog-mode
   :ensure nil
+  :no-require t
   :preface
   (defun my/prog-mode-hook ()
     (hs-minor-mode 1)
@@ -1060,6 +1069,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package electric-pair
   :ensure nil
+  :no-require t
   :hook (prog-mode text-mode)
   :custom (electric-pair-preserve-balance nil))
 
@@ -1123,10 +1133,9 @@ PATH should be in the format `op://Vault/Item/Field'."
   :custom (visual-wrap-extra-indent 2))
 
 (use-package flymake
-  :after my-keybindings
   :ensure nil
   :no-require t
-  :after modus-themes
+  :after (my-keybindings modus-themes)
   :hook prog-mode
   :bind (:map my/personal-map ("M-f" . flymake-show-buffer-diagnostics))
   :custom
@@ -1177,8 +1186,8 @@ PATH should be in the format `op://Vault/Item/Field'."
   :ensure nil
   :no-require t
   :init
-  (add-hook 'text-mode flyspell-mode)
-  ;; (add-hook 'prog-mode flyspell-prog-mode)
+  (add-hook 'text-mode-hook #'flyspell-mode)
+  ;; (add-hook 'prog-mode-hook #'flyspell-prog-mode)
   :config (require 'ispell))
 
 (use-package ispell
@@ -1197,6 +1206,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package emacs-lisp-mode
   :after my-keybindings
   :ensure nil
+  :no-require t
   :bind (:map my/personal-map ("(" . 'check-parens))
   :preface (add-hook 'emacs-lisp-mode-hook (lambda () (setq-local evil-shift-width 2))))
 
@@ -1205,6 +1215,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package vimscript-ts-mode
   :ensure nil
+  :no-require t
   :mode "/\\.?\\(vimrc\\|vims?\\)\\'")
 
 
