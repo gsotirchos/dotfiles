@@ -33,6 +33,19 @@ Otherwise, apply emphasis to the word at point (CHAR)."
   (message "Emphasis markers are now %s." (if org-hide-emphasis-markers "hidden" "visible")))
 
 ;;;###autoload
+(defun my/org-open-journal (&optional arg)
+  "Open today's journal file at `org-directory'/journal/YYYY-MM-DD.org.
+With a prefix ARG, open a Dired buffer on the journal directory instead."
+  (interactive "P")
+  (let ((dir (expand-file-name "journal" org-directory))
+        (current-prefix-arg nil))
+    (make-directory dir t)
+    (my/find-file
+     (if arg
+         dir
+       (expand-file-name (format-time-string "%Y-%m-%d.org") dir)))))
+
+;;;###autoload
 (defun my/org-latex-preview-buffer ()
   "Preview all LaTeX fragments in buffer."
   (interactive)
@@ -184,9 +197,6 @@ Otherwise, apply emphasis to the word at point (CHAR)."
   :doc "Keymap for my-org-mode."
   "A-M-S-<right>" #'my/org-demote-heading
   "A-M-S-<left>" #'my/org-promote-heading
-  "C-c a" #'org-agenda
-  "C-c C-x m" #'my/org-toggle-emphasis-marker-display
-  "C-c C-x l" #'org-toggle-link-display
   "<remap> <org-emphasize>" #'my/org-emphasize-dwim)
 
 ;;;###autoload
