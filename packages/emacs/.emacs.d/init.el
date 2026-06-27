@@ -1413,9 +1413,19 @@ PATH should be in the format `op://Vault/Item/Field'."
   (org-special-ctrl-o t))
 
 (use-package my-org
+  :after my-keybindings
   :ensure nil
   :load-path "site-lisp/"
-  :hook (org-mode . my-org-mode))
+  :hook (org-mode . my-org-mode)
+  :bind
+  (nil
+   :map my/personal-map
+   ("l" . org-store-link)
+   ("a" . org-agenda)
+   ("j" . my/org-open-journal)
+   :map my/toggles-map
+   ("m" . my/org-toggle-emphasis-marker-display)
+   ("l" . org-toggle-link-display)))
 
 (use-package org-indent
   :ensure nil

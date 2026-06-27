@@ -40,12 +40,12 @@
 (defun my/edit-emacs-init ()
   "Edit `~/.emacs.d/init.el'."
   (interactive)
-  (my/find-file  "~/.emacs.d/init.el"))
+  (my/find-file "~/.emacs.d/init.el"))
 
 (defun my/edit-emacs-early-init ()
   "Edit `~/.emacs.d/early-init.el'."
   (interactive)
-  (my/find-file  "~/.emacs.d/early-init.el"))
+  (my/find-file "~/.emacs.d/early-init.el"))
 
 (defun my/open-scratch-buffer-new-frame ()
   "Open the *scratch* buffer in another frame."
