@@ -81,6 +81,22 @@ Otherwise, apply emphasis to the word at point (CHAR)."
 ;;; ----------------------------------------------------------------------------
 
 ;;;###autoload
+(defun my/org-promote-heading ()
+  "Promote the heading at point one level, no-op if not on a heading."
+  (interactive)
+  (when (org-at-heading-p)
+    (org-promote)
+    (org-fix-position-after-promote)))
+
+;;;###autoload
+(defun my/org-demote-heading ()
+  "Demote the heading at point one level, no-op if not on a heading."
+  (interactive)
+  (when (org-at-heading-p)
+    (org-demote)
+    (org-fix-position-after-promote)))
+
+;;;###autoload
 (defun my/org-create-archive-dir (&rest _)
   "Automatically create the .archive directory if it doesn't exist."
   (let* ((location (org-archive--compute-location
@@ -166,6 +182,8 @@ Otherwise, apply emphasis to the word at point (CHAR)."
 
 (defvar-keymap my-org-mode-map
   :doc "Keymap for my-org-mode."
+  "A-M-S-<right>" #'my/org-demote-heading
+  "A-M-S-<left>" #'my/org-promote-heading
   "C-c a" #'org-agenda
   "C-c C-x m" #'my/org-toggle-emphasis-marker-display
   "C-c C-x l" #'org-toggle-link-display
@@ -195,9 +213,9 @@ Otherwise, apply emphasis to the word at point (CHAR)."
     (remove-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews t)
     (remove-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays t)
     (dolist (hook
-                 '(after-load-theme-hook
-                   auto-save-hook
-                   after-save-hook))
+             '(after-load-theme-hook
+               auto-save-hook
+               after-save-hook))
       (remove-hook hook #'my/org-latex-preview-buffer t))))
 
 (provide 'my-org)
