@@ -37,15 +37,12 @@
           (find-file-other-tab file-name)
         (find-file-other-frame file-name)))))
 
-(defun my/edit-emacs-init ()
-  "Edit `~/.emacs.d/init.el'."
-  (interactive)
-  (my/find-file "~/.emacs.d/init.el"))
-
-(defun my/edit-emacs-early-init ()
-  "Edit `~/.emacs.d/early-init.el'."
-  (interactive)
-  (my/find-file "~/.emacs.d/early-init.el"))
+(defun my/edit-emacs-init (&optional arg)
+  "Edit `~/.emacs.d/init.el'.
+With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
+  (interactive "P")
+  (my/find-file
+   (if arg "~/.emacs.d/early-init.el" "~/.emacs.d/init.el")))
 
 (defun my/open-scratch-buffer-new-frame ()
   "Open the *scratch* buffer in another frame."
@@ -139,7 +136,6 @@
   "M-m" #'iconify-frame
   "M-h" #'ns-do-hide-emacs
   "M-," #'my/edit-emacs-init
-  "C-M-," #'my/edit-emacs-early-init
   "C-M-n" #'my/open-scratch-buffer-new-frame
 
   ;; Apply Prefix Map to C-c
