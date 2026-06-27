@@ -328,6 +328,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :ensure nil
   :no-require t
   :preface
+  (defvar project-vc-ignores)
   (defun my/project-query-replace-ignore-binaries (orig-fun &rest args)
     "Temporarily ignore binary files during project-wide query-replace."
     (let ((project-vc-ignores
