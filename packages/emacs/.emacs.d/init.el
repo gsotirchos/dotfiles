@@ -220,6 +220,8 @@ PATH should be in the format `op://Vault/Item/Field'."
   (scroll-step 1)
   (hscroll-step 1)
   ;; (underline-minimum-offset 2)
+  (text-scale-mode-step 1.1)
+  (global-text-scale-adjust-resizes-frames t)
   (line-spacing fixed-pitch-line-spacing)
   (truncate-lines nil)
   (wrap-prefix "…")
