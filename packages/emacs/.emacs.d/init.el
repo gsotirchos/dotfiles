@@ -1392,7 +1392,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (org-cycle-separator-lines 1)
   (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
   (org-image-max-width (/ 2 (+ 1 (sqrt 5))))
-  (org-archive-location ".archive/%s_archive::")
+  (org-archive-location "org_archive/%s_archive::")
   (org-directory "~/Documents/org")
   (org-agenda-files (list org-directory "~/Desktop"))
   (org-todo-keywords '((sequence "TODO" "NEXT" "WIP" "WAIT" "|" "DONE" "SKIP" "FAIL")))
