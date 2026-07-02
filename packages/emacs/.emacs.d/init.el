@@ -775,6 +775,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (defalias 'consult-line-thing-at-point 'consult-line)
   (consult-customize consult-line-thing-at-point
                      :initial (thing-at-point 'symbol))
+  (add-to-list 'consult-preview-allowed-hooks #'adaptive-wrap-prefix-mode)
   (add-to-list 'consult-preview-allowed-hooks #'visual-wrap-prefix-mode)
   (add-to-list 'consult-preview-allowed-hooks #'visual-line-mode)
   (add-to-list 'consult-preview-allowed-hooks #'variable-pitch-mode)
@@ -808,7 +809,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :custom (warning-minimum-level :error))
 
 (use-package which-key
-  :ensure nil
+  ;; :ensure nil
   :defer 1
   :custom (which-key-idle-delay 1)
   :config (which-key-mode))
@@ -1127,13 +1128,18 @@ PATH should be in the format `op://Vault/Item/Field'."
   :no-require t
   :hook ((text-mode compilation-mode) . visual-line-mode))
 
-(use-package visual-wrap
-  :after my-keybindings
-  :ensure nil
-  :no-require t
-  :hook ((prog-mode compilation-mode magit-status-mode) . visual-wrap-prefix-mode)
-  :bind (:map my/toggles-map ("w" . visual-wrap-prefix-mode))
-  :custom (visual-wrap-extra-indent 2))
+(if (version< emacs-version "30.0")
+    (use-package adaptive-wrap
+      :hook ((prog-mode compilation-mode magit-status-mode) . adaptive-wrap-prefix-mode)
+      :bind (:map my/toggles-map ("w" . adaptive-wrap-prefix-mode))
+      :custom (adaptive-wrap-extra-indent 2))
+  (use-package visual-wrap
+    :after my-keybindings
+    :ensure nil
+    :no-require t
+    :hook ((prog-mode compilation-mode magit-status-mode) . visual-wrap-prefix-mode)
+    :bind (:map my/toggles-map ("w" . visual-wrap-prefix-mode))
+    :custom (visual-wrap-extra-indent 2)))
 
 (use-package flymake
   :ensure nil
