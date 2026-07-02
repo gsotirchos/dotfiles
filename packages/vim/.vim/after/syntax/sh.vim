@@ -1,5 +1,5 @@
 syn clear bashSpecialVariables
-syn clear shArrayRegion
+" syn clear shArrayRegion
 " syn clear shSpecialDQ
 
 hi! link shFunctionTag  Function
