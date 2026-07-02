@@ -65,6 +65,8 @@ main() {
     done
     unset f
 
+    mkdir -p ~/.emacs.d
+
     # stow the common packages
     echo -e "${bright_style}- Stowing dotfiles${normal_style}"
     local common=(
