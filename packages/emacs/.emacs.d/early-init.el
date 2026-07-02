@@ -5,9 +5,6 @@
 ;; Hide modeline on startup
 (setq mode-line-format nil)
 
-(when (eq system-type 'darwin)
-  (add-to-list 'default-frame-alist '(undecorated-round . t)))
-
 ;; Less aggressive garbage collection on startup
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6)
@@ -43,6 +40,7 @@
 
 ;; Configure properties for my MacbookAir
 (when (eq system-type 'darwin)
+  (add-to-list 'default-frame-alist '(undecorated-round . t))
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
   (setq-default mac-mouse-wheel-smooth-scroll t
                 mouse-wheel-flip-direction t

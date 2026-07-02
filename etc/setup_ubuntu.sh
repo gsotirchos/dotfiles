@@ -61,7 +61,8 @@ main() {
         python3-bashate \
         light \
         gnome-tweaks \
-        dconf-editor
+        dconf-editor \
+        chrome-gnome-shell
 
     # --- backlight permissions (for light utility) ----------------------
     header "Configuring backlight permissions"
