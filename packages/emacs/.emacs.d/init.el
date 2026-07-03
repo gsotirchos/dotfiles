@@ -627,13 +627,11 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package evil-collection
   :after evil
-  :defer 1
-  ;; :demand t
+  :demand t
   :config (evil-collection-init))
 
 (use-package evil-surround
-  :defer 1
-  ;; :demand t
+  :demand t
   :config (global-evil-surround-mode 1))
 
 (use-package corfu
