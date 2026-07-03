@@ -92,8 +92,8 @@
   (set-face-attribute 'fixed-pitch nil :family "Menlo")  ;; :height 130
   (set-face-attribute 'variable-pitch nil :family "Lucida Grande"))  ;; :height 130
  ((eq system-type 'gnu/linux)
-  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono")  ;; :height 140
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu")))  ;; :height 130
+  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 130)
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 120)))
 (copy-face 'fixed-pitch 'default)
 
 ;; Initialize package sources and set up `use-package'
