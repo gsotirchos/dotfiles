@@ -174,7 +174,7 @@ main() {
         header "Emacs already installed — skipping."
     elif prompt_yn "Install Emacs (GTK graphical)?"; then
         header "Installing Emacs (GTK graphical)"
-        sudo apt install -y emacs-gtk
+        sudo apt install -y emacs-pgtk
     fi
 
     # --- 1password (desktop app + cli) ---------------------------------
