@@ -48,7 +48,7 @@ main() {
     # so that stow has a clean target on machines being migrated.
     echo -e "${bright_style}- Cleaning up legacy symlinks${normal_style}"
     local legacy=(
-        ~/.bashrc ~/.bash_aliases ~/.bash_profile ~/.inputrc ~/.completion_dirs
+        ~/.bashrc ~/.bash_aliases ~/.bash_profile ~/.profile ~/.inputrc ~/.completion_dirs
         ~/.gitconfig ~/.gitignore
         ~/.vim ~/.emacs.d ~/.conda
         ~/.config/starship.toml ~/.config/ghostty ~/.config/opencode
@@ -65,13 +65,17 @@ main() {
     done
     unset f
 
+    mkdir -p ~/.emacs.d
+
     # stow the common packages
     echo -e "${bright_style}- Stowing dotfiles${normal_style}"
     local common=(
         bash git vim emacs conda starship ghostty opencode zotero
         clang cmake latex linters op
     )
-    stow -d "${dotfiles}/packages" -t "${HOME}" -R "${common[@]}"
+    local ignore=()
+    [[ "${os}" == "macos" ]] && ignore=(--ignore='^\.profile$')
+    stow -d "${dotfiles}/packages" -t "${HOME}" ${ignore[@]+"${ignore[@]}"} -R "${common[@]}"
 
     # OS-specific overrides layered on top of shared packages (e.g. ghostty)
     stow -d "${dotfiles}/packages" -t "${HOME}" -R "ghostty-${os}"
