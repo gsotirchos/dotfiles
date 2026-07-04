@@ -532,8 +532,15 @@ PATH should be in the format `op://Vault/Item/Field'."
   (tramp-use-connection-share nil)  ;; Let ~/.ssh/config handle it
   (vc-handled-backends '(Git))  ;; Limit VC to Git only
   :config
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (add-to-list 'tramp-remote-path "/snap/bin")
   (add-to-list 'tramp-remote-path "~/.local/bin"))
+
+(use-package my-devcontainer
+  :ensure nil
+  :load-path "site-lisp/"
+  :after my-keybindings
+  :bind (:map my/personal-map ("c" . my/devcontainer-up)))
 
 (use-package ls-lisp
   :ensure nil
@@ -723,7 +730,6 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package consult
   :after (evil vertico)
-  :hook (completion-list-mode . consult-preview-at-point-mode)
   :bind
   (([remap Info-search] . consult-info)
    ([remap switch-to-buffer] . consult-buffer)
@@ -793,8 +799,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :init (setq prefix-help-command 'embark-prefix-help-command))
 
 (use-package embark-consult
-  :after (embark consult)
-  :hook (embark-collect-mode . consult-preview-at-point-mode))
+  :after (embark consult))
 
 (use-package helpful
   :bind
