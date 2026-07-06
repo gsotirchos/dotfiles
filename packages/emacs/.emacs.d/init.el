@@ -1028,17 +1028,23 @@ PATH should be in the format `op://Vault/Item/Field'."
             (lambda () (setq-local apheleia-formatter '(ruff-isort ruff))))
   (add-hook 'sh-base-mode-hook
             (lambda () (setq-local apheleia-formatter 'shfmt)))
+  (defun my/ruff-fallback-config-args ()
+    "Use the dotfiles ruff config only when the project provides none."
+    (unless (or (file-remote-p default-directory)
+                (seq-some (lambda (name)
+                            (locate-dominating-file default-directory name))
+                          '("ruff.toml" ".ruff.toml" "pyproject.toml")))
+      (list "--config" (expand-file-name "pyproject.toml" dotfiles-dir))))
   :config
   (apheleia-global-mode 1)
-  (let ((config-path (expand-file-name "pyproject.toml" dotfiles-dir)))
-    (setf (alist-get 'ruff apheleia-formatters)
-          `("ruff" "format" "--config" ,config-path "--silent" "--stdin-filename" filepath "-"))
-    (setf (alist-get 'ruff-isort apheleia-formatters)
-          `("ruff" "check" "--select" "I" "--fix" "--config" ,config-path "--silent" "--stdin-filename" filepath "-"))
-    (setf (alist-get 'shfmt apheleia-formatters)
-          '("shfmt" "-ln" "bash" "-i" "4" "-ci" "-bn" "-sr"))
-    (setf (alist-get 'latexindent apheleia-formatters)
-          '("latexindent" "--logfile=/dev/null" "-m" "-rv"))))
+  (setf (alist-get 'ruff apheleia-formatters)
+        '("ruff" "format" (my/ruff-fallback-config-args) "--silent" "--stdin-filename" filepath "-"))
+  (setf (alist-get 'ruff-isort apheleia-formatters)
+        '("ruff" "check" "--select" "I" "--fix" (my/ruff-fallback-config-args) "--silent" "--stdin-filename" filepath "-"))
+  (setf (alist-get 'shfmt apheleia-formatters)
+        '("shfmt" "-ln" "bash" "-i" "4" "-ci" "-bn" "-sr"))
+  (setf (alist-get 'latexindent apheleia-formatters)
+        '("latexindent" "--logfile=/dev/null" "-m" "-rv")))
 
 (use-package prog-mode
   :ensure nil
@@ -1254,6 +1260,19 @@ PATH should be in the format `op://Vault/Item/Field'."
   :hook (python-base-mode . flymake-ruff-load)
   :custom (python-flymake-command python-check-command))
 
+;; Vendored from https://github.com/com4/flymake-mypy (BSD-2-Clause)
+(use-package flymake-mypy
+  :ensure nil
+  :load-path "site-lisp/"
+  :commands (flymake-mypy-enable)
+  :preface
+  (defun my/flymake-mypy-enable ()
+    "Enable the mypy Flymake backend when mypy is available."
+    (when (executable-find "mypy")
+      (setq-local flymake-mypy-executable (executable-find "mypy"))
+      (flymake-mypy-enable)))
+  :hook (python-base-mode . my/flymake-mypy-enable))
+
 (use-package conda
   :preface
   (defun my/conda-env-activate-for-buffer ()
@@ -1324,7 +1343,7 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package nxml-mode
   :ensure nil
   :no-require t
-  :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'")
+  :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'" "\\.launch\\'")
   :preface
   (defun my/nxml-mode-hook ()
     (setq-local standard-indent nxml-child-indent)
