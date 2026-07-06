@@ -37,6 +37,9 @@ esac
 
 if [[ "$OS" == "linux" ]]; then
     export TMPDIR="${HOME}/.tmp"
+
+    # unique per developer -- register this ID in the team's ROS_DOMAIN_ID tracker
+    export ROS_DOMAIN_ID=4
 fi
 
 if [[ "$OS" == "macos" ]]; then
