@@ -85,8 +85,8 @@ export CLAUDE_CODE_NO_FLICKER=1
 export BASHRC_SOURCED=1
 
 # TODO: move where it fits better
-if command -v "nvm" &> /dev/null; then
-    export NVM_DIR="$HOME/.nvm"
+if [[ -d "${HOME}/.nvm" ]]; then
+    export NVM_DIR="${HOME}/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
