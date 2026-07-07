@@ -148,6 +148,7 @@ main() {
         header "Installing Python linters and tools"
         # python-lsp-server and its ruff plugin must share one environment
         pipx install python-lsp-server
+        # TODO add mypy
         pipx inject python-lsp-server python-lsp-ruff autopep8 isort
         # standalone tools each get their own environment
         for pkg in cmakelang pylint ruff proselint; do
