@@ -84,6 +84,13 @@ fi
 export CLAUDE_CODE_NO_FLICKER=1
 export BASHRC_SOURCED=1
 
+# TODO: move where it fits better
+if command -v "nvm" &> /dev/null; then
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
+
 # configure or start prompt
 if command -v "prmt" &> /dev/null && prmt --version &> /dev/null; then
     export PS1='$(prmt --code $? "{path:cyan.bold} {git:magenta.bold}\n{ok:bold:>}{fail:red.bold:>} ")'
