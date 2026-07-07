@@ -108,6 +108,11 @@ augroup vimrc
         \ *.msg,*.srv,*.action
         \ set ft=conf
 
+    " treat devcontainer configs as JSONC
+    autocmd BufWinEnter,BufRead,BufWritePre
+        \ devcontainer.json
+        \ set ft=jsonc
+
     " treat certain extensions as Lisp files
     "autocmd BufWinEnter,BufRead,BufWritePre
     "    \ *.lisp*.el,*.emacs
