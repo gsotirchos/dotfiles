@@ -159,13 +159,13 @@ fi
 if [[ -f ~/.conda/conda_init.sh ]]; then
     # lazy conda initialization
     conda() {
-        # TIME ~499ms
+        # TIME ~500ms
+        unset "${FUNCNAME[0]}"
         echo -ne "-- Initializing conda ..."
-        unset conda
         # export CONDA_BASH_COMPLETION_LOADED="Y"
         source ~/.conda/conda_init.sh
         echo -e " DONE"
-        conda "$@"
+        "${FUNCNAME[0]}" "$@"
     }
 
     if command -v "mamba" &> /dev/null; then
@@ -178,6 +178,20 @@ if [[ -f ~/.conda/conda_init.sh ]]; then
     alias sb="${conda_mamba} activate sandbox &> /dev/null"
 
     unset conda_mamba
+fi
+
+# lazy NPM
+if [[ -d "${HOME}/.nvm" ]]; then
+    npm() {
+        unset "${FUNCNAME[0]}"
+        nvm use --lts
+        "${FUNCNAME[0]}" "$@"
+    }
+    devcontainer() {
+        unset "${FUNCNAME[0]}"
+        nvm use --lts
+        "${FUNCNAME[0]}" "$@"
+    }
 fi
 
 # Catkin (ROS 1)
