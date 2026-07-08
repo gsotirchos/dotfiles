@@ -35,15 +35,21 @@ Otherwise, apply emphasis to the word at point (CHAR)."
 ;;;###autoload
 (defun my/org-open-journal (&optional arg)
   "Open today's journal file at `org-directory'/journal/YYYY-MM-DD.org.
-With a prefix ARG, open a Dired buffer on the journal directory instead."
+With a prefix ARG, open the most recent journal file dated before today."
   (interactive "P")
   (let ((dir (expand-file-name "journal" org-directory))
+        (today (format-time-string "%Y-%m-%d.org"))
         (current-prefix-arg nil))
     (make-directory dir t)
     (my/find-file
      (if arg
-         dir
-       (expand-file-name (format-time-string "%Y-%m-%d.org") dir)))))
+         (let ((previous (car (last (seq-filter
+                                     (lambda (file) (string< file today))
+                                     (directory-files dir nil "\\`[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\.org\\'"))))))
+           (unless previous
+             (user-error "No journal entries before today"))
+           (expand-file-name previous dir))
+       (expand-file-name today dir)))))
 
 ;;;###autoload
 (defun my/org-latex-preview-buffer ()
