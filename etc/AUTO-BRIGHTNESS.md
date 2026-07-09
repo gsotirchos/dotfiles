@@ -10,8 +10,8 @@ sensor for it.
 
 | Path | Role |
 |------|------|
-| `bin/brightness` | Bash orchestrator: CLI + background auto-adjust daemon. |
-| `bin/lg-brightness` | Python (stdlib only) helper: get/set LG brightness over `hidraw`. |
+| `bin/linux/brightness` | Bash orchestrator: CLI + background auto-adjust daemon. |
+| `bin/linux/lg-brightness` | Python (stdlib only) helper: get/set LG brightness over `hidraw`. |
 | `etc/udev/90-lg-ultrafine.rules` | Grants the LG `hidraw` node to the logged-in user (no sudo). |
 | `packages/autostart/.config/autostart/lg-ultrafine-brightness.desktop` | Starts `brightness daemon` at GNOME login. |
 
@@ -55,7 +55,7 @@ Both sensors are exposed via the kernel IIO subsystem. Resolve them by `name`
 | LG UltraFine | `als` | HID sensor under USB device `043E:9A63`. |
 
 **LG sensor warm-up:** the LG HID sensor uses runtime power management and reads
-`0` while idle, waking after ~1 s of continuous reads. `bin/brightness` polls
+`0` while idle, waking after ~1 s of continuous reads. `bin/linux/brightness` polls
 briefly (`sensor_value`) so a one-shot read returns a woken value; a genuinely
 dark room still falls through to `0`.
 
@@ -65,7 +65,7 @@ The LG 5K does **not** support DDC/CI; brightness is a single **6-byte HID
 feature report**:
 
 - USB device: `043e:9a63` ("LG UltraFine Display Controls").
-- `hidraw` candidates: `hidraw6/7/8` all map to `043e:9a63`; `bin/lg-brightness`
+- `hidraw` candidates: `hidraw6/7/8` all map to `043e:9a63`; `bin/linux/lg-brightness`
   auto-probes and uses the one that answers the brightness report (here
   `hidraw7`; the others are the ALS/other interfaces and return `EPIPE`).
 - Buffer layout (7 bytes): `[report_id=0, value_lo, value_hi, 0, 0, 0, 0]`.
@@ -85,7 +85,7 @@ brightness. State lives under `${XDG_RUNTIME_DIR}/brightness/`:
 
 - `mode` — `auto` or `manual`. The daemon only adjusts in `auto`.
 
-Tunables at the top of `bin/brightness`:
+Tunables at the top of `bin/linux/brightness`:
 
 - `SLEEP_DELAY=1` — seconds between samples.
 - `MIN_STEP=10` — ignore auto changes smaller than this many points.
@@ -99,7 +99,7 @@ Ambient reading → brightness is a **logarithmic** interpolation between
 readings `>= x2` clamp to `CURVE_Y2`. Each display has its own `x1`/`x2` because
 the two sensors use different scales.
 
-Constants in `bin/brightness`:
+Constants in `bin/linux/brightness`:
 
 ```bash
 IMAC_X1=2      # iMac sensor reading -> minimum brightness

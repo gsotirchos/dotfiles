@@ -1,0 +1,117 @@
+#!/bin/bash
+# restore-fingerprint — MINIMAL build.
+# Only the USB reset is active. Everything else is commented out so you can
+# enable pieces one at a time and see what's actually needed.
+#
+# One-time setup:   sudo ./restore-fingerprint install
+# Manual test:      sudo ./restore-fingerprint post   (then: fprintd-enroll)
+
+VID="06cb"
+PID="0106"
+# HOSTBUS="usb0" # internal bus the sensor is on (Bus 001)
+SELF="/usr/lib/systemd/system-sleep/restore-fingerprint"
+# UDEV="/etc/udev/rules.d/99-fingerprint-no-autosuspend.rules"
+LOG="/var/log/restore-fingerprint.log"
+
+log() { echo "$(date '+%F %T') $*" >> "$LOG" 2> /dev/null; }
+
+# Path to the sensor's sysfs dir, matched by vendor:product.
+# (Only needed by the optional blocks below; harmless to keep.)
+find_dev() {
+    local d
+    for d in /sys/bus/usb/devices/*/; do
+        if [[ ! -f "${d}idVendor" || ! -f "${d}idProduct" ]]; then
+            continue
+        fi
+        if [ "$(cat "${d}idVendor")" = "$VID" ] \
+            && [ "$(cat "${d}idProduct")" = "$PID" ]; then
+            printf '%s' "${d%/}"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# ===== Reset the USB ports =====
+usb_reset() {
+    python3 - "$VID" "$PID" << 'PY'
+import fcntl, os, glob, sys
+USBDEVFS_RESET = (ord('U') << 8) | 20
+vid, pid = sys.argv[1], sys.argv[2]
+for d in glob.glob('/sys/bus/usb/devices/*'):
+    try:
+        if open(d+'/idVendor').read().strip() != vid: continue
+        if open(d+'/idProduct').read().strip() != pid: continue
+        b = int(open(d+'/busnum').read()); n = int(open(d+'/devnum').read())
+    except OSError:
+        continue
+    dev = f'/dev/bus/usb/{b:03d}/{n:03d}'
+    fd = os.open(dev, os.O_WRONLY)
+    try:
+        fcntl.ioctl(fd, USBDEVFS_RESET, 0)
+        print(dev)
+    finally:
+        os.close(fd)
+    sys.exit(0)
+sys.exit(1)
+PY
+}
+
+restore() {
+    ## ---- OPTIONAL: Controller re-enumeration fallback. ----
+    ## For the rare case the sensor drops off the USB bus entirely, so usb_reset can't find it.
+    ## Enable only if you see "sensor not found for reset" in the log.
+    # local pci
+    # pci="$(basename "$(readlink -f "/sys/bus/usb/devices/$HOSTBUS/..")")"
+    # if [ -e "/sys/bus/pci/drivers/xhci_hcd/$pci" ]; then
+    #     echo -n "$pci" > /sys/bus/pci/drivers/xhci_hcd/unbind 2>/dev/null; sleep 2
+    #     echo -n "$pci" > /sys/bus/pci/drivers/xhci_hcd/bind   2>/dev/null; sleep 2
+    # fi
+
+    if reset_dev="$(usb_reset)"; then
+        log "USB reset sent to $reset_dev."
+    else
+        log "USB reset failed; sensor not found for reset."
+    fi
+
+    # Restart fprintd so it re-initialises immediately after the reset.
+    systemctl restart fprintd 2> /dev/null
+
+    ## ---- OPTIONAL. Keep the sensor awake (disable USB autosuspend). ----
+    ## Enable if the reset works but the sensor later re-sleeps and glitches again.
+    # dev="$(find_dev)" && [ -w "$dev/power/control" ] && echo on > "$dev/power/control"
+
+    log "Restore complete."
+}
+
+install_hook() {
+    command -v python3 > /dev/null || {
+        echo "python3 is required."
+        exit 1
+    }
+    install -m 0755 "$0" "$SELF"
+
+    ## ---- OPTIONAL: Permanent autosuspend-off udev rule. ----
+    ## This is the persistent form of the block from above. Enable if you decide
+    ## you want autosuspend disabled from boot, not just nudged on resume.
+    # printf 'ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="%s", ATTRS{idProduct}=="%s", TEST=="power/control", ATTR{power/control}="on"\n' \
+    #     "$VID" "$PID" > "$UDEV"
+    # udevadm control --reload-rules && udevadm trigger
+
+    log "Installed sleep hook ($SELF)."
+    echo "Installed. Runs the USB reset automatically on every resume. Log: $LOG"
+}
+
+# systemd calls sleep hooks as:  <script> {pre|post} {suspend|hibernate|...}
+case "${1:-post}" in
+    install)
+        [ "$(id -u)" -eq 0 ] || {
+            echo "Run with sudo: sudo $0 install"
+            exit 1
+        }
+        install_hook
+        ;;
+    pre) exit 0 ;;
+    post | "") restore ;;
+    *) exit 0 ;;
+esac

@@ -2,7 +2,8 @@
     helper = store
 [user]
     name = George Sotirchos
-    email = gsotirch@gmail.com
+    #email = gsotirch@gmail.com
+    email = G.Sotirchos@tudelft.nl
 [status]
     submodulesummary = 1
 [push]
