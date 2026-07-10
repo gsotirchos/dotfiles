@@ -489,18 +489,12 @@ PATH should be in the format `op://Vault/Item/Field'."
      tab-bar-format-global))
   :preface
   (defun my/format-tab-spacing (string _ _)
-    "Add spacing for Emacs 30+ format-functions."
     (concat "  " string "  "))
-  (defun my/tab-name-padded-and-truncated ()
-    "Calculate the truncated tab name, then add padding (Emacs 29)."
-    (let ((name (tab-bar-tab-name-truncated)))
-      (concat "  " name "  ")))
   :config
   (if (boundp 'tab-bar-tab-name-format-functions)
       (progn
         (add-to-list 'tab-bar-tab-name-format-functions #'my/format-tab-spacing)
-        (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated))
-    (setq tab-bar-tab-name-function #'my/tab-name-padded-and-truncated))
+        (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated)))
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package stripes
@@ -1141,19 +1135,6 @@ PATH should be in the format `op://Vault/Item/Field'."
   :no-require t
   :hook ((text-mode compilation-mode) . visual-line-mode))
 
-(if (version< emacs-version "30.0")
-    (use-package adaptive-wrap
-      :hook ((prog-mode compilation-mode magit-status-mode) . adaptive-wrap-prefix-mode)
-      :bind (:map my/toggles-map ("w" . adaptive-wrap-prefix-mode))
-      :custom (adaptive-wrap-extra-indent 2))
-  (use-package visual-wrap
-    :after my-keybindings
-    :ensure nil
-    :no-require t
-    :hook ((prog-mode compilation-mode magit-status-mode) . visual-wrap-prefix-mode)
-    :bind (:map my/toggles-map ("w" . visual-wrap-prefix-mode))
-    :custom (visual-wrap-extra-indent 2)))
-
 (use-package flymake
   :ensure nil
   :no-require t
@@ -1166,7 +1147,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (flymake-indicator-type 'margins)
   (flymake-autoresize-margins nil)      ; width is my-margin's job
   (flymake-margin-indicators-string
-   '((note "●" flymake-note-echo)  ;; •
+   '((note "•" flymake-note-echo)  ;; ●
      (warning "▲" flymake-warning-echo)
      (error "◼" flymake-error-echo)))
   :preface
@@ -1194,16 +1175,6 @@ PATH should be in the format `op://Vault/Item/Field'."
     (my/customize-flymake)
     (add-hook 'after-load-theme-hook #'my/customize-flymake nil t))
   (add-hook 'flymake-mode-hook #'my/flymake-hook))
-
-;; (when (version< emacs-version "30.0")
-;;   (use-package flymake-margin
-;;     :hook (flymake-mode . flymake-margin-mode)
-;;     :after flymake
-;;     :custom
-;;     (flymake-margin-error-symbol   "◼")
-;;     (flymake-margin-warning-symbol "▲")
-;;     (flymake-margin-note-symbol    "●")
-;;     (flymake-margin-side 'left-margin)))
 
 (use-package flyspell
   :ensure nil
