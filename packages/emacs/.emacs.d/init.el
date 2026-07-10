@@ -400,6 +400,11 @@ PATH should be in the format `op://Vault/Item/Field'."
   :load-path "site-lisp/"
   :hook after-init)
 
+;; (use-package my-margin
+;;   :ensure nil
+;;   :load-path "site-lisp/"
+;;   :hook after-init)
+
 (use-package my-keybindings
   :ensure nil
   :load-path "site-lisp/"
@@ -823,34 +828,33 @@ PATH should be in the format `op://Vault/Item/Field'."
 (use-package diff-hl
   :custom
   (diff-hl-draw-borders nil)
-  (diff-hl-autohide-margin t)
-  (diff-hl-update-async t)
+  (diff-hl-margin-symbols-alist
+   '((insert . "+") (delete . "-") (change . "~")
+     (unknown . "?") (ignored . "i")))
+  :hook (find-file . my/diff-hl-enable)
   :preface
-  (defun my/diff-hl-mode-if-vc ()
-    (when (and (buffer-file-name) (vc-registered (buffer-file-name)))
-      (diff-hl-mode 1)
-      (diff-hl-flydiff-mode 1)
-      (diff-hl-margin-mode 1)))
-  (add-hook 'find-file-hook #'my/diff-hl-mode-if-vc)
-  (defun my/customize-diff-hl ()
-    (when (boundp 'diff-hl-margin-symbols-alist)
-      (setf (alist-get 'change diff-hl-margin-symbols-alist nil nil #'equal) "~"))
-    (pcase-dolist (`(,diff-hl-face ,diff-face)
-                   '((diff-hl-change diff-changed)
-                     (diff-hl-insert diff-added)
-                     (diff-hl-delete diff-removed)))
-      (set-face-attribute diff-hl-face nil
+  (defun my/diff-hl-enable ()
+    "Enable diff-hl (margin display, live updates) in vc-tracked buffers."
+    ;; (when (and buffer-file-name (vc-registered buffer-file-name))
+    (diff-hl-margin-mode 1)
+    (diff-hl-flydiff-mode 1)
+    (diff-hl-mode 1)) ;)
+  (defun my/diff-hl-faces (&rest _)
+    "Make diff-hl faces follow the theme's diff faces."
+    (pcase-dolist (`(,hl-face . ,diff-face)
+                   '((diff-hl-change . diff-changed)
+                     (diff-hl-insert . diff-added)
+                     (diff-hl-delete . diff-removed)))
+      (set-face-attribute hl-face nil
                           :inherit diff-face
                           :foreground 'unspecified
                           :background 'unspecified
-                          :italic nil :bold nil
-                          :height (round (* 0.92 (face-attribute 'default :height))))))
-  (defun my/diff-hl-hook ()
-    (my/customize-diff-hl)
-    (add-hook 'after-load-theme-hook #'my/customize-diff-hl nil t)
-    ;; (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh nil t)
-    (add-hook 'auto-save-hook 'diff-hl-update nil t))
-  (add-hook 'diff-hl-margin-local-mode-hook #'my/diff-hl-hook))
+                          :slant 'normal
+                          :weight 'normal
+                          :height 0.92)))
+  :config
+  (my/diff-hl-faces)
+  (add-hook 'after-load-theme-hook #'my/diff-hl-faces))
 
 (use-package ediff
   :ensure nil
@@ -1160,21 +1164,12 @@ PATH should be in the format `op://Vault/Item/Field'."
   (flymake-no-changes-timeout 1)
   (flymake-show-diagnostics-at-end-of-line t)
   (flymake-indicator-type 'margins)
-  (flymake-autoresize-margins nil)
+  (flymake-autoresize-margins nil)      ; width is my-margin's job
   (flymake-margin-indicators-string
    '((note "●" flymake-note-echo)  ;; •
      (warning "▲" flymake-warning-echo)
      (error "◼" flymake-error-echo)))
   :preface
-  (defun my/flymake-auto-adjust-margins (&rest _)
-    "Dynamically resize the left margin based on the presence of diagnostics."
-    (if flymake-mode
-        (let ((new-width (if (flymake-diagnostics) 2 0)))
-          (setq left-margin-width new-width))
-      (setq left-margin-width 0))
-    (dolist (win (get-buffer-window-list (current-buffer) nil t))
-      (set-window-margins win left-margin-width)))
-  (advice-add 'flymake--handle-report :after #'my/flymake-auto-adjust-margins)
   (defun my/customize-flymake ()
     (when (and (fboundp 'modus-themes-get-color-value)
                (facep 'flymake-end-of-line-diagnostics-face))
@@ -1199,6 +1194,16 @@ PATH should be in the format `op://Vault/Item/Field'."
     (my/customize-flymake)
     (add-hook 'after-load-theme-hook #'my/customize-flymake nil t))
   (add-hook 'flymake-mode-hook #'my/flymake-hook))
+
+;; (when (version< emacs-version "30.0")
+;;   (use-package flymake-margin
+;;     :hook (flymake-mode . flymake-margin-mode)
+;;     :after flymake
+;;     :custom
+;;     (flymake-margin-error-symbol   "◼")
+;;     (flymake-margin-warning-symbol "▲")
+;;     (flymake-margin-note-symbol    "●")
+;;     (flymake-margin-side 'left-margin)))
 
 (use-package flyspell
   :ensure nil
