@@ -67,7 +67,9 @@ main() {
         ncctools \
         algorithms \
         algorithmicx \
+        algorithm2e \
         svg \
+        todonotes \
         catchfile \
         transparent \
         adjustbox \
@@ -76,7 +78,12 @@ main() {
         comment \
         trimspaces \
         collectbox \
-        soul
+        soul \
+        newtx kastrup \
+        placeins \
+        ifoddpage \
+        doublestroke \
+        enumitem
 }
 
 main "$@"
