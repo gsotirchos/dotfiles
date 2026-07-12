@@ -1314,6 +1314,21 @@ PATH should be in the format `op://Vault/Item/Field'."
     (treesit-install-language-grammar 'yaml)))
 
 
+;; Docker
+
+(use-package dockerfile-ts-mode
+  :ensure nil
+  :no-require t
+  ;; The built-in mode registers its auto-mode-alist entry and font-lock only
+  ;; when the grammar is already installed, so declare the mapping ourselves.
+  :mode ("\\(?:Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'")
+  :config
+  (add-to-list 'treesit-language-source-alist
+               '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile" "v0.2.0"))
+  (unless (treesit-language-available-p 'dockerfile)
+    (treesit-install-language-grammar 'dockerfile)))
+
+
 ;; XML
 
 (use-package nxml-mode
