@@ -400,10 +400,10 @@ PATH should be in the format `op://Vault/Item/Field'."
   :load-path "site-lisp/"
   :hook after-init)
 
-;; (use-package my-margin
-;;   :ensure nil
-;;   :load-path "site-lisp/"
-;;   :hook after-init)
+(use-package my-margin
+  :ensure nil
+  :load-path "site-lisp/"
+  :hook after-init)
 
 (use-package my-keybindings
   :ensure nil

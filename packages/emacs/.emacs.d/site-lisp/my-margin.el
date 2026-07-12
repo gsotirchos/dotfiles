@@ -66,11 +66,13 @@ the `my/margin-contributors' report, recomputed after each of the
   :global t
   :group 'my-margin
   (if my-margin-mode
-      ;; Advising not-yet-defined functions is fine: the advice takes
-      ;; effect when the function is defined, so this does not force
-      ;; diff-hl or flymake to load.
-      (dolist (fn my/margin-triggers)
-        (advice-add fn :after #'my/margin-update))
+      (progn
+        (dolist (fn my/margin-triggers)
+          (advice-add fn :after #'my/margin-update))
+        ;; Correct any buffers that already exist (e.g. restored by desktop)
+        (dolist (buf (buffer-list))
+          (with-current-buffer buf
+            (my/margin-update))))
     (dolist (fn my/margin-triggers)
       (advice-remove fn #'my/margin-update))))
 
