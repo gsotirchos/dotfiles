@@ -89,6 +89,16 @@ main() {
         fi
         # stow -d "${dotfiles}/packages" -t "${HOME}" -R redshift
 
+        # keyd config lives under /etc (system path), so it is stowed
+        # separately from the HOME-targeted packages, and only when keyd
+        # is installed.
+        if command -v keyd &> /dev/null; then
+            echo -e "${bright_style}- Stowing keyd config (/etc/keyd)${normal_style}"
+            sudo mkdir -p /etc/keyd
+            sudo stow -d "${dotfiles}/packages" -t /etc -R keyd
+            sudo systemctl restart keyd 2> /dev/null || true
+        fi
+
         if [[ -f "${dotfiles}/config/dconf/user.conf" ]] \
             && { [[ -n "${DISPLAY:-}" ]] || [[ -n "${WAYLAND_DISPLAY:-}" ]]; }; then
             echo -e "${bright_style}- Importing GNOME dconf settings${normal_style}"

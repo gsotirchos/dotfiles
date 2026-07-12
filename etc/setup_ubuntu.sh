@@ -79,6 +79,18 @@ main() {
     sudo udevadm trigger --subsystem-match=hidraw
     echo "  Note: replug the LG display (or re-login) for access to take effect."
 
+    # --- Copilot key remap to plain Super (via keyd) --------------------
+    if command -v keyd &> /dev/null; then
+        header "keyd already installed — skipping Copilot key remap."
+    elif prompt_yn "Remap the Copilot key to a plain Super key (installs keyd)?"; then
+        header "Remapping Copilot key → Super (via keyd)"
+        # keyd is only in the archive from Ubuntu 25.04 on; use the PPA for 24.04.
+        sudo add-apt-repository -y ppa:keyd-team/ppa
+        sudo apt update
+        sudo apt install -y keyd
+        sudo systemctl enable --now keyd
+    fi
+
     # --- miniforge (conda/mamba) ----------------------------------------
     local conda_dir="/opt/miniforge"
     if [[ -d "${conda_dir}" ]]; then
