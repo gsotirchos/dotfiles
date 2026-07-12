@@ -990,7 +990,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :after my-keybindings
   :ensure nil
   :no-require t
-  :hook ((python-base-mode sh-base-mode LaTeX-mode) . eglot-ensure)
+  :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode) . eglot-ensure)
   :bind (:map my/personal-map ("rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
@@ -1011,8 +1011,16 @@ PATH should be in the format `op://Vault/Item/Field'."
   :init
   (setq eglot-stay-out-of '(flymake))
   (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
-  :config (add-to-list 'eglot-server-programs
-                       `(python-base-mode . ("pyright-langserver" "--stdio"))))
+  :config
+  (add-to-list 'eglot-server-programs
+               `(python-base-mode . ("pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs
+               `((c++-ts-mode c-ts-mode c++-mode c-mode)
+                 . ("clangd"
+                    "--clang-tidy"
+                    "--header-insertion=never"
+                    "--background-index"
+                    "--completion-style=detailed"))))
 
 (use-package apheleia
   :defer 1
@@ -1266,6 +1274,30 @@ PATH should be in the format `op://Vault/Item/Field'."
   ;; (conda-env-initialize-eshell)
   ;; (conda-env-autoactivate-mode 1)
   )
+
+
+;; C/C++
+
+(use-package c-ts-mode
+  :ensure nil
+  :no-require t
+  :mode (("\\.\\(c\\|h\\)\\'" . c-ts-mode)
+         ("\\.\\(cc\\|cpp\\|cxx\\|hh\\|hpp\\|hxx\\|ipp\\|tpp\\)\\'" . c++-ts-mode))
+  :preface
+  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
+  :init
+  (add-hook 'c-ts-base-mode-hook (lambda () (hs-minor-mode -1)))
+  :config
+  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 30 max); master is ABI 15.
+  (add-to-list 'treesit-language-source-alist
+               '(c "https://github.com/tree-sitter/tree-sitter-c" "v0.23.4"))
+  (add-to-list 'treesit-language-source-alist
+               '(cpp "https://github.com/tree-sitter/tree-sitter-cpp" "v0.23.4"))
+  (dolist (lang '(c cpp))
+    (unless (treesit-language-available-p lang)
+      (treesit-install-language-grammar lang))))
 
 
 ;; Bash
