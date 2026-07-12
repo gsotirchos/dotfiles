@@ -829,10 +829,10 @@ PATH should be in the format `op://Vault/Item/Field'."
   :preface
   (defun my/diff-hl-enable ()
     "Enable diff-hl (margin display, live updates) in vc-tracked buffers."
-    ;; (when (and buffer-file-name (vc-registered buffer-file-name))
-    (diff-hl-margin-mode 1)
-    (diff-hl-flydiff-mode 1)
-    (diff-hl-mode 1)) ;)
+    (when (and buffer-file-name (vc-registered buffer-file-name))
+      (diff-hl-margin-mode 1)
+      (diff-hl-flydiff-mode 1)
+      (diff-hl-mode 1)))
   (defun my/diff-hl-faces (&rest _)
     "Make diff-hl faces follow the theme's diff faces."
     (pcase-dolist (`(,hl-face . ,diff-face)
@@ -848,7 +848,8 @@ PATH should be in the format `op://Vault/Item/Field'."
                           :height 0.92)))
   :config
   (my/diff-hl-faces)
-  (add-hook 'after-load-theme-hook #'my/diff-hl-faces))
+  (add-hook 'after-load-theme-hook #'my/diff-hl-faces)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 (use-package ediff
   :ensure nil
