@@ -535,12 +535,6 @@ PATH should be in the format `op://Vault/Item/Field'."
   (add-to-list 'tramp-remote-path "/snap/bin")
   (add-to-list 'tramp-remote-path "~/.local/bin"))
 
-(use-package my-devcontainer
-  :ensure nil
-  :load-path "site-lisp/"
-  :after my-keybindings
-  :bind (:map my/personal-map ("c" . my/devcontainer-up)))
-
 (use-package ls-lisp
   :ensure nil
   :demand t
