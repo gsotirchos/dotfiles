@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # restore-fingerprint — MINIMAL build.
 # Only the USB reset is active. Everything else is commented out so you can
 # enable pieces one at a time and see what's actually needed.
