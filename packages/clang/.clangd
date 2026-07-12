@@ -1,6 +1,12 @@
 # vim: set ft=yaml:
 CompileFlags:
   Add: -ferror-limit=0
+  # Drop the SDK/deployment-target flags that build tools bake into
+  # compile_commands.json. They pin an absolute, versioned macOS SDK path that
+  # breaks once Command Line Tools are updated and the old SDK is removed
+  # (symptoms: "mbstate_t" / "no member named 'value' in std::is_const"). Let
+  # clangd auto-detect the current SDK instead. No-op on Linux.
+  Remove: [-isysroot, "-mmacosx-version-min=*"]
 
 Diagnostics:
   Suppress: writable-strings
