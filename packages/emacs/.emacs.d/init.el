@@ -1000,13 +1000,14 @@ PATH should be in the format `op://Vault/Item/Field'."
   (eglot-events-buffer-config '(:size 0 :format full))
   (eglot-ignored-server-capabilities
    '(:codeLensProvider
-     :codeActionProvider
+     ;; :codeActionProvider
      ;; :colorProvider
      :foldingRangeProvider
      :executeCommandProvider))
   :preface
   (defun my/eglot-mode-hook ()
-    (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t))
+    (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
+    (when flymake-mode (flymake-start)))
   (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
   :init
   (setq eglot-stay-out-of '(flymake))
