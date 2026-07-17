@@ -32,7 +32,7 @@ stty -ixon                # enable Ctrl+S for forward search
 
 declare -a files_to_source=(
     "${HOMEBREW_PREFIX}"/etc/profile.d/bash_completion.sh # TIME ~170ms
-    /opt/ros/noetic/setup.bash
+    /opt/ros/jazzy/setup.bash
     ~/.bash_aliases
 )
 
@@ -42,54 +42,26 @@ for file in "${files_to_source[@]}"; do
     fi
 done
 
-# HPC
-if [[ "$(hostname)" =~ login[0-9]+ ]]; then
-    export TERM="vt100"
-    export SCRATCH="/scratch/${USER}"
-    export RISC="${SCRATCH}/RISC/risc"
-    export SQUEUE_FORMAT="%.10i %.60j %.18a %.17R %M"
-    alias rm="rm -I"
-    alias live_squeue="while true; do clear; squeue --me -o \"$SQUEUE_FORMAT\"; sleep 1; done"
-    alias scancel_all="squeue --noheader --format %i | xargs scancel"
-    rlhive() {
-        if command -v "module" &> /dev/null; then
-            echo -n "Loading module miniconda3... "
-            module load miniconda3 && echo "DONE"
-        fi
-        echo -n "Activating \"rlhive\" conda env... "
-        conda activate rlhive && echo "DONE"
-    }
-    rlhive
+# pixi
+if command -v "pixi" &> /dev/null; then
+    eval "$(pixi completion --shell bash)"
+fi
+
+# npm
+if [[ -d "${HOME}/.nvm" ]]; then
+    export NVM_DIR="${HOME}/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
 # enable shell integration
-if [[ "$TERM_PROGRAM" = "iTerm.app" ]]; then
-    # enable iTerm2 shell integration on macOS
-    if [[ ! -f ~/.iterm2_shell_integration.bash ]]; then
-        curl -L "https://iterm2.com/shell_integration/bash" \
-            -o ~/.iterm2_shell_integration.bash
-    fi
-
-    # clean up PROMPT_COMMAND just in case, to avoid surprises...
-    export PROMPT_COMMAND="${PROMPT_COMMAND//__bp_precmd_invoke_cmd$'\n'/}"
-    export PROMPT_COMMAND="${PROMPT_COMMAND//$'\n'__bp_interactive_mode/}"
-    export PROMPT_COMMAND="${PROMPT_COMMAND//$'\n'__iterm2_prompt_command/}"
-
-    source ~/.iterm2_shell_integration.bash
-elif [[ -n "$GHOSTTY_RESOURCES_DIR" ]]; then
+if [[ -n "$GHOSTTY_RESOURCES_DIR" ]]; then
     # enable Ghostty shell integration
     source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
 fi
 
 export CLAUDE_CODE_NO_FLICKER=1
 export BASHRC_SOURCED=1
-
-# TODO: move where it fits better
-if [[ -d "${HOME}/.nvm" ]]; then
-    export NVM_DIR="${HOME}/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-fi
 
 # configure or start prompt
 if command -v "prmt" &> /dev/null && prmt --version &> /dev/null; then
