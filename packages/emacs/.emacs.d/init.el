@@ -638,8 +638,8 @@ PATH should be in the format `op://Vault/Item/Field'."
   :bind
   (nil
    :map corfu-map
-   ;; ("<return>" . my/corfu-send-in-shell)
    ;; ("RET" . nil)
+   ("<return>" . corfu-send)
    ("<tab>" . corfu-next)
    ("S-<tab>" . corfu-previous)
    ("<escape>" . corfu-reset)
@@ -649,12 +649,6 @@ PATH should be in the format `op://Vault/Item/Field'."
    ("<prior>" . corfu-scroll-down)
    ("S-SPC" . corfu-insert-separator))
   :preface
-  (defun my/corfu-send-in-shell ()
-    "Send Corfu candidate in shell modes, else do nothing."
-    (interactive)
-    (if (derived-mode-p 'eshell-mode 'comint-mode)
-        (corfu-send)
-      (call-interactively (key-binding (kbd "RET")))))
   (defun my/corfu-minibuffer-filter ()
     "Do not show Corfu in minibuffer for MCT, Vertico, or password prompts."
     (interactive)
