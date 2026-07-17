@@ -448,12 +448,12 @@ PATH should be in the format `op://Vault/Item/Field'."
      (builtin magenta-faint)
      (type magenta-cooler)
      (fnname blue-faint)
-     (variable cyan)))
+     (variable cyan)
+     (bg-popup bg-main)))
   (modus-vivendi-palette-overrides
    '((bg-main "#1e1e1e")
      (bg-dim "#292929")
-     (bg-inactive "#424242")
-     (fg-vertical-border bg-popup)))
+     (bg-inactive "#424242")))  ;; keep the dark divider (was bg-popup)
   (modus-themes-headings
    '((1 . (1.06666))
      (2 . (1.06666))
@@ -499,7 +499,8 @@ PATH should be in the format `op://Vault/Item/Field'."
 
 (use-package stripes
   :after (my-keybindings modus-themes)
-  :hook dired-mode  ;; minibuffer-mode vertico-mode corfu-popupinfo-mode
+  :demand t  ;; load at startup so the face is themed and my-stripes can build on it
+  :hook dired-mode
   :bind (:map my/toggles-map ("s" . stripes-mode))
   :custom
   (stripes-unit 1)
@@ -507,10 +508,20 @@ PATH should be in the format `op://Vault/Item/Field'."
   :preface
   (defun my/customize-stripes ()
     (when (fboundp 'modus-themes-get-color-value)
-      (set-face-background 'stripes (modus-themes-get-color-value 'bg-dim t))))
+      (set-face-attribute 'stripes nil
+                          :extend t  ;; fill candidate lines to the full width
+                          :background (modus-themes-get-color-value 'bg-dim t))))
   (add-hook 'stripes-mode-hook #'my/customize-stripes)
   :config
+  (my/customize-stripes)  ;; set the face now, not only on theme reload
   (add-hook 'after-load-theme-hook #'my/customize-stripes))
+
+;; Extends the `stripes' face to the Corfu popup and Vertico list.
+(use-package my-stripes
+  :ensure nil
+  :load-path "site-lisp/"
+  :after (stripes corfu vertico)
+  :demand t)
 
 (use-package files
   :ensure nil
@@ -635,6 +646,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :config (global-evil-surround-mode 1))
 
 (use-package corfu
+  :demand t
   :bind
   (nil
    :map corfu-map
@@ -666,7 +678,6 @@ PATH should be in the format `op://Vault/Item/Field'."
   (corfu-cycle t)
   ;; (global-corfu-minibuffer t)
   (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
-  :defer 1
   :config
   (global-corfu-mode)
   (corfu-popupinfo-mode)
@@ -679,7 +690,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (dabbrev-check-all-buffers nil))
 
 (use-package vertico
-  :defer nil
+  :demand t
   :custom
   (vertico-scroll-margin 1)
   (vertico-count 10)  ;; Limit to a fixed size
