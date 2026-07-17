@@ -36,7 +36,7 @@ main() {
     mkdir -p \
         ~/.local/bin \
         ~/.vim/{undo,spell,tags} \
-        ~/.config \
+        ~/.config/pixi \
         ~/.conda \
         ~/Zotero
     if [[ "${os}" == "linux" ]]; then
@@ -70,24 +70,24 @@ main() {
     # stow the common packages
     echo -e "${bright_style}- Stowing dotfiles${normal_style}"
     local common=(
-        bash git vim emacs conda starship ghostty opencode zotero
-        clang cmake latex linters op
+        bash git vim emacs ghostty starship op conda linters opencode
+        pixi clang cmake latex zotero
     )
     local ignore=()
     [[ "${os}" == "macos" ]] && ignore=(--ignore='^\.profile$')
-    stow -d "${dotfiles}/packages" -t "${HOME}" ${ignore[@]+"${ignore[@]}"} -R "${common[@]}"
+    stow -vd "${dotfiles}/packages" -t "${HOME}" ${ignore[@]+"${ignore[@]}"} -R "${common[@]}"
 
     # OS-specific overrides layered on top of shared packages (e.g. ghostty)
-    stow -d "${dotfiles}/packages" -t "${HOME}" -R "ghostty-${os}"
+    stow -vd "${dotfiles}/packages" -t "${HOME}" -R "ghostty-${os}"
 
     # OS-specific
     if [[ "${os}" == "linux" ]]; then
         local dmi_product
         dmi_product=$(cat /sys/devices/virtual/dmi/id/product_name 2> /dev/null)
         if [[ "${dmi_product}" == "iMac14,1" ]]; then
-            stow -d "${dotfiles}/packages" -t "${HOME}" -R autostart
+            stow -vd "${dotfiles}/packages" -t "${HOME}" -R autostart
         fi
-        # stow -d "${dotfiles}/packages" -t "${HOME}" -R redshift
+        # stow -vd "${dotfiles}/packages" -t "${HOME}" -R redshift
 
         # keyd config lives under /etc (system path), so it is stowed
         # separately from the HOME-targeted packages, and only when keyd
@@ -95,7 +95,7 @@ main() {
         if command -v keyd &> /dev/null; then
             echo -e "${bright_style}- Stowing keyd config (/etc/keyd)${normal_style}"
             sudo mkdir -p /etc/keyd
-            sudo stow -d "${dotfiles}/packages" -t /etc -R keyd
+            sudo stow -vd "${dotfiles}/packages" -t /etc -R keyd
             sudo systemctl restart keyd 2> /dev/null || true
         fi
 
