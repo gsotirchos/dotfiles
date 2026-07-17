@@ -1,4 +1,5 @@
 {
-    "theme": "auto",
-    "wheelScrollAccelerationEnabled": false
+  "theme": "auto",
+  "wheelScrollAccelerationEnabled": false,
+  "model": "opus"
 }
