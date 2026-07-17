@@ -196,7 +196,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   :custom
   (initial-scratch-message nil)
   (initial-major-mode 'fundamental-mode)
-  (fill-column 79)
+  (fill-column most-positive-fixnum)
   (column-number-mode t)
   (use-dialog-box nil)
   (auto-save-visited-file-name t)
@@ -1405,7 +1405,6 @@ PATH should be in the format `op://Vault/Item/Field'."
   (preview-scale-function (/ 1 my/scale-factor))
   :preface
   (defun my/LaTeX-mode-hook ()
-    (setq-local fill-column most-positive-fixnum)
     (outline-minor-mode 1)
     (LaTeX-math-mode 1)
     (turn-on-reftex)
