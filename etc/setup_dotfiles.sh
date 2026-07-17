@@ -38,6 +38,7 @@ main() {
         ~/.vim/{undo,spell,tags} \
         ~/.config/pixi \
         ~/.conda \
+        ~/.claude \
         ~/Zotero
     if [[ "${os}" == "linux" ]]; then
         mkdir -p ~/.local/share/fonts
@@ -70,8 +71,8 @@ main() {
     # stow the common packages
     echo -e "${bright_style}- Stowing dotfiles${normal_style}"
     local common=(
-        bash git vim emacs ghostty starship op conda linters opencode
-        pixi clang cmake latex zotero
+        bash git vim emacs ghostty starship op conda linters claude
+        opencode pixi clang cmake latex zotero
     )
     local ignore=()
     [[ "${os}" == "macos" ]] && ignore=(--ignore='^\.profile$')
