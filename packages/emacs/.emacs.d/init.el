@@ -453,7 +453,8 @@ PATH should be in the format `op://Vault/Item/Field'."
   (modus-vivendi-palette-overrides
    '((bg-main "#1e1e1e")
      (bg-dim "#292929")
-     (bg-inactive "#424242")))  ;; keep the dark divider (was bg-popup)
+     (bg-inactive "#424242")
+     (fg-vertical-border "#000000")))
   (modus-themes-headings
    '((1 . (1.06666))
      (2 . (1.06666))
