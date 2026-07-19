@@ -103,7 +103,18 @@ main() {
         if [[ -f "${dotfiles}/config/dconf/user.conf" ]] \
             && { [[ -n "${DISPLAY:-}" ]] || [[ -n "${WAYLAND_DISPLAY:-}" ]]; }; then
             echo -e "${bright_style}- Importing GNOME dconf settings${normal_style}"
-            bash "${dotfiles}/bin/dconf-import"
+            bash "${dotfiles}/bin/linux/dconf-import"
+        fi
+
+        local ff_base="${XDG_CONFIG_HOME:-${HOME}/.config}/mozilla/firefox"
+        [[ -f "${ff_base}/profiles.ini" ]] || ff_base="${HOME}/.mozilla/firefox"
+        if [[ -f "${ff_base}/profiles.ini" ]]; then
+            local ff_rel=$(sed -n '/^\[Install/,/^$/s/^Default=//p' "${ff_base}/profiles.ini" | head -1)
+            if [[ -n "${ff_rel}" && -d "${ff_base}/${ff_rel}" ]]; then
+                echo -e "${bright_style}- Stowing Firefox custom keyboard shortcuts${normal_style}"
+                rm -f "${ff_base}/${ff_rel}/customKeys.json"
+                stow -vd "${dotfiles}/packages" -t "${ff_base}/${ff_rel}" -R firefox
+            fi
         fi
     fi
 
