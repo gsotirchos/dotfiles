@@ -405,6 +405,14 @@ PATH should be in the format `op://Vault/Item/Field'."
   :load-path "site-lisp/"
   :hook after-init)
 
+(use-package my-modifier-remap
+  :ensure nil
+  :load-path "site-lisp/"
+  :when (eq system-type 'gnu/linux)
+  :demand t
+  :custom (my-modifier-remap-alist '((super . meta) (meta . alt)))
+  :config (my-modifier-remap-mode 1))
+
 (use-package my-keybindings
   :ensure nil
   :load-path "site-lisp/"
