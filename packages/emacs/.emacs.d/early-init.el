@@ -46,8 +46,7 @@
                 mouse-wheel-flip-direction t
                 mouse-wheel-tilt-scroll t
                 ns-command-modifier 'meta
-                ns-option-modifier 'alt
-                x-super-keysym 'alt)
+                ns-option-modifier 'alt)
 
   (let ((mm-width 286)
         (mm-height 179)
