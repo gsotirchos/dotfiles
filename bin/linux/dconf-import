@@ -11,8 +11,17 @@ main() {
         exit 1
     fi
 
+    # `dconf load` only merges; it never clears keys absent from the file. So we
+    # first reset every group the file tracks (its section headers) back to
+    # defaults, then load our values on top. The result: keys we specify take
+    # our value, and any other key in those groups reverts to its default.
+    local section
+    while IFS= read -r section; do
+        dconf reset -f "/${section}/"
+    done < <(grep -oP '^\[\K[^]]+' "${infile}")
+
     dconf load / < "${infile}"
-    echo "Imported config/dconf/user.conf → dconf"
+    echo "Imported config/dconf/user.conf → dconf (tracked groups reset first)"
 }
 
 main "$@"
