@@ -1,13 +1,54 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# dconf groups we care about. `dconf dump /` emits everything on the system;
+# only the sections listed here are written to user.conf. Add/remove paths to
+# change what gets tracked.
+DCONF_GROUPS=(
+    org/gnome/Ptyxis/Shortcuts
+    org/gnome/TextEditor
+    org/gnome/desktop/calendar
+    org/gnome/desktop/datetime
+    org/gnome/desktop/input-sources
+    org/gnome/desktop/interface
+    org/gnome/desktop/peripherals/touchpad
+    org/gnome/desktop/wm/keybindings
+    org/gnome/desktop/wm/preferences
+    org/gnome/mutter
+    org/gnome/mutter/keybindings
+    org/gnome/mutter/wayland/keybindings
+    org/gnome/settings-daemon/plugins/color
+    org/gnome/settings-daemon/plugins/media-keys
+    org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0
+    org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1
+    org/gnome/settings-daemon/plugins/power
+    org/gnome/shell/extensions/dash-to-dock
+    org/gnome/shell/extensions/ding
+    org/gnome/shell/extensions/nightthemeswitcher/time
+    org/gnome/shell/keybindings
+    org/gnome/system/location
+)
+
 main() {
     local dotfiles
     dotfiles="$(builtin cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../.." > /dev/null && pwd)"
     local outfile="${dotfiles}/config/dconf/user.conf"
     mkdir -p "$(dirname "${outfile}")"
-    dconf dump / > "${outfile}"
-    echo "Exported dconf → config/dconf/user.conf"
+
+    # Filter the full dump down to the allowlisted sections, preserving dconf's
+    # own ordering and formatting.
+    local tmp
+    tmp="$(mktemp "${outfile}.XXXXXX")"
+    dconf dump / | awk '
+        # First input (allowlist): one "[section]" header per line.
+        FNR == NR { allowed[$0] = 1; next }
+        # Second input (fresh dump on stdin): emit only allowed sections.
+        /^\[.*\]$/ { keep = allowed[$0] }
+        keep
+    ' <(printf '[%s]\n' "${DCONF_GROUPS[@]}") - > "${tmp}"
+
+    mv "${tmp}" "${outfile}"
+    echo "Exported dconf → config/dconf/user.conf (tracked groups only)"
     echo "Review with: git -C '${dotfiles}' diff config/dconf/user.conf"
 }
 
