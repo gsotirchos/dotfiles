@@ -146,4 +146,5 @@
                      (kill-buffer (process-buffer proc)))))))))))
 
 (provide 'flymake-mypy)
+
 ;;; flymake-mypy.el ends here
