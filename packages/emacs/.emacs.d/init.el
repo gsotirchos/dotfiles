@@ -50,6 +50,20 @@ PATH should be in the format `op://Vault/Item/Field'."
             (puthash path secret my/1password-secret-cache)
             secret)))))
 
+  ;; Reindent by default instead of collapsing into one-line
+  (defun my/reindent-or-fill-paragraph (&optional justify)
+    "Fill the comment at point, otherwise reindent the enclosing defun.
+Return t so `fill-paragraph' treats the paragraph as handled."
+    (if (nth 4 (syntax-ppss))
+        (fill-paragraph justify)
+      (save-excursion
+        (beginning-of-defun)
+        (let ((start (point)))
+          (end-of-defun)
+          (indent-region start (point)))))
+    t)
+  (setq-default fill-paragraph-function #'my/reindent-or-fill-paragraph)
+
   ;; List manipulation utilities
   (defun my/update-plist-property (plist property fn)
     "Update the PLIST's PROPERTY's value using FN."
@@ -1091,7 +1105,7 @@ PATH should be in the format `op://Vault/Item/Field'."
   (advice-add 'outline-toggle-children :around #'my/outline-toggle-children-advice))
 
 (use-package outline-indent
-  :hook ((conf-mode yaml-ts-mode python-base-mode sh-base-mode) . outline-indent-minor-mode)
+  :hook ((conf-mode yaml-ts-mode nxml-mode python-base-mode sh-base-mode) . outline-indent-minor-mode)
   :custom (outline-blank-line t)
   ;; (outline-indent-ellipsis " ▼")
   )
@@ -1377,13 +1391,15 @@ PATH should be in the format `op://Vault/Item/Field'."
   :ensure nil
   :no-require t
   :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'" "\\.launch\\'")
+  :custom (nxml-child-indent 4)
   :preface
   (defun my/nxml-mode-hook ()
+    (flyspell-mode -1)
+    (outline-minor-mode 1)
+    (setq-local fill-paragraph-function #'my/reindent-or-fill-paragraph)
     (setq-local standard-indent nxml-child-indent)
     (setq-local evil-shift-width nxml-child-indent)
     (setq-local nxml-attribute-indent nxml-child-indent)
-    (flyspell-mode -1)
-    (outline-minor-mode 1)
     (setq-local outline-regexp "[ \t]*<[^!?]*")
     (setq-local outline-heading-end-regexp ">[\n\r]")
     (setq-local outline-level
