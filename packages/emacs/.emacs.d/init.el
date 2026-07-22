@@ -1405,7 +1405,15 @@ Return t so `fill-paragraph' treats the paragraph as handled."
     (setq-local outline-level
                 (lambda ()
                   (+ 1 (/ (current-indentation) nxml-child-indent)))))
-  :config (add-hook 'nxml-mode-hook #'my/nxml-mode-hook))
+  (defun my/nxml-close-tag-indent (orig pos)
+    "Indent a lone tag-closer (`>' or `/>') to the start-tag's column.
+ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
+    (if (save-excursion (goto-char pos) (looking-at-p "/?>[ \t]*$"))
+        (save-excursion (goto-char xmltok-start) (current-indentation))
+      (funcall orig pos)))
+  :config
+  (add-hook 'nxml-mode-hook #'my/nxml-mode-hook)
+  (advice-add 'nxml-compute-indent-in-start-tag :around #'my/nxml-close-tag-indent))
 
 
 ;; ROS
