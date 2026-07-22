@@ -1396,15 +1396,14 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (defun my/nxml-mode-hook ()
     (flyspell-mode -1)
     (outline-minor-mode 1)
-    (setq-local fill-paragraph-function #'my/reindent-or-fill-paragraph)
-    (setq-local standard-indent nxml-child-indent)
-    (setq-local evil-shift-width nxml-child-indent)
-    (setq-local nxml-attribute-indent nxml-child-indent)
-    (setq-local outline-regexp "[ \t]*<[^!?]*")
-    (setq-local outline-heading-end-regexp ">[\n\r]")
-    (setq-local outline-level
-                (lambda ()
-                  (+ 1 (/ (current-indentation) nxml-child-indent)))))
+    (setq-local fill-paragraph-function #'my/reindent-or-fill-paragraph
+                standard-indent nxml-child-indent
+                evil-shift-width nxml-child-indent
+                nxml-attribute-indent nxml-child-indent
+                outline-regexp "[ \t]*<[^!?]*"
+                outline-heading-end-regexp ">[\n\r]"
+                outline-level (lambda ()
+                                (+ 1 (/ (current-indentation) nxml-child-indent)))))
   (defun my/nxml-close-tag-indent (orig pos)
     "Indent a lone tag-closer (`>' or `/>') to the start-tag's column.
 ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
@@ -1496,7 +1495,10 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
    (list (concat "\\input{" (expand-file-name "etc/math_commands.tex" dotfiles-dir) "}")))
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
-  (org-special-ctrl-o t))
+  (org-special-ctrl-o t)
+  :config
+  (when (bound-and-true-p evil-mode)
+    (evil-define-key 'insert 'org-mode-map (kbd "M-<return>") #'org-ctrl-c-ret)))
 
 (use-package my-org
   :after my-keybindings
