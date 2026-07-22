@@ -50,7 +50,8 @@ All subsets are enumerated so that, for a `super' -> `meta' remap,
           (mapcar #'char-to-string (number-sequence ?0 ?9))
           (mapcar #'char-to-string
                   '(?\[ ?\] ?\; ?\' ?\, ?. ?/ ?\\ ?- ?= ?`
-                    ?! ?@ ?# ?$ ?% ?^ ?& ?* ?\( ?\)))
+                    ?! ?@ ?# ?$ ?% ?^ ?& ?* ?\( ?\)
+                    ?: ?\" ?< ?> ?\? ?{ ?} ?| ?_ ?+ ?~))
           '("SPC" "RET" "TAB" "DEL" "<backspace>" "<tab>" "<return>"
             "<escape>" "<left>" "<right>" "<up>" "<down>"
             "<home>" "<end>" "<prior>" "<next>"))
