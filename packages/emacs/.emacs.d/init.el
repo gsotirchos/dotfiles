@@ -1050,7 +1050,8 @@ Return t so `fill-paragraph' treats the paragraph as handled."
                     "--clang-tidy"
                     "--header-insertion=never"
                     "--background-index"
-                    "--completion-style=detailed"))))
+                    "--completion-style=detailed"
+                    "--query-driver=**/.pixi/envs/**/bin/*"))))
 
 (use-package apheleia
   :defer 1
