@@ -1067,6 +1067,24 @@ Return t so `fill-paragraph' treats the paragraph as handled."
                             (locate-dominating-file default-directory name))
                           '("ruff.toml" ".ruff.toml" "pyproject.toml")))
       (list "--config" (expand-file-name "pyproject.toml" dotfiles-dir))))
+  (defun my/apheleia-format-or (fallback &optional arg)
+    "Format the buffer with Apheleia if a formatter is configured for it.
+Otherwise call FALLBACK (the command normally on \\[fill-paragraph])
+interactively with ARG.  Used to overload \\[fill-paragraph]."
+    (if-let ((formatters (and (fboundp 'apheleia--get-formatters)
+                              (apheleia--get-formatters))))
+        (apheleia-format-buffer formatters)
+      (funcall-interactively fallback arg)))
+  (defun my/apheleia-format-or-fill-paragraph (&optional arg)
+    "Apheleia-format the buffer, else fall back to `fill-paragraph'."
+    (interactive "P")
+    (my/apheleia-format-or #'fill-paragraph arg))
+  (defun my/apheleia-format-or-prog-fill (&optional arg)
+    "Apheleia-format the buffer, else fall back to `prog-fill-reindent-defun'."
+    (interactive "P")
+    (my/apheleia-format-or #'prog-fill-reindent-defun arg))
+  :bind (([remap fill-paragraph] . my/apheleia-format-or-fill-paragraph)
+         ([remap prog-fill-reindent-defun] . my/apheleia-format-or-prog-fill))
   :config
   (apheleia-global-mode 1)
   (setf (alist-get 'ruff apheleia-formatters)
@@ -1378,12 +1396,21 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   :ensure nil
   :no-require t
   :mode ("\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'")
-  :init (add-hook 'cmake-ts-mode-hook (lambda () (hs-minor-mode -1)))
+  :init
+  (add-hook 'cmake-ts-mode-hook (lambda () (hs-minor-mode -1)))
+  (add-hook 'cmake-ts-mode-hook #'flymake-cmake-lint-setup)
   :config
   (add-to-list 'treesit-language-source-alist
                '(cmake "https://github.com/uyha/tree-sitter-cmake" "v0.7.4"))
   (unless (treesit-language-available-p 'cmake)
     (treesit-install-language-grammar 'cmake)))
+
+;; `flymake-quickdef' (used by the backend below) is already pulled in as a
+;; dependency of `flymake-bashate'.
+(use-package flymake-cmake-lint
+  :ensure nil
+  :load-path "site-lisp/"
+  :commands (flymake-cmake-lint-setup))
 
 
 ;; Docker
