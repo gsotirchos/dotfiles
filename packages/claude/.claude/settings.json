@@ -1,5 +1,8 @@
 {
+  "model": "sonnet",
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true
+  },
   "theme": "auto",
-  "wheelScrollAccelerationEnabled": false,
-  "model": "opus"
+  "wheelScrollAccelerationEnabled": false
 }

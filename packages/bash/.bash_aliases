@@ -85,7 +85,7 @@ alias chmod="chmod -v"            # verbose
 alias chown="chown -v"            # verbose
 alias ec="emacsclient -a '' -c &" # start emacs daemon and/or client
 alias tree="tree \
-    -lFNC -L 2 \
+    -FNC -L 2 \
     --dirsfirst \
     -I '.DS_Store|.localized|._*' --matchdirs"
 alias ports="lsof -i -P -n | env grep LISTEN" # see what is listening on which ports

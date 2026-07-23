@@ -631,6 +631,7 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (setq evil-want-integration t
         evil-want-keybinding nil
         evil-disable-insert-state-bindings t
+        ;; evil-want-empty-ex-last-command nil
         evil-want-C-u-scroll t
         evil-toggle-key "C-<escape>"
         evil-cross-lines t
