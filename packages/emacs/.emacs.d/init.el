@@ -1371,6 +1371,20 @@ Return t so `fill-paragraph' treats the paragraph as handled."
     (treesit-install-language-grammar 'yaml)))
 
 
+;; CMake
+
+(use-package cmake-ts-mode
+  :ensure nil
+  :no-require t
+  :mode ("\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'")
+  :init (add-hook 'cmake-ts-mode-hook (lambda () (hs-minor-mode -1)))
+  :config
+  (add-to-list 'treesit-language-source-alist
+               '(cmake "https://github.com/uyha/tree-sitter-cmake" "v0.7.4"))
+  (unless (treesit-language-available-p 'cmake)
+    (treesit-install-language-grammar 'cmake)))
+
+
 ;; Docker
 
 (use-package dockerfile-ts-mode
