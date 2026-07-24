@@ -6,24 +6,27 @@
 # defaults and help text, run:  cmake-format --dump-config yaml
 
 format:
-  # Allow wider lines than the 80-column default.
+  tab_size: 2
   line_width: 100
 
-  # Enforce a vertical, one-argument-per-line style: as soon as a command
-  # has more than one positional argument, or would wrap past a single line,
-  # break every argument onto its own line instead of packing horizontally.
-  max_pargs_hwrap: 1
-  max_lines_hwrap: 1
-  max_rows_cmdline: 1
+  # Keep a command on a single line whenever it fits within line_width;
+  # only when it doesn't fit does it explode one-argument-per-line. This
+  # threshold is the number of positional args that may be packed onto
+  # wrapped lines: at 5, short commands (find_package, if, add_compile_options,
+  # ...) stay horizontal, while longer arg lists (set(...) with 6+ entries)
+  # go fully vertical instead of packing several per line.
+  max_pargs_hwrap: 5
 
   # Put the closing paren on its own line, aligned to the statement start.
   dangle_parens: true
 
-  # Permit prefix-aligned (un-nested) layouts up to nearly the full line
-  # width. NOTE: this pulls against the vertical/dangle style above; drop
-  # this line (default is 10) if you'd rather force nested layouts more often.
-  max_prefix_chars: 98
+  # Force these commands to always break onto multiple lines, even when they
+  # would fit on one, so library/install blocks read vertically.
+  always_wrap:
+    - add_library
+    - install
 
 markup:
-  # Treat comments as literal text; do not reflow or rewrap them.
+  # Treat comments as literal text; do not reflow or rewrap them (keeps
+  # #####... banner lines intact).
   enable_markup: false
