@@ -106,8 +106,7 @@ main() {
             bash "${dotfiles}/bin/linux/dconf-import"
         fi
 
-        local ff_base="${XDG_CONFIG_HOME:-${HOME}/.config}/mozilla/firefox"
-        [[ -f "${ff_base}/profiles.ini" ]] || ff_base="${HOME}/.mozilla/firefox"
+        local ff_base="${HOME}/snap/firefox/common/.mozilla/firefox/"
         if [[ -f "${ff_base}/profiles.ini" ]]; then
             local ff_rel=$(sed -n '/^\[Install/,/^$/s/^Default=//p' "${ff_base}/profiles.ini" | head -1)
             if [[ -n "${ff_rel}" && -d "${ff_base}/${ff_rel}" ]]; then
