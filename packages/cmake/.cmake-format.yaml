@@ -27,6 +27,6 @@ format:
     - install
 
 markup:
-  # Treat comments as literal text; do not reflow or rewrap them (keeps
-  # #####... banner lines intact).
+  # Treat comments as literal text; do not reflow or rewrap them
+  # (keeps #####... banner lines intact).
   enable_markup: false
