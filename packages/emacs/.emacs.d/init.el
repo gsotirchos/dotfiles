@@ -680,7 +680,7 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (nil
    :map corfu-map
    ;; ("RET" . nil)
-   ("<return>" . corfu-send)
+   ("<return>" . corfu-complete)
    ("<tab>" . corfu-next)
    ("S-<tab>" . corfu-previous)
    ("<escape>" . corfu-reset)
