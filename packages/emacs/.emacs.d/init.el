@@ -585,7 +585,8 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (nil
    :map dired-mode-map
    ("M-<up>" . dired-up-directory)
-   ("M-<down>" . dired-find-file))
+   ("M-<down>" . dired-find-file)
+   ([remap dired-view-file] . my/dired-find-file-other-frame))
   :custom
   (dired-listing-switches "-alF")
   (dired-omit-files "^\\.[^.].*")
@@ -595,6 +596,10 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (dired-hide-details-hide-symlink-targets nil)
   (dired-kill-when-opening-new-dired-buffer t)
   :preface
+  (defun my/dired-find-file-other-frame ()
+    "Open the file under point in a new frame."
+    (interactive)
+    (find-file-other-frame (dired-get-file-for-visit)))
   (defun my/dired-mode-hook ()
     (dired-omit-mode 1)
     (dired-hide-details-mode 1)
