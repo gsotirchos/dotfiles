@@ -100,6 +100,14 @@ main() {
             sudo systemctl restart keyd 2> /dev/null || true
         fi
 
+        # xremap: macOS-style app-aware Super shortcuts, layered on keyd.
+        if command -v xremap &> /dev/null; then
+            echo -e "${bright_style}- Stowing xremap config${normal_style}"
+            stow -vd "${dotfiles}/packages" -t "${HOME}" -R xremap
+            systemctl --user daemon-reload 2> /dev/null || true
+            systemctl --user enable --now xremap.service 2> /dev/null || true
+        fi
+
         if [[ -f "${dotfiles}/config/dconf/user.conf" ]] \
             && { [[ -n "${DISPLAY:-}" ]] || [[ -n "${WAYLAND_DISPLAY:-}" ]]; }; then
             echo -e "${bright_style}- Importing GNOME dconf settings${normal_style}"
