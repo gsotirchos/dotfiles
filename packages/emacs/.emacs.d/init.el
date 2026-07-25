@@ -705,12 +705,14 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (corfu-preview-current 'insert)  ;; insert previewed candidate
   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
   (corfu-cycle t)
-  ;; (global-corfu-minibuffer t)
   (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
   :config
   (global-corfu-mode)
   (corfu-popupinfo-mode)
   (corfu-history-mode))
+
+(use-package cape
+  :init (add-to-list 'completion-at-point-functions #'cape-file))
 
 (use-package dabbrev
   :ensure nil
@@ -1144,7 +1146,6 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
 (use-package rainbow-mode)
 
 (use-package rainbow-delimiters
-  :after modus-themes
   :hook (prog-mode minibuffer-setup)
   :preface
   (defun my/customize-rainbow-delimiters ()
