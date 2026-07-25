@@ -1,30 +1,28 @@
 # vim: set ft=yaml:
-# cmake-format configuration.
 #
 # Only non-default overrides are listed here; everything else uses
 # cmake-format's built-in defaults. To see the full option reference with
 # defaults and help text, run:  cmake-format --dump-config yaml
-
 format:
+  disable: true
+
   tab_size: 2
   line_width: 100
 
-  # Keep a command on a single line whenever it fits within line_width;
-  # only when it doesn't fit does it explode one-argument-per-line. This
-  # threshold is the number of positional args that may be packed onto
-  # wrapped lines: at 5, short commands (find_package, if, add_compile_options,
-  # ...) stay horizontal, while longer arg lists (set(...) with 6+ entries)
-  # go fully vertical instead of packing several per line.
-  max_pargs_hwrap: 5
+  # max_subgroups_hwrap: 2
+  # max_pargs_hwrap: 6
 
-  # Put the closing paren on its own line, aligned to the statement start.
+  min_prefix_chars: 2
+  # max_prefix_chars: 10
+  max_lines_hwrap: 0
+
   dangle_parens: true
 
-  # Force these commands to always break onto multiple lines, even when they
-  # would fit on one, so library/install blocks read vertically.
-  always_wrap:
-    - add_library
-    - install
+  # always_wrap:
+  #   # - add_library
+  #   # - install
+  #   - target_include_directories
+  #   - target_link_libraries
 
 markup:
   # Treat comments as literal text; do not reflow or rewrap them
