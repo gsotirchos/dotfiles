@@ -64,6 +64,7 @@ export CLAUDE_CODE_NO_FLICKER=1
 export BASHRC_SOURCED=1
 
 # configure or start prompt
+export PS2="\[\e]133;P;k=s\a\]… \[\e]133;B\a\]"
 if command -v "prmt" &> /dev/null && prmt --version &> /dev/null; then
     export PS1='$(prmt --code $? "{path:cyan.bold} {git:magenta.bold}\n{ok:bold:>}{fail:red.bold:>} ")'
     export PS1='${CONDA_DEFAULT_ENV:+\[\e[0;32m\]($CONDA_DEFAULT_ENV)\[\e[0m\] }'"$PS1"
