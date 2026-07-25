@@ -20,8 +20,8 @@ theme = light:custom-modus-operandi, dark:custom-modus-vivendi
 keybind = shift+escape=text:~
 keybind = alt+delete=esc:d
 keybind = super+delete=text:\x15
-keybind = super+up=jump_to_prompt:-2
-keybind = super+down=jump_to_prompt:+2
+keybind = super+up=jump_to_prompt:-1
+keybind = super+down=jump_to_prompt:+1
 keybind = super+enter=unbind
 keybind = super+ctrl+up=unbind
 keybind = super+ctrl+down=unbind
