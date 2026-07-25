@@ -1067,6 +1067,8 @@ Return t so `fill-paragraph' treats the paragraph as handled."
             (lambda () (setq-local apheleia-formatter '(ruff-isort ruff))))
   (add-hook 'sh-base-mode-hook
             (lambda () (setq-local apheleia-formatter 'shfmt)))
+  (add-hook 'cmake-ts-mode-hook
+            (lambda () (setq-local apheleia-formatter 'cmake-fmt)))
   (defun my/ruff-fallback-config-args ()
     "Use the dotfiles ruff config only when the project provides none."
     (unless (or (file-remote-p default-directory)
@@ -1100,6 +1102,8 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
         '("ruff" "check" "--select" "I" "--fix" (my/ruff-fallback-config-args) "--silent" "--stdin-filename" filepath "-"))
   (setf (alist-get 'shfmt apheleia-formatters)
         '("shfmt" "-ln" "bash" "-i" "4" "-ci" "-bn" "-sr"))
+  (setf (alist-get 'cmake-fmt apheleia-formatters)
+        '("cmake_format"))
   (setf (alist-get 'latexindent apheleia-formatters)
         '("latexindent" "--logfile=/dev/null" "-m" "-rv")))
 

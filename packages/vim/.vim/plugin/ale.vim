@@ -34,7 +34,7 @@ endfunction
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
 \   'sh': [{ -> execute('undojoin', 'silent!') + 0 }, 'shfmt'],
-\   'cmake': [{ -> execute('undojoin', 'silent!') + 0 }, 'cmakeformat'],
+\   'cmake': [{ -> execute('undojoin', 'silent!') + 0 }, {b -> {'command': 'cmake_format'}}],
 \   'cpp': [{ -> execute('undojoin', 'silent!') + 0 }, 'clang-format'],
 \   'python': [{ -> execute('undojoin', 'silent!') + 0 }, 'ruff', 'ruff_format'],
 \   'tex': [{ -> execute('undojoin', 'silent!') + 0 }, 'latexindent'],
