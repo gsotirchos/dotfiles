@@ -3,6 +3,11 @@
 set -euo pipefail
 
 main() {
+    local dotfiles="$(
+        builtin cd "$(
+            realpath "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.."
+        )" > /dev/null && pwd
+    )"
     local bright='\033[1m'
     local reset='\033[0m'
 
@@ -73,13 +78,13 @@ main() {
     # --- LG UltraFine brightness access (hidraw, no sudo) ---------------
     header "Configuring LG UltraFine brightness access"
     local rules_src
-    rules_src="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/udev/90-lg-ultrafine.rules"
+    rules_src="${dotfiles}/etc/udev/90-lg-ultrafine.rules"
     sudo cp "${rules_src}" /etc/udev/rules.d/
     sudo udevadm control --reload
     sudo udevadm trigger --subsystem-match=hidraw
     echo "  Note: replug the LG display (or re-login) for access to take effect."
 
-    # --- Copilot key remap to plain Super (via keyd) --------------------
+    # --- keyd (for remapping modifiers) ---------------------------------
     if command -v keyd &> /dev/null; then
         header "keyd already installed — skipping Copilot key remap."
     elif prompt_yn "Remap the Copilot key to a plain Super key (installs keyd)?"; then
@@ -89,6 +94,46 @@ main() {
         sudo apt update
         sudo apt install -y keyd
         sudo systemctl enable --now keyd
+    fi
+
+    # --- macOS-style Super shortcuts (via xremap, app-aware) ------------
+    # Layers on top of keyd: keyd swaps Alt/Meta at the evdev level, xremap
+    # then rewrites Super+C etc. to Ctrl+C in GTK apps while leaving Emacs
+    # and the terminal untouched (see packages/xremap/.config/xremap).
+    if ! command -v xremap &> /dev/null \
+        && prompt_yn "Install xremap for macOS-style Super shortcuts?"; then
+        header "Installing xremap"
+        local xr_zip="xremap-linux-x86_64-gnome.zip"
+        curl -L -O \
+            "https://github.com/xremap/xremap/releases/latest/download/${xr_zip}"
+        sudo unzip -o "${xr_zip}" -d /usr/local/bin/
+        sudo chmod +x /usr/local/bin/xremap
+        rm -f "${xr_zip}"
+    fi
+
+    # Grant input access whenever xremap is present — decoupled from the
+    # install prompt above so a pre-existing binary still gets set up. All
+    # steps are idempotent, so this is safe to re-run.
+    if command -v xremap &> /dev/null; then
+        # Run xremap as the user (not root): needs read on /dev/input and
+        # write on /dev/uinput.
+        header "Configuring xremap input access"
+        sudo usermod -aG input "${USER}"
+        echo uinput | sudo tee /etc/modules-load.d/uinput.conf > /dev/null
+        sudo modprobe uinput
+        sudo cp "${dotfiles}/etc/udev/99-uinput.rules" /etc/udev/rules.d/
+        sudo udevadm control --reload
+        sudo udevadm trigger
+        # Apply group/mode to the current /dev/uinput node immediately;
+        # udev's static_node option only re-applies on module (re)load.
+        sudo chgrp input /dev/uinput && sudo chmod 660 /dev/uinput
+
+        echo "  Next steps:"
+        echo "    1. Install the GNOME extension 'Xremap' from"
+        echo "       https://extensions.gnome.org/extension/5060/xremap/"
+        echo "       (required for per-application rules on Wayland)."
+        echo "    2. Log out and back in for the 'input' group to take effect."
+        echo "    3. Run setup_dotfiles.sh to stow the config and start the service."
     fi
 
     # --- miniforge (conda/mamba) ----------------------------------------
