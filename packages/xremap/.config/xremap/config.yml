@@ -15,9 +15,9 @@ keymap:
   - name: macOS clipboard/window shortcuts
     application:
       not:
-        - Emacs                     # GUI Emacs — keep raw Super
-        - com.mitchellh.ghostty     # has its own config
-        - firefox                   # clipboard only — see block below
+        - emacs
+        - com.mitchellh.ghostty
+        - firefox
     remap:
       Super-c: Ctrl-c               # copy
       Super-v: Ctrl-v               # paste
