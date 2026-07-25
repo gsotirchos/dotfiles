@@ -1,0 +1,43 @@
+# xremap — macOS-style Super shortcuts, application-aware.
+#
+# Sits on top of keyd: keyd does the physical Alt/Meta swap and emits a
+# "keyd virtual keyboard" device; the xremap systemd user service reads ONLY
+# that device (see xremap.service) so it acts on the post-swap key stream.
+#
+# The whole point of doing this in xremap rather than a blind keyd remap is
+# the `application` guards below: Super+C becomes Ctrl+C in GTK apps
+# (Nautilus, Text Editor, ...) but is left UNTOUCHED in Emacs, so Emacs keeps
+# full use of its Super bindings. App names are matched against the focused
+# window's WM_CLASS, reported by the "Xremap" GNOME Shell extension.
+
+keymap:
+  # --- Everywhere EXCEPT Emacs and the terminal --------------------------
+  - name: macOS clipboard/window shortcuts
+    application:
+      not:
+        - Emacs                     # GUI Emacs — keep raw Super
+        - com.mitchellh.ghostty     # has its own config
+        - firefox                   # clipboard only — see block below
+    remap:
+      Super-c: Ctrl-c               # copy
+      Super-v: Ctrl-v               # paste
+      Super-x: Ctrl-x               # cut
+      Super-a: Ctrl-Slash           # sends Ctrl+/  (see note)
+      Super-z: Ctrl-z               # undo
+      Super-Shift-z: Ctrl-Shift-z   # redo
+      Super-n: Ctrl-n               # new window
+      Super-w: Ctrl-w               # close tab/window
+      Super-t: Ctrl-t               # new tab
+      Super-f: Ctrl-f               # find
+      Super-s: Ctrl-s               # save
+      # Extend as needed — anything not listed passes through as real Super.
+
+  - name: macOS shortcuts in Firefox
+    application:
+      only:
+        - firefox
+    remap:
+      Super-c: Ctrl-c               # copy
+      Super-v: Ctrl-v               # paste
+      Super-x: Ctrl-x               # cut
+      Super-a: Ctrl-Slash           # sends Ctrl+/  (see note)
