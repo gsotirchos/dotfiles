@@ -153,11 +153,6 @@ With a prefix ARG, open the most recent journal file dated before today."
 ;;;###autoload
 (defun my/customize-org-mode ()
   "Apply my tweaks to theme-controlled settings."
-  (setq org-todo-keyword-faces
-        `(("NEXT" . ,(modus-themes-get-color-value 'green))
-          ("WIP" . ,(modus-themes-get-color-value 'blue))
-          ("WAIT" . ,(modus-themes-get-color-value 'red-faint))
-          ("FAIL" . ,(modus-themes-get-color-value 'red))))
   (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
   (set-face-bold 'org-checkbox t)
   (let ((bg-color (face-background 'org-agenda-clocking)))
@@ -169,6 +164,17 @@ With a prefix ARG, open the most recent journal file dated before today."
              org-done
              org-checkbox))
     (set-face-attribute face nil :family nil :inherit 'fixed-pitch))
+  (when (fboundp 'modus-themes-get-color-value)
+    (setq org-todo-keyword-faces
+          `(("NEXT" . ,(modus-themes-get-color-value 'green))
+            ("WIP" . ,(modus-themes-get-color-value 'blue))
+            ("WAIT" . ,(modus-themes-get-color-value 'red-faint))
+            ("FAIL" . ,(modus-themes-get-color-value 'red))))
+    (let ((bg-color (modus-themes-get-color-value 'bg-inactive)))
+      (dolist (face
+               '(org-block-begin-line
+                 org-block-end-line))
+        (set-face-background face bg-color))))
   (font-lock-update))
 
 
