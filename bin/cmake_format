@@ -1,0 +1,229 @@
+#!/usr/bin/env python3
+"""A very barebones CMake formatter.
+
+It re-indents CMake code and breaks command arguments onto their own lines,
+matching the hand-written style of this project's CMakeLists.txt. It does NOT
+try to be a full parser; it assumes the conventions the user described:
+
+  * commands / statements are lowercase:   add_library(...)
+  * keyword arguments are UPPERCASE:        DESTINATION, PUBLIC, SHARED
+  * the first non-keyword argument is the "name" that stays on the opening
+    line (a target/variable), while pure keyword-led or list commands put
+    every argument on its own indented line.
+
+Usage:
+    python3 cmake_format.py CMakeLists.txt      # print formatted to stdout
+    python3 cmake_format.py                     # read stdin, write stdout
+"""
+
+import re
+import sys
+
+INDENT = "  "
+
+# Blocks whose bodies get indented one level.
+BLOCK_OPEN = {"if", "foreach", "while", "function", "macro", "block"}
+BLOCK_MID = {"else", "elseif"}
+BLOCK_CLOSE = {
+    "endif", "endforeach", "endwhile", "endfunction", "endmacro", "endblock",
+}
+
+# UPPERCASE keywords that are valueless flags: a value after one of these
+# starts a fresh line instead of attaching (e.g. add_library(x SHARED foo.cpp)).
+FLAGS = {"SHARED", "STATIC", "MODULE", "OBJECT"}
+
+_KWARG_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
+
+
+def is_kwarg(arg):
+    """True for a bare UPPERCASE token like DESTINATION or PUBLIC."""
+    return bool(_KWARG_RE.match(arg))
+
+
+# --------------------------------------------------------------------------- #
+# Tokenizer
+# --------------------------------------------------------------------------- #
+def tokenize(src):
+    """Turn source text into a flat list of ('kind', value?) tokens."""
+    toks = []
+    i, n = 0, len(src)
+    while i < n:
+        c = src[i]
+        if c == "\n":
+            toks.append(("nl",))
+            i += 1
+        elif c in " \t\r":
+            i += 1
+        elif c == "#":
+            j = i
+            while j < n and src[j] != "\n":
+                j += 1
+            toks.append(("comment", src[i:j].rstrip()))
+            i = j
+        elif c == "(":
+            toks.append(("lp",))
+            i += 1
+        elif c == ")":
+            toks.append(("rp",))
+            i += 1
+        elif c == '"':
+            j = i + 1
+            while j < n and src[j] != '"':
+                j += 2 if src[j] == "\\" else 1
+            j = min(j + 1, n)
+            toks.append(("word", src[i:j]))
+            i = j
+        else:
+            j = i
+            while j < n and src[j] not in ' \t\r\n()#"':
+                j += 1
+            toks.append(("word", src[i:j]))
+            i = j
+    return toks
+
+
+# --------------------------------------------------------------------------- #
+# Grouping into top-level elements
+# --------------------------------------------------------------------------- #
+def parse(toks):
+    """Build a list of elements: command / comment / blank."""
+    elements = []
+    i, blanks = 0, 0
+    while i < len(toks):
+        t = toks[i]
+        if t[0] == "nl":
+            blanks += 1
+            i += 1
+            continue
+        # Collapse any run of >=1 blank line into a single blank element.
+        if blanks >= 2 and elements and elements[-1][0] != "blank":
+            elements.append(("blank",))
+        blanks = 0
+
+        if t[0] == "comment":
+            elements.append(("comment", t[1]))
+            i += 1
+        elif t[0] == "word" and i + 1 < len(toks) and toks[i + 1][0] == "lp":
+            name = t[1]
+            args, multiline, depth, j = [], False, 1, i + 2
+            while j < len(toks) and depth > 0:
+                tj = toks[j]
+                if tj[0] == "lp":
+                    depth += 1
+                elif tj[0] == "rp":
+                    depth -= 1
+                elif tj[0] == "nl":
+                    multiline = True
+                elif tj[0] == "word":
+                    args.append(tj[1])
+                j += 1
+            elements.append(("command", name, args, multiline))
+            i = j
+        else:
+            elements.append(("raw", t[1] if len(t) > 1 else ""))
+            i += 1
+    return elements
+
+
+# --------------------------------------------------------------------------- #
+# Rendering
+# --------------------------------------------------------------------------- #
+def opening_count(args):
+    """How many leading args stay on the command's opening line (0 or 1)."""
+    if not args:
+        return 0
+    first = args[0]
+    if is_kwarg(first):
+        # A leading UPPERCASE token is a real keyword (e.g. DIRECTORY) when the
+        # command has other keywords; otherwise it's a name like a set() var.
+        return 0 if any(is_kwarg(a) for a in args[1:]) else 1
+    # A value like ${TARGET} is a name; a plain list item (a dependency) is not.
+    return 1 if ("${" in first or "$<" in first) else 0
+
+
+def group_args(args):
+    """Split trailing args into lines: `KEYWORD value...` groups, lone values,
+    and standalone flags each on their own line."""
+    groups, cur, last = [], [], None  # last: 'kw' | 'val' | None
+    for a in args:
+        if a in FLAGS:
+            if cur:
+                groups.append(cur)
+                cur = []
+            groups.append([a])
+            last = None
+        elif is_kwarg(a):
+            if last == "kw":
+                cur.append(a)            # consecutive keywords share a line
+            else:
+                if cur:
+                    groups.append(cur)
+                cur = [a]
+            last = "kw"
+        else:  # value
+            if cur and last in ("kw", "val"):
+                cur.append(a)            # attaches to its keyword's line
+                last = "val"
+            else:
+                if cur:
+                    groups.append(cur)
+                    cur = []
+                groups.append([a])       # standalone value on its own line
+                last = "val"
+    if cur:
+        groups.append(cur)
+    return groups
+
+
+def render_command(name, args, multiline, indent):
+    pad = INDENT * indent
+    if not multiline:
+        return f"{pad}{name}({' '.join(args)})"
+
+    oc = opening_count(args)
+    head, rest = args[:oc], args[oc:]
+    lines = [f"{pad}{name}({' '.join(head)}"]
+    for g in group_args(rest):
+        lines.append(f"{pad}{INDENT}{' '.join(g)}")
+    lines.append(f"{pad})")
+    return "\n".join(lines)
+
+
+def format_cmake(src):
+    elements = parse(tokenize(src))
+    out, indent = [], 0
+    for el in elements:
+        kind = el[0]
+        if kind == "blank":
+            out.append("")
+        elif kind == "comment":
+            out.append(f"{INDENT * indent}{el[1]}")
+        elif kind == "raw":
+            if el[1]:
+                out.append(f"{INDENT * indent}{el[1]}")
+        elif kind == "command":
+            name = el[1]
+            if name in BLOCK_CLOSE or name in BLOCK_MID:
+                indent = max(0, indent - 1)
+            out.append(render_command(name, el[2], el[3], indent))
+            if name in BLOCK_OPEN or name in BLOCK_MID:
+                indent += 1
+    # Trim leading/trailing blank lines and guarantee one trailing newline.
+    while out and out[0] == "":
+        out.pop(0)
+    while out and out[-1] == "":
+        out.pop()
+    return "\n".join(out) + "\n"
+
+
+def main():
+    if len(sys.argv) > 1:
+        with open(sys.argv[1], encoding="utf-8") as f:
+            src = f.read()
+    else:
+        src = sys.stdin.read()
+    sys.stdout.write(format_cmake(src))
+
+
+if __name__ == "__main__":
+    main()
