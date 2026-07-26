@@ -123,7 +123,7 @@ augroup vimrc
         \ set ft=dosini
 
     autocmd BufWinEnter,BufRead,BufWritePre
-        \ *.yml,*.rviz,*.env
+        \ *.yml,*.rviz,*.env,*.repos
         \ set ft=yaml
 
     " treat .m files as Matlab files

@@ -1385,7 +1385,7 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
 (use-package yaml-ts-mode
   :ensure nil
   :no-require t
-  :mode ("\\.yaml\\'" "\\.yml\\'")
+  :mode ("\\.yaml\\'" "\\.yml\\'" "\\.repos\\'")
   :preface
   (defun my/yaml-mode-hook ()
     (setq-local yaml-indent-offset 2)

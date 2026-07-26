@@ -24,8 +24,8 @@ keybind = super+backspace=text:\x15
 keybind = super+shift+arrow_up=jump_to_prompt:-1
 keybind = super+shift+arrow_down=jump_to_prompt:+1
 keybind = super+enter=unbind
-keybind = super+arrow_up=unbind
-keybind = super+arrow_down=unbind
+keybind = super+arrow_up=text:
+keybind = super+arrow_down=text:
 keybind = super+ctrl+arrow_up=unbind
 keybind = super+ctrl+arrow_down=unbind
 keybind = super+ctrl+arrow_right=unbind
