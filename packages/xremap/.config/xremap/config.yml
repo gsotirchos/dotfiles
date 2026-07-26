@@ -30,7 +30,10 @@ keymap:
       Super-t: Ctrl-t               # new tab
       Super-f: Ctrl-f               # find
       Super-s: Ctrl-s               # save
-      # Extend as needed — anything not listed passes through as real Super.
+      Super-Backspace: Ctrl-u       # delete line
+      Super-Delete: Ctrl-k          # kill line
+      Alt-Backspace: Ctrl-Backspace # delete word
+      Alt-Delete: Ctrl-Delete       # kill word
 
   - name: macOS shortcuts in Firefox
     application:
@@ -41,3 +44,7 @@ keymap:
       Super-v: Ctrl-v               # paste
       Super-x: Ctrl-x               # cut
       Super-a: Ctrl-Slash           # sends Ctrl+/  (see note)
+      Super-Backspace: Ctrl-u       # delete line
+      Super-Delete: Ctrl-k          # kill line
+      Alt-Backspace: Ctrl-Backspace # delete word
+      Alt-Delete: Ctrl-Delete       # kill word
