@@ -24,10 +24,12 @@ keybind = super+backspace=text:\x15
 keybind = super+shift+up=jump_to_prompt:-1
 keybind = super+shift+down=jump_to_prompt:+1
 keybind = super+enter=unbind
-keybind = super+ctrl+up=unbind
-keybind = super+ctrl+down=unbind
-keybind = super+ctrl+right=unbind
-keybind = super+ctrl+left=unbind
+keybind = super+arrow_up=ignore
+keybind = super+arrow_down=ignore
+keybind = super+ctrl+arrow_up=unbind
+keybind = super+ctrl+arrow_down=unbind
+keybind = super+ctrl+arrow_right=unbind
+keybind = super+ctrl+arrow_left=unbind
 keybind = super+1=unbind
 keybind = super+2=unbind
 keybind = super+3=unbind
