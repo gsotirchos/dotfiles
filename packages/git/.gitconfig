@@ -16,7 +16,7 @@
 [core]
     excludesFile = ~/.dotfiles/.gitignore
 [alias]
-    glog = log --graph --decorate --all --stat --oneline
+    glog = log --graph --decorate --all --stat  # --oneline
     sync = !git stash && git pull --recurse-submodules=off && git stash apply && git add . && git commit -m \"${1-\"Update locally\"}\" && git push && git stash clear && :
 [filter "lfs"]
     clean = git-lfs clean -- %f
