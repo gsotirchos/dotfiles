@@ -79,16 +79,20 @@ else
     export VISUAL="vim"
 fi
 
+if [[ "${XDG_SESSION_TYPE}" == "wayland" ]]; then
+    export QT_QPA_PLATFORM=wayland
+fi
+
 # set cmake makefile generator, compiler, and standard
-export CC="$(command -v gcc-11 || command -v clang)"
-export CXX="$(command -v g++-11 || command -v clang++)"
+export CC="$(command -v gcc || command -v clang)"
+export CXX="$(command -v g++ || command -v clang++)"
 export CXX_STD="c++17"
-export CMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/llvm"
-export CMAKE_GENERATOR="$(
-    command -v ninja &> /dev/null \
-        && echo "Ninja" \
-        || echo ""
-)"
+if [[ -d "${HOMEBREW_PREFIX}/opt/llvm" ]]; then
+    export CMAKE_PREFIX_PATH="${HOMEBREW_PREFIX}/opt/llvm"
+fi
+if command -v "ninja" &> /dev/null; then
+    export CMAKE_GENERATOR="Ninja"
+fi
 export CMAKE_EXPORT_COMPILE_COMMANDS=1
 
 export BASH_PROFILE_SOURCED=1

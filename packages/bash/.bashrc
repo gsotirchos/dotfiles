@@ -42,9 +42,15 @@ for file in "${files_to_source[@]}"; do
     fi
 done
 
-# pixi
+# pixi completion
 if command -v "pixi" &> /dev/null; then
     eval "$(pixi completion --shell bash)"
+fi
+
+# ros2 completion
+if command -v register-python-argcomplete > /dev/null 2>&1; then
+    eval "$(register-python-argcomplete ros2)"
+    eval "$(register-python-argcomplete colcon)"
 fi
 
 # npm
