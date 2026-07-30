@@ -1518,6 +1518,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
 (use-package org
   :ensure nil
   :no-require t
+  :bind (:map org-mode-map ("M-<return>" . org-meta-return))
   :custom
   (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
@@ -1548,10 +1549,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
    (list (concat "\\input{" (expand-file-name "etc/math_commands.tex" dotfiles-dir) "}")))
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
-  (org-special-ctrl-o t)
-  :config
-  (when (bound-and-true-p evil-mode)
-    (evil-define-key 'insert 'org-mode-map (kbd "M-<return>") #'org-ctrl-c-ret)))
+  (org-special-ctrl-o t))
 
 (use-package my-org
   :after my-keybindings
