@@ -1145,7 +1145,7 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
   :ensure nil
   :no-require t
   :hook (prog-mode text-mode)
-  :custom (electric-pair-preserve-balance nil))
+  :custom (electric-pair-skip-self nil))
 
 (use-package rainbow-mode)
 
