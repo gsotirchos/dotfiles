@@ -33,10 +33,6 @@ BLOCK_CLOSE = {
     "endblock",
 }
 
-# UPPERCASE keywords that are valueless flags: a value after one of these
-# starts a fresh line instead of attaching (e.g. add_library(x SHARED foo.cpp)).
-FLAGS = {"SHARED", "STATIC", "MODULE", "OBJECT"}
-
 # A command whose first positional arg is a target/variable name keeps that name
 # on the opening line even when it's a plain word, e.g. add_executable(foo.
 # Used with .match(), so every branch is start-anchored.
@@ -157,17 +153,12 @@ def opening_count(name, args):
 
 
 def group_args(args):
-    """Split trailing args into lines: `KEYWORD value...` groups, lone values,
-    and standalone flags each on their own line."""
+    """Split trailing args into lines: `KEYWORD value...` groups and lone
+    values each on their own line. A library-type keyword (SHARED, STATIC, ...)
+    is just an UPPERCASE keyword, so its source attaches: `SHARED foo.cpp`."""
     groups, cur, last = [], [], None  # last: 'kw' | 'val' | None
     for a in args:
-        if a in FLAGS:
-            if cur:
-                groups.append(cur)
-                cur = []
-            groups.append([a])
-            last = None
-        elif is_kwarg(a):
+        if is_kwarg(a):
             if last == "kw":
                 cur.append(a)  # consecutive keywords share a line
             else:
