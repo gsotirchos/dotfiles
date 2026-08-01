@@ -20,9 +20,10 @@ import re
 import sys
 
 INDENT = "  "
-MAX_WIDTH = 100  # a group line wider than this is split one token per line
+MAX_WIDTH = 100
 
-# Blocks whose bodies get indented one level.
+OWN_LINE_KEYWORDS = {}
+
 BLOCK_OPEN = {"if", "foreach", "while", "function", "macro", "block"}
 BLOCK_MID = {"else", "elseif"}
 BLOCK_CLOSE = {
@@ -34,11 +35,7 @@ BLOCK_CLOSE = {
     "endblock",
 }
 
-# A command whose first positional arg is a target/variable name keeps that name
-# on the opening line even when it's a plain word, e.g. add_executable(foo.
-# Used with .match(), so every branch is start-anchored.
-# (${...}/$<...> names are kept on the line for any command; see opening_count.)
-NAME_FIRST_RE = re.compile(r"(ament_|set_|get_)?target_|add_(executable|library|dependencies)$")
+NAME_FIRST_RE = re.compile(r"(ament_)?target_|(set_|get_)\w*(properties|property)$")
 
 _KWARG_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
@@ -48,9 +45,6 @@ def is_kwarg(arg):
     return bool(_KWARG_RE.match(arg))
 
 
-# --------------------------------------------------------------------------- #
-# Tokenizer
-# --------------------------------------------------------------------------- #
 def tokenize(src):
     """Turn source text into a flat list of ('kind', value?) tokens."""
     toks = []
@@ -90,9 +84,6 @@ def tokenize(src):
     return toks
 
 
-# --------------------------------------------------------------------------- #
-# Grouping into top-level elements
-# --------------------------------------------------------------------------- #
 def parse(toks):
     """Build a list of elements: command / comment / blank."""
     elements = []
@@ -103,7 +94,6 @@ def parse(toks):
             blanks += 1
             i += 1
             continue
-        # Collapse any run of >=1 blank line into a single blank element.
         if blanks >= 2 and elements and elements[-1][0] != "blank":
             elements.append(("blank",))
         blanks = 0
@@ -133,22 +123,17 @@ def parse(toks):
     return elements
 
 
-# --------------------------------------------------------------------------- #
-# Rendering
-# --------------------------------------------------------------------------- #
 def opening_count(name, args):
-    """How many leading args stay on the command's opening line (0 or 1)."""
+    """How many leading args stay on the command's opening line."""
     if not args:
         return 0
     first = args[0]
     if is_kwarg(first):
-        # A leading UPPERCASE token is a real keyword (e.g. DIRECTORY) when the
-        # command has other keywords; otherwise it's a name like a set() var.
         return 0 if any(is_kwarg(a) for a in args[1:]) else 1
-    # A ${TARGET}/$<...> value is always a name; a plain word is a name only for
-    # commands that lead with a target (add_executable), not a list item (a
-    # dependency in ament_export_dependencies).
-    if "${" in first or "$<" in first or NAME_FIRST_RE.match(name):
+    if any(is_kwarg(a) for a in args[1:]) or NAME_FIRST_RE.match(name):
+        for i in range(1, len(args) - 1):
+            if is_kwarg(args[i]) and not is_kwarg(args[i + 1]):
+                return i
         return 1
     return 0
 
@@ -159,6 +144,12 @@ def group_args(args):
     is just an UPPERCASE keyword, so its source attaches: `SHARED foo.cpp`."""
     groups, cur, last = [], [], None  # last: 'kw' | 'val' | None
     for a in args:
+        if a in OWN_LINE_KEYWORDS:
+            if cur:
+                groups.append(cur)
+            groups.append([a])
+            cur, last = [], None
+            continue
         if is_kwarg(a):
             if last == "kw":
                 cur.append(a)  # consecutive keywords share a line
@@ -196,11 +187,13 @@ def render_command(name, args, multiline, indent):
     oc = opening_count(name, args)
     if NAME_FIRST_RE.match(name) and len(args) > oc:
         multiline = True
-    if not multiline:
-        return f"{pad}{name}({' '.join(args)})"
+    single = f"{pad}{name}({' '.join(args)})"
+    fits = len(single) <= MAX_WIDTH or len(args) <= 1
+    if fits and (not multiline or not any(is_kwarg(a) for a in args)):
+        return single
 
-    if oc and len(f"{pad}{name}({args[0]}") > MAX_WIDTH:
-        oc = 0  # the name alone overflows the opening line; list it below instead
+    if oc and len(f"{pad}{name}({' '.join(args[:oc])}") > MAX_WIDTH:
+        oc = 0
     head, rest = args[:oc], args[oc:]
     lines = [f"{pad}{name}({' '.join(head)}"]
     for g in group_args(rest):
@@ -228,7 +221,6 @@ def format_cmake(src):
             out.append(render_command(name, el[2], el[3], indent))
             if name in BLOCK_OPEN or name in BLOCK_MID:
                 indent += 1
-    # Trim leading/trailing blank lines and guarantee one trailing newline.
     while out and out[0] == "":
         out.pop(0)
     while out and out[-1] == "":
