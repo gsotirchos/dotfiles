@@ -25,12 +25,23 @@ INDENT = "  "
 BLOCK_OPEN = {"if", "foreach", "while", "function", "macro", "block"}
 BLOCK_MID = {"else", "elseif"}
 BLOCK_CLOSE = {
-    "endif", "endforeach", "endwhile", "endfunction", "endmacro", "endblock",
+    "endif",
+    "endforeach",
+    "endwhile",
+    "endfunction",
+    "endmacro",
+    "endblock",
 }
 
 # UPPERCASE keywords that are valueless flags: a value after one of these
 # starts a fresh line instead of attaching (e.g. add_library(x SHARED foo.cpp)).
 FLAGS = {"SHARED", "STATIC", "MODULE", "OBJECT"}
+
+# A command whose first positional arg is a target/variable name keeps that name
+# on the opening line even when it's a plain word, e.g. add_executable(foo.
+# Used with .match(), so every branch is start-anchored.
+# (${...}/$<...> names are kept on the line for any command; see opening_count.)
+NAME_FIRST_RE = re.compile(r"(ament_|set_|get_)?target_|add_(executable|library|dependencies)$")
 
 _KWARG_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
@@ -128,7 +139,7 @@ def parse(toks):
 # --------------------------------------------------------------------------- #
 # Rendering
 # --------------------------------------------------------------------------- #
-def opening_count(args):
+def opening_count(name, args):
     """How many leading args stay on the command's opening line (0 or 1)."""
     if not args:
         return 0
@@ -137,8 +148,12 @@ def opening_count(args):
         # A leading UPPERCASE token is a real keyword (e.g. DIRECTORY) when the
         # command has other keywords; otherwise it's a name like a set() var.
         return 0 if any(is_kwarg(a) for a in args[1:]) else 1
-    # A value like ${TARGET} is a name; a plain list item (a dependency) is not.
-    return 1 if ("${" in first or "$<" in first) else 0
+    # A ${TARGET}/$<...> value is always a name; a plain word is a name only for
+    # commands that lead with a target (add_executable), not a list item (a
+    # dependency in ament_export_dependencies).
+    if "${" in first or "$<" in first or NAME_FIRST_RE.match(name):
+        return 1
+    return 0
 
 
 def group_args(args):
@@ -154,7 +169,7 @@ def group_args(args):
             last = None
         elif is_kwarg(a):
             if last == "kw":
-                cur.append(a)            # consecutive keywords share a line
+                cur.append(a)  # consecutive keywords share a line
             else:
                 if cur:
                     groups.append(cur)
@@ -162,13 +177,13 @@ def group_args(args):
             last = "kw"
         else:  # value
             if cur and last in ("kw", "val"):
-                cur.append(a)            # attaches to its keyword's line
+                cur.append(a)  # attaches to its keyword's line
                 last = "val"
             else:
                 if cur:
                     groups.append(cur)
                     cur = []
-                groups.append([a])       # standalone value on its own line
+                groups.append([a])  # standalone value on its own line
                 last = "val"
     if cur:
         groups.append(cur)
@@ -180,7 +195,7 @@ def render_command(name, args, multiline, indent):
     if not multiline:
         return f"{pad}{name}({' '.join(args)})"
 
-    oc = opening_count(args)
+    oc = opening_count(name, args)
     head, rest = args[:oc], args[oc:]
     lines = [f"{pad}{name}({' '.join(head)}"]
     for g in group_args(rest):
