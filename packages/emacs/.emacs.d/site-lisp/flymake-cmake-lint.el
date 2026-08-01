@@ -18,10 +18,13 @@
 (require 'flymake-quickdef)
 
 (flymake-quickdef-backend flymake-cmake-lint--backend
-  :pre-check (unless (executable-find "cmake-lint")
-               (error "Executable `cmake-lint' not found on PATH"))
+  :pre-check (progn
+               (unless (executable-find "cmake-lint")
+                 (error "Executable `cmake-lint' not found on PATH"))
+               (unless (buffer-file-name)
+                 (error "cmake-lint: buffer is not visiting a file")))
   :write-type 'file
-  :proc-form (list "cmake-lint" "--suppress-decorations" fmqd-temp-file)
+  :proc-form (list "cmake-lint" "--suppress-decorations" (buffer-file-name))
   :search-regexp
   "^[^:\n]*:\\([0-9]+\\)\\(?:,\\([0-9]+\\)\\)?: \\[\\([CRWE]\\)[0-9]+\\] \\(.*\\)$"
   :prep-diagnostic
