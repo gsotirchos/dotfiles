@@ -20,6 +20,7 @@ import re
 import sys
 
 INDENT = "  "
+MAX_WIDTH = 100  # a group line wider than this is split one token per line
 
 # Blocks whose bodies get indented one level.
 BLOCK_OPEN = {"if", "foreach", "while", "function", "macro", "block"}
@@ -181,16 +182,29 @@ def group_args(args):
     return groups
 
 
+def wrap(pad, tokens):
+    """`tokens` as one `pad`-indented line, or—when that would exceed MAX_WIDTH
+    and there's more than one token—each token on its own `pad`-indented line."""
+    line = f"{pad}{' '.join(tokens)}"
+    if len(line) <= MAX_WIDTH or len(tokens) == 1:
+        return [line]
+    return [f"{pad}{tok}" for tok in tokens]
+
+
 def render_command(name, args, multiline, indent):
     pad = INDENT * indent
+    oc = opening_count(name, args)
+    if NAME_FIRST_RE.match(name) and len(args) > oc:
+        multiline = True
     if not multiline:
         return f"{pad}{name}({' '.join(args)})"
 
-    oc = opening_count(name, args)
+    if oc and len(f"{pad}{name}({args[0]}") > MAX_WIDTH:
+        oc = 0  # the name alone overflows the opening line; list it below instead
     head, rest = args[:oc], args[oc:]
     lines = [f"{pad}{name}({' '.join(head)}"]
     for g in group_args(rest):
-        lines.append(f"{pad}{INDENT}{' '.join(g)}")
+        lines += wrap(f"{pad}{INDENT}", g)
     lines.append(f"{pad})")
     return "\n".join(lines)
 
