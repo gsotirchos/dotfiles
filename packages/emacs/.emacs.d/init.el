@@ -901,6 +901,12 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (when (bound-and-true-p evil-mode)
     (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
 
+(use-package my-git-commit
+  :ensure nil
+  :load-path "site-lisp/"
+  :after magit
+  :demand t)
+
 (use-package pdf-tools
   :commands (pdf-loader-install)
   :mode ("\\.pdf\\'" . pdf-view-mode)
