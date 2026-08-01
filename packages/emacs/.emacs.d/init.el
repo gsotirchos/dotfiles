@@ -895,7 +895,9 @@ Return t so `fill-paragraph' treats the paragraph as handled."
    :map magit-section-mode-map
    ("<tab>" . magit-section-toggle)
    ("C-<tab>" . nil))
-  :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  (git-commit-summary-max-length 50)
   :preface (add-hook 'magit-status-mode-hook (lambda () (toggle-truncate-lines -1)))
   :config
   (when (bound-and-true-p evil-mode)
