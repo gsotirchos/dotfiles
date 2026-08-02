@@ -3,7 +3,7 @@ font-synthetic-style = false
 adjust-cell-height = 30%
 
 window-padding-x = 1
-window-padding-y = 1
+window-padding-y = 1,6
 #window-step-resize = true
 window-width = 80
 window-height = 24
