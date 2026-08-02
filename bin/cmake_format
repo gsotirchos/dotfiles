@@ -32,20 +32,13 @@ class CMakeFormatter:
     groups/subgroups) are set per instance.
     """
 
-    BLOCK_OPEN = {"if", "foreach", "while", "function", "macro", "block"}
-    BLOCK_MID = {"else", "elseif"}
-    BLOCK_CLOSE = {
-        "endif",
-        "endforeach",
-        "endwhile",
-        "endfunction",
-        "endmacro",
-        "endblock",
-    }
-
-    NAME_FIRST_RE = re.compile(r"(ament_)?target_$")  # |(set_|get_)\w*(properties|property)$")
+    BLOCK_OPEN = ("if", "foreach", "while", "function", "macro", "block")
+    BLOCK_MID = ("else", "elseif")
+    BLOCK_CLOSE = ("endif", "endforeach", "endwhile", "endfunction", "endmacro", "endblock")
 
     KWARG_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
+
+    NAME_FIRST_RE = re.compile(r"^(add_(executable|library|test))$")
 
     def __init__(
         self,
@@ -58,6 +51,10 @@ class CMakeFormatter:
         self.line_width = line_width
         self.always_wrap_groups = always_wrap_groups
         self.always_wrap_subgroups = always_wrap_subgroups
+
+    def _pad(self, indent):
+        """Indent string for a given nesting level."""
+        return " " * (self.indent_width * indent)
 
     @classmethod
     def is_kwarg(cls, arg):
@@ -148,15 +145,24 @@ class CMakeFormatter:
         """How many leading args stay on the command's opening line."""
         if not args:
             return 0
-        first = args[0]
-        if self.is_kwarg(first):
+        if self.NAME_FIRST_RE.match(name):
+            return 1  # name-first command: its single name/target anchors the line
+        if self.is_kwarg(args[0]):
             return 0 if any(self.is_kwarg(a) for a in args[1:]) else 1
-        if any(self.is_kwarg(a) for a in args[1:]) or self.NAME_FIRST_RE.match(name):
+        if any(self.is_kwarg(a) for a in args[1:]):
+            # name-led command with keyword groups: keep the leading names (up to
+            # the first keyword that introduces a value) on the opening line
             for i in range(1, len(args) - 1):
                 if self.is_kwarg(args[i]) and not self.is_kwarg(args[i + 1]):
                     return i
             return 1
-        return 1  # a plain non-keyword first arg is the target name; keep it up top
+        return 0  # a flat value list has no distinguished name; put every arg below
+
+    def _split(self, name, args):
+        """Split args into (head, groups): the leading args that stay on the
+        opening line, and the KEYWORD-led / standalone-value groups to break out."""
+        oc = self.opening_count(name, args)
+        return args[:oc], self.group_args(args[oc:])
 
     def group_args(self, args):
         """Split trailing args into lines: `KEYWORD value...` groups and lone
@@ -198,30 +204,34 @@ class CMakeFormatter:
             return [f"{pad}{tok}" for tok in tokens]
         return [line]
 
-    def wants_block(self, name, args, oc, single):
+    def wants_block(self, name, args, head, single):
         """Should this command spread its arguments over multiple lines?
 
-        A command that fits under line_width stays on one line — unless
-        always_wrap_groups asks it to be broken up regardless. Those are:
-          * keyword-led commands, where nothing stays on the opening line, e.g.
-            install(DIRECTORY ... DESTINATION ...);
-          * name-led commands, where a target name is followed by a list of
-            values to break out, e.g. add_executable(name src...) or
-            ament_target_dependencies(name deps...);
-          * the target_*/set_*_properties family matched by NAME_FIRST_RE.
-        Commands with no value list beyond the name — set(MY_VAR foo),
-        find_package(pkg REQUIRED) — stay on one line."""
+        Anything wider than line_width always wraps. Control-flow commands
+        (if/foreach/...) are otherwise immune and stay on one line. Beyond that a
+        command stays on one line unless always_wrap_groups breaks it up, which
+        happens when it has structure to spread out:
+          * an empty head — nothing stays on the opening line — so every argument
+            goes below: keyword-led commands like install(DIRECTORY ...
+            DESTINATION ...) and flat value lists like add_compile_options(-Wall
+            -Wextra);
+          * a leading name followed by values or keyword groups that break onto
+            their own lines below it, e.g. add_executable(app src...) or
+            target_include_directories(t PUBLIC inc SYSTEM other) — the name is
+            kept on the opening line by opening_count.
+        Commands whose only tail is the keyword itself stay on one line:
+        set(MY_VAR foo), find_package(pkg REQUIRED), add_library(mylib INTERFACE)."""
         if len(args) <= 1:
             return False
         if len(single) > self.line_width:
             return True
+        if name in self.BLOCK_OPEN or name in self.BLOCK_MID or name in self.BLOCK_CLOSE:
+            return False
         if not self.always_wrap_groups:
             return False
-        if oc == 0 and any(self.is_kwarg(a) for a in args):
+        if not head:
             return True
-        if not self.is_kwarg(args[0]) and any(not self.is_kwarg(a) for a in args[1:]):
-            return True
-        return bool(self.NAME_FIRST_RE.match(name))
+        return not self.is_kwarg(head[0]) and any(not self.is_kwarg(a) for a in args[1:])
 
     def render_command(self, name, args, indent):
         """Format a single command, either on one line or spread across an
@@ -230,18 +240,20 @@ class CMakeFormatter:
         The opening-line args fall back to the block form if keeping them up top
         would already overflow line_width.
         """
-        pad = " " * (self.indent_width * indent)
-        oc = self.opening_count(name, args)
+        pad = self._pad(indent)
+        head, groups = self._split(name, args)
         single = f"{pad}{name}({' '.join(args)})"
-        if not self.wants_block(name, args, oc, single):
+        if not self.wants_block(name, args, head, single):
             return single
 
-        if oc and len(f"{pad}{name}({' '.join(args[:oc])}") > self.line_width:
-            oc = 0
-        head, rest = args[:oc], args[oc:]
-        lines = [f"{pad}{name}({' '.join(head)}"]
-        for g in self.group_args(rest):
-            lines += self.wrap(f"{pad}{' ' * self.indent_width}", g)
+        head_line = f"{pad}{name}({' '.join(head)}"
+        if head and len(head_line) > self.line_width:
+            head, groups = [], self.group_args(args)
+            head_line = f"{pad}{name}("
+        lines = [head_line]
+        sub = self._pad(indent + 1)
+        for g in groups:
+            lines += self.wrap(sub, g)
         lines.append(f"{pad})")
         return "\n".join(lines)
 
@@ -259,10 +271,10 @@ class CMakeFormatter:
             if kind == "blank":
                 out.append("")
             elif kind == "comment":
-                out.append(f"{' ' * (self.indent_width * indent)}{el[1]}")
+                out.append(f"{self._pad(indent)}{el[1]}")
             elif kind == "raw":
                 if el[1]:
-                    out.append(f"{' ' * (self.indent_width * indent)}{el[1]}")
+                    out.append(f"{self._pad(indent)}{el[1]}")
             elif kind == "command":
                 name = el[1]
                 if name in self.BLOCK_CLOSE or name in self.BLOCK_MID:
