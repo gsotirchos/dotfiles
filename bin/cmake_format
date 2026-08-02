@@ -20,7 +20,9 @@ import re
 import sys
 
 INDENT = "  "
-MAX_WIDTH = 100
+LINE_WIDTH = 100
+ALWAYS_WRAP_GROUPS = True
+ALWAYS_WRAP_SUBGROUPS = False
 
 OWN_LINE_KEYWORDS = {}
 
@@ -103,19 +105,17 @@ def parse(toks):
             i += 1
         elif t[0] == "word" and i + 1 < len(toks) and toks[i + 1][0] == "lp":
             name = t[1]
-            args, multiline, depth, j = [], False, 1, i + 2
+            args, depth, j = [], 1, i + 2
             while j < len(toks) and depth > 0:
                 tj = toks[j]
                 if tj[0] == "lp":
                     depth += 1
                 elif tj[0] == "rp":
                     depth -= 1
-                elif tj[0] == "nl":
-                    multiline = True
                 elif tj[0] == "word":
                     args.append(tj[1])
                 j += 1
-            elements.append(("command", name, args, multiline))
+            elements.append(("command", name, args))
             i = j
         else:
             elements.append(("raw", t[1] if len(t) > 1 else ""))
@@ -135,7 +135,7 @@ def opening_count(name, args):
             if is_kwarg(args[i]) and not is_kwarg(args[i + 1]):
                 return i
         return 1
-    return 0
+    return 1  # a plain non-keyword first arg is the target name; keep it up top
 
 
 def group_args(args):
@@ -174,25 +174,51 @@ def group_args(args):
 
 
 def wrap(pad, tokens):
-    """`tokens` as one `pad`-indented line, or—when that would exceed MAX_WIDTH
-    and there's more than one token—each token on its own `pad`-indented line."""
+    """`tokens` as one `pad`-indented line, or—when that would exceed LINE_WIDTH
+    (or ALWAYS_WRAP_SUBGROUPS is on) and there's more than one token—each token
+    on its own `pad`-indented line."""
     line = f"{pad}{' '.join(tokens)}"
-    if len(line) <= MAX_WIDTH or len(tokens) == 1:
+    if len(tokens) == 1:
         return [line]
-    return [f"{pad}{tok}" for tok in tokens]
+    if ALWAYS_WRAP_SUBGROUPS or len(line) > LINE_WIDTH:
+        return [f"{pad}{tok}" for tok in tokens]
+    return [line]
 
 
-def render_command(name, args, multiline, indent):
+def wants_block(name, args, oc, single):
+    """Should this command spread its arguments over multiple lines?
+
+    A command that fits under LINE_WIDTH stays on one line — unless
+    ALWAYS_WRAP_GROUPS asks it to be broken up regardless. Those are:
+      * keyword-led commands, where nothing stays on the opening line, e.g.
+        install(DIRECTORY ... DESTINATION ...);
+      * name-led commands, where a target name is followed by a list of values
+        to break out, e.g. add_executable(name src...) or
+        ament_target_dependencies(name deps...);
+      * the target_*/set_*_properties family matched by NAME_FIRST_RE.
+    Commands with no value list beyond the name — set(MY_VAR foo),
+    find_package(pkg REQUIRED) — stay on one line."""
+    if len(args) <= 1:
+        return False
+    if len(single) > LINE_WIDTH:
+        return True
+    if not ALWAYS_WRAP_GROUPS:
+        return False
+    if oc == 0 and any(is_kwarg(a) for a in args):
+        return True
+    if not is_kwarg(args[0]) and any(not is_kwarg(a) for a in args[1:]):
+        return True
+    return bool(NAME_FIRST_RE.match(name))
+
+
+def render_command(name, args, indent):
     pad = INDENT * indent
     oc = opening_count(name, args)
-    if NAME_FIRST_RE.match(name) and len(args) > oc:
-        multiline = True
     single = f"{pad}{name}({' '.join(args)})"
-    fits = len(single) <= MAX_WIDTH or len(args) <= 1
-    if fits and (not multiline or not any(is_kwarg(a) for a in args)):
+    if not wants_block(name, args, oc, single):
         return single
 
-    if oc and len(f"{pad}{name}({' '.join(args[:oc])}") > MAX_WIDTH:
+    if oc and len(f"{pad}{name}({' '.join(args[:oc])}") > LINE_WIDTH:
         oc = 0
     head, rest = args[:oc], args[oc:]
     lines = [f"{pad}{name}({' '.join(head)}"]
@@ -218,7 +244,7 @@ def format_cmake(src):
             name = el[1]
             if name in BLOCK_CLOSE or name in BLOCK_MID:
                 indent = max(0, indent - 1)
-            out.append(render_command(name, el[2], el[3], indent))
+            out.append(render_command(name, el[2], indent))
             if name in BLOCK_OPEN or name in BLOCK_MID:
                 indent += 1
     while out and out[0] == "":
