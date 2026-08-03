@@ -38,7 +38,7 @@ class CMakeFormatter:
 
     KWARG_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
-    NAME_FIRST_RE = re.compile(r"^(add_(executable|library|test))$")
+    NAME_FIRST_RE = re.compile(r"^(add_(executable|library|test))|((ament_)?target_\w*)$")
 
     def __init__(
         self,
@@ -297,7 +297,7 @@ def main():
     parser.add_argument(
         "--always-wrap-groups",
         action=argparse.BooleanOptionalAction,
-        default=True,
+        default=False,
         help="wrap keyword groups",
     )
     parser.add_argument(
