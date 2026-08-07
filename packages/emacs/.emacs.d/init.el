@@ -544,7 +544,8 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   :ensure nil
   :load-path "site-lisp/"
   :after (stripes corfu vertico)
-  :demand t)
+  :demand t
+  :bind (:map vertico-map ("TAB" . minibuffer-complete)))
 
 (use-package files
   :ensure nil
@@ -698,7 +699,7 @@ Return t so `fill-paragraph' treats the paragraph as handled."
              (eq (current-local-map) read-passwd-map))))
   :custom
   (corfu-auto t)  ;; auto-completion
-  (corfu-quit-no-match 'separator)  ;; test
+  (corfu-quit-no-match t)
   (corfu-auto-prefix 2)
   (corfu-auto-delay 0.2)
   (corfu-popupinfo-delay '(0.5 . 0.2))
