@@ -733,7 +733,12 @@ Return t so `fill-paragraph' treats the paragraph as handled."
 (use-package vertico-directory
   :after vertico
   :ensure nil  ;; comes with vertico
-  :bind (:map vertico-map ("DEL" . vertico-directory-delete-char)))
+  :bind
+  (nil
+   :map
+   vertico-map
+   ("RET" . vertico-directory-enter)
+   ("DEL" . vertico-directory-delete-char)))
 
 (use-package marginalia
   :bind (:map minibuffer-local-map ("M-a" . marginalia-cycle))
