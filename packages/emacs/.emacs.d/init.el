@@ -904,6 +904,8 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (git-commit-summary-max-length 50)
   :preface (add-hook 'magit-status-mode-hook (lambda () (toggle-truncate-lines -1)))
   :config
+  (with-eval-after-load 'git-commit
+    (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
   (when (bound-and-true-p evil-mode)
     (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
 
