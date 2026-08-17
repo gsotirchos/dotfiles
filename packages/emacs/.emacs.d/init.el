@@ -817,6 +817,7 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (add-to-list 'consult-preview-allowed-hooks #'visual-line-mode)
   (add-to-list 'consult-preview-allowed-hooks #'variable-pitch-mode)
   ;; (add-to-list 'consult-preview-allowed-hooks #'my/fixed-pitch-mode)
+  (add-to-list 'consult-preview-allowed-hooks #'my/csv-mode-hook)
   (add-to-list 'consult-preview-allowed-hooks #'my/pdf-view-mode-hook)
   (add-to-list 'consult-preview-allowed-hooks #'my/org-mode-hook))
 
@@ -949,9 +950,9 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   :preface
   (defun my/csv-mode-hook ()
     (csv-header-line)
-    (let ((state (if (derived-mode-p 'csv-mode) 1 -1)))
-      (hl-line-mode state)
-      (csv-align-mode state)))
+    (csv-align-mode 1)
+    (hl-line-mode 1)
+    (visual-line-mode -1))
   (add-hook 'csv-mode-hook #'my/csv-mode-hook))
 
 (use-package markdown-mode
