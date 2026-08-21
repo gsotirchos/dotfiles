@@ -28,6 +28,10 @@ noremap  <silent> 0       g0
 noremap  <silent> ^       g^
 noremap  <silent> $       g$
 
+" Beginning of line with Ctrl+A, disable increment/decrement
+noremap  <silent> <C-a>   g0
+noremap  <silent> <C-x>   <Nop>
+
 " Smart indenting when entering insert mode on empty lines
 nnoremap <expr> i IndentWithI()
 nnoremap <expr> a IndentWithA()
