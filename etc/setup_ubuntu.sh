@@ -158,12 +158,12 @@ main() {
         mamba clean --all -y
     fi
 
-    # --- llvm/clang 17 --------------------------------------------------
+    # --- llvm/clang 18 --------------------------------------------------
     if command -v clangd &> /dev/null; then
         header "Clangd already in PATH — skipping."
-    elif prompt_yn "Install LLVM/Clang 17?"; then
-        header "Installing LLVM/Clang 17"
-        local clang_ver="17"
+    elif prompt_yn "Install LLVM/Clang 18?"; then
+        header "Installing LLVM/Clang 18"
+        local clang_ver="18"
         local llvm_sh
         llvm_sh="$(mktemp)"
         if curl -fsSL "https://apt.llvm.org/llvm.sh" -o "${llvm_sh}"; then
