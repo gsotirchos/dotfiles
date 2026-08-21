@@ -49,3 +49,10 @@ keymap:
       Super-Delete: Ctrl-k          # kill line
       Alt-Backspace: Ctrl-Backspace # delete word
       Alt-Delete: Ctrl-Delete       # kill word
+
+  - name: macOS-style Super-click
+    application:
+      not:
+        - emacs
+    remap:
+      Super-BTN_LEFT: Ctrl-BTN_LEFT

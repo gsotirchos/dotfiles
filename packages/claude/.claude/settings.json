@@ -4,5 +4,7 @@
     "clangd-lsp@claude-plugins-official": true
   },
   "theme": "auto",
-  "wheelScrollAccelerationEnabled": false
+  "wheelScrollAccelerationEnabled": false,
+  "agentPushNotifEnabled": true,
+  "inputNeededNotifEnabled": true
 }
