@@ -1361,8 +1361,6 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
   (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
   (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
   (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
-  :init
-  (add-hook 'c-ts-base-mode-hook (lambda () (hs-minor-mode -1)))
   :config
   ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 30 max); master is ABI 15.
   (add-to-list 'treesit-language-source-alist
