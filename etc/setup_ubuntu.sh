@@ -203,11 +203,13 @@ main() {
     # --- python linters / tools -----------------------------------------
     if prompt_yn "Install Python linters and tools (ruff, pylint, lsp, proselint, vint…)?"; then
         header "Installing Python linters and tools"
-        for pkg in python-lsp-server pylint ruff proselint mypy cmakelang; do
+        for pkg in pyright pylint ruff proselint mypy cmakelang; do
             pipx install "${pkg}"
         done
-        pipx inject python-lsp-server python-lsp-ruff autopep8 isort
         pipx inject cmakelang pyyaml
+        # pyright downloads its own node on first run; get that out of the
+        # way here rather than on the first LSP start inside Emacs.
+        pyright --version > /dev/null
     fi
 
     # --- ghostty terminal -----------------------------------------------
