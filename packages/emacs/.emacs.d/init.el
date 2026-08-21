@@ -1319,28 +1319,31 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
       (flymake-mypy-enable)))
   :hook (python-base-mode . my/flymake-mypy-enable))
 
+(use-package my-pixi
+  :ensure nil
+  :load-path "site-lisp/"
+  :commands (my-pixi-mode my-pixi-python-setup my-pixi-refresh)
+  :init
+  ;; Depth -90 so the environment is in place before `eglot-ensure' connects.
+  (add-hook 'python-base-mode-hook #'my-pixi-python-setup -90))
+
 (use-package conda
   :preface
   (defun my/conda-env-activate-for-buffer ()
+    "Activate the env of the current buffer unless it is already active."
     (when (and (derived-mode-p 'python-base-mode)
                (bound-and-true-p conda-project-env-path)
-               (not (string-equal conda-project-env-path
-                                  (bound-and-true-p conda-env-current-name)))
-               (not (string-equal conda-project-env-path
-                                  (bound-and-true-p conda-env-current-path))))
-      ;; (conda-mode-line-setup)
+               (not (equal conda-project-env-path
+                           (bound-and-true-p conda-env-current-path))))
       (conda-env-activate-for-buffer)))
+  (defun my/conda-reconnect-eglot ()
+    "Restart the language server so that it sees the new environment."
+    (when-let* ((server (and (featurep 'eglot) (eglot-current-server))))
+      (eglot-reconnect server)))
+  :init
   (add-hook 'find-file-hook #'my/conda-env-activate-for-buffer)
-  (defun my/conda-eglot-hook ()
-    (let ((fn (lambda () (eglot-reconnect (eglot--current-server-or-lose)))))
-      (add-hook 'conda-postactivate-hook fn nil t)
-      (add-hook 'conda-postdeactivate-hook fn nil t)))
-  (add-hook 'eglot-managed-mode-hook #'my/conda-eglot-hook)
-  ;; :config
-  ;; (conda-env-initialize-interactive-shells)
-  ;; (conda-env-initialize-eshell)
-  ;; (conda-env-autoactivate-mode 1)
-  )
+  (add-hook 'conda-postactivate-hook #'my/conda-reconnect-eglot)
+  (add-hook 'conda-postdeactivate-hook #'my/conda-reconnect-eglot))
 
 
 ;; C/C++
