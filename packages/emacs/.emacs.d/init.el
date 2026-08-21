@@ -1084,13 +1084,6 @@ Return t so `fill-paragraph' treats the paragraph as handled."
             (lambda () (setq-local apheleia-formatter 'shfmt)))
   (add-hook 'cmake-ts-mode-hook
             (lambda () (setq-local apheleia-formatter 'cmake-fmt)))
-  (defun my/ruff-fallback-config-args ()
-    "Use the dotfiles ruff config only when the project provides none."
-    (unless (or (file-remote-p default-directory)
-                (seq-some (lambda (name)
-                            (locate-dominating-file default-directory name))
-                          '("ruff.toml" ".ruff.toml" "pyproject.toml")))
-      (list "--config" (expand-file-name "pyproject.toml" dotfiles-dir))))
   (defun my/apheleia-format-or (fallback &optional arg)
     "Format the buffer with Apheleia if a formatter is configured for it.
 Otherwise call FALLBACK (the command normally on \\[fill-paragraph])
@@ -1112,9 +1105,9 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
   :config
   (apheleia-global-mode 1)
   (setf (alist-get 'ruff apheleia-formatters)
-        '("ruff" "format" (my/ruff-fallback-config-args) "--silent" "--stdin-filename" filepath "-"))
+        '("ruff" "format" "--silent" "--stdin-filename" filepath "-"))
   (setf (alist-get 'ruff-isort apheleia-formatters)
-        '("ruff" "check" "--select" "I" "--fix" (my/ruff-fallback-config-args) "--silent" "--stdin-filename" filepath "-"))
+        '("ruff" "check" "--select" "I" "--fix" "--silent" "--stdin-filename" filepath "-"))
   (setf (alist-get 'shfmt apheleia-formatters)
         '("shfmt" "-ln" "bash" "-i" "4" "-ci" "-bn" "-sr"))
   (setf (alist-get 'cmake-fmt apheleia-formatters)

@@ -1,0 +1,6 @@
+# User-level fallback, used only when a project supplies no mypy config of its own.
+# https://mypy.readthedocs.io/en/stable/config_file.html
+[mypy]
+# ROS 2 and conda packages ship no py.typed marker or stubs, so every import from
+# them is an error that no amount of local fixing can resolve.
+ignore_missing_imports = True
