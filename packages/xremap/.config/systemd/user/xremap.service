@@ -7,8 +7,12 @@ PartOf=graphical-session.target
 Type=simple
 # --device pins xremap to keyd's output so it sees the post-Alt/Meta-swap
 # stream and does not fight keyd over the physical keyboard grab.
-# --watch reloads on config edits and re-grabs the device if keyd restarts.
-ExecStart=/usr/local/bin/xremap --device "keyd virtual keyboard" --watch %h/.config/xremap/config.yml
+# --watch=config,device reloads on config edits and re-grabs the device if
+# keyd restarts.
+ExecStart=/usr/local/bin/xremap \
+    --device "keyd virtual keyboard" \
+    --watch=config,device \
+    %h/.config/xremap/config.yml
 Restart=on-failure
 RestartSec=3
 
