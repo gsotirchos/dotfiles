@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-import sys
+import argparse
 import json
+import sys
+
 
 def clean_json(s):
     out = []
@@ -72,13 +74,23 @@ def clean_json(s):
     return "".join(out_final)
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Strip comments/trailing commas from JSON on stdin and reformat it."
+    )
+    parser.add_argument(
+        '-i', '--indent', type=int, default=4,
+        help="number of spaces per indent level (0 for tabs, default: 4)"
+    )
+    args = parser.parse_args()
+    indent = '\t' if args.indent == 0 else args.indent
+
     content = sys.stdin.read()
     if not content.strip():
         sys.exit(0)
     try:
         cleaned = clean_json(content)
         data = json.loads(cleaned)
-        print(json.dumps(data, indent=4))
+        print(json.dumps(data, indent=indent))
     except Exception as e:
         sys.stderr.write(f"Error cleaning/parsing JSON: {e}\n")
         sys.stdout.write(content)
