@@ -1111,7 +1111,7 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
   (setf (alist-get 'shfmt apheleia-formatters)
         '("shfmt" "-ln" "bash" "-i" "4" "-ci" "-bn" "-sr"))
   (setf (alist-get 'cmake-fmt apheleia-formatters)
-        '("cmake_format"))
+        '("format-cmake"))
   (setf (alist-get 'latexindent apheleia-formatters)
         '("latexindent" "--logfile=/dev/null" "-m" "-rv")))
 

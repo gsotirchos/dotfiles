@@ -26,15 +26,28 @@ let g:ale_linters = {
 \}
 
 " Custom fixer for JSON (strips trailing commas and comments, then formats)
+" Indent width follows the buffer's 'shiftwidth' ('tabstop' when it is 0);
+" 'noexpandtab' buffers are indented with tabs instead (--indent 0).
 function! ALEFixJson(buffer) abort
-    return { 'command': expand(g:dotfiles_dir . '/bin/fix-json') }
+    let l:indent = getbufvar(a:buffer, '&shiftwidth')
+    if l:indent == 0
+        let l:indent = getbufvar(a:buffer, '&tabstop')
+    endif
+    if !getbufvar(a:buffer, '&expandtab')
+        let l:indent = 0
+    endif
+
+    return {
+    \   'command': ale#Escape(expand(g:dotfiles_dir . '/bin/format-json'))
+    \       . ' --indent ' . l:indent,
+    \}
 endfunction
 
 " Fixers on save (safe undojoin wrapper to prevent undo history breakage)
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
 \   'sh': [{ -> execute('undojoin', 'silent!') + 0 }, 'shfmt'],
-\   'cmake': [{ -> execute('undojoin', 'silent!') + 0 }, {b -> {'command': 'cmake_format'}}],
+\   'cmake': [{ -> execute('undojoin', 'silent!') + 0 }, {b -> {'command': 'format-cmake'}}],
 \   'cpp': [{ -> execute('undojoin', 'silent!') + 0 }, 'clang-format'],
 \   'python': [{ -> execute('undojoin', 'silent!') + 0 }, 'ruff', 'ruff_format'],
 \   'tex': [{ -> execute('undojoin', 'silent!') + 0 }, 'latexindent'],
