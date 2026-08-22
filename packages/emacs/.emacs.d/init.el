@@ -64,6 +64,13 @@ Return t so `fill-paragraph' treats the paragraph as handled."
     t)
   (setq-default fill-paragraph-function #'my/reindent-or-fill-paragraph)
 
+  ;; Indentation utilities
+  (defun my/set-local-indent-width (width)
+    "Set the buffer-local indentation step to WIDTH."
+    (setq-local standard-indent width
+                evil-shift-width width
+                tab-width width))
+
   ;; List manipulation utilities
   (defun my/update-plist-property (plist property fn)
     "Update the PLIST's PROPERTY's value using FN."
@@ -968,11 +975,13 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (markdown-display-remote-images t)
   (markdown-list-item-bullets '("●" "○" "◎" "◆" "◇" "►" "•"))
   (markdown-list-indent-width 2)
-  (standard-indent 2)
-  (evil-shift-width 2)
   (markdown-blockquote-display-char '(">"))
   :preface
-  (add-hook 'markdown-mode-hook (lambda () (markdown-display-inline-images))))
+  (defun my/markdown-mode-hook ()
+    (markdown-display-inline-images)
+    (my/set-local-indent-width markdown-list-indent-width))
+  :config
+  (add-hook 'markdown-mode-hook #'my/markdown-mode-hook))
 
 (use-package gptel
   :after my-keybindings
@@ -1260,7 +1269,7 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
   :no-require t
   :init
   (add-hook 'text-mode-hook #'flyspell-mode)
-  ;; (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
   :config (require 'ispell))
 
 (use-package ispell
@@ -1281,7 +1290,7 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
   :ensure nil
   :no-require t
   :bind (:map my/personal-map ("(" . 'check-parens))
-  :preface (add-hook 'emacs-lisp-mode-hook (lambda () (setq-local evil-shift-width 2))))
+  :preface (add-hook 'emacs-lisp-mode-hook (lambda () (my/set-local-indent-width lisp-body-indent))))
 
 
 ;; Vimscript
@@ -1404,11 +1413,11 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
   :ensure nil
   :no-require t
   :mode ("\\.yaml\\'" "\\.yml\\'" "\\.repos\\'")
+  :custom (yaml-indent-offset 2)
   :preface
   (defun my/yaml-mode-hook ()
-    (setq-local yaml-indent-offset 2)
-    (variable-pitch-mode -1)
-    (flyspell-mode -1))
+    (flyspell-mode -1)
+    (my/set-local-indent-width yaml-indent-offset))
   (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook)
   :config
   ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 29.3 max); master is ABI 15.
@@ -1416,6 +1425,27 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
                '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml" "v0.7.0"))
   (unless (treesit-language-available-p 'yaml)
     (treesit-install-language-grammar 'yaml)))
+
+
+;; JSON
+
+(use-package json-ts-mode
+  :ensure nil
+  :no-require t
+  :mode ("\\.json\\'" "\\.jsonc\\'")
+  :custom (json-ts-mode-indent-offset 2)
+  :preface
+  (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
+  (defun my/json-mode-hook ()
+    (flyspell-mode -1)
+    (my/set-local-indent-width json-ts-mode-indent-offset))
+  (add-hook 'json-ts-mode-hook #'my/json-mode-hook)
+  :config
+  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 29.3 max); master is ABI 15.
+  (add-to-list 'treesit-language-source-alist
+               '(json "https://github.com/tree-sitter/tree-sitter-json" "v0.24.8"))
+  (unless (treesit-language-available-p 'json)
+    (treesit-install-language-grammar 'json)))
 
 
 ;; CMake
