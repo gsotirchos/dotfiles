@@ -179,7 +179,8 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (defface my/echo-area-default-face nil "Remapped default face for echo area text.")
   (dolist (buf '(" *Echo Area 0*" " *Echo Area 1*"))
     (with-current-buffer (get-buffer-create buf)
-      (setq-local line-prefix " ")
+      (when (eq system-type 'darwin)
+        (setq-local line-prefix " "))
       (face-remap-add-relative 'default 'my/echo-area-default-face)))
 
   (defun my/customize-echo-area-face ()
@@ -189,12 +190,13 @@ Return t so `fill-paragraph' treats the paragraph as handled."
                           :foreground (modus-themes-get-color-value 'fg-dim t))))
   (add-hook 'after-load-theme-hook #'my/customize-echo-area-face)
 
-  (defun my/pad-minibuffer-prompt ()
-    "Add a prefix to the minibuffer prompt to prevent rounded corner obstruction."
-    (let ((inhibit-read-only t))
-      (put-text-property (point-min) (minibuffer-prompt-end) 'line-prefix " ")
-      (put-text-property (point-min) (minibuffer-prompt-end) 'wrap-prefix " ")))
-  (add-hook 'minibuffer-setup-hook #'my/pad-minibuffer-prompt)
+  (when (eq system-type 'darwin)
+    (defun my/pad-minibuffer-prompt ()
+      "Add a prefix to the minibuffer prompt to prevent rounded corner obstruction."
+      (let ((inhibit-read-only t))
+        (put-text-property (point-min) (minibuffer-prompt-end) 'line-prefix " ")
+        (put-text-property (point-min) (minibuffer-prompt-end) 'wrap-prefix " ")))
+    (add-hook 'minibuffer-setup-hook #'my/pad-minibuffer-prompt))
 
   ;; Suppress blank tooltips
   (defun my-suppress-blank-tooltips (str &rest _)
