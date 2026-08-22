@@ -1,3 +1,11 @@
+" Polyglot bundles stale copies of Vim's own runtime files. 'yaml' is disabled
+" so the maintained $VIMRUNTIME yaml syntax/ftplugin/indent win: polyglot's
+" 2021 indent/yaml.vim predates two upstream fixes -- it still has '0#' in
+" 'indentkeys' and applies the multiline-scalar rule unconditionally, so typing
+" '#' anywhere below the second line re-indents by a shiftwidth.
+" Must be set before the package loads; plugin/ is sourced first (:h load-plugins).
+let g:polyglot_disabled = ['autoindent', 'sensible', 'yaml']
+
 " https://github.com/vim-python/python-syntax
 let g:python_highlight_all = 1
 
