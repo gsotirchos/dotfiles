@@ -221,6 +221,8 @@ With a prefix ARG, open the most recent journal file dated before today."
   (if my-org-mode
       (progn
         (visual-line-mode 1)
+        (when (bound-and-true-p visual-wrap-prefix-mode)
+          (visual-wrap-prefix-mode -1))
         (my/customize-org-mode)
         (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
         (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
