@@ -617,32 +617,6 @@ Return t so `fill-paragraph' treats the paragraph as handled."
     (hl-line-mode 1))
   (add-hook 'dired-mode-hook #'my/dired-mode-hook))
 
-(use-package dired-subtree
-  :after dired
-  :demand t
-  :custom
-  (dired-subtree-use-backgrounds nil)  ;; let `stripes' and `hl-line' show through
-  :preface
-  (defun my/dired-subtree-tidy ()
-    "Tidy up the subtree just inserted.
-Drops its `.' and `..' entries and re-applies `dired-omit-mode', neither
-of which `dired-subtree' does on its own."
-    (save-excursion
-      (save-restriction
-        (dired-subtree-narrow)
-        (let ((dired-omit-mode t))  ;; `dired-omit-expunge' is a no-op when off
-          (dired-omit-expunge "\\`\\.\\.?\\'"))
-        (when dired-omit-mode (dired-omit-expunge)))))
-  :config
-  ;; Appended so that it runs after `dired-subtree--after-insert', which
-  ;; re-applies `dired-hide-details-mode' to the new lines.
-  (add-hook 'dired-subtree-after-insert-hook #'my/dired-subtree-tidy t)
-  (when (bound-and-true-p evil-mode)
-    (evil-define-key 'normal dired-mode-map
-      (kbd "<tab>") #'dired-subtree-toggle
-      (kbd "TAB") #'dired-subtree-toggle
-      (kbd "<backtab>") #'dired-subtree-cycle)))
-
 (use-package eshell
   :ensure nil
   :no-require t
