@@ -5,11 +5,11 @@ It re-indents CMake code and breaks command arguments onto their own lines,
 matching the hand-written style of this project's CMakeLists.txt.
 
 Usage:
-    cmake_format CMakeLists.txt      # print formatted to stdout
-    cmake_format                     # read stdin, write stdout
+    format-cmake CMakeLists.txt      # print formatted to stdout
+    format-cmake                     # read stdin, write stdout
 
 Formatting knobs can be overridden per run, e.g.
-    cmake_format --indent-width 4 --no-always-wrap-groups CMakeLists.txt
+    format-cmake --indent-width 4 --no-always-wrap-groups CMakeLists.txt
 """
 
 import argparse
