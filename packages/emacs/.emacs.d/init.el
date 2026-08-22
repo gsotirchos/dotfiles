@@ -1089,6 +1089,8 @@ Return t so `fill-paragraph' treats the paragraph as handled."
             (lambda () (setq-local apheleia-formatter 'shfmt)))
   (add-hook 'cmake-ts-mode-hook
             (lambda () (setq-local apheleia-formatter 'cmake-fmt)))
+  (add-hook 'json-ts-mode-hook
+            (lambda () (setq-local apheleia-formatter 'json-fmt)))
   (defun my/apheleia-format-or (fallback &optional arg)
     "Format the buffer with Apheleia if a formatter is configured for it.
 Otherwise call FALLBACK (the command normally on \\[fill-paragraph])
@@ -1117,6 +1119,8 @@ interactively with ARG.  Used to overload \\[fill-paragraph]."
         '("shfmt" "-ln" "bash" "-i" "4" "-ci" "-bn" "-sr"))
   (setf (alist-get 'cmake-fmt apheleia-formatters)
         '("format-cmake"))
+  (setf (alist-get 'json-fmt apheleia-formatters)
+        '("format-json" (apheleia-formatters-indent '("--indent" "0") "--indent")))
   (setf (alist-get 'latexindent apheleia-formatters)
         '("latexindent" "--logfile=/dev/null" "-m" "-rv")))
 
