@@ -1100,18 +1100,19 @@ Return t so `fill-paragraph' treats the paragraph as handled."
             (lambda () (setq-local apheleia-formatter 'cmake-fmt)))
   (add-hook 'json-ts-mode-hook
             (lambda () (setq-local apheleia-formatter 'json-fmt)))
-  (defun my/apheleia-format-or (fallback &optional arg)
+  (defun my/apheleia-format-or (fallback &rest args)
     "Format the buffer with Apheleia if a formatter is configured for it.
 Otherwise call FALLBACK (the command normally on \\[fill-paragraph])
-interactively with ARG.  Used to overload \\[fill-paragraph]."
+interactively with ARGS.  Used to overload \\[fill-paragraph]."
     (if-let ((formatters (and (fboundp 'apheleia--get-formatters)
                               (apheleia--get-formatters))))
         (apheleia-format-buffer formatters)
-      (funcall-interactively fallback arg)))
-  (defun my/apheleia-format-or-fill-paragraph (&optional arg)
+      (apply #'funcall-interactively fallback args)))
+  (defun my/apheleia-format-or-fill-paragraph (&optional justify region)
     "Apheleia-format the buffer, else fall back to `fill-paragraph'."
-    (interactive "P")
-    (my/apheleia-format-or #'fill-paragraph arg))
+    (interactive (progn (barf-if-buffer-read-only)
+                        (list (if current-prefix-arg 'full) t)))
+    (my/apheleia-format-or #'fill-paragraph justify region))
   (defun my/apheleia-format-or-prog-fill (&optional arg)
     "Apheleia-format the buffer, else fall back to `prog-fill-reindent-defun'."
     (interactive "P")
