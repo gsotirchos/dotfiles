@@ -407,6 +407,11 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   ;;                   (setq-default mode-line-format my/mode-line-format)))
   )
 
+(use-package two-column
+  :ensure nil
+  :no-require t
+  :custom (2C-mode-line-format '(:eval (default-value 'mode-line-format))))
+
 (use-package my-theme-switcher
   :ensure nil
   :load-path "site-lisp/"
