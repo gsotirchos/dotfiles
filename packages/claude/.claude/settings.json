@@ -1,10 +1,18 @@
 {
+  "theme": "auto",
   "model": "opus",
+  "workflowKeywordTriggerEnabled": false,
+  "promptSuggestionEnabled": false,
+  "editorMode": "normal",
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true
   },
-  "theme": "auto",
   "wheelScrollAccelerationEnabled": false,
-  "agentPushNotifEnabled": true,
-  "inputNeededNotifEnabled": true
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  }
 }
