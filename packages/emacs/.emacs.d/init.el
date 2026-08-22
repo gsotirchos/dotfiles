@@ -913,7 +913,12 @@ Return t so `fill-paragraph' treats the paragraph as handled."
    ("<tab>" . magit-section-toggle)
    ("C-<tab>" . nil))
   :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
-  :preface (add-hook 'magit-status-mode-hook (lambda () (toggle-truncate-lines -1)))
+  :preface
+  (defun my/magit-mode-hook ()
+    (toggle-truncate-lines -1)
+    "Let `visual-wrap-prefix-mode' see the diff marker in the first column."
+    (setq-local adaptive-fill-regexp "[-+ ]?[ \t]*"))
+  (add-hook 'magit-mode-hook #'my/magit-mode-hook)
   :config
   (with-eval-after-load 'git-commit
     (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
@@ -1167,7 +1172,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
 (use-package visual-wrap
   :ensure nil
   :no-require t
-  :hook (prog-mode . visual-wrap-prefix-mode)
+  :hook ((prog-mode magit-mode) . visual-wrap-prefix-mode)
   :preface
   (defun my/visual-wrap--prefix-advice (orig-fn fcp)
     "Indent continuation lines one level deeper and mark them with `wrap-prefix'.
