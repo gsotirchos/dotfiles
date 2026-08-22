@@ -916,7 +916,7 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   :preface
   (defun my/magit-mode-hook ()
     (toggle-truncate-lines -1)
-    "Let `visual-wrap-prefix-mode' see the diff marker in the first column."
+    ;; Let `visual-wrap-prefix-mode' see the diff marker in the first column.
     (setq-local adaptive-fill-regexp "[-+ ]?[ \t]*"))
   (add-hook 'magit-mode-hook #'my/magit-mode-hook)
   :config
@@ -1116,13 +1116,17 @@ commit message.")
   :defer 1
   :preface
   (add-hook 'python-base-mode-hook
-            (lambda () (setq-local apheleia-formatter '(ruff-isort ruff))))
+            (lambda () (setq-local apheleia-formatter '(ruff-check ruff))))
   (add-hook 'sh-base-mode-hook
             (lambda () (setq-local apheleia-formatter 'shfmt)))
   (add-hook 'cmake-ts-mode-hook
             (lambda () (setq-local apheleia-formatter 'cmake-fmt)))
   (add-hook 'json-ts-mode-hook
             (lambda () (setq-local apheleia-formatter 'json-fmt)))
+  (add-hook 'c-ts-base-mode-hook
+            (lambda () (setq-local apheleia-formatter 'clang-format)))
+  (add-hook 'LaTeX-mode-hook
+            (lambda () (setq-local apheleia-formatter 'latexindent)))
   (defun my/apheleia-format-or (fallback &rest args)
     "Format the buffer with Apheleia if a formatter is configured for it.
 Otherwise call FALLBACK (the command normally on \\[fill-paragraph])
@@ -1146,10 +1150,12 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   (apheleia-global-mode 1)
   (setf (alist-get 'ruff apheleia-formatters)
         '("ruff" "format" "--silent" "--stdin-filename" filepath "-"))
-  (setf (alist-get 'ruff-isort apheleia-formatters)
-        '("ruff" "check" "--select" "I" "--fix" "--silent" "--stdin-filename" filepath "-"))
+  (setf (alist-get 'ruff-check apheleia-formatters)
+        '("ruff" "check" "--fix" "--silent" "--stdin-filename" filepath "-"))
   (setf (alist-get 'shfmt apheleia-formatters)
-        '("shfmt" "-ln" "bash" "-i" "4" "-ci" "-bn" "-sr"))
+        '("shfmt" "-ln" "bash"
+          (apheleia-formatters-indent '("-i" "0") "-i" 'standard-indent)
+          "-ci" "-bn" "-sr"))
   (setf (alist-get 'cmake-fmt apheleia-formatters)
         '("format-cmake"))
   (setf (alist-get 'json-fmt apheleia-formatters)
