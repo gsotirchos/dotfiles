@@ -1169,17 +1169,14 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :no-require t
   :hook (prog-mode . visual-wrap-prefix-mode)
   :preface
-  (defvar my/visual-wrap-ellipsis wrap-prefix
-    "String appended to the `visual-wrap-prefix-mode' continuation prefix.")
-
   (defun my/visual-wrap--prefix-advice (orig-fn fcp)
-    "Indent continuation lines one level deeper and mark them with an ellipsis.
+    "Indent continuation lines one level deeper and mark them with `wrap-prefix'.
 Binds `visual-wrap-extra-indent' to the buffer's indentation step, as set by
-`my/set-local-indent-width', less the width of the ellipsis, so that wrapped
+`my/set-local-indent-width', less the width of `wrap-prefix', so that wrapped
 text still lands on a multiple of `standard-indent'."
     (dlet ((visual-wrap-extra-indent
-            (max 0 (- standard-indent (string-width my/visual-wrap-ellipsis)))))
-      (concat (funcall orig-fn fcp) my/visual-wrap-ellipsis)))
+            (max 0 (- standard-indent (string-width wrap-prefix)))))
+      (concat (funcall orig-fn fcp) wrap-prefix)))
   :config
   (advice-add 'visual-wrap--prefix :around #'my/visual-wrap--prefix-advice))
 
@@ -1657,16 +1654,17 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :no-require t
   :preface
   (defun my/org-indent-set-line-properties-advice (orig-fn level indentation &optional heading)
-    "Append an ellipsis specifically to the wrap-prefix property of the current line."
+    "Append `wrap-prefix' to the current line's wrap-prefix property only.
+Leaves the line-prefix property `org-indent' also sets untouched."
     (let ((beg (line-beginning-position))
           (end (line-beginning-position 2)))
       ;; The original function calculates and sets both line-prefix and wrap-prefix,
       ;; and then moves point to the next line via (forward-line).
       (funcall orig-fn level indentation heading)
-      ;; We intercept the wrap-prefix it just set on the line, and append our ellipsis.
+      ;; We intercept the wrap-prefix it just set on the line, and append our marker.
       (let ((wrap-prop (get-text-property beg 'wrap-prefix)))
         (when (stringp wrap-prop)
-          (put-text-property beg end 'wrap-prefix (concat wrap-prop "…"))))))
+          (put-text-property beg end 'wrap-prefix (concat wrap-prop wrap-prefix))))))
   :config
   (advice-add 'org-indent-set-line-properties :around #'my/org-indent-set-line-properties-advice))
 
