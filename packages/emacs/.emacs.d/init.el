@@ -912,9 +912,7 @@ Return t so `fill-paragraph' treats the paragraph as handled."
    :map magit-section-mode-map
    ("<tab>" . magit-section-toggle)
    ("C-<tab>" . nil))
-  :custom
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
-  (git-commit-summary-max-length 50)
+  :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :preface (add-hook 'magit-status-mode-hook (lambda () (toggle-truncate-lines -1)))
   :config
   (with-eval-after-load 'git-commit
@@ -922,10 +920,30 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (when (bound-and-true-p evil-mode)
     (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
 
+(use-package git-commit
+  :ensure nil
+  :custom (git-commit-summary-max-length 50)
+  :preface
+  (defconst my/git-commit-filename-regexp "\\(MSG\\|_DESCRIPTION\\)\\'"
+    "Cheap superset of `git-commit-filename-regexp'.
+Matching it only decides whether pulling in `git-commit' is worthwhile;
+that library's own regexp still decides whether the buffer really is a
+commit message.")
+  (defun my/git-commit-load-on-demand ()
+    "Load `git-commit' when a commit message file is visited."
+    (when (and buffer-file-name
+               (not (featurep 'git-commit))
+               (string-match-p my/git-commit-filename-regexp buffer-file-name))
+      (remove-hook 'find-file-hook #'my/git-commit-load-on-demand)
+      (require 'git-commit)
+      (unless (bound-and-true-p git-commit-mode)
+        (git-commit-setup-check-buffer))))
+  :init (add-hook 'find-file-hook #'my/git-commit-load-on-demand))
+
 (use-package my-git-commit
   :ensure nil
   :load-path "site-lisp/"
-  :after magit
+  :after git-commit
   :demand t)
 
 (use-package pdf-tools
