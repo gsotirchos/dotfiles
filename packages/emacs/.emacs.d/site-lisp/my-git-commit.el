@@ -13,6 +13,10 @@
 ;; git-commit keyword already faced -- which means the summary line
 ;; (`git-commit-summary') and comment/status lines (`font-lock-comment-face')
 ;; are skipped for free, with no bespoke matcher or region logic.
+;;
+;; The same limit also drives `fill-column' in the commit buffer, so that
+;; git-commit's own `git-commit-setup-auto-fill' wraps the body exactly
+;; where the overlong-body face would otherwise kick in.
 
 ;;; Code:
 
@@ -38,6 +42,14 @@
                '(eval . `(,(format "^.\\{%d\\}\\(.+\\)$" git-commit-body-max-length)
                           (1 'git-commit-overlong-body)))
                t))
+
+(defun my/git-commit-set-fill-column ()
+  "Set `fill-column' to `git-commit-body-max-length' in commit buffers.
+Auto filling itself is already enabled by `git-commit-setup-auto-fill',
+which leaves the summary line alone."
+  (setq-local fill-column git-commit-body-max-length))
+
+(add-hook 'git-commit-setup-hook #'my/git-commit-set-fill-column)
 
 (provide 'my-git-commit)
 
