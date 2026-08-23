@@ -1208,6 +1208,14 @@ text still lands on a multiple of `standard-indent'."
   :config
   (advice-add 'visual-wrap--prefix :around #'my/visual-wrap--prefix-advice))
 
+(use-package hideshow
+  :ensure nil
+  :no-require t
+  ;; Give every nested block an overlay of its own, so that opening a block
+  ;; uncovers only the level below it and closing it remembers which of its
+  ;; children were folded, the way Vim's fold levels behave.
+  :custom (hs-allow-nesting t))
+
 (use-package outline
   :ensure nil
   :no-require t
@@ -1237,7 +1245,23 @@ text still lands on a multiple of `standard-indent'."
              kirigami-close-fold
              kirigami-toggle-fold
              kirigami-open-folds
-             kirigami-close-folds))
+             kirigami-close-folds)
+  :preface
+  (defun my/hs-show-block-recursively ()
+    "Open the hideshow block at point and every block nested inside it."
+    (let ((hs-allow-nesting nil))
+      (save-excursion
+        ;; Hideshow looks for the block from point, and misses it when point sits
+        ;; left of the opening delimiter.
+        (end-of-line)
+        ;; The first call drops the overlay of the block itself; the second, which
+        ;; finds it open, discards the nested ones.
+        (hs-show-block)
+        (hs-show-block))))
+  :config
+  ;; `kirigami' leaves `:open-rec' unimplemented for hideshow.
+  (plist-put (cdr (assoc '(hs-minor-mode) kirigami-fold-list))
+             :open-rec #'my/hs-show-block-recursively))
 
 (use-package my-fold-level
   :ensure nil
