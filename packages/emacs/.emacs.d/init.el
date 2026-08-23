@@ -152,6 +152,15 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (advice-add 'load-theme :before (lambda (&rest _) (mapc #'disable-theme custom-enabled-themes)))
   (advice-add 'load-theme :after #'my/run-after-load-theme-hook)
 
+  (defun my/theme-color (name)
+    "Return the color NAME resolves to in the active theme's palette, or nil.
+Returns nil rather than `unspecified', so callers can guard with `when-let*'."
+    (and (fboundp 'modus-themes-get-color-value)
+         ;; Non-nil OVERRIDES, so `modus-themes-common-palette-overrides' and
+         ;; `modus-vivendi-palette-overrides' are honoured everywhere.
+         (let ((value (modus-themes-get-color-value name t)))
+           (and (stringp value) value))))
+
   ;; Variable pitch
   (defun my/set-line-spacing-advice (&rest _)
     "Set `line-spacing' after the advised function is executed."
@@ -184,10 +193,9 @@ Return t so `fill-paragraph' treats the paragraph as handled."
       (face-remap-add-relative 'default 'my/echo-area-default-face)))
 
   (defun my/customize-echo-area-face ()
-    "Color echo area text with modus-themes fg-dim."
-    (when (fboundp 'modus-themes-get-color-value)
-      (set-face-attribute 'my/echo-area-default-face nil
-                          :foreground (modus-themes-get-color-value 'fg-dim t))))
+    "Color echo area text with the theme's dimmed foreground."
+    (when-let* ((fg (my/theme-color 'fg-dim)))
+      (set-face-attribute 'my/echo-area-default-face nil :foreground fg)))
   (add-hook 'after-load-theme-hook #'my/customize-echo-area-face)
 
   (when (eq system-type 'darwin)
@@ -542,10 +550,10 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (stripes-overlay-priority -100)
   :preface
   (defun my/customize-stripes ()
-    (when (fboundp 'modus-themes-get-color-value)
+    (when-let* ((bg (my/theme-color 'bg-dim)))
       (set-face-attribute 'stripes nil
                           :extend t  ;; fill candidate lines to the full width
-                          :background (modus-themes-get-color-value 'bg-dim t))))
+                          :background bg)))
   (add-hook 'stripes-mode-hook #'my/customize-stripes)
   :config
   (my/customize-stripes)  ;; set the face now, not only on theme reload
@@ -1247,23 +1255,16 @@ text still lands on a multiple of `standard-indent'."
   (defface my/fold-ellipsis '((t :inherit default))
     "Face for the ellipsis standing in for folded text.")
 
-  (defun my/fold-ellipsis--color (name)
-    "Return palette color NAME, or nil while no modus theme is active."
-    (and (fboundp 'modus-themes-get-color-value)
-         (let ((value (modus-themes-get-color-value name t)))
-           (and (stringp value) value))))
-
   (defun my/customize-fold-ellipsis ()
     "Give the folding ellipsis a dimmed, boxed badge look."
-    (let ((fg (my/fold-ellipsis--color 'fg-dim))
-          (bg (my/fold-ellipsis--color 'bg-dim))
-          (border (my/fold-ellipsis--color 'border)))
-      (when (and fg bg border)
-        (set-face-attribute
-         'my/fold-ellipsis nil
-         :foreground fg
-         :background bg
-         :box `(:line-width (-1 . -1) :color ,border))))
+    (when-let* ((fg (my/theme-color 'fg-dim))
+                (bg (my/theme-color 'bg-dim))
+                (border (my/theme-color 'border)))
+      (set-face-attribute
+       'my/fold-ellipsis nil
+       :foreground fg
+       :background bg
+       :box `(:line-width (-1 . -1) :color ,border)))
     (unless standard-display-table
       (setq standard-display-table (make-display-table)))
     (set-display-table-slot
@@ -1283,18 +1284,18 @@ text still lands on a multiple of `standard-indent'."
   :hook (prog-mode minibuffer-setup)
   :preface
   (defun my/customize-rainbow-delimiters ()
-    (when (fboundp 'modus-themes-get-color-value)
-      (pcase-dolist (`(,face ,color)
-                     '((rainbow-delimiters-depth-1-face fg-dim)
-                       (rainbow-delimiters-depth-2-face magenta-faint)
-                       (rainbow-delimiters-depth-3-face cyan-faint)
-                       (rainbow-delimiters-depth-4-face red-faint)
-                       (rainbow-delimiters-depth-5-face yellow-faint)
-                       (rainbow-delimiters-depth-6-face indigo)
-                       (rainbow-delimiters-depth-7-face green-faint)
-                       (rainbow-delimiters-depth-8-face blue-faint)
-                       (rainbow-delimiters-depth-9-face rust)))
-        (set-face-foreground face (modus-themes-get-color-value color t)))))
+    (pcase-dolist (`(,face ,color)
+                   '((rainbow-delimiters-depth-1-face fg-dim)
+                     (rainbow-delimiters-depth-2-face magenta-faint)
+                     (rainbow-delimiters-depth-3-face cyan-faint)
+                     (rainbow-delimiters-depth-4-face red-faint)
+                     (rainbow-delimiters-depth-5-face yellow-faint)
+                     (rainbow-delimiters-depth-6-face indigo)
+                     (rainbow-delimiters-depth-7-face green-faint)
+                     (rainbow-delimiters-depth-8-face blue-faint)
+                     (rainbow-delimiters-depth-9-face rust)))
+      (when-let* ((fg (my/theme-color color)))
+        (set-face-foreground face fg))))
   (defun my/rainbow-delimiters-hook ()
     (my/customize-rainbow-delimiters)
     (add-hook 'after-load-theme-hook #'my/customize-rainbow-delimiters nil t))
@@ -1344,10 +1345,10 @@ text still lands on a multiple of `standard-indent'."
      (error "◼" flymake-error-echo)))
   :preface
   (defun my/customize-flymake ()
-    (when (and (fboundp 'modus-themes-get-color-value)
-               (facep 'flymake-end-of-line-diagnostics-face))
+    (when-let* (((facep 'flymake-end-of-line-diagnostics-face))
+                (fg-dim (my/theme-color 'fg-dim)))
       (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
-                          :foreground (modus-themes-get-color-value 'fg-dim t)
+                          :foreground fg-dim
                           :box '(:line-width (4 . -1) :style flat-button)
                           :height (round (* 0.92 (face-attribute 'default :height)))
                           :italic t
@@ -1357,13 +1358,15 @@ text still lands on a multiple of `standard-indent'."
                        (flymake-note-echo-at-eol     cyan-faint   bg-cyan-nuanced)
                        (flymake-warning-echo-at-eol  yellow-faint bg-yellow-nuanced)
                        (flymake-error-echo-at-eol    red-faint    bg-red-nuanced)))
-        (when (facep face)
+        (when-let* (((facep face))
+                    (fg (my/theme-color fg-color))
+                    (bg (my/theme-color bg-color)))
           (set-face-attribute face nil
                               :extend t
                               :underline nil
                               :inherit 'flymake-end-of-line-diagnostics-face
-                              :foreground (modus-themes-get-color-value fg-color t)
-                              :background (modus-themes-get-color-value bg-color t))))))
+                              :foreground fg
+                              :background bg)))))
   (defun my/flymake-hook ()
     (my/customize-flymake)
     (add-hook 'after-load-theme-hook #'my/customize-flymake nil t))
