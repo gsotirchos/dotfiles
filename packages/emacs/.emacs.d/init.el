@@ -1270,7 +1270,25 @@ text still lands on a multiple of `standard-indent'."
     (set-display-table-slot
      standard-display-table 'selective-display
      (vconcat (mapcar (lambda (c) (make-glyph-code c 'my/fold-ellipsis)) "..."))))
-  (add-hook 'after-load-theme-hook #'my/customize-fold-ellipsis))
+  (add-hook 'after-load-theme-hook #'my/customize-fold-ellipsis)
+
+  (defvar my/fold-ellipsis-string (propertize " ... " 'face 'my/fold-ellipsis)
+    "Marker shown in place of folded text to avoid mis-painting a `:box'.
+Padded with literal spaces: a `(space :width ...)' spec would allow sub-cell
+padding but produces a stretch glyph, drawn separately, splitting the box.")
+
+  (defun my/fold-ellipsis-mark-overlay (from to flag &rest _)
+    "Sync the fold marker across the overlays between FROM and TO; FLAG hides."
+    (dolist (o (overlays-in from to))
+      (cond ((and flag (overlay-get o 'invisible) (= (overlay-start o) from))
+             (overlay-put o 'display my/fold-ellipsis-string))
+            ((and (eq (overlay-get o 'display) my/fold-ellipsis-string)
+                  (not (overlay-get o 'invisible)))
+             (overlay-put o 'display nil)))))
+  ;; Neither has a hook that hands over the overlay it just created.
+  (advice-add 'outline-flag-region :after #'my/fold-ellipsis-mark-overlay)
+  (advice-add 'org-fold-core-region :after #'my/fold-ellipsis-mark-overlay)
+  :custom (hs-set-up-overlay (lambda (ov) (overlay-put ov 'display my/fold-ellipsis-string))))
 
 (use-package electric-pair
   :ensure nil
