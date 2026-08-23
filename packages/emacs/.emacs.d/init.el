@@ -664,12 +664,20 @@ Return t so `fill-paragraph' treats the paragraph as handled."
   (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
   (global-set-key (kbd "M-v") #'yank)
   (evil-global-set-key 'insert (kbd "C-v") #'ignore)
+  (evil-global-set-key 'normal (kbd "C-i") #'evil-jump-forward)
   (evil-global-set-key 'motion (kbd "j") #'evil-next-visual-line)
   (evil-global-set-key 'motion (kbd "k") #'evil-previous-visual-line)
   (evil-global-set-key 'motion (kbd "<down>") #'evil-next-visual-line)
   (evil-global-set-key 'motion (kbd "<up>") #'evil-previous-visual-line)
-  (evil-global-set-key 'normal (kbd "<tab>") #'evil-toggle-fold)
-  (evil-global-set-key 'normal (kbd "C-i") #'evil-jump-forward)
+  (evil-global-set-key 'normal (kbd "<tab>") #'kirigami-toggle-fold)
+  (evil-global-set-key 'normal (kbd "za") #'kirigami-toggle-fold)
+  (evil-global-set-key 'normal (kbd "zo") #'kirigami-open-fold)
+  (evil-global-set-key 'normal (kbd "zO") #'kirigami-open-fold-rec)
+  (evil-global-set-key 'normal (kbd "zc") #'kirigami-close-fold)
+  (evil-global-set-key 'normal (kbd "zm") #'my-fold-level-decrease)
+  (evil-global-set-key 'normal (kbd "zr") #'my-fold-level-increase)
+  (evil-global-set-key 'normal (kbd "zM") #'my-fold-level-close-all)
+  (evil-global-set-key 'normal (kbd "zR") #'my-fold-level-open-all)
   (evil-global-set-key 'visual (kbd "p") #'evil-paste-before)
   (evil-global-set-key 'visual (kbd "P") #'evil-visual-paste)
   (define-key evil-command-line-map (kbd "C-a") nil)
@@ -1214,6 +1222,23 @@ text still lands on a multiple of `standard-indent'."
   :custom (outline-blank-line t)
   ;; (outline-indent-ellipsis " ▼")
   )
+
+(use-package kirigami
+  :custom (kirigami-preserve-visual-position t)
+  :commands (kirigami-open-fold
+             kirigami-open-fold-rec
+             kirigami-close-fold
+             kirigami-toggle-fold
+             kirigami-open-folds
+             kirigami-close-folds))
+
+(use-package my-fold-level
+  :ensure nil
+  :load-path "site-lisp/"
+  :commands (my-fold-level-decrease
+             my-fold-level-increase
+             my-fold-level-close-all
+             my-fold-level-open-all))
 
 (use-package electric-pair
   :ensure nil
