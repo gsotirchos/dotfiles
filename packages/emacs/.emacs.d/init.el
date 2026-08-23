@@ -415,6 +415,11 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (repeat-too-dangerous '(kill-this-buffer))
   (repeat-exit-timeout 5))
 
+(use-package two-column
+  :ensure nil
+  :no-require t
+  :custom (2C-mode-line-format '(:eval (default-value 'mode-line-format))))
+
 (use-package my-mode-line
   :ensure nil
   :load-path "site-lisp/"
@@ -423,11 +428,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   ;;                 (lambda ()
   ;;                   (setq-default mode-line-format my/mode-line-format)))
   )
-
-(use-package two-column
-  :ensure nil
-  :no-require t
-  :custom (2C-mode-line-format '(:eval (default-value 'mode-line-format))))
 
 (use-package my-theme-switcher
   :ensure nil
@@ -559,7 +559,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (my/customize-stripes)  ;; set the face now, not only on theme reload
   (add-hook 'after-load-theme-hook #'my/customize-stripes))
 
-;; Extends the `stripes' face to the Corfu popup and Vertico list.
 (use-package my-stripes
   :ensure nil
   :load-path "site-lisp/"
@@ -933,7 +932,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :preface
   (defun my/magit-mode-hook ()
-    (toggle-truncate-lines -1)
+    (setq-local truncate-lines nil)
     ;; Let `visual-wrap-prefix-mode' see the diff marker in the first column.
     (setq-local adaptive-fill-regexp "[-+ ]?[ \t]*"))
   (add-hook 'magit-mode-hook #'my/magit-mode-hook)
