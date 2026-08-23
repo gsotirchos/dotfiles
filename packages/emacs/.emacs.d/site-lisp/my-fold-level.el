@@ -6,11 +6,12 @@
 ;; `evil', `kirigami' and `outline-indent' all provide only "fold this node" and
 ;; "fold everything".
 ;;
-;; The primitives are there, though.  Both `outline-hide-sublevels' and
-;; `hs-hide-level' take a number of nesting levels to leave visible and act on
-;; the whole buffer, which is exactly Vim's model.  This module supplies the
-;; missing piece: a buffer-local counter over those two primitives, plus the four
-;; commands that step it.
+;; The primitive is there for outline: `outline-hide-sublevels' takes a number of
+;; nesting levels to leave visible and acts on the whole buffer, which is exactly
+;; Vim's model.  Hideshow needs a pass of its own, `hs-hide-level' folding a single
+;; depth and leaving the blocks nested inside it without an overlay of their own.
+;; This module supplies the missing piece: a buffer-local counter over those two
+;; backends, plus the four commands that step it.
 ;;
 ;; Levels here are 1-based -- level 1 leaves only the outermost constructs
 ;; visible -- while the echo area reports Vim's 0-based `foldlevel'.
@@ -26,7 +27,7 @@
 (defvar hs-minor-mode)
 (defvar hs-block-start-regexp)
 (defvar hs-block-start-mdata-select)
-(declare-function hs-hide-level "hideshow" (arg))
+(declare-function hs-hide-block-at-point "hideshow" (&optional end comment-reg))
 (declare-function hs-show-all "hideshow" ())
 (declare-function kirigami-open-folds "kirigami" ())
 (declare-function kirigami-close-folds "kirigami" ())
@@ -103,6 +104,30 @@ nothing."
                 (setq deepest level))))))
       (1+ deepest))))
 
+(defun my-fold-level--hideshow-hide (level)
+  "Fold every hideshow block nested LEVEL levels deep or deeper.
+`hs-hide-level' gives an overlay of its own only to the blocks at the depth
+it is asked for, so opening one of them uncovers its whole subtree.  Folding
+every level instead leaves each nested block an overlay of its own, which is
+what makes opening a block uncover just the next level, as in Vim.  Relies on
+`hs-allow-nesting', without which hideshow discards the nested overlays."
+  (save-excursion
+    (goto-char (point-min))
+    (let (blocks)
+      ;; Same traversal as `my-fold-level--hideshow-max'.
+      (while (re-search-forward hs-block-start-regexp nil t)
+        (let* ((start (match-beginning hs-block-start-mdata-select))
+               (state (save-excursion (syntax-ppss start)))
+               (depth (1+ (car state))))
+          (unless (or (nth 8 state) (< depth level))
+            (push (cons depth start) blocks))))
+      ;; Deepest first: `hs-hide-block-at-point' deletes whichever overlay
+      ;; covers the header of the block it folds, which for an outer block
+      ;; would be the overlay of a child folded earlier.
+      (dolist (block (sort blocks (lambda (a b) (> (car a) (car b)))))
+        (goto-char (cdr block))
+        (hs-hide-block-at-point)))))
+
 
 (defun my-fold-level--max-level ()
   "Return the lowest level at which the buffer is fully unfolded.
@@ -125,14 +150,12 @@ The result is cached until the buffer text changes."
          (outline-show-all)
        (outline-hide-sublevels level)))
     ('hideshow
-     (if (>= level (my-fold-level--max-level))
-         (hs-show-all)
-       ;; `hs-hide-level-recursive' first looks for the block enclosing point and
-       ;; restricts itself to it, so it has to be called from `point-min' for the
-       ;; whole buffer to be folded.
-       (save-excursion
-         (goto-char (point-min))
-         (hs-hide-level level))))))
+     ;; Hideshow leaves its overlays alone while `hs-allow-nesting' is on, so
+     ;; the state left by the previous level has to be cleared before laying
+     ;; down the new one.
+     (hs-show-all)
+     (unless (>= level (my-fold-level--max-level))
+       (my-fold-level--hideshow-hide level)))))
 
 ;;;; Level stepping
 
