@@ -1252,7 +1252,9 @@ text still lands on a multiple of `standard-indent'."
   :ensure nil
   :no-require t
   :preface
-  (defface my/fold-ellipsis '((t :inherit default))
+  (defvar my/fold-ellipsis " ... ")
+
+  (defface my/fold-ellipsis-face '((t :inherit default))
     "Face for the ellipsis standing in for folded text.")
 
   (defun my/customize-fold-ellipsis ()
@@ -1261,7 +1263,7 @@ text still lands on a multiple of `standard-indent'."
                 (bg (my/theme-color 'bg-dim))
                 (border (my/theme-color 'border)))
       (set-face-attribute
-       'my/fold-ellipsis nil
+       'my/fold-ellipsis-face nil
        :foreground fg
        :background bg
        :box `(:line-width (-1 . -1) :color ,border)))
@@ -1269,13 +1271,11 @@ text still lands on a multiple of `standard-indent'."
       (setq standard-display-table (make-display-table)))
     (set-display-table-slot
      standard-display-table 'selective-display
-     (vconcat (mapcar (lambda (c) (make-glyph-code c 'my/fold-ellipsis)) "..."))))
+     (vconcat (mapcar (lambda (c) (make-glyph-code c 'my/fold-ellipsis-face)) my/fold-ellipsis))))
   (add-hook 'after-load-theme-hook #'my/customize-fold-ellipsis)
 
-  (defvar my/fold-ellipsis-string (propertize " ... " 'face 'my/fold-ellipsis)
-    "Marker shown in place of folded text to avoid mis-painting a `:box'.
-Padded with literal spaces: a `(space :width ...)' spec would allow sub-cell
-padding but produces a stretch glyph, drawn separately, splitting the box.")
+  (defvar my/fold-ellipsis-string (propertize my/fold-ellipsis 'face 'my/fold-ellipsis-face)
+    "Marker shown in place of folded text to avoid mis-painting a `:box'.")
 
   (defun my/fold-ellipsis-mark-overlay (from to flag &rest _)
     "Sync the fold marker across the overlays between FROM and TO; FLAG hides."
@@ -1539,9 +1539,9 @@ padding but produces a stretch glyph, drawn separately, splitting the box.")
   :ensure nil
   :no-require t
   :mode ("\\.yaml\\'" "\\.yml\\'" "\\.repos\\'")
-  :custom (yaml-indent-offset 2)
   :preface
   (defun my/yaml-mode-hook ()
+    (setq-local yaml-indent-offset 2)
     (flyspell-mode -1)
     (my/set-local-indent-width yaml-indent-offset))
   (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook)
