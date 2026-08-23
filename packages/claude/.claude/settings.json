@@ -1,15 +1,16 @@
 {
-  "theme": "auto",
   "model": "opus",
-  "workflowKeywordTriggerEnabled": false,
+  "theme": "auto",
+  "wheelScrollAccelerationEnabled": false,
   "promptSuggestionEnabled": false,
-  "editorMode": "normal",
+  "spinnerTipsEnabled": false,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
+  "agentPushNotifEnabled": false,
+  "editorMode": "normal",
+  "workflowKeywordTriggerEnabled": false,
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true
   },
-  "wheelScrollAccelerationEnabled": false,
   "attribution": {
     "commit": "",
     "pr": "",
