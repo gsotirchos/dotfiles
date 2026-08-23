@@ -1240,6 +1240,37 @@ text still lands on a multiple of `standard-indent'."
              my-fold-level-close-all
              my-fold-level-open-all))
 
+(use-package disp-table
+  :ensure nil
+  :no-require t
+  :preface
+  (defface my/fold-ellipsis '((t :inherit default))
+    "Face for the ellipsis standing in for folded text.")
+
+  (defun my/fold-ellipsis--color (name)
+    "Return palette color NAME, or nil while no modus theme is active."
+    (and (fboundp 'modus-themes-get-color-value)
+         (let ((value (modus-themes-get-color-value name t)))
+           (and (stringp value) value))))
+
+  (defun my/customize-fold-ellipsis ()
+    "Give the folding ellipsis a dimmed, boxed badge look."
+    (let ((fg (my/fold-ellipsis--color 'fg-dim))
+          (bg (my/fold-ellipsis--color 'bg-dim))
+          (border (my/fold-ellipsis--color 'border)))
+      (when (and fg bg border)
+        (set-face-attribute
+         'my/fold-ellipsis nil
+         :foreground fg
+         :background bg
+         :box `(:line-width (-1 . -1) :color ,border))))
+    (unless standard-display-table
+      (setq standard-display-table (make-display-table)))
+    (set-display-table-slot
+     standard-display-table 'selective-display
+     (vconcat (mapcar (lambda (c) (make-glyph-code c 'my/fold-ellipsis)) "..."))))
+  (add-hook 'after-load-theme-hook #'my/customize-fold-ellipsis))
+
 (use-package electric-pair
   :ensure nil
   :no-require t
@@ -1317,7 +1348,7 @@ text still lands on a multiple of `standard-indent'."
                (facep 'flymake-end-of-line-diagnostics-face))
       (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
                           :foreground (modus-themes-get-color-value 'fg-dim t)
-                          :box '(:line-width (5 . -1) :style flat-button)
+                          :box '(:line-width (4 . -1) :style flat-button)
                           :height (round (* 0.92 (face-attribute 'default :height)))
                           :italic t
                           :inherit 'variable-pitch)
@@ -1329,6 +1360,7 @@ text still lands on a multiple of `standard-indent'."
         (when (facep face)
           (set-face-attribute face nil
                               :extend t
+                              :underline nil
                               :inherit 'flymake-end-of-line-diagnostics-face
                               :foreground (modus-themes-get-color-value fg-color t)
                               :background (modus-themes-get-color-value bg-color t))))))
