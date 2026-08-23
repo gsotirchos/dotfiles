@@ -1,19 +1,20 @@
 {
-  "model": "opus",
-  "theme": "auto",
-  "wheelScrollAccelerationEnabled": false,
-  "promptSuggestionEnabled": false,
-  "spinnerTipsEnabled": false,
-  "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": false,
-  "editorMode": "normal",
-  "workflowKeywordTriggerEnabled": false,
-  "enabledPlugins": {
-    "clangd-lsp@claude-plugins-official": true
-  },
   "attribution": {
     "commit": "",
     "pr": "",
     "sessionUrl": false
-  }
+  },
+  "model": "opus",
+  "workflowKeywordTriggerEnabled": false,
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "spinnerTipsEnabled": false,
+  "promptSuggestionEnabled": false,
+  "theme": "auto",
+  "editorMode": "normal",
+  "preferredNotifChannel": "ghostty",
+  "wheelScrollAccelerationEnabled": false,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true
 }
