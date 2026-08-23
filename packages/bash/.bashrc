@@ -68,12 +68,13 @@ fi
 
 export CLAUDE_CODE_NO_FLICKER=1
 export BASHRC_SOURCED=1
+export TMDB_API_KEY=5e6f795639e4daa21a22945cbc3e352a
 
 # configure or start prompt
 export PS2="\[\e]133;P;k=s\a\]… \[\e]133;B\a\]"
 if command -v "prmt" &> /dev/null && prmt --version &> /dev/null; then
-    export PS1='$(prmt --code $? "{path:cyan.bold} {git:magenta.bold}\n{ok:bold:>}{fail:red.bold:>} ")'
-    export PS1='${CONDA_DEFAULT_ENV:+\[\e[0;32m\]($CONDA_DEFAULT_ENV)\[\e[0m\] }'"$PS1"
+    export PS1='$(prmt --shell bash --code $? "{fail:red:code::\n}{path:cyan.bold} {git:magenta.bold}\n> ")'
+    #export PS1='${CONDA_DEFAULT_ENV:+\[\e[0;32m\]($CONDA_DEFAULT_ENV)\[\e[0m\] }'"$PS1"
 elif command -v "starship" &> /dev/null; then
     export STARSHIP_CONFIG=${HOME}/.config/starship.toml
     eval "$(starship init bash)"
