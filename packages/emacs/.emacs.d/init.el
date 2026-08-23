@@ -1211,10 +1211,7 @@ text still lands on a multiple of `standard-indent'."
 (use-package hideshow
   :ensure nil
   :no-require t
-  ;; Give every nested block an overlay of its own, so that opening a block
-  ;; uncovers only the level below it and closing it remembers which of its
-  ;; children were folded, the way Vim's fold levels behave.
-  :custom (hs-allow-nesting t))
+  :init (setq hs-allow-nesting t))
 
 (use-package outline
   :ensure nil
