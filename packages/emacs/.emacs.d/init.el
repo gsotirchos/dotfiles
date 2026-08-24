@@ -1195,7 +1195,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
 (use-package visual-wrap
   :ensure nil
   :no-require t
-  :hook ((prog-mode magit-mode) . visual-wrap-prefix-mode)
+  :hook ((prog-mode magit-mode conf-mode) . visual-wrap-prefix-mode)
   :preface
   (defun my/visual-wrap--prefix-advice (orig-fn fcp)
     "Indent continuation lines one level deeper and mark them with `wrap-prefix'.
