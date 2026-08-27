@@ -1429,7 +1429,9 @@ text still lands on a multiple of `standard-indent'."
   :ensure nil
   :no-require t
   :custom
+  (ispell-silently-savep t)
   (ispell-program-name "aspell")
+  (ispell-extra-args '("--ignore-case"))
   (ispell-local-dictionary-alist
    '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
   (ispell-dictionary "en_US")
