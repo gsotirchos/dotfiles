@@ -50,9 +50,14 @@ keymap:
       Alt-Backspace: Ctrl-Backspace # delete word
       Alt-Delete: Ctrl-Delete       # kill word
 
-  - name: macOS-style Super-click
+  - name: macOS navigation shortcuts
     application:
       not:
         - emacs
+        - com.mitchellh.ghostty
     remap:
       Super-BTN_LEFT: Ctrl-BTN_LEFT
+      Alt-Left: Ctrl-Left           # word left
+      Alt-Right: Ctrl-Right         # word right
+      Super-Left: Home              # line start
+      Super-Right: End              # line end
