@@ -841,7 +841,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (defalias 'consult-line-thing-at-point 'consult-line)
   (consult-customize consult-line-thing-at-point
                      :initial (thing-at-point 'symbol))
-  (add-to-list 'consult-preview-allowed-hooks #'adaptive-wrap-prefix-mode)
   (add-to-list 'consult-preview-allowed-hooks #'visual-wrap-prefix-mode)
   (add-to-list 'consult-preview-allowed-hooks #'visual-line-mode)
   (add-to-list 'consult-preview-allowed-hooks #'variable-pitch-mode)
@@ -1195,7 +1194,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
 (use-package visual-wrap
   :ensure nil
   :no-require t
-  :hook ((prog-mode magit-mode conf-mode) . visual-wrap-prefix-mode)
+  :custom (global-visual-wrap-prefix-mode t)
   :preface
   (defun my/visual-wrap--prefix-advice (orig-fn fcp)
     "Indent continuation lines one level deeper and mark them with `wrap-prefix'.
