@@ -534,6 +534,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (defun my/format-tab-spacing (string _ _)
     (concat "  " string "  "))
   :config
+  (tab-bar-mode 1)
   (if (boundp 'tab-bar-tab-name-format-functions)
       (progn
         (add-to-list 'tab-bar-tab-name-format-functions #'my/format-tab-spacing)
