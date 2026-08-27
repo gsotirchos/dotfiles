@@ -1320,7 +1320,7 @@ text still lands on a multiple of `standard-indent'."
     (or (eq (char-syntax (following-char)) ?w)
         (electric-pair-default-inhibit char)))
   :custom
-  (electric-pair-skip-self nil)
+  (electric-pair-skip-whitespace nil)
   (electric-pair-inhibit-predicate #'my/electric-pair-inhibit))
 
 (use-package rainbow-mode)
