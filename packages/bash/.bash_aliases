@@ -20,6 +20,13 @@ trash() {
     local flags=()
     for arg in "$@"; do
         if [[ "${arg}" == -* ]]; then
+            # drop -r/-R/--recursive arguments
+            if [[ "${arg}" == "--recursive" ]]; then
+                continue
+            elif [[ "${arg}" != --* ]]; then
+                arg="${arg//[rR]/}"
+                [[ "${arg}" == "-" ]] && continue
+            fi
             flags=("${flags[@]}" "${arg}")
             continue
         fi
