@@ -50,6 +50,15 @@ keymap:
       Alt-Backspace: Ctrl-Backspace # delete word
       Alt-Delete: Ctrl-Delete       # kill word
 
+  # Modifiers a remap doesn't name are ignored by xremap, so Super-Alt-Right
+  # would match `Alt-Right` below and emit Ctrl-Right with Super still held.
+  # Claiming the combo first and mapping it to itself passes it through to
+  # GNOME untouched. (Shift-Super-Alt-Arrow passes through too).
+  - name: GNOME workspace switching
+    remap:
+      Super-Alt-Left: Super-Alt-Left
+      Super-Alt-Right: Super-Alt-Right
+
   - name: macOS navigation shortcuts
     application:
       not:
