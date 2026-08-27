@@ -1314,7 +1314,14 @@ text still lands on a multiple of `standard-indent'."
   :ensure nil
   :no-require t
   :hook (prog-mode text-mode)
-  :custom (electric-pair-skip-self nil))
+  :preface
+  (defun my/electric-pair-inhibit (char)
+    "Inhibit pairing CHAR directly before a word; else use the default."
+    (or (eq (char-syntax (following-char)) ?w)
+        (electric-pair-default-inhibit char)))
+  :custom
+  (electric-pair-skip-self nil)
+  (electric-pair-inhibit-predicate #'my/electric-pair-inhibit))
 
 (use-package rainbow-mode)
 
