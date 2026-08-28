@@ -1095,7 +1095,7 @@ commit message.")
   :after my-keybindings
   :ensure nil
   :no-require t
-  :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode) . eglot-ensure)
+  :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode nxml-mode) . eglot-ensure)
   :bind (:map my/personal-map ("rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
@@ -1116,6 +1116,16 @@ commit message.")
   (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
   :init
   (setq eglot-stay-out-of '(flymake))
+  ;; LemMinX reads its settings from the `xml' section, both from
+  ;; `initializationOptions' and from `workspace/didChangeConfiguration';
+  ;; Eglot sends the latter on connect with exactly this shape.
+  (setq-default eglot-workspace-configuration
+                '(:xml (:useCache t
+                                  :downloadExternalResources (:enabled t)
+                                  :validation (:noGrammar "ignore")
+                                  :format (:enabled t
+                                                    :maxLineWidth 100
+                                                    :splitAttributes "preserve"))))
   (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
   :config
   (add-to-list 'eglot-server-programs
@@ -1127,7 +1137,9 @@ commit message.")
                     "--header-insertion=never"
                     "--background-index"
                     "--completion-style=detailed"
-                    "--query-driver=**/.pixi/envs/**/bin/*"))))
+                    "--query-driver=**/.pixi/envs/**/bin/*")))
+  (add-to-list 'eglot-server-programs
+               `((nxml-mode :language-id "xml") . ("lemminx"))))
 
 (use-package apheleia
   :defer 1
@@ -1647,14 +1659,13 @@ text still lands on a multiple of `standard-indent'."
   :ensure nil
   :no-require t
   :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'" "\\.launch\\'")
-  :custom (nxml-child-indent 4)
+  :custom (nxml-child-indent 2)
   :preface
   (defun my/nxml-mode-hook ()
     (flyspell-mode -1)
     (outline-minor-mode 1)
+    (my/set-local-indent-width nxml-child-indent)
     (setq-local fill-paragraph-function #'my/reindent-or-fill-paragraph
-                standard-indent nxml-child-indent
-                evil-shift-width nxml-child-indent
                 nxml-attribute-indent nxml-child-indent
                 outline-regexp "[ \t]*<[^!?]*"
                 outline-heading-end-regexp ">[\n\r]"
