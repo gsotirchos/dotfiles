@@ -57,10 +57,10 @@ Return t so `fill-paragraph' treats the paragraph as handled."
     (if (nth 4 (syntax-ppss))
         (fill-paragraph justify)
       (save-excursion
-        (beginning-of-defun)
-        (let ((start (point)))
-          (end-of-defun)
-          (indent-region start (point)))))
+        (let* ((orig (point))
+               (end (progn (goto-char orig) (end-of-defun) (point)))
+               (start (progn (goto-char orig) (beginning-of-defun) (point))))
+          (indent-region start end))))
     t)
   (setq-default fill-paragraph-function #'my/reindent-or-fill-paragraph)
 
@@ -1125,7 +1125,8 @@ commit message.")
                                   :validation (:noGrammar "ignore")
                                   :format (:enabled t
                                                     :maxLineWidth 100
-                                                    :splitAttributes "preserve"))))
+                                                    :splitAttributes "preserve"
+                                                    :preserveAttributeLineBreaks t))))
   (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
   :config
   (add-to-list 'eglot-server-programs
@@ -1168,7 +1169,9 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
     "Apheleia-format the buffer, else fall back to `fill-paragraph'."
     (interactive (progn (barf-if-buffer-read-only)
                         (list (if current-prefix-arg 'full) t)))
-    (my/apheleia-format-or #'fill-paragraph justify region))
+    (if (and region (use-region-p) (not (nth 4 (syntax-ppss))))
+        (indent-region (region-beginning) (region-end))
+      (my/apheleia-format-or #'fill-paragraph justify region)))
   (defun my/apheleia-format-or-prog-fill (&optional arg)
     "Apheleia-format the buffer, else fall back to `prog-fill-reindent-defun'."
     (interactive "P")
@@ -1664,6 +1667,7 @@ text still lands on a multiple of `standard-indent'."
   (defun my/nxml-mode-hook ()
     (flyspell-mode -1)
     (outline-minor-mode 1)
+    (visual-line-mode -1)
     (my/set-local-indent-width nxml-child-indent)
     (setq-local fill-paragraph-function #'my/reindent-or-fill-paragraph
                 nxml-attribute-indent nxml-child-indent
