@@ -7,10 +7,12 @@
   "model": "opus",
   "workflowKeywordTriggerEnabled": false,
   "enabledPlugins": {
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
   },
   "spinnerTipsEnabled": false,
   "promptSuggestionEnabled": false,
+  "respectGitignore": false,
   "theme": "auto",
   "editorMode": "vim",
   "preferredNotifChannel": "ghostty",
