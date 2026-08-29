@@ -189,7 +189,9 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
 
   ;; Pad the echo area and command entry minibuffer to avoid rounded corner obstruction
-  (defface my/echo-area-default-face nil "Remapped default face for echo area text.")
+  (defface my/echo-area-default-face nil
+    "Remapped default face for echo area text."
+    :group 'faces)
   (dolist (buf '(" *Echo Area 0*" " *Echo Area 1*"))
     (with-current-buffer (get-buffer-create buf)
       (when (eq system-type 'darwin)
@@ -1289,7 +1291,8 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   (defvar my/fold-ellipsis " ... ")
 
   (defface my/fold-ellipsis-face '((t :inherit default))
-    "Face for the ellipsis standing in for folded text.")
+    "Face for the ellipsis standing in for folded text."
+    :group 'faces)
 
   (defun my/customize-fold-ellipsis ()
     "Give the folding ellipsis a dimmed, boxed badge look."
