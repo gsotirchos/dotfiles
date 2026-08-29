@@ -435,11 +435,10 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
 (use-package my-mode-line
   :ensure nil
   :load-path "site-lisp/"
-  :hook after-init
-  ;; :init (add-hook 'after-load-theme-hook
-  ;;                 (lambda ()
-  ;;                   (setq-default mode-line-format my/mode-line-format)))
-  )
+  :hook (after-init . my-mode-line-setup)
+  :custom
+  (mode-line-modes-delimiters nil)
+  (mode-line-collapse-minor-modes '(not flymake-mode)))
 
 (use-package my-theme-switcher
   :ensure nil
@@ -1396,6 +1395,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :bind (:map my/personal-map ("M-f" . flymake-show-buffer-diagnostics))
   :custom
   (flymake-no-changes-timeout 1)
+  (flymake-mode-line-format '(" " flymake-mode-line-counters))
   (flymake-show-diagnostics-at-end-of-line t)
   (flymake-indicator-type 'margins)
   (flymake-autoresize-margins nil)      ; width is my-margin's job
