@@ -5,7 +5,6 @@ This document provides compact, high-signal guidance to help AI agents working i
 ## Core Rules & File Ownership
 
 * **Do NOT Edit Home Directory Files:** This repository is a dotfiles manager. The files in `~/.bashrc`, `~/.vim/`, etc., are symlinked from here (via `etc/setup_dotfiles.sh`, which runs GNU Stow over `packages/`). **Always make edits to the files inside this repository** (e.g., `/Users/george/.dotfiles/packages/bash/.bashrc`), never directly in `$HOME`.
-* **Suggest commit messages:** Any time you implement a (meaningful) fix after my request, for an issue we troubleshooted together, at the very end of that answer accompanying your code changes you will provide me with a *concise yet informative commit message (summary: max. 50 chars long line; body: max. 73 chars long lines, if any)* in case I want to commit those changes myself later.
 
 ## Linting and Verification
 
