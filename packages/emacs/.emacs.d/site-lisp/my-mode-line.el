@@ -23,22 +23,6 @@ mouse-3: Toggle minor modes"
           " ")))
 (put 'my/mode-line-major-modes 'risky-local-variable t)
 
-(defvar my/mode-line-minor-modes
-  (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
-    (list (propertize "%[" 'help-echo recursive-edit-help-echo)
-          "("
-          `(:propertize ("" minor-mode-alist)
-                        mouse-face mode-line-highlight
-                        help-echo "Minor mode\n\
-mouse-1: Display minor mode menu\n\
-mouse-2: Show help for minor mode\n\
-mouse-3: Toggle minor modes"
-                        local-map ,mode-line-minor-mode-keymap)
-          " )"
-          (propertize "%]" 'help-echo recursive-edit-help-echo)
-          " ")))
-(put 'my/mode-line-minor-modes 'risky-local-variable t)
-
 (defvar my/mode-line-spacer
   '(:propertize (" ") display (min-width (1.0))))
 (put 'my/mode-line-spacer 'risky-local-variable t)
@@ -57,7 +41,8 @@ mouse-3: Toggle minor modes"
 
 (defun my/mode-line-reset-local-buffers ()
   "Reset `mode-line-format' to the global default in all buffers.
-Protects buffers where it is explicitly set to nil (e.g., `pdf-view-mode')."
+Leaves alone buffers hiding their mode line via `mode-line-invisible-mode',
+which marks them by setting `mode-line-format' buffer-locally to nil."
   (dolist (buf (buffer-list))
     (with-current-buffer buf
       (when (and (local-variable-p 'mode-line-format)
@@ -78,7 +63,7 @@ Protects buffers where it is explicitly set to nil (e.g., `pdf-view-mode')."
     mode-line-frame-identification
     mode-line-buffer-identification
     my/mode-line-spacer
-    mode-line-position
+    (:propertize ("" mode-line-position) display (min-width (10.0)))
     my/mode-line-vc-info
     my/mode-line-major-modes
     my/mode-line-flymake-info

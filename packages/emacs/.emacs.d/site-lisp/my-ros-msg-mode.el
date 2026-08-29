@@ -15,10 +15,10 @@
   ;; Define font-lock rules
   (setq font-lock-defaults
         '((("^\\s-*\\([a-zA-Z0-9_/]+\\)\\(?:\\[[0-9]*\\]\\)?\\s-+\\([a-zA-Z0-9_]+\\)"
-            (1 font-lock-type-face)
-            (2 font-lock-variable-name-face))
+            (1 'font-lock-type-face)
+            (2 'font-lock-variable-name-face))
            ("=\\s-*\\([^#\n]*[^# \t\n]\\)"
-            (1 font-lock-constant-face))))))
+            (1 'font-lock-constant-face))))))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.msg\\'" . my-ros-msg-mode))
