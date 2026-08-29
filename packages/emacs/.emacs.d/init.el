@@ -1170,8 +1170,8 @@ commit message.")
     "Format the buffer with Apheleia if a formatter is configured for it.
 Otherwise call FALLBACK (the command normally on \\[fill-paragraph])
 interactively with ARGS.  Used to overload \\[fill-paragraph]."
-    (if-let ((formatters (and (fboundp 'apheleia--get-formatters)
-                              (apheleia--get-formatters))))
+    (if-let* ((formatters (and (fboundp 'apheleia--get-formatters)
+                               (apheleia--get-formatters))))
         (apheleia-format-buffer formatters)
       (apply #'funcall-interactively fallback args)))
   (defun my/apheleia-format-or-fill-paragraph (&optional justify region)
