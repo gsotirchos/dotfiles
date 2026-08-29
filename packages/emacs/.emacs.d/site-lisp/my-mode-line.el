@@ -1,53 +1,17 @@
 ;;; my-mode-line.el --- Custom mode line configuration  -*- lexical-binding: t; -*-
 ;;; Commentary:
 
+;; Emacs 31.1 dropped the `min-width' specs from the standard `mode-line-format',
+;; which a proportional mode-line font (`modus-themes-variable-pitch-ui') needs to
+;; keep fields from resizing.  This format is the standard one with those specs
+;; restored and a slot added for `evil-mode-line-tag'.
+
 ;;; Code:
 
-
-(defvar my/mode-line-major-modes
-  (let ((recursive-edit-help-echo "Recursive edit, type C-M-c to get out"))
-    (list (propertize "%[" 'help-echo recursive-edit-help-echo)
-          `(:propertize ("" mode-name)
-                        help-echo "Major mode\n\
-mouse-1: Display major mode menu\n\
-mouse-2: Show help for major mode\n\
-mouse-3: Toggle minor modes"
-                        mouse-face mode-line-highlight
-                        local-map ,mode-line-major-mode-keymap)
-          '("" mode-line-process)
-          (propertize "%n" 'help-echo "mouse-2: Remove narrowing from buffer"
-                      'mouse-face 'mode-line-highlight
-                      'local-map (make-mode-line-mouse-map
-                                  'mouse-2 #'mode-line-widen))
-          (propertize "%]" 'help-echo recursive-edit-help-echo)
-          " ")))
-(put 'my/mode-line-major-modes 'risky-local-variable t)
 
 (defvar my/mode-line-spacer
   '(:propertize (" ") display (min-width (1.0))))
 (put 'my/mode-line-spacer 'risky-local-variable t)
-
-(defvar my/mode-line-vc-info
-  '(:eval (when (and vc-mode (not (string-empty-p vc-mode)))
-            (list '(vc-mode vc-mode) my/mode-line-spacer))))
-(put 'my/mode-line-vc-info 'risky-local-variable t)
-
-(defvar my/mode-line-flymake-info
-  '(:eval (when (bound-and-true-p flymake-mode)
-            (list
-             my/mode-line-spacer
-             flymake-mode-line-counters))))
-(put 'my/mode-line-flymake-info 'risky-local-variable t)
-
-(defun my/mode-line-reset-local-buffers ()
-  "Reset `mode-line-format' to the global default in all buffers.
-Leaves alone buffers hiding their mode line via `mode-line-invisible-mode',
-which marks them by setting `mode-line-format' buffer-locally to nil."
-  (dolist (buf (buffer-list))
-    (with-current-buffer buf
-      (when (and (local-variable-p 'mode-line-format)
-                 mode-line-format)
-        (kill-local-variable 'mode-line-format)))))
 
 (defvar my/mode-line-format
   '("%e"
@@ -64,34 +28,27 @@ which marks them by setting `mode-line-format' buffer-locally to nil."
     mode-line-buffer-identification
     my/mode-line-spacer
     (:propertize ("" mode-line-position) display (min-width (10.0)))
-    my/mode-line-vc-info
-    my/mode-line-major-modes
-    my/mode-line-flymake-info
+    ;; The inner list must start with "" so that its head is not read as the
+    ;; condition of a nested (SYMBOL THEN) construct.
+    (vc-mode ("" vc-mode my/mode-line-spacer))
+    mode-line-modes
     my/mode-line-spacer
     mode-line-misc-info
     mode-line-end-spaces))
 
-;; Save the original format to restore it if we disable the mode
-(defvar my/original-mode-line-format nil)
-
-
 ;;;###autoload
-(define-minor-mode my-mode-line-mode
-  "Toggle my custom mode line."
-  :global t
-  :group 'mode-line
-  (if my-mode-line-mode
-      (progn
-        ;; Capture original format if we don't have a backup yet
-        (unless my/original-mode-line-format
-          (setq my/original-mode-line-format (default-value 'mode-line-format)))
-        (setq-default mode-line-format my/mode-line-format)
-        (my/mode-line-reset-local-buffers))
-    ;; Restore original format and clear the backup
-    (when my/original-mode-line-format
-      (setq-default mode-line-format my/original-mode-line-format)
-      (setq my/original-mode-line-format nil)
-      (my/mode-line-reset-local-buffers))))
+(defun my-mode-line-setup ()
+  "Install `my/mode-line-format' as the default mode line.
+Buffers that predate this call carry a buffer-local `mode-line-format':
+`early-init.el' hides the mode line during startup, and `evil-mode' copies
+whatever the format holds into every live buffer as it turns on.  Killing
+those locals lets such buffers pick up the new default, while buffers
+hiding their mode line via `mode-line-invisible-mode' are left alone."
+  (setq-default mode-line-format my/mode-line-format)
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (unless (bound-and-true-p mode-line-invisible-mode)
+        (kill-local-variable 'mode-line-format)))))
 
 (provide 'my-mode-line)
 ;;; my-mode-line.el ends here
