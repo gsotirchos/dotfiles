@@ -3,8 +3,7 @@
 ;;; Commentary:
 ;; Vim steps a buffer-local `foldlevel' with `zm' and `zr', so folding closes and
 ;; opens one nesting level at a time.  No Emacs folding front end offers this:
-;; `evil', `kirigami' and `outline-indent' all provide only "fold this node" and
-;; "fold everything".
+;; `evil' and `kirigami' provide only "fold this node" and "fold everything".
 ;;
 ;; The primitive is there for outline: `outline-hide-sublevels' takes a number of
 ;; nesting levels to leave visible and acts on the whole buffer, which is exactly
@@ -12,6 +11,14 @@
 ;; depth and leaving the blocks nested inside it without an overlay of their own.
 ;; This module supplies the missing piece: a buffer-local counter over those two
 ;; backends, plus the four commands that step it.
+;;
+;; The hideshow pass measures nesting with `hs-block-start-regexp' and the paren
+;; depth at each match, which suits sexp languages such as Emacs Lisp.  Emacs 31.1
+;; leaves that regexp nil in tree-sitter modes, which find their blocks through the
+;; parser instead, so hideshow cannot measure depth there at all.  Those languages
+;; are folded through the outline pass instead, `outline-indent-minor-mode' giving
+;; them an indentation outline to count.  A tree-sitter buffer set up with neither
+;; reports a single level, and the commands below then fold it as a whole.
 ;;
 ;; Levels here are 1-based -- level 1 leaves only the outermost constructs
 ;; visible -- while the echo area reports Vim's 0-based `foldlevel'.
@@ -49,8 +56,7 @@ nothing folded.")
 (defun my-fold-level--backend ()
   "Return the folding backend of the current buffer.
 Either the symbol `outline' or `hideshow', or nil if neither is in use.
-Outline wins when both are active: it is the more faithful of the two, and
-`outline-indent-minor-mode' is built on it."
+Outline wins when both are active: it is the more faithful of the two."
   (cond ((or (bound-and-true-p outline-minor-mode)
              (derived-mode-p 'outline-mode))
          'outline)
@@ -61,9 +67,9 @@ Outline wins when both are active: it is the more faithful of the two, and
   "Return the level at which no outline heading is left folded.
 That is the deepest heading level, plus one if any heading has a body:
 `outline-hide-sublevels' hides every body, so where bodies exist one further
-level is needed before nothing at all is hidden.  Indentation outlines such as
-`outline-indent-minor-mode' have no bodies, every non-blank line being a heading
-of its own, and so stop one level earlier."
+level is needed before nothing at all is hidden.  Indentation outlines have no
+bodies, every non-blank line being a heading of its own, and so stop one level
+earlier."
   (save-excursion
     (goto-char (point-min))
     (let ((deepest 0) (body nil))
@@ -89,7 +95,9 @@ nothing."
   (save-excursion
     (goto-char (point-min))
     (let ((deepest 0))
-      (while (re-search-forward hs-block-start-regexp nil t)
+      (while (and (stringp hs-block-start-regexp)
+                  (not (bound-and-true-p hs-indentation-mode))
+                  (re-search-forward hs-block-start-regexp nil t))
         ;; `syntax-ppss' leaves point at the position it parsed up to, which
         ;; would send the search back over the delimiter it just matched.
         (let* ((start (match-beginning hs-block-start-mdata-select))
@@ -115,7 +123,8 @@ what makes opening a block uncover just the next level, as in Vim.  Relies on
     (goto-char (point-min))
     (let (blocks)
       ;; Same traversal as `my-fold-level--hideshow-max'.
-      (while (re-search-forward hs-block-start-regexp nil t)
+      (while (and (stringp hs-block-start-regexp)
+                  (re-search-forward hs-block-start-regexp nil t))
         (let* ((start (match-beginning hs-block-start-mdata-select))
                (state (save-excursion (syntax-ppss start)))
                (depth (1+ (car state))))
@@ -185,12 +194,19 @@ The result is cached until the buffer text changes."
   "Return the current fold level, defaulting to a fully unfolded buffer."
   (or my-fold-level (my-fold-level--max-level)))
 
+(defun my-fold-level--steppable-p ()
+  "Return non-nil if the buffer has more than one fold level to step through.
+A backend that cannot measure nesting reports a single level, which leaves
+nothing for `zm' and `zr' to do; such buffers are folded whole instead."
+  (and (my-fold-level--backend)
+       (> (my-fold-level--max-level) 1)))
+
 ;;;###autoload
 (defun my-fold-level-decrease (&optional count)
   "Fold one nesting level more, like Vim's `zm'.
 With a numeric prefix COUNT, fold COUNT levels more."
   (interactive "p")
-  (if (my-fold-level--backend)
+  (if (my-fold-level--steppable-p)
       (my-fold-level--set (- (my-fold-level--current) (or count 1)))
     (my-fold-level--fallback 'close)))
 
@@ -199,7 +215,7 @@ With a numeric prefix COUNT, fold COUNT levels more."
   "Unfold one nesting level more, like Vim's `zr'.
 With a numeric prefix COUNT, unfold COUNT levels more."
   (interactive "p")
-  (if (my-fold-level--backend)
+  (if (my-fold-level--steppable-p)
       (my-fold-level--set (+ (my-fold-level--current) (or count 1)))
     (my-fold-level--fallback 'open)))
 
@@ -207,7 +223,7 @@ With a numeric prefix COUNT, unfold COUNT levels more."
 (defun my-fold-level-close-all ()
   "Close every fold in the buffer, like Vim's `zM'."
   (interactive)
-  (if (my-fold-level--backend)
+  (if (my-fold-level--steppable-p)
       (my-fold-level--set 1)
     (my-fold-level--fallback 'close)))
 
@@ -215,7 +231,7 @@ With a numeric prefix COUNT, unfold COUNT levels more."
 (defun my-fold-level-open-all ()
   "Open every fold in the buffer, like Vim's `zR'."
   (interactive)
-  (if (my-fold-level--backend)
+  (if (my-fold-level--steppable-p)
       (my-fold-level--set (my-fold-level--max-level))
     (my-fold-level--fallback 'open)))
 
