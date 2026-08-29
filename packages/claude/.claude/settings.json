@@ -1,4 +1,5 @@
 {
+  "respectGitignore": false,
   "attribution": {
     "commit": "",
     "pr": "",
@@ -12,9 +13,8 @@
   },
   "spinnerTipsEnabled": false,
   "promptSuggestionEnabled": false,
-  "respectGitignore": false,
   "theme": "auto",
-  "editorMode": "vim",
+  "editorMode": "normal",
   "preferredNotifChannel": "ghostty",
   "wheelScrollAccelerationEnabled": false,
   "inputNeededNotifEnabled": true,
