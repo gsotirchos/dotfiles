@@ -636,6 +636,16 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
     (hl-line-mode 1))
   (add-hook 'dired-mode-hook #'my/dired-mode-hook))
 
+(use-package speedbar
+  :ensure nil
+  :no-require t
+  :commands (speedbar)
+  :custom
+  (speedbar-prefer-window t)
+  (speedbar-use-images nil)
+  (speedbar-show-unknown-files t)
+  (speedbar-directory-unshown-regexp "^\\'"))
+
 (use-package eshell
   :ensure nil
   :no-require t
