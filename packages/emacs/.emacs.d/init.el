@@ -69,7 +69,8 @@ Return t so `fill-paragraph' treats the paragraph as handled."
     "Set the buffer-local indentation step to WIDTH."
     (setq-local standard-indent width
                 tab-width width
-                evil-shift-width width))
+                evil-shift-width width
+                visual-wrap-extra-indent width))
 
   ;; List manipulation utilities
   (defun my/update-plist-property (plist property fn)
@@ -138,19 +139,22 @@ Return t so `fill-paragraph' treats the paragraph as handled."
         (when (functionp func)
           (funcall func)))))
 
-  ;; Custom after theme load hook
+  ;; Carrier for the per-buffer face customizations; `enable-theme-functions'
+  ;; is global, so buffer-local entries are dispatched from the one hook below.
   (defvar after-load-theme-hook nil
-    "Hook that runs after a color theme is loaded using `load-theme'.")
+    "Hook that runs after a color theme is enabled.")
 
-  (defun my/run-after-load-theme-hook (&rest _)
-    "Run `after-load-theme-hook`."
-    (run-hooks 'after-load-theme-hook))
+  (defun my/run-after-load-theme-hook (theme &rest _)
+    "Run `after-load-theme-hook' once THEME is enabled.
+Skips the `user' pseudo-theme, which `load-theme' enables alongside the
+real one and which would otherwise run every hook twice."
+    (unless (eq theme 'user)
+      (run-hooks 'after-load-theme-hook)))
 
   (add-hook 'after-load-theme-hook
             (lambda () (my/run-other-buffers-local-hooks 'after-load-theme-hook)))
 
-  (advice-add 'load-theme :before (lambda (&rest _) (mapc #'disable-theme custom-enabled-themes)))
-  (advice-add 'load-theme :after #'my/run-after-load-theme-hook)
+  (add-hook 'enable-theme-functions #'my/run-after-load-theme-hook)
 
   (defun my/theme-color (name)
     "Return the color NAME resolves to in the active theme's palette, or nil.
@@ -197,6 +201,12 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
     (when-let* ((fg (my/theme-color 'fg-dim)))
       (set-face-attribute 'my/echo-area-default-face nil :foreground fg)))
   (add-hook 'after-load-theme-hook #'my/customize-echo-area-face)
+
+  (defun my/customize-special-glyphs ()
+    "Dim the truncation and continuation glyphs so they read as marks, not text."
+    (when-let* ((fg (my/theme-color 'fg-dim)))
+      (set-face-attribute 'special-glyphs nil :foreground fg)))
+  (add-hook 'after-load-theme-hook #'my/customize-special-glyphs)
 
   (when (eq system-type 'darwin)
     (defun my/pad-minibuffer-prompt ()
@@ -256,21 +266,23 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (global-text-scale-adjust-resizes-frames t)
   (line-spacing fixed-pitch-line-spacing)
   (truncate-lines nil)
-  (wrap-prefix "…")
+  (wrap-prefix (propertize "…" 'face 'special-glyphs))
   (cursor-in-non-selected-windows nil)
   (left-margin-width 0)
   (right-margin-width 0)
   (indent-tabs-mode nil)
   (treemacs-no-png-images t)
   (delete-by-moving-to-trash t)
+  (treesit-enabled-modes t)
 
   :init
-  (xterm-mouse-mode 1)
   (context-menu-mode 1)
   (pixel-scroll-precision-mode 1)
   ;; Display table for wrap prefix
   (set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
-  (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix)))
+  (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
+  ;; Keeps the glyphs set above and applies `special-glyphs' to them.
+  (prettify-special-glyphs-mode 1))
 
 
 ;; Basic packages
@@ -524,7 +536,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (tab-bar-close-button-show nil)
   (tab-bar-separator "")
   (tab-bar-auto-width nil)
-  (tab-bar-tab-name-truncated-max 100)
+  (tab-bar-truncate t)
   (tab-bar-format
    '(tab-bar-format-tabs
      tab-bar-separator
@@ -535,10 +547,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
     (concat "  " string "  "))
   :config
   (tab-bar-mode 1)
-  (if (boundp 'tab-bar-tab-name-format-functions)
-      (progn
-        (add-to-list 'tab-bar-tab-name-format-functions #'my/format-tab-spacing)
-        (add-to-list 'tab-bar-tab-name-format-functions #'tab-bar-tab-name-format-truncated)))
+  (add-to-list 'tab-bar-tab-name-format-functions #'my/format-tab-spacing)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package stripes
@@ -787,9 +796,9 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
 (use-package orderless
   :custom
   (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion))))
-  (completion-category-defaults nil) ;; Disable defaults, use our settings
-  (completion-pcm-leading-wildcard t)) ;; Emacs 31: partial-completion behaves like substring
+  (completion-category-overrides
+   '((file (styles (partial-completion ((completion-pcm-leading-wildcard t)))))))
+  (completion-category-defaults nil)) ;; Disable defaults, use our settings
 
 (use-package consult
   :after (evil vertico)
@@ -982,7 +991,7 @@ commit message.")
         (pdf-view-midnight-minor-mode 1)
       (pdf-view-midnight-minor-mode -1)))
   (defun my/pdf-view-mode-hook ()
-    (setq mode-line-format nil)
+    (mode-line-invisible-mode 1)
     (pdf-view-fit-width-to-window)
     (tooltip-mode -1)
     (my/maybe-toggle-pdf-midnight-view)
@@ -1210,18 +1219,9 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
 (use-package visual-wrap
   :ensure nil
   :no-require t
-  :custom (global-visual-wrap-prefix-mode t)
-  :preface
-  (defun my/visual-wrap--prefix-advice (orig-fn fcp)
-    "Indent continuation lines one level deeper and mark them with `wrap-prefix'.
-Binds `visual-wrap-extra-indent' to the buffer's indentation step, as set by
-`my/set-local-indent-width', less the width of `wrap-prefix', so that wrapped
-text still lands on a multiple of `standard-indent'."
-    (dlet ((visual-wrap-extra-indent
-            (max 0 (- standard-indent (string-width wrap-prefix)))))
-      (concat (funcall orig-fn fcp) wrap-prefix)))
-  :config
-  (advice-add 'visual-wrap--prefix :around #'my/visual-wrap--prefix-advice))
+  :custom
+  (global-visual-wrap-prefix-mode t)
+  (visual-wrap-extra-indent standard-indent))
 
 (use-package hideshow
   :ensure nil
@@ -1231,6 +1231,7 @@ text still lands on a multiple of `standard-indent'."
 (use-package outline
   :ensure nil
   :no-require t
+  :custom (outline-blank-line t)
   :preface
   (defun my/outline-toggle-children-advice (_orig-fun &rest _args)
     "Fix `outline-toggle-children` for multi-line headings."
@@ -1245,10 +1246,9 @@ text still lands on a multiple of `standard-indent'."
   (advice-add 'outline-toggle-children :around #'my/outline-toggle-children-advice))
 
 (use-package outline-indent
-  :hook ((conf-mode yaml-ts-mode nxml-mode python-base-mode sh-base-mode) . outline-indent-minor-mode)
-  :custom (outline-blank-line t)
-  ;; (outline-indent-ellipsis " ▼")
-  )
+  :hook ((conf-mode yaml-ts-mode nxml-mode python-base-mode sh-base-mode
+                    c-ts-base-mode json-ts-mode)
+         . outline-indent-minor-mode))
 
 (use-package kirigami
   :custom (kirigami-preserve-visual-position t)
@@ -1258,22 +1258,12 @@ text still lands on a multiple of `standard-indent'."
              kirigami-toggle-fold
              kirigami-open-folds
              kirigami-close-folds)
-  :preface
-  (defun my/hs-show-block-recursively ()
-    "Open the hideshow block at point and every block nested inside it."
-    (let ((hs-allow-nesting nil))
-      (save-excursion
-        ;; Hideshow looks for the block from point, and misses it when point sits
-        ;; left of the opening delimiter.
-        (end-of-line)
-        ;; The first call drops the overlay of the block itself; the second, which
-        ;; finds it open, discards the nested ones.
-        (hs-show-block)
-        (hs-show-block))))
   :config
-  ;; `kirigami' leaves `:open-rec' unimplemented for hideshow.
-  (plist-put (cdr (assoc '(hs-minor-mode) kirigami-fold-list))
-             :open-rec #'my/hs-show-block-recursively))
+  ;; `kirigami' leaves `:open-rec' unimplemented for hideshow.  Since Emacs 31.1
+  ;; `hs-show-block' opens the blocks nested inside the one at point, so the
+  ;; plain opener already is the recursive one.
+  (let ((hideshow (cdr (assoc '(hs-minor-mode) kirigami-fold-list))))
+    (plist-put hideshow :open-rec (plist-get hideshow :open))))
 
 (use-package my-fold-level
   :ensure nil
@@ -1477,18 +1467,10 @@ text still lands on a multiple of `standard-indent'."
   :ensure nil
   :no-require t
   :after treesit
-  :preface (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
   :init
-  (add-hook 'python-base-mode-hook (lambda () (hs-minor-mode -1)))
   (add-hook 'inferior-python-mode-hook
-            (lambda () (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer)))
-  :config
-  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 29.3 max); master is ABI 15.
-  (add-to-list 'treesit-language-source-alist
-               '(python "https://github.com/tree-sitter/tree-sitter-python" "v0.23.6"))
-  (unless (treesit-language-available-p 'python)
-    (treesit-install-language-grammar 'python)))
+            (lambda () (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))))
 
 (use-package flymake-ruff
   :hook (python-base-mode . flymake-ruff-load)
@@ -1540,20 +1522,7 @@ text still lands on a multiple of `standard-indent'."
   :ensure nil
   :no-require t
   :mode (("\\.\\(c\\|h\\)\\'" . c-ts-mode)
-         ("\\.\\(cc\\|cpp\\|cxx\\|hh\\|hpp\\|hxx\\|ipp\\|tpp\\)\\'" . c++-ts-mode))
-  :preface
-  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
-  :config
-  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 30 max); master is ABI 15.
-  (add-to-list 'treesit-language-source-alist
-               '(c "https://github.com/tree-sitter/tree-sitter-c" "v0.23.4"))
-  (add-to-list 'treesit-language-source-alist
-               '(cpp "https://github.com/tree-sitter/tree-sitter-cpp" "v0.23.4"))
-  (dolist (lang '(c cpp))
-    (unless (treesit-language-available-p lang)
-      (treesit-install-language-grammar lang))))
+         ("\\.\\(cc\\|cpp\\|cxx\\|hh\\|hpp\\|hxx\\|ipp\\|tpp\\)\\'" . c++-ts-mode)))
 
 
 ;; Bash
@@ -1561,17 +1530,8 @@ text still lands on a multiple of `standard-indent'."
 (use-package sh-script
   :ensure nil
   :no-require t
-  :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode)
-  :preface (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
-  :init
-  ;; (add-hook 'sh-base-mode-hook #'flymake-mode-off)
-  (add-hook 'sh-base-mode-hook (lambda () (hs-minor-mode -1)))
-  :config
-  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 29.3 max); master is ABI 15.
-  (add-to-list 'treesit-language-source-alist
-               '(bash "https://github.com/tree-sitter/tree-sitter-bash" "v0.23.3"))
-  (unless (treesit-language-available-p 'bash)
-    (treesit-install-language-grammar 'bash)))
+  ;; :init (add-hook 'sh-base-mode-hook #'flymake-mode-off)
+  :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode))
 
 (use-package flymake-bashate
   :commands flymake-bashate-setup
@@ -1588,13 +1548,7 @@ text still lands on a multiple of `standard-indent'."
     (setq-local yaml-indent-offset 2)
     (flyspell-mode -1)
     (my/set-local-indent-width yaml-indent-offset))
-  (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook)
-  :config
-  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 29.3 max); master is ABI 15.
-  (add-to-list 'treesit-language-source-alist
-               '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml" "v0.7.0"))
-  (unless (treesit-language-available-p 'yaml)
-    (treesit-install-language-grammar 'yaml)))
+  (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-hook))
 
 
 ;; JSON
@@ -1605,17 +1559,10 @@ text still lands on a multiple of `standard-indent'."
   :mode ("\\.json\\'" "\\.jsonc\\'")
   :custom (json-ts-mode-indent-offset 2)
   :preface
-  (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
   (defun my/json-mode-hook ()
     (flyspell-mode -1)
     (my/set-local-indent-width json-ts-mode-indent-offset))
-  (add-hook 'json-ts-mode-hook #'my/json-mode-hook)
-  :config
-  ;; Pin to a revision emitting grammar ABI <= 14 (Emacs 29.3 max); master is ABI 15.
-  (add-to-list 'treesit-language-source-alist
-               '(json "https://github.com/tree-sitter/tree-sitter-json" "v0.24.8"))
-  (unless (treesit-language-available-p 'json)
-    (treesit-install-language-grammar 'json)))
+  (add-hook 'json-ts-mode-hook #'my/json-mode-hook))
 
 
 ;; CMake
@@ -1625,13 +1572,7 @@ text still lands on a multiple of `standard-indent'."
   :no-require t
   :mode ("\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'")
   :init
-  (add-hook 'cmake-ts-mode-hook (lambda () (hs-minor-mode -1)))
-  (add-hook 'cmake-ts-mode-hook #'flymake-cmake-lint-setup)
-  :config
-  (add-to-list 'treesit-language-source-alist
-               '(cmake "https://github.com/uyha/tree-sitter-cmake" "v0.7.4"))
-  (unless (treesit-language-available-p 'cmake)
-    (treesit-install-language-grammar 'cmake)))
+  (add-hook 'cmake-ts-mode-hook #'flymake-cmake-lint-setup))
 
 ;; `flymake-quickdef' (used by the backend below) is already pulled in as a
 ;; dependency of `flymake-bashate'.
@@ -1648,12 +1589,7 @@ text still lands on a multiple of `standard-indent'."
   :no-require t
   ;; The built-in mode registers its auto-mode-alist entry and font-lock only
   ;; when the grammar is already installed, so declare the mapping ourselves.
-  :mode ("\\(?:Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'")
-  :config
-  (add-to-list 'treesit-language-source-alist
-               '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile" "v0.2.0"))
-  (unless (treesit-language-available-p 'dockerfile)
-    (treesit-install-language-grammar 'dockerfile)))
+  :mode ("\\(?:Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'"))
 
 
 ;; XML
@@ -1669,12 +1605,7 @@ text still lands on a multiple of `standard-indent'."
     (outline-minor-mode 1)
     (visual-line-mode -1)
     (my/set-local-indent-width nxml-child-indent)
-    (setq-local fill-paragraph-function #'my/reindent-or-fill-paragraph
-                nxml-attribute-indent nxml-child-indent
-                outline-regexp "[ \t]*<[^!?]*"
-                outline-heading-end-regexp ">[\n\r]"
-                outline-level (lambda ()
-                                (+ 1 (/ (current-indentation) nxml-child-indent)))))
+    (setq-local nxml-attribute-indent nxml-child-indent))
   (defun my/nxml-close-tag-indent (orig pos)
     "Indent a lone tag-closer (`>' or `/>') to the start-tag's column.
 ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
