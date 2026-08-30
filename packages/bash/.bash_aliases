@@ -148,7 +148,7 @@ if ! command -v "open" &> /dev/null; then
 fi
 
 if [[ "$OS" == "macos" ]]; then
-    alias update="brew update && brew upgrade -y && brew autoremove -y && brew cleanup --prune=all"
+    alias update="brew update && brew upgrade -y && brew autoremove && brew cleanup --prune=all"
 else
     alias update="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y"
 fi
