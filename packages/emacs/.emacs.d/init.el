@@ -273,6 +273,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (left-margin-width 0)
   (right-margin-width 0)
   (indent-tabs-mode nil)
+  (tab-always-indent 'complete)
   (treemacs-no-png-images t)
   (delete-by-moving-to-trash t)
   (treesit-enabled-modes t)
@@ -574,8 +575,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :ensure nil
   :load-path "site-lisp/"
   :after (stripes corfu vertico)
-  :demand t
-  :bind (:map vertico-map ("TAB" . minibuffer-complete)))
+  :demand t)
 
 (use-package files
   :ensure nil
@@ -771,6 +771,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
 
 (use-package vertico
   :demand t
+  :bind (:map vertico-map ("TAB" . minibuffer-complete))
   :custom
   (vertico-scroll-margin 1)
   (vertico-count 10)  ;; Limit to a fixed size
@@ -791,6 +792,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
    ("DEL" . vertico-directory-delete-char)))
 
 (use-package marginalia
+  :defer nil
   :bind (:map minibuffer-local-map ("M-a" . marginalia-cycle))
   :custom (marginalia-field-width 180)
   :preface
@@ -799,8 +801,13 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
       (set-face-attribute 'marginalia-documentation nil
                           :italic t :family nil :inherit 'variable-pitch)))
   (add-hook 'after-load-theme-hook #'my/marginalia-mode-hook)
-  :defer 1
+  (defun my/marginalia-no-truncate (orig-fun string width)
+    "Return STRING whole when WIDTH is relative, else defer to ORIG-FUN."
+    (if (floatp width)
+        (substring string 0 (string-search "\n" string))
+      (funcall orig-fun string width)))
   :config
+  (advice-add 'marginalia--truncate :around #'my/marginalia-no-truncate)
   (marginalia-mode)
   (my/marginalia-mode-hook))
 
@@ -1438,6 +1445,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
 (use-package flyspell
   :ensure nil
   :no-require t
+  :custom (flyspell-delay-use-timer t)
   :init
   (add-hook 'text-mode-hook #'flyspell-mode)
   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
