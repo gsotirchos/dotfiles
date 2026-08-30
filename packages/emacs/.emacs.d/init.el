@@ -272,6 +272,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (left-margin-width 0)
   (right-margin-width 0)
   (indent-tabs-mode nil)
+  (tab-always-indent 'complete)
   (treemacs-no-png-images t)
   (delete-by-moving-to-trash t)
   (treesit-enabled-modes t)
@@ -769,13 +770,12 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
    ;; so it also shadows the default `C-i' binding of `completion-preview-insert'.
    ("<tab>" . completion-preview-next-candidate)
    ("TAB" . completion-preview-next-candidate)
-   ("S-<tab>" . completion-preview-prev-candidate)
+   ("<backtab>" . completion-preview-prev-candidate)
    ("<return>" . completion-preview-insert)
    ;; Defer to the *Completions* buffer to see every candidate at once.
    ("M-i" . completion-preview-complete))
   :custom
   (completion-preview-minimum-symbol-length 2)
-  (completion-preview-idle-delay 0.2)
   :config
   (global-completion-preview-mode 1))
 
@@ -814,10 +814,53 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :demand t
   :preface
   (defun my/completion-list-mode-hook ()
-    ;; Candidate + marginalia annotation easily exceed the window width; wrapping
-    ;; them would break the one-candidate-per-line reading of `one-column'.
-    (setq-local truncate-lines t))
+    (setq-local truncate-lines t)
+    (mode-line-invisible-mode 1))
   (add-hook 'completion-list-mode-hook #'my/completion-list-mode-hook)
+
+  (defun my/completions-select-first (&rest _)
+    "Select the first candidate when *Completions* has no selection.
+`minibuffer-completion-help' restores an already selected candidate itself
+after every redisplay, so this only fires on bringup and whenever the
+selected candidate is filtered out by what was typed."
+    (when (and (minibufferp)
+               (minibuffer--completions-visible)
+               (not (completion--selected-candidate)))
+      (with-minibuffer-completions-window (first-completion))))
+
+  (defvar my/minibuffer-confirm-categories '(consult-location consult-grep)
+    "Completion categories where RET confirms instead of inserting a candidate.
+A whole line of text is not something to build up in the minibuffer.")
+
+  (defun my/minibuffer-insert-completion ()
+    "Insert the candidate selected in *Completions*, if any.
+Return non-nil when the minibuffer contents changed.  The list is rebuilt
+synchronously because `completion-eager-update' only redraws it once Emacs
+goes idle, which would leave the next key acting on a stale candidate."
+    (unless (memq (completion-metadata-get
+                   (completion-metadata (minibuffer-contents)
+                                        minibuffer-completion-table
+                                        minibuffer-completion-predicate)
+                   'category)
+                  my/minibuffer-confirm-categories)
+      (let ((contents (minibuffer-contents)))
+        (minibuffer-completion-exit t)
+        (unless (equal contents (minibuffer-contents))
+          (when (minibuffer--completions-visible)
+            (minibuffer-completion-help))
+          t))))
+
+  (defun my/minibuffer-insert-or-exit ()
+    "Insert the selected candidate, or exit when there is nothing to insert."
+    (interactive)
+    (unless (my/minibuffer-insert-completion)
+      (exit-minibuffer)))
+
+  (defun my/minibuffer-insert-or-complete-and-exit ()
+    "Insert the selected candidate, or confirm the input when already inserted."
+    (interactive)
+    (unless (my/minibuffer-insert-completion)
+      (minibuffer-complete-and-exit)))
   :custom
   (completions-format 'one-column)
   (completions-max-height 12)
@@ -828,29 +871,33 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (completion-auto-help t)
   ;; Keep focus in the minibuffer and let the list follow what I type.
   (completion-auto-select nil)
+  (completion-auto-deselect nil)
   (minibuffer-visible-completions t)
   (completion-eager-display t)
   (completion-eager-update t)
   (read-minibuffer-restore-windows nil)
   :config
-  ;; `orderless' uses SPC as its component separator and `?' is a legitimate
-  ;; input character; the default completion map claims both.
   (keymap-unset minibuffer-local-completion-map "SPC" t)
   (keymap-unset minibuffer-local-completion-map "?" t)
-  ;; Vertico remapped these to `vertico-next'/`vertico-previous'; point them at
-  ;; the *Completions* list instead.  The menu-item filter falls back to the
-  ;; history commands whenever no completions window is shown.
-  (keymap-set minibuffer-visible-completions-map "<remap> <next-line-or-history-element>"
+  (keymap-unset minibuffer-visible-completions-map "C-g" t)
+  (keymap-set minibuffer-visible-completions-map "TAB"
               (minibuffer-visible-completions--bind #'minibuffer-next-line-completion))
-  (keymap-set minibuffer-visible-completions-map "<remap> <previous-line-or-history-element>"
-              (minibuffer-visible-completions--bind #'minibuffer-previous-line-completion)))
+  (keymap-set minibuffer-visible-completions-map "<backtab>"
+              (minibuffer-visible-completions--bind #'minibuffer-previous-line-completion))
+  (keymap-set minibuffer-visible-completions-map "C-n"
+              (minibuffer-visible-completions--bind #'minibuffer-next-line-completion))
+  (keymap-set minibuffer-visible-completions-map "C-p"
+              (minibuffer-visible-completions--bind #'minibuffer-previous-line-completion))
+  (keymap-set minibuffer-local-completion-map "RET" #'my/minibuffer-insert-or-exit)
+  (keymap-set minibuffer-local-must-match-map "RET" #'my/minibuffer-insert-or-complete-and-exit)
+  (advice-add 'minibuffer-completion-help :after #'my/completions-select-first))
 
 (use-package marginalia
   :defer nil
   :bind (:map minibuffer-local-map ("M-a" . marginalia-cycle))
   :custom (marginalia-field-width 180)
   :preface
-  (defvar my/marginalia-align-max 30
+  (defvar my/marginalia-align-max 40
     "Upper bound, in columns, for the start of a marginalia annotation.")
 
   (defun my/marginalia-mode-hook ()
@@ -860,12 +907,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (add-hook 'after-load-theme-hook #'my/marginalia-mode-hook)
 
   (defun my/marginalia-clamp-align (affixations)
-    "Clamp the annotation column of AFFIXATIONS to `my/marginalia-align-max'.
-`marginalia--align' aligns to the widest candidate of the *entire* set and
-never shrinks again (`marginalia--cache-reset' leaves
-`marginalia--cand-width-max' alone).  Vertico hid this by only ever handing
-marginalia the visible slice; the *Completions* buffer hands it everything,
-which strands the annotations far off to the right."
+    "Clamp the annotation column of AFFIXATIONS to `my/marginalia-align-max'."
     (dolist (affixation affixations affixations)
       (let* ((annotation (nth 2 affixation))
              (pos (text-property-not-all 0 (length annotation) 'display nil annotation)))
@@ -878,28 +920,48 @@ which strands the annotations far off to the right."
               annotation)))))))
 
   (defun my/marginalia-no-truncate (orig-fun string width)
-    "Return STRING whole when WIDTH is relative, else defer to ORIG-FUN.
-A float WIDTH is a fraction of `marginalia-field-width', which
-`marginalia--affixate' caps at half the window width -- so annotations get
-cut off well before the line is full.  `truncate-lines' in the *Completions*
-buffer already deals with overlong lines.  Integer widths are deliberate
-column widths (package version, status, group) and are left to ORIG-FUN.
-Annotations must stay single-line, hence the cut at the first newline."
+    "Return STRING whole when WIDTH is relative, else defer to ORIG-FUN."
     (if (floatp width)
         (substring string 0 (string-search "\n" string))
       (funcall orig-fun string width)))
+
+  (defvar my/marginalia-annotate-max 50
+    "How many candidates to annotate before leaving the rest bare.")
+
+  (defun my/marginalia-annotate-visible (orig-fun metadata annotator candidates)
+    "Annotate only the first `my/marginalia-annotate-max' of CANDIDATES."
+    (if (<= (length candidates) my/marginalia-annotate-max)
+        (funcall orig-fun metadata annotator candidates)
+      (nconc (funcall orig-fun metadata annotator
+                      (take my/marginalia-annotate-max candidates))
+             (nthcdr my/marginalia-annotate-max candidates))))
   :config
+  (advice-add 'marginalia--affixate :around #'my/marginalia-annotate-visible)
   (advice-add 'marginalia--align :filter-return #'my/marginalia-clamp-align)
   (advice-add 'marginalia--truncate :around #'my/marginalia-no-truncate)
   (marginalia-mode)
   (my/marginalia-mode-hook))
 
 (use-package orderless
+  :demand t  ;; `orderless-anchored' must be registered before it is used
+  :preface
+  (defun my/orderless-anchor-first-component (_component index _total)
+    "Match the first pattern component as a literal prefix of the candidate."
+    (when (= index 0) #'orderless-literal-prefix))
   :custom
-  (completion-styles '(orderless basic))
+  (completion-styles '(orderless-anchored basic))
   (completion-category-overrides
-   '((file (styles (partial-completion ((completion-pcm-leading-wildcard t)))))))
-  (completion-category-defaults nil)) ;; Disable defaults, use our settings
+   ;; Anchoring is meaningless where a candidate is a whole line of text.
+   '((consult-location (styles orderless))
+     (consult-grep (styles orderless))
+     (file (styles (partial-completion ((completion-pcm-leading-wildcard t)))))))
+  (completion-category-defaults nil) ;; Disable defaults, use our settings
+  :config
+  (orderless-define-completion-style orderless-anchored
+    "Orderless with the first component anchored to the start of the candidate.
+Affix dispatch still takes precedence, so `~def' remains a flex match."
+    (orderless-style-dispatchers (list #'orderless-affix-dispatch
+                                       #'my/orderless-anchor-first-component))))
 
 (use-package consult
   :after evil
@@ -1528,6 +1590,11 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
 (use-package flyspell
   :ensure nil
   :no-require t
+  :custom
+  ;; Wait for the delay on an idle timer instead of blocking `post-command-hook'
+  ;; in `flyspell-check-word-p' with `sit-for', which stalls the command loop
+  ;; (and any *Completions* refresh) for `flyspell-delay' seconds.
+  (flyspell-delay-use-timer t)
   :init
   (add-hook 'text-mode-hook #'flyspell-mode)
   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
