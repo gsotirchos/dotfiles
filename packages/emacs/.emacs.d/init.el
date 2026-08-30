@@ -257,7 +257,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (ad-redefinition-action 'accept)
   (use-short-answers t)
   (confirm-kill-emacs #'yes-or-no-p)
-  (global-completion-preview-mode t)
   (sentence-end-double-space nil)
   (scroll-margin 0)
   (hscroll-margin 0)
@@ -570,12 +569,12 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (my/customize-stripes)  ;; set the face now, not only on theme reload
   (add-hook 'after-load-theme-hook #'my/customize-stripes))
 
-(use-package my-stripes
-  :ensure nil
-  :load-path "site-lisp/"
-  :after (stripes corfu vertico)
-  :demand t
-  :bind (:map vertico-map ("TAB" . minibuffer-complete)))
+;; (use-package my-stripes
+;;   :ensure nil
+;;   :load-path "site-lisp/"
+;;   :after (stripes corfu vertico)
+;;   :demand t
+;;   :bind (:map vertico-map ("TAB" . minibuffer-complete)))
 
 (use-package files
   :ensure nil
@@ -723,42 +722,62 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :demand t
   :config (global-evil-surround-mode 1))
 
-(use-package corfu
+;; (use-package corfu
+;;   :demand t
+;;   :bind
+;;   (nil
+;;    :map corfu-map
+;;    ;; ("RET" . nil)
+;;    ("<return>" . corfu-complete)
+;;    ("<tab>" . corfu-next)
+;;    ("S-<tab>" . corfu-previous)
+;;    ("<escape>" . corfu-reset)
+;;    ("C-d" . corfu-scroll-up)
+;;    ("C-u" . corfu-scroll-down)
+;;    ("<next>" . corfu-scroll-up)
+;;    ("<prior>" . corfu-scroll-down)
+;;    ("S-SPC" . corfu-insert-separator))
+;;   :preface
+;;   (defun my/corfu-minibuffer-filter ()
+;;     "Do not show Corfu in minibuffer for MCT, Vertico, or password prompts."
+;;     (interactive)
+;;     (not (or (bound-and-true-p mct--active)
+;;              (bound-and-true-p vertico--input)
+;;              (eq (current-local-map) read-passwd-map))))
+;;   :custom
+;;   (corfu-auto t)  ;; auto-completion
+;;   (corfu-quit-no-match t)
+;;   (corfu-auto-prefix 2)
+;;   (corfu-auto-delay 0.2)
+;;   (corfu-popupinfo-delay '(0.5 . 0.2))
+;;   (corfu-preview-current 'insert)  ;; insert previewed candidate
+;;   (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
+;;   (corfu-cycle t)
+;;   (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
+;;   :config
+;;   (global-corfu-mode)
+;;   (corfu-popupinfo-mode)
+;;   (corfu-history-mode))
+
+(use-package completion-preview
+  :ensure nil
   :demand t
   :bind
   (nil
-   :map corfu-map
-   ;; ("RET" . nil)
-   ("<return>" . corfu-complete)
-   ("<tab>" . corfu-next)
-   ("S-<tab>" . corfu-previous)
-   ("<escape>" . corfu-reset)
-   ("C-d" . corfu-scroll-up)
-   ("C-u" . corfu-scroll-down)
-   ("<next>" . corfu-scroll-up)
-   ("<prior>" . corfu-scroll-down)
-   ("S-SPC" . corfu-insert-separator))
-  :preface
-  (defun my/corfu-minibuffer-filter ()
-    "Do not show Corfu in minibuffer for MCT, Vertico, or password prompts."
-    (interactive)
-    (not (or (bound-and-true-p mct--active)
-             (bound-and-true-p vertico--input)
-             (eq (current-local-map) read-passwd-map))))
+   :map completion-preview-active-mode-map
+   ;; Mirror the `corfu-map' keys this replaces.  TAB is bound alongside <tab>
+   ;; so it also shadows the default `C-i' binding of `completion-preview-insert'.
+   ("<tab>" . completion-preview-next-candidate)
+   ("TAB" . completion-preview-next-candidate)
+   ("S-<tab>" . completion-preview-prev-candidate)
+   ("<return>" . completion-preview-insert)
+   ;; Defer to the *Completions* buffer to see every candidate at once.
+   ("M-i" . completion-preview-complete))
   :custom
-  (corfu-auto t)  ;; auto-completion
-  (corfu-quit-no-match t)
-  (corfu-auto-prefix 2)
-  (corfu-auto-delay 0.2)
-  (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-preview-current 'insert)  ;; insert previewed candidate
-  (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
-  (corfu-cycle t)
-  (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
+  (completion-preview-minimum-symbol-length 2)
+  (completion-preview-idle-delay 0.2)
   :config
-  (global-corfu-mode)
-  (corfu-popupinfo-mode)
-  (corfu-history-mode))
+  (global-completion-preview-mode 1))
 
 (use-package cape
   :init (add-to-list 'completion-at-point-functions #'cape-file))
@@ -769,38 +788,109 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :custom
   (dabbrev-check-all-buffers nil))
 
-(use-package vertico
-  :demand t
-  :custom
-  (vertico-scroll-margin 1)
-  (vertico-count 10)  ;; Limit to a fixed size
-  (vertico-cycle t)  ;; Enable cycling for `vertico-next/previous'
-  (vertico-resize 'grow-only)  ;; Grow and shrink the Vertico minibuffer
-  :config
-  (vertico-mode)
-  (vertico-mouse-mode 1))
+;; (use-package vertico
+;;   :demand t
+;;   :custom
+;;   (vertico-scroll-margin 1)
+;;   (vertico-count 10)  ;; Limit to a fixed size
+;;   (vertico-cycle t)  ;; Enable cycling for `vertico-next/previous'
+;;   (vertico-resize 'grow-only)  ;; Grow and shrink the Vertico minibuffer
+;;   :config
+;;   (vertico-mode)
+;;   (vertico-mouse-mode 1))
+;;
+;; (use-package vertico-directory
+;;   :after vertico
+;;   :ensure nil  ;; comes with vertico
+;;   :bind
+;;   (nil
+;;    :map
+;;    vertico-map
+;;    ("RET" . vertico-directory-enter)
+;;    ("DEL" . vertico-directory-delete-char)))
 
-(use-package vertico-directory
-  :after vertico
-  :ensure nil  ;; comes with vertico
-  :bind
-  (nil
-   :map
-   vertico-map
-   ("RET" . vertico-directory-enter)
-   ("DEL" . vertico-directory-delete-char)))
+(use-package minibuffer
+  :ensure nil
+  :demand t
+  :preface
+  (defun my/completion-list-mode-hook ()
+    ;; Candidate + marginalia annotation easily exceed the window width; wrapping
+    ;; them would break the one-candidate-per-line reading of `one-column'.
+    (setq-local truncate-lines t))
+  (add-hook 'completion-list-mode-hook #'my/completion-list-mode-hook)
+  :custom
+  (completions-format 'one-column)
+  (completions-max-height 12)
+  (completions-sort 'historical)  ;; relies on `savehist-mode'
+  (completions-detailed t)
+  (completion-show-help nil)
+  (completion-show-inline-help nil)
+  (completion-auto-help t)
+  ;; Keep focus in the minibuffer and let the list follow what I type.
+  (completion-auto-select nil)
+  (minibuffer-visible-completions t)
+  (completion-eager-display t)
+  (completion-eager-update t)
+  (read-minibuffer-restore-windows nil)
+  :config
+  ;; `orderless' uses SPC as its component separator and `?' is a legitimate
+  ;; input character; the default completion map claims both.
+  (keymap-unset minibuffer-local-completion-map "SPC" t)
+  (keymap-unset minibuffer-local-completion-map "?" t)
+  ;; Vertico remapped these to `vertico-next'/`vertico-previous'; point them at
+  ;; the *Completions* list instead.  The menu-item filter falls back to the
+  ;; history commands whenever no completions window is shown.
+  (keymap-set minibuffer-visible-completions-map "<remap> <next-line-or-history-element>"
+              (minibuffer-visible-completions--bind #'minibuffer-next-line-completion))
+  (keymap-set minibuffer-visible-completions-map "<remap> <previous-line-or-history-element>"
+              (minibuffer-visible-completions--bind #'minibuffer-previous-line-completion)))
 
 (use-package marginalia
+  :defer nil
   :bind (:map minibuffer-local-map ("M-a" . marginalia-cycle))
   :custom (marginalia-field-width 180)
   :preface
+  (defvar my/marginalia-align-max 30
+    "Upper bound, in columns, for the start of a marginalia annotation.")
+
   (defun my/marginalia-mode-hook ()
     (when (facep 'marginalia-documentation)
       (set-face-attribute 'marginalia-documentation nil
                           :italic t :family nil :inherit 'variable-pitch)))
   (add-hook 'after-load-theme-hook #'my/marginalia-mode-hook)
-  :defer 1
+
+  (defun my/marginalia-clamp-align (affixations)
+    "Clamp the annotation column of AFFIXATIONS to `my/marginalia-align-max'.
+`marginalia--align' aligns to the widest candidate of the *entire* set and
+never shrinks again (`marginalia--cache-reset' leaves
+`marginalia--cand-width-max' alone).  Vertico hid this by only ever handing
+marginalia the visible slice; the *Completions* buffer hands it everything,
+which strands the annotations far off to the right."
+    (dolist (affixation affixations affixations)
+      (let* ((annotation (nth 2 affixation))
+             (pos (text-property-not-all 0 (length annotation) 'display nil annotation)))
+        (when pos
+          (pcase (get-text-property pos 'display annotation)
+            (`(space :align-to (+ left ,column))
+             (put-text-property
+              pos (1+ pos) 'display
+              `(space :align-to (+ left ,(min column my/marginalia-align-max)))
+              annotation)))))))
+
+  (defun my/marginalia-no-truncate (orig-fun string width)
+    "Return STRING whole when WIDTH is relative, else defer to ORIG-FUN.
+A float WIDTH is a fraction of `marginalia-field-width', which
+`marginalia--affixate' caps at half the window width -- so annotations get
+cut off well before the line is full.  `truncate-lines' in the *Completions*
+buffer already deals with overlong lines.  Integer widths are deliberate
+column widths (package version, status, group) and are left to ORIG-FUN.
+Annotations must stay single-line, hence the cut at the first newline."
+    (if (floatp width)
+        (substring string 0 (string-search "\n" string))
+      (funcall orig-fun string width)))
   :config
+  (advice-add 'marginalia--align :filter-return #'my/marginalia-clamp-align)
+  (advice-add 'marginalia--truncate :around #'my/marginalia-no-truncate)
   (marginalia-mode)
   (my/marginalia-mode-hook))
 
@@ -812,7 +902,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (completion-category-defaults nil)) ;; Disable defaults, use our settings
 
 (use-package consult
-  :after (evil vertico)
+  :after evil
   :bind
   (([remap Info-search] . consult-info)
    ([remap switch-to-buffer] . consult-buffer)
