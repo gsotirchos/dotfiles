@@ -1050,71 +1050,72 @@ commit message.")
   :config
   (add-hook 'markdown-mode-hook #'my/markdown-mode-hook))
 
-(use-package gptel
-  :after my-keybindings
-  :bind
-  (nil
-   :map my/personal-map
-   ("g g" . gptel)
-   ("g s" . gptel-send)
-   ("g r" . gptel-rewrite)
-   ("g m" . gptel-menu))
-  :config
-  (let ((_ollama-backend
-         (gptel-make-ollama "Ollama"
-           :host "localhost:11434"
-           :stream t
-           :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")))
-        (_gemini-backend
-         (gptel-make-gemini "Gemini"
-           :key (lambda () (my/read-1password-secret "GOOGLE_API_KEY"))
-           :stream t
-           :models '("gemini-3-flash-preview"
-                     "gemini-3-pro-preview")))
-        (_deepseek-backend
-         (gptel-make-deepseek "DeepSeek"
-           :key (lambda () (my/read-1password-secret "DEEPSEEK_API_KEY"))
-           :stream t
-           :models '("deepseek-reasoner")))
-        (_fireworks-backend
-         (gptel-make-openai "FireworksAI"
-           :host "api.fireworks.ai"
-           :endpoint "/inference/v1/chat/completions"
-           :protocol "https"
-           :key (lambda () (my/read-1password-secret "FIREWORKS_API_KEY"))
-           :stream t
-           :models '("accounts/fireworks/models/deepseek-v3p2")))
-        (_codestral-backend
-         (gptel-make-openai "Codestral"
-           :host "codestral.mistral.ai"
-           :endpoint "/v1/chat/completions"
-           :protocol "https"
-           :key (lambda () (my/read-1password-secret "CODESTRAL_API_KEY"))
-           :stream t
-           :models '("codestral-latest")))
-        (_devstral-backend
-         (gptel-make-openai "Devstral"
-           :host "api.mistral.ai"
-           :endpoint "/v1/chat/completions"
-           :protocol "https"
-           :key (lambda () (my/read-1password-secret "DEVSTRAL_API_KEY"))
-           :stream t
-           :models '("devstral-latest")))
-        (mistral-backend
-         (gptel-make-openai "Mistral"
-           :host "api.mistral.ai"
-           :endpoint "/v1/chat/completions"
-           :protocol "https"
-           :key (lambda () (my/read-1password-secret "MISTRAL_API_KEY"))
-           :stream t
-           :models '("mistral-medium-3-5"))))
-    (setq gptel-backend mistral-backend
-          gptel-model 'mistral-medium-3-5)))
+(when nil
+  (use-package gptel
+    :after my-keybindings
+    :bind
+    (nil
+     :map my/personal-map
+     ("g g" . gptel)
+     ("g s" . gptel-send)
+     ("g r" . gptel-rewrite)
+     ("g m" . gptel-menu))
+    :config
+    (let ((_ollama-backend
+           (gptel-make-ollama "Ollama"
+             :host "localhost:11434"
+             :stream t
+             :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")))
+          (_gemini-backend
+           (gptel-make-gemini "Gemini"
+             :key (lambda () (my/read-1password-secret "GOOGLE_API_KEY"))
+             :stream t
+             :models '("gemini-3-flash-preview"
+                       "gemini-3-pro-preview")))
+          (_deepseek-backend
+           (gptel-make-deepseek "DeepSeek"
+             :key (lambda () (my/read-1password-secret "DEEPSEEK_API_KEY"))
+             :stream t
+             :models '("deepseek-reasoner")))
+          (_fireworks-backend
+           (gptel-make-openai "FireworksAI"
+             :host "api.fireworks.ai"
+             :endpoint "/inference/v1/chat/completions"
+             :protocol "https"
+             :key (lambda () (my/read-1password-secret "FIREWORKS_API_KEY"))
+             :stream t
+             :models '("accounts/fireworks/models/deepseek-v3p2")))
+          (_codestral-backend
+           (gptel-make-openai "Codestral"
+             :host "codestral.mistral.ai"
+             :endpoint "/v1/chat/completions"
+             :protocol "https"
+             :key (lambda () (my/read-1password-secret "CODESTRAL_API_KEY"))
+             :stream t
+             :models '("codestral-latest")))
+          (_devstral-backend
+           (gptel-make-openai "Devstral"
+             :host "api.mistral.ai"
+             :endpoint "/v1/chat/completions"
+             :protocol "https"
+             :key (lambda () (my/read-1password-secret "DEVSTRAL_API_KEY"))
+             :stream t
+             :models '("devstral-latest")))
+          (mistral-backend
+           (gptel-make-openai "Mistral"
+             :host "api.mistral.ai"
+             :endpoint "/v1/chat/completions"
+             :protocol "https"
+             :key (lambda () (my/read-1password-secret "MISTRAL_API_KEY"))
+             :stream t
+             :models '("mistral-medium-3-5"))))
+      (setq gptel-backend mistral-backend
+            gptel-model 'mistral-medium-3-5)))
 
-(use-package gptel-agent
-  :after gptel
-  :config (gptel-agent-update))
-
+  (use-package gptel-agent
+    :after gptel
+    :config (gptel-agent-update))
+  )
 
 ;; Programming
 
