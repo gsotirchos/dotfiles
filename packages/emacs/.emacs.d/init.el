@@ -1239,7 +1239,17 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :no-require t
   :custom
   (global-visual-wrap-prefix-mode t)
-  (visual-wrap-extra-indent standard-indent))
+  (visual-wrap-extra-indent standard-indent)
+  :preface
+  (defun my/visual-wrap-append-marker ()
+    "Append `wrap-prefix' to the wrap-prefix property of the line at point."
+    (let ((wrap-prop (get-text-property (point) 'wrap-prefix)))
+      (when (stringp wrap-prop)
+        (put-text-property (point) (pos-eol) 'wrap-prefix
+                           (concat wrap-prop wrap-prefix)))))
+  :config
+  ;; NOTE: `visual-wrap--apply-to-line' is private; revisit on Emacs updates.
+  (advice-add 'visual-wrap--apply-to-line :after #'my/visual-wrap-append-marker))
 
 (use-package hideshow
   :ensure nil
