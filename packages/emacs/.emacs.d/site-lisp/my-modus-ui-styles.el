@@ -37,6 +37,7 @@ If STYLE is \\='cycle, cycle the current style."
          (bold-tab-faces-p t)
          (bg-main (modus-themes-get-color-value 'bg-main t))
          (bg-dim (modus-themes-get-color-value 'bg-dim t))
+         (bg-hover (modus-themes-get-color-value 'bg-hover t))
          (fg-vertical-border (modus-themes-get-color-value 'fg-vertical-border t))
          (fg-active (modus-themes-get-color-value 'fg-mode-line-active t))
          (fg-inactive (modus-themes-get-color-value 'fg-mode-line-inactive t))
@@ -48,6 +49,10 @@ If STYLE is \\='cycle, cycle the current style."
          (color-inactive (if is-3d bg-inactive border-inactive))
          (box-minimal (list :line-width 8 :color bg-main))
          (box-minimal-thin (list :line-width 6 :color bg-main))
+         (box-minimal-highlight (list :line-width (plist-get box-minimal :line-width) :color bg-hover))
+         (box-minimal-highlight-thin (list :line-width (plist-get box-minimal-thin :line-width) :color bg-hover))
+         (underline-minimal (list :color bg-inactive :position 0))
+         (underline-minimal-thin (list :color bg-dim :position 0))
          (box-active (append (list :line-width width :color color-active)
                              (when button-style (list :style button-style))))
          (box-inactive (append (list :line-width width :color color-inactive)
@@ -75,10 +80,10 @@ If STYLE is \\='cycle, cycle the current style."
                  (mode-line            nil               unspecified  ,bg-inactive nil)
                  (mode-line-active     nil               ,fg-active   ,bg-inactive nil)
                  (mode-line-inactive   nil               ,fg-inactive ,bg-dim      nil)
-                 (tab-bar              ,box-minimal      unspecified  nil          (:color ,bg-inactive :position 0))
-                 (tab-bar-tab          ,box-minimal      ,fg-active   nil          (:color ,bg-inactive :position 0))
-                 (tab-bar-tab-inactive ,box-minimal      ,fg-inactive nil          (:color ,bg-inactive :position 0))
-                 (header-line          ,box-minimal-thin unspecified  nil          (:color ,bg-dim :position 0))))
+                 (tab-bar              ,box-minimal      unspecified  nil          ,underline-minimal)
+                 (tab-bar-tab          ,box-minimal      ,fg-active   nil          ,underline-minimal)
+                 (tab-bar-tab-inactive ,box-minimal      ,fg-inactive nil          ,underline-minimal)
+                 (header-line          ,box-minimal-thin unspecified  nil          ,underline-minimal-thin)))
             (set-face-attribute face nil
                                 :box box
                                 :foreground fg
@@ -88,11 +93,16 @@ If STYLE is \\='cycle, cycle the current style."
           (pcase-dolist
               (`(,face ,ol ,ul)
                `((mode-line-highlight   ,bg-inactive nil)
-                 (header-line-highlight nil          ,bg-dim)))
+                 (tab-bar-tab-highlight nil          ,underline-minimal)
+                 (header-line-highlight nil          ,underline-minimal-thin)))
             (set-face-attribute face nil
                                 :box nil
                                 :overline ol
                                 :underline ul))
+          (set-face-attribute 'tab-bar-tab-highlight nil
+                              :box box-minimal-highlight)
+          (set-face-attribute 'header-line-highlight nil
+                              :box box-minimal-highlight-thin)
           (set-face-attribute 'modus-themes-button nil
                               :overline nil
                               :underline nil))
@@ -123,6 +133,7 @@ If STYLE is \\='cycle, cycle the current style."
                               :background bg-inactive))
         (dolist (face
                  '(mode-line-highlight
+                   tab-bar-tab-highlight
                    header-line-highlight))
           (set-face-attribute face nil
                               :box box-active
