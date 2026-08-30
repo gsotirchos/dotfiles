@@ -206,7 +206,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (confirm-kill-emacs #'yes-or-no-p)
   (save-silently t)
   (completion-ignore-case t)
-  (global-completion-preview-mode t)
   (sentence-end-double-space nil)
   (hscroll-margin 0)
   (scroll-conservatively 101)
@@ -583,11 +582,11 @@ the window."
   (my/customize-stripes)  ; set the face now, not only on theme reload
   (add-hook 'after-load-theme-hook #'my/customize-stripes))
 
-(use-package my-stripes
-  :ensure nil
-  :load-path "site-lisp/"
-  :after (stripes corfu vertico)
-  :demand t)
+;; (use-package my-stripes
+;;   :ensure nil
+;;   :load-path "site-lisp/"
+;;   :after (stripes corfu vertico)
+;;   :demand t)
 
 (use-package files
   :ensure nil
@@ -807,48 +806,68 @@ STATE defaults to `normal'.")
   :hook ((org-mode markdown-ts-mode LaTeX-mode) . my/evil-surround-add-math-pairs)
   :config (global-evil-surround-mode 1))
 
-(use-package corfu
+;; (use-package corfu
+;;   :demand t
+;;   :bind
+;;   (nil
+;;    :map corfu-map
+;;    ;; ("RET" . nil)
+;;    ("<return>" . corfu-complete)
+;;    ("<tab>" . corfu-next)
+;;    ("S-<tab>" . corfu-previous)
+;;    ("<escape>" . corfu-reset)
+;;    ("C-d" . corfu-scroll-up)
+;;    ("C-u" . corfu-scroll-down)
+;;    ("<next>" . corfu-scroll-up)
+;;    ("<prior>" . corfu-scroll-down)
+;;    ("S-SPC" . corfu-insert-separator))
+;;   :preface
+;;   (defun my/corfu-minibuffer-filter ()
+;;     "Do not show Corfu in minibuffer for MCT, Vertico, or password prompts."
+;;     (interactive)
+;;     (not (or (bound-and-true-p mct--active)
+;;              (bound-and-true-p vertico--input)
+;;              (eq (current-local-map) (bound-and-true-p read-passwd-map)))))
+;;   (defun my/customize-corfu-annotations ()
+;;     (set-face-attribute 'corfu-annotations nil :slant 'normal))
+;;   (defun patch/corfu-widen-popup (formatted)
+;;     (pcase-let ((`(,prefix-width ,width ,lines) formatted))
+;;       (list prefix-width (+ width 1) lines)))
+;;   :custom
+;;   (corfu-auto t)
+;;   (corfu-quit-no-match t)
+;;   (corfu-auto-prefix 2)
+;;   (corfu-popupinfo-delay '(0.5 . 0.2))
+;;   (corfu-on-exact-match nil)  ; Don't auto expand tempel snippets
+;;   (corfu-cycle t)
+;;   (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
+;;   :config
+;;   (my/customize-corfu-annotations)  ; set the face now, not only on theme reload
+;;   (add-hook 'after-load-theme-hook #'my/customize-corfu-annotations)
+;;   (advice-add 'corfu--format-candidates :filter-return #'patch/corfu-widen-popup)
+;;   (global-corfu-mode)
+;;   (corfu-popupinfo-mode)
+;;   (corfu-history-mode))
+
+(use-package completion-preview
+  :ensure nil
   :demand t
   :bind
   (nil
-   :map corfu-map
-   ;; ("RET" . nil)
-   ("<return>" . corfu-complete)
-   ("<tab>" . corfu-next)
-   ("S-<tab>" . corfu-previous)
-   ("<escape>" . corfu-reset)
-   ("C-d" . corfu-scroll-up)
-   ("C-u" . corfu-scroll-down)
-   ("<next>" . corfu-scroll-up)
-   ("<prior>" . corfu-scroll-down)
-   ("S-SPC" . corfu-insert-separator))
-  :preface
-  (defun my/corfu-minibuffer-filter ()
-    "Do not show Corfu in minibuffer for MCT, Vertico, or password prompts."
-    (interactive)
-    (not (or (bound-and-true-p mct--active)
-             (bound-and-true-p vertico--input)
-             (eq (current-local-map) (bound-and-true-p read-passwd-map)))))
-  (defun my/customize-corfu-annotations ()
-    (set-face-attribute 'corfu-annotations nil :slant 'normal))
-  (defun patch/corfu-widen-popup (formatted)
-    (pcase-let ((`(,prefix-width ,width ,lines) formatted))
-      (list prefix-width (+ width 1) lines)))
+   :map completion-preview-active-mode-map
+   ;; Mirror the `corfu-map' keys this replaces.  TAB is bound alongside <tab>
+   ;; so it also shadows the default `C-i' binding of `completion-preview-insert'.
+   ("<tab>" . completion-preview-next-candidate)
+   ("TAB" . completion-preview-next-candidate)
+   ("S-<tab>" . completion-preview-prev-candidate)
+   ("<return>" . completion-preview-insert)
+   ;; Defer to the *Completions* buffer to see every candidate at once.
+   ("M-i" . completion-preview-complete))
   :custom
-  (corfu-auto t)
-  (corfu-quit-no-match t)
-  (corfu-auto-prefix 2)
-  (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-on-exact-match nil)  ; Don't auto expand tempel snippets
-  (corfu-cycle t)
-  (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
+  (completion-preview-minimum-symbol-length 2)
+  (completion-preview-idle-delay 0.2)
   :config
-  (my/customize-corfu-annotations)  ; set the face now, not only on theme reload
-  (add-hook 'after-load-theme-hook #'my/customize-corfu-annotations)
-  (advice-add 'corfu--format-candidates :filter-return #'patch/corfu-widen-popup)
-  (global-corfu-mode)
-  (corfu-popupinfo-mode)
-  (corfu-history-mode))
+  (global-completion-preview-mode 1))
 
 (use-package cape
   :demand t
@@ -914,76 +933,135 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   :custom
   (dabbrev-check-all-buffers nil))
 
-(use-package vertico
+;; (use-package vertico
+;;   :demand t
+;;   :bind (:map vertico-map ("TAB" . minibuffer-complete))
+;;   :custom
+;;   (vertico-scroll-margin 1)
+;;   (vertico-cycle t)
+;;   (vertico-resize 'grow-only)
+;;   :config
+;;   (vertico-mode)
+;;   (vertico-mouse-mode 1))
+;;
+;; (use-package vertico-mouse
+;;   :after vertico
+;;   :ensure nil  ;; comes with vertico
+;;   :bind
+;;   (nil
+;;    :map vertico-mouse-map
+;;    ("<wheel-up>" . patch/vertico-mouse-wheel)
+;;    ("<wheel-down>" . patch/vertico-mouse-wheel))
+;;   :preface
+;;   (defvar patch/vertico-wheel-pixels 0
+;;     "Wheel travel in pixels not yet turned into a candidate step.")
+;;   (defun patch/vertico-mouse-wheel (event)
+;;     "Step the Vertico selection one candidate per line of EVENT's travel.
+;; Replaces the buffer-local `mwheel-coalesce-scroll-events' that
+;; `vertico-mouse-mode' sets for the same purpose: the NS port reads it
+;; from the current buffer, i.e. the minibuffer, so it also coalesces
+;; the pixel scrolling of any other window under the mouse."
+;;     (interactive "e")
+;;     (let* ((line-height (default-line-height))
+;;            (pixels (abs (or (cdr (nth 4 event)) line-height)))
+;;            (travel (if (eq (event-basic-type event) 'wheel-up) (- pixels) pixels)))
+;;       (when (< (* travel patch/vertico-wheel-pixels) 0)
+;;         (setq patch/vertico-wheel-pixels 0))
+;;       (cl-incf patch/vertico-wheel-pixels travel)
+;;       (let ((candidates (truncate patch/vertico-wheel-pixels line-height)))
+;;         (cl-decf patch/vertico-wheel-pixels (* candidates line-height))
+;;         (unless (zerop candidates)
+;;           (vertico-next candidates)))))
+;;   (defun patch/vertico-mouse-uncoalesce (&rest _)
+;;     "Undo the coalescing that `vertico-mouse-mode' sets in the minibuffer."
+;;     (kill-local-variable 'mwheel-coalesce-scroll-events))
+;;   :config (advice-add 'vertico--setup :after #'patch/vertico-mouse-uncoalesce))
+;;
+;; (use-package vertico-directory
+;;   :after vertico
+;;   :ensure nil  ;; comes with vertico
+;;   :bind
+;;   (nil
+;;    :map
+;;    vertico-map
+;;    ("RET" . vertico-directory-enter)
+;;    ("DEL" . vertico-directory-delete-char)))
+
+(use-package minibuffer
+  :ensure nil
   :demand t
-  :bind (:map vertico-map ("TAB" . minibuffer-complete))
-  :custom
-  (vertico-scroll-margin 1)
-  (vertico-cycle t)
-  (vertico-resize 'grow-only)
-  :config
-  (vertico-mode)
-  (vertico-mouse-mode 1))
-
-(use-package vertico-mouse
-  :after vertico
-  :ensure nil  ;; comes with vertico
-  :bind
-  (nil
-   :map vertico-mouse-map
-   ("<wheel-up>" . patch/vertico-mouse-wheel)
-   ("<wheel-down>" . patch/vertico-mouse-wheel))
   :preface
-  (defvar patch/vertico-wheel-pixels 0
-    "Wheel travel in pixels not yet turned into a candidate step.")
-  (defun patch/vertico-mouse-wheel (event)
-    "Step the Vertico selection one candidate per line of EVENT's travel.
-Replaces the buffer-local `mwheel-coalesce-scroll-events' that
-`vertico-mouse-mode' sets for the same purpose: the NS port reads it
-from the current buffer, i.e. the minibuffer, so it also coalesces
-the pixel scrolling of any other window under the mouse."
-    (interactive "e")
-    (let* ((line-height (default-line-height))
-           (pixels (abs (or (cdr (nth 4 event)) line-height)))
-           (travel (if (eq (event-basic-type event) 'wheel-up) (- pixels) pixels)))
-      (when (< (* travel patch/vertico-wheel-pixels) 0)
-        (setq patch/vertico-wheel-pixels 0))
-      (cl-incf patch/vertico-wheel-pixels travel)
-      (let ((candidates (truncate patch/vertico-wheel-pixels line-height)))
-        (cl-decf patch/vertico-wheel-pixels (* candidates line-height))
-        (unless (zerop candidates)
-          (vertico-next candidates)))))
-  (defun patch/vertico-mouse-uncoalesce (&rest _)
-    "Undo the coalescing that `vertico-mouse-mode' sets in the minibuffer."
-    (kill-local-variable 'mwheel-coalesce-scroll-events))
-  :config (advice-add 'vertico--setup :after #'patch/vertico-mouse-uncoalesce))
-
-(use-package vertico-directory
-  :after vertico
-  :ensure nil  ;; comes with vertico
-  :bind
-  (nil
-   :map
-   vertico-map
-   ("RET" . vertico-directory-enter)
-   ("DEL" . vertico-directory-delete-char)))
+  (defun my/completion-list-mode-hook ()
+    ;; Candidate + marginalia annotation easily exceed the window width; wrapping
+    ;; them would break the one-candidate-per-line reading of `one-column'.
+    (setq-local truncate-lines t))
+  (add-hook 'completion-list-mode-hook #'my/completion-list-mode-hook)
+  :custom
+  (completions-format 'one-column)
+  (completions-max-height 12)
+  (completions-sort 'historical)  ;; relies on `savehist-mode'
+  (completions-detailed t)
+  (completion-show-help nil)
+  (completion-show-inline-help nil)
+  (completion-auto-help t)
+  ;; Keep focus in the minibuffer and let the list follow what I type.
+  (completion-auto-select nil)
+  (minibuffer-visible-completions t)
+  (completion-eager-display t)
+  (completion-eager-update t)
+  (read-minibuffer-restore-windows nil)
+  :config
+  ;; `orderless' uses SPC as its component separator and `?' is a legitimate
+  ;; input character; the default completion map claims both.
+  (keymap-unset minibuffer-local-completion-map "SPC" t)
+  (keymap-unset minibuffer-local-completion-map "?" t)
+  ;; Vertico remapped these to `vertico-next'/`vertico-previous'; point them at
+  ;; the *Completions* list instead.  The menu-item filter falls back to the
+  ;; history commands whenever no completions window is shown.
+  (keymap-set minibuffer-visible-completions-map "<remap> <next-line-or-history-element>"
+              (minibuffer-visible-completions--bind #'minibuffer-next-line-completion))
+  (keymap-set minibuffer-visible-completions-map "<remap> <previous-line-or-history-element>"
+              (minibuffer-visible-completions--bind #'minibuffer-previous-line-completion)))
 
 (use-package marginalia
   :defer nil
   :bind (:map minibuffer-local-map ("M-a" . marginalia-cycle))
   :custom (marginalia-field-width 180)
   :preface
+  (defvar my/marginalia-align-max 30
+    "Upper bound, in columns, for the start of a marginalia annotation.")
+
   (defun my/marginalia-mode-hook ()
     (when (facep 'marginalia-documentation)
       (set-face-attribute 'marginalia-documentation nil
                           :italic t :family nil :inherit 'variable-pitch)))
   (add-hook 'after-load-theme-hook #'my/marginalia-mode-hook)
+
+  (defun my/marginalia-clamp-align (affixations)
+    "Clamp the annotation column of AFFIXATIONS to `my/marginalia-align-max'.
+`marginalia--align' aligns to the widest candidate of the *entire* set and
+never shrinks again (`marginalia--cache-reset' leaves
+`marginalia--cand-width-max' alone).  Vertico hid this by only ever handing
+marginalia the visible slice; the *Completions* buffer hands it everything,
+which strands the annotations far off to the right."
+    (dolist (affixation affixations affixations)
+      (let* ((annotation (nth 2 affixation))
+             (pos (text-property-not-all 0 (length annotation) 'display nil annotation)))
+        (when pos
+          (pcase (get-text-property pos 'display annotation)
+            (`(space :align-to (+ left ,column))
+             (put-text-property
+              pos (1+ pos) 'display
+              `(space :align-to (+ left ,(min column my/marginalia-align-max)))
+              annotation)))))))
+
   (defun my/marginalia-no-truncate (orig-fun string width)
     "Return STRING whole when WIDTH is relative, else defer to ORIG-FUN."
     (if (floatp width)
         (substring string 0 (string-search "\n" string))
       (funcall orig-fun string width)))
   :config
+  (advice-add 'marginalia--align :filter-return #'my/marginalia-clamp-align)
   (advice-add 'marginalia--truncate :around #'my/marginalia-no-truncate)
   (marginalia-mode)
   (my/marginalia-mode-hook))
@@ -997,7 +1075,7 @@ the pixel scrolling of any other window under the mouse."
   (read-file-name-completion-ignore-case t))
 
 (use-package consult
-  :after (evil vertico)
+  :after evil
   :bind
   (([remap Info-search] . consult-info)
    ([remap switch-to-buffer] . consult-buffer)
