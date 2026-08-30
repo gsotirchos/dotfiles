@@ -263,6 +263,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (hscroll-margin 0)
   (scroll-step 1)
   (hscroll-step 1)
+  (scroll-bar-mode 'right)
   ;; (underline-minimum-offset 2)
   (text-scale-mode-step 1.1)
   (global-text-scale-adjust-resizes-frames t)
@@ -449,6 +450,11 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :hook after-init)
 
 (use-package my-margin
+  :ensure nil
+  :load-path "site-lisp/"
+  :hook after-init)
+
+(use-package my-auto-scroll-bar
   :ensure nil
   :load-path "site-lisp/"
   :hook after-init)
