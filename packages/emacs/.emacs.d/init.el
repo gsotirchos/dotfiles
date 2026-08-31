@@ -770,6 +770,37 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
 (use-package cape
   :init (add-to-list 'completion-at-point-functions #'cape-file))
 
+(use-package tempel
+  :after my-keybindings
+  :bind
+  (nil
+   :map my/personal-map
+   ("i" . tempel-insert)
+   :map tempel-map
+   ("<tab>" . tempel-next)
+   ("S-<tab>" . tempel-previous))
+  :preface
+  (defun my/tempel-setup-capf ()
+    "Put `tempel-expand' in front of the buffer's other completion sources.
+Idempotent, since the hooks below can fire repeatedly in one buffer."
+    (setq-local completion-at-point-functions
+                (cons #'tempel-expand
+                      (remq #'tempel-expand completion-at-point-functions))))
+  ;; `eglot--managed-mode' prepends its own exclusive Capf after `prog-mode-hook'
+  ;; has run, so the setup is repeated on its hook to stay ahead of it.
+  :hook ((prog-mode text-mode conf-mode eglot-managed-mode) . my/tempel-setup-capf))
+
+(use-package tempel-collection
+  :after tempel)
+
+;; Left disabled pending confirmation that it is safe: it was suspected of
+;; causing the empty-prefix buffer wipe that `my/eglot-require-completion-prefix'
+;; now guards against, but that reproduces without it.  Re-enable with
+;; `M-x eglot-tempel-mode'.
+(use-package eglot-tempel
+  :after eglot
+  :commands (eglot-tempel-mode))
+
 (use-package dabbrev
   :ensure nil
   :no-require t
@@ -1149,6 +1180,13 @@ commit message.")
     (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
     (when flymake-mode (flymake-start)))
   (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
+  (defun my/eglot-require-completion-prefix (fn &rest args)
+    "Suppress the advised Capf's result when nothing precedes point."
+    (let ((res (apply fn args)))
+      (unless (and (consp res)
+                   (integer-or-marker-p (car res))
+                   (<= (point) (car res)))
+        res)))
   :init
   (setq eglot-stay-out-of '(flymake))
   ;; LemMinX reads its settings from the `xml' section, both from
@@ -1163,6 +1201,8 @@ commit message.")
                                                     :splitAttributes "preserve"
                                                     :preserveAttributeLineBreaks t))))
   (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
+  (advice-add 'eglot-completion-at-point :around
+              #'my/eglot-require-completion-prefix)
   :config
   (add-to-list 'eglot-server-programs
                `(python-base-mode . ("pyright-langserver" "--stdio")))
