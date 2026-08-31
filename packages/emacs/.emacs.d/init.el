@@ -1275,7 +1275,6 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :no-require t
   :preface
   (defun my/prog-mode-hook ()
-    (hs-minor-mode 1)
     (which-function-mode 1)
     (setq show-trailing-whitespace t)
     ;; (modify-syntax-entry ?- "w")
@@ -1302,6 +1301,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
 (use-package hideshow
   :ensure nil
   :no-require t
+  :hook ((prog-mode toml-ts-mode) . hs-minor-mode)
   :init (setq hs-allow-nesting t))
 
 (use-package outline
@@ -1677,7 +1677,10 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :ensure nil
   :no-require t
   :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'" "\\.launch\\'")
-  :custom (nxml-child-indent 2)
+  :custom
+  (nxml-child-indent 2)
+  ;; Let LemMinX resolve and validate <?xml-model?> schema naming.
+  (rng-nxml-auto-validate-flag nil)
   :preface
   (defun my/nxml-mode-hook ()
     (flyspell-mode -1)
