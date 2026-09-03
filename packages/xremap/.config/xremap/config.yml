@@ -18,6 +18,7 @@ keymap:
         - emacs
         - com.mitchellh.ghostty
         - firefox
+        - firefox_firefox
     remap:
       Super-c: Ctrl-c               # copy
       Super-v: Ctrl-v               # paste
@@ -40,6 +41,7 @@ keymap:
     application:
       only:
         - firefox
+        - firefox_firefox
     remap:
       Super-c: Ctrl-c               # copy
       Super-v: Ctrl-v               # paste
