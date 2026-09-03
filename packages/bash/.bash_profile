@@ -40,6 +40,9 @@ if [[ "$OS" == "linux" ]]; then
 
     # unique per developer -- register this ID in the team's ROS_DOMAIN_ID tracker
     export ROS_DOMAIN_ID=4
+
+    # Match container users to this account
+    export HOST_UID=$(id -u) HOST_GID=$(id -g)
 fi
 
 if [[ "$OS" == "macos" ]]; then
