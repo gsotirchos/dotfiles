@@ -84,13 +84,14 @@ alias mv="mv -iv"  # confirmatory, verbose
 alias cp="cp -ivr" # confirmatory, verbose, recursive
 alias ln="ln -iv"  # confirmatory, verbose
 alias ls="ls -vh --color=always \
-    --group-directories-first"    # human-readable, version-ordered, colored, dirs first
-alias ll="ls -l"                  # ll := list
-alias la="ls -la"                 # la := list all
-alias mkdir="mkdir -pv"           # recursive, verbose
-alias chmod="chmod -v"            # verbose
-alias chown="chown -v"            # verbose
-alias ec="emacsclient -a '' -c &" # start emacs daemon and/or client
+    --group-directories-first"               # human-readable, version-ordered, colored, dirs first
+alias ll="ls -l"                             # ll := list
+alias la="ls -la"                            # la := list all
+alias mkdir="mkdir -pv"                      # recursive, verbose
+alias chmod="chmod -v"                       # verbose
+alias chown="chown -v"                       # verbose
+alias ec="emacsclient -a '' -c &"            # start emacs daemon and/or client
+alias magit="emacs  --eval '(magit-status)'" # start emacs with magit
 alias tree="tree \
     -FNC -L 2 \
     --dirsfirst \
