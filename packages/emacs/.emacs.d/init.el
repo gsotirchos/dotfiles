@@ -1187,6 +1187,10 @@ commit message.")
                    (integer-or-marker-p (car res))
                    (<= (point) (car res)))
         res)))
+  (defun my/eglot-tolerate-watch-limit (fn &rest args)
+    "Degrade to fewer file watches instead of failing the server's request."
+    (condition-case err (apply fn args)
+      (jsonrpc-error (eglot--warn "Capability registration degraded: %S" err))))
   :init
   (setq eglot-stay-out-of '(flymake))
   ;; LemMinX reads its settings from the `xml' section, both from
@@ -1201,8 +1205,8 @@ commit message.")
                                                     :splitAttributes "preserve"
                                                     :preserveAttributeLineBreaks t))))
   (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
-  (advice-add 'eglot-completion-at-point :around
-              #'my/eglot-require-completion-prefix)
+  (advice-add 'eglot-completion-at-point :around #'my/eglot-require-completion-prefix)
+  (advice-add 'eglot-register-capability :around #'my/eglot-tolerate-watch-limit)
   :config
   (add-to-list 'eglot-server-programs
                `(python-base-mode . ("pyright-langserver" "--stdio")))
