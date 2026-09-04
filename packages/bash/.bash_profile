@@ -82,9 +82,9 @@ else
     export VISUAL="vim"
 fi
 
-if [[ "${XDG_SESSION_TYPE}" == "wayland" ]]; then
-    export QT_QPA_PLATFORM=wayland
-fi
+#if [[ "${XDG_SESSION_TYPE}" == "wayland" ]]; then
+#    export QT_QPA_PLATFORM=wayland
+#fi
 
 # set cmake makefile generator, compiler, and standard
 export CC="$(command -v gcc || command -v clang)"
