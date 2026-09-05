@@ -117,7 +117,7 @@ fi
 if command -v "fd" &> /dev/null; then
     alias find="fd -E .git -E .venv -E .conda -E .pixi -E pack"
 else
-    find() {
+    myfind() {
         local p=() x=(\( -name .git -o -name .venv -o -name .conda -o -name .pixi -o -name pack \) -prune -o)
         while [[ $1 && ! $1 =~ ^[-!\(] ]]; do
             p+=("$1")
@@ -132,6 +132,7 @@ else
         fi
         command find "${p[@]:-.}" "${x[@]}" "$@"
     }
+    alias find=myfind
 fi
 
 if command -v "vint" &> /dev/null; then
