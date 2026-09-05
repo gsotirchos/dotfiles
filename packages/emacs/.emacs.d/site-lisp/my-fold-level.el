@@ -23,8 +23,8 @@
 ;; Levels here are 1-based -- level 1 leaves only the outermost constructs
 ;; visible -- while the echo area reports Vim's 0-based `foldlevel'.
 ;;
-;; Buffers driven by neither `outline-minor-mode' nor `hs-minor-mode' (markdown,
-;; `treesit-fold', vdiff...) have no level notion to step, so `zM' and `zR' fall
+;; Buffers driven by neither `outline-minor-mode' nor `hs-minor-mode'
+;; (`treesit-fold', vdiff...) have no level notion to step, so `zM' and `zR' fall
 ;; back to `kirigami', which knows how to fold them.
 
 ;;; Code:
