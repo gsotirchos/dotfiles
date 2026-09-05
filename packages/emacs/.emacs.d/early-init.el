@@ -62,8 +62,8 @@
 
     (eval-after-load "frame"
       `(dolist (fn-override
-                `((display-pixel-width . (lambda () ,pixel-width))
-                  (display-pixel-height . (lambda () ,pixel-height))
+                `((display-pixel-width  . (lambda (&optional _display) ,pixel-width))
+                  (display-pixel-height . (lambda (&optional _display) ,pixel-height))
                   (display-monitor-attributes-list
                    . (lambda  (&optional display)
                        `(((geometry . (0 0 ,,pixel-width ,,pixel-height))
