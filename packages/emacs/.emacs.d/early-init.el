@@ -20,6 +20,11 @@
           (lambda ()
             (setq file-name-handler-alist my/saved-file-name-handler-alist)))
 
+;; Tighter security
+(setq gnutls-verify-error t)
+(setq tls-checktrust t)
+(setq gnutls-min-prime-bits 3072)
+
 ;; Make things a little quieter
 (setq byte-compile-warnings '(not obsolete)
       warning-suppress-log-types '((comp) (bytecomp))
