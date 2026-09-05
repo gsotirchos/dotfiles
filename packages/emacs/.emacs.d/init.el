@@ -347,6 +347,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :defer 1
   :custom (recentf-auto-cleanup 'never)
   :config
+  (advice-add 'recentf-load-list :around #'my/silence-advice)
   (recentf-mode 1)
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-var-directory))
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
