@@ -228,13 +228,14 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   ;; Startup time
   (defun my/display-startup-stats ()
     "Display startup stats."
-    (message
-     "%d packages loaded in %ss with %d garbage collections"
-     (length package-activated-list)
-     (emacs-init-time "%.3f")
-     gcs-done))
+    (message "%d packages loaded in %.2fs (init time: %.2fs) with %d garbage collections."
+             (length package-activated-list)
+             (float-time (time-since before-init-time))
+             (float-time (time-subtract after-init-time before-init-time))
+             gcs-done))
 
-  (add-hook 'emacs-startup-hook #'my/display-startup-stats)
+  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Startup-Summary.html
+  (add-hook 'window-setup-hook #'my/display-startup-stats 99)
 
   :custom
   (initial-scratch-message nil)
@@ -334,7 +335,9 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
    '(kill-ring
      search-ring
      regexp-search-ring))
-  :preface (advice-add 'completing-read :before (lambda (&rest _) (unless savehist-mode (savehist-mode 1))))
+  :preface
+  (advice-add 'completing-read :before (lambda (&rest _) (unless savehist-mode (savehist-mode 1))))
+  (advice-add 'previous-history-element :before (lambda (&rest _) (unless savehist-mode (savehist-mode 1))))
   :config (savehist-mode 1))
 
 (use-package recentf
@@ -887,17 +890,18 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
    ([remap isearch-forward] . consult-history)
    ([remap next-matching-history-element] . consult-history)
    ([remap previous-matching-history-element] . consult-history))
+  :preface
+  (advice-add 'consult-recent-file :before (lambda (&rest _) (recentf-mode 1)))
+  (advice-add 'register-preview :override #'consult-register-window)
   :init
   ;; Tweak the register preview for `consult-register-load',
   ;; `consult-register-store' and the built-in commands.  This improves the
   ;; register formatting, adds thin separator lines, register sorting and hides
   ;; the window mode line.
-  (advice-add 'register-preview :override #'consult-register-window)
   (setq register-preview-delay 0.5)
   ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
-  (advice-add 'consult-recent-file :before (lambda (&rest _) (recentf-mode 1)))
   :config
   ;; The configuration values are evaluated at runtime, just before the
   ;; completion session is started. Therefore you can use for example
@@ -1322,8 +1326,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
             (outline-hide-subtree)
           (outline-show-children)
           (outline-show-entry)))))
-  :init
-  (advice-add 'outline-toggle-children :around #'my/outline-toggle-children-advice))
+  :init (advice-add 'outline-toggle-children :around #'my/outline-toggle-children-advice))
 
 (use-package outline-indent
   :hook ((conf-mode yaml-ts-mode nxml-mode python-base-mode sh-base-mode
@@ -1576,9 +1579,8 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :ensure nil
   :load-path "site-lisp/"
   :commands (my-pixi-mode my-pixi-python-setup my-pixi-refresh)
-  :init
   ;; Depth -90 so the environment is in place before `eglot-ensure' connects.
-  (add-hook 'python-base-mode-hook #'my-pixi-python-setup -90))
+  :init (add-hook 'python-base-mode-hook #'my-pixi-python-setup -90))
 
 (use-package conda
   :preface
@@ -1654,8 +1656,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :ensure nil
   :no-require t
   :mode ("\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'")
-  :init
-  (add-hook 'cmake-ts-mode-hook #'flymake-cmake-lint-setup))
+  :init (add-hook 'cmake-ts-mode-hook #'flymake-cmake-lint-setup))
 
 ;; `flymake-quickdef' (used by the backend below) is already pulled in as a
 ;; dependency of `flymake-bashate'.
