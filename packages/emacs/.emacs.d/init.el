@@ -183,8 +183,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (add-hook 'Custom-mode-hook #'variable-pitch-mode)
   (add-hook 'Info-mode-hook #'variable-pitch-mode)
   (add-hook 'org-mode-hook #'variable-pitch-mode)
-  (add-hook 'markdown-view-mode-hook #'variable-pitch-mode)
-  (add-hook 'gfm-view-mode-hook #'variable-pitch-mode)
+  (add-hook 'markdown-ts-view-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'text-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
 
@@ -633,10 +632,16 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (dired-listing-switches "-alF")
   (dired-omit-files "^\\.[^.].*")
   (dired-mouse-drag-files t)
+  (dired-movement-style 'bounded-files)
+  (dired-free-space nil)
   (dired-omit-verbose nil)
   (dired-dwim-target 'dired-dwim-target-next)
   (dired-hide-details-hide-symlink-targets nil)
   (dired-kill-when-opening-new-dired-buffer t)
+  (dired-clean-confirm-killing-deleted-buffers nil)
+  (dired-vc-rename-file t)
+  (dired-auto-revert-buffer 'dired-directory-changed-p)
+  (dired-do-revert-buffer (lambda (dir) (not (file-remote-p dir))))
   :preface
   (defun my/dired-find-file-other-frame ()
     "Open the file under point in a new frame."
@@ -657,6 +662,11 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (speedbar-use-images nil)
   (speedbar-show-unknown-files t)
   (speedbar-directory-unshown-regexp "^\\'"))
+
+(use-package treesit
+  :ensure nil
+  :no-require t
+  :custom (treesit-auto-install-grammar 'always))
 
 (use-package eshell
   :ensure nil
@@ -1077,88 +1087,43 @@ commit message.")
     (visual-line-mode -1))
   (add-hook 'csv-mode-hook #'my/csv-mode-hook))
 
-(use-package markdown-mode
+(use-package markdown-ts-mode
+  :ensure nil
+  :no-require t
   :after emacs
-  :mode ("\\.md\\'" . gfm-mode)
+  :mode ("\\.md\\'" "\\.markdown\\'")
   :custom
-  (markdown-max-image-size `(,(round (* my/scale-factor 300)) . ,(round (* my/scale-factor 150))))
-  (markdown-display-remote-images t)
-  (markdown-list-item-bullets '("●" "○" "◎" "◆" "◇" "►" "•"))
-  (markdown-list-indent-width 2)
-  (markdown-blockquote-display-char '(">"))
+  ;; (markdown-ts-appear-trigger 'evil-insert)
+  (markdown-ts-inline-images t)
+  (markdown-ts-image-max-width (round (* my/scale-factor 300)))
+  (markdown-ts-display-remote-inline-images 'download)
+  (markdown-ts-appear-enable-math-preview t)
+  (markdown-ts-appear-link-icon "↗")
+  (markdown-ts-appear-image-icon "▧")
+  (markdown-ts-appear-label-caps '("<" . ">"))
+  (markdown-ts-appear-render-callouts t)
+  (markdown-ts-appear-block-quote-marker "┃")
   :preface
-  (defun my/markdown-mode-hook ()
-    (markdown-display-inline-images)
-    (my/set-local-indent-width markdown-list-indent-width))
-  :config
-  (add-hook 'markdown-mode-hook #'my/markdown-mode-hook))
+  (defvar my/markdown-list-indent-width 2)
+  (defun my/markdown-ts-mode-hook ()
+    (my/set-local-indent-width my/markdown-list-indent-width)
+    ;; The `image-preview' feature sits in the fourth sublist of
+    ;; `treesit-font-lock-feature-list', past the default level of 3.
+    (setq-local treesit-font-lock-level 4)
+    (treesit-font-lock-recompute-features)
+    ;; Drop `#' and `*': `visual-wrap-prefix-mode' reserves a `min-width' for
+    ;; whatever matches here, padding markup `markdown-ts-hide-markup' hid.
+    (setq-local adaptive-fill-regexp "[-–!|%;>·•‣⁃◦ \t]*"))
+  (add-hook 'markdown-ts-mode-hook #'my/markdown-ts-mode-hook)
+  (add-hook 'markdown-ts-view-mode-hook #'my/markdown-ts-mode-hook))
 
-(when nil
-  (use-package gptel
-    :after my-keybindings
-    :bind
-    (nil
-     :map my/personal-map
-     ("g g" . gptel)
-     ("g s" . gptel-send)
-     ("g r" . gptel-rewrite)
-     ("g m" . gptel-menu))
-    :config
-    (let ((_ollama-backend
-           (gptel-make-ollama "Ollama"
-             :host "localhost:11434"
-             :stream t
-             :models '("hf.co/bartowski/Nanbeige_Nanbeige4-3B-Thinking-2511-GGUF:Q4_K_M")))
-          (_gemini-backend
-           (gptel-make-gemini "Gemini"
-             :key (lambda () (my/read-1password-secret "GOOGLE_API_KEY"))
-             :stream t
-             :models '("gemini-3-flash-preview"
-                       "gemini-3-pro-preview")))
-          (_deepseek-backend
-           (gptel-make-deepseek "DeepSeek"
-             :key (lambda () (my/read-1password-secret "DEEPSEEK_API_KEY"))
-             :stream t
-             :models '("deepseek-reasoner")))
-          (_fireworks-backend
-           (gptel-make-openai "FireworksAI"
-             :host "api.fireworks.ai"
-             :endpoint "/inference/v1/chat/completions"
-             :protocol "https"
-             :key (lambda () (my/read-1password-secret "FIREWORKS_API_KEY"))
-             :stream t
-             :models '("accounts/fireworks/models/deepseek-v3p2")))
-          (_codestral-backend
-           (gptel-make-openai "Codestral"
-             :host "codestral.mistral.ai"
-             :endpoint "/v1/chat/completions"
-             :protocol "https"
-             :key (lambda () (my/read-1password-secret "CODESTRAL_API_KEY"))
-             :stream t
-             :models '("codestral-latest")))
-          (_devstral-backend
-           (gptel-make-openai "Devstral"
-             :host "api.mistral.ai"
-             :endpoint "/v1/chat/completions"
-             :protocol "https"
-             :key (lambda () (my/read-1password-secret "DEVSTRAL_API_KEY"))
-             :stream t
-             :models '("devstral-latest")))
-          (mistral-backend
-           (gptel-make-openai "Mistral"
-             :host "api.mistral.ai"
-             :endpoint "/v1/chat/completions"
-             :protocol "https"
-             :key (lambda () (my/read-1password-secret "MISTRAL_API_KEY"))
-             :stream t
-             :models '("mistral-medium-3-5"))))
-      (setq gptel-backend mistral-backend
-            gptel-model 'mistral-medium-3-5)))
+(use-package markdown-ts-appear
+  :vc (markdown-ts-appear
+       :url "https://github.com/Thysrael/markdown-ts-appear"
+       :rev :newest)
+  :hook (markdown-ts-mode . markdown-ts-appear-mode))
 
-  (use-package gptel-agent
-    :after gptel
-    :config (gptel-agent-update))
-  )
+(use-package mathjax)
 
 ;; Programming
 
