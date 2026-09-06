@@ -22,8 +22,8 @@
 
   (defun my/silence-advice (fn &rest args)
     "Silence the advised function's execution."
-    (let ((message-log-max nil)
-          (inhibit-message t))
+    (let ( ;; (message-log-max nil)  ;; don't log message
+          (inhibit-message t))  ;; don't echo message
       (apply fn args)))
 
   (defun my/read-envvar-from-file (envvar file)
@@ -260,6 +260,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (ad-redefinition-action 'accept)
   (use-short-answers t)
   (confirm-kill-emacs #'yes-or-no-p)
+  (save-silently t)
   (global-completion-preview-mode t)
   (sentence-end-double-space nil)
   (scroll-margin 0)
