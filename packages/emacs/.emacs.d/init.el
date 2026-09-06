@@ -252,7 +252,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (enable-local-variables :safe)
   ;; (enable-local-eval nil)
   (ffap-machine-p-known 'reject)
-  (package-check-signature t)
+  ;; (package-check-signature t)
   (package-review-policy t)
   (auth-sources '("~/.authinfo.gpg"))
   (vc-follow-symlinks t)
@@ -1098,7 +1098,7 @@ commit message.")
   :custom
   ;; (markdown-ts-appear-trigger 'evil-insert)
   (markdown-ts-inline-images t)
-  (markdown-ts-image-max-width (round (* my/scale-factor 300)))
+  (markdown-ts-image-max-width (round (* my/scale-factor 250)))
   (markdown-ts-display-remote-inline-images 'download)
   (markdown-ts-appear-enable-math-preview t)
   (markdown-ts-appear-link-icon "↗")
@@ -1795,8 +1795,7 @@ Leaves the line-prefix property `org-indent' also sets untouched."
 
 (use-package org-appear
   :hook org-mode
-  ;; :custom (org-appear-autolinks t)
-  )
+  :custom (org-appear-autolinks t))
 
 (provide 'init)
 

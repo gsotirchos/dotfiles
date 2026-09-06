@@ -83,7 +83,8 @@ If STYLE is \\='cycle, cycle the current style."
                  (tab-bar              ,box-minimal      unspecified  nil          ,underline-minimal)
                  (tab-bar-tab          ,box-minimal      ,fg-active   nil          ,underline-minimal)
                  (tab-bar-tab-inactive ,box-minimal      ,fg-inactive nil          ,underline-minimal)
-                 (header-line          ,box-minimal-thin unspecified  nil          ,underline-minimal-thin)))
+                 (header-line          ,box-minimal-thin unspecified  nil          ,underline-minimal-thin)
+                 (header-line-inactive ,box-minimal-thin ,fg-inactive nil          ,underline-minimal-thin)))
             (set-face-attribute face nil
                                 :box box
                                 :foreground fg
