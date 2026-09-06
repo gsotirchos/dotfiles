@@ -1276,6 +1276,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
             (lambda () (setq-local apheleia-formatter 'clang-format)))
   (add-hook 'LaTeX-mode-hook
             (lambda () (setq-local apheleia-formatter 'latexindent)))
+  (defun my/apheleia-format-after-save (&rest _)
+    (apheleia-format-after-save))
+  (advice-add 'save-buffer :after #'my/apheleia-format-after-save)
+  (advice-add 'evil-write :after #'my/apheleia-format-after-save)
   (defun my/apheleia-busy-p ()
     (process-live-p apheleia--current-process))
   (defun my/apheleia-format-or (fallback &rest args)
