@@ -54,30 +54,35 @@ append_paths() {
         existing_val="${!env_var_name}"
     fi
 
-    IFS=':' read -ra existing_paths <<< "${existing_val}"
-    for path in "${existing_paths[@]}"; do
-        if [[ "${path}" ]]; then
-            #echo "existing path: $path"
-            added_paths["$path"]=1
-        fi
-    done
     local new_paths_array=()
 
     for path in "${paths_to_add[@]}"; do
-        if [[ "${added_paths["$path"]:-}" ]]; then
-            #echo "Warning: skipped adding existing path \"$path\" in $env_var_name"
-            continue
-        fi
         if [[ "${path:0:1}" == "#" ]]; then
             #echo "skipped invalid: $path"
             continue
         fi
-        #echo -e "appended to $env_var_name: $path"
+        if [[ "${added_paths["$path"]:-}" ]]; then
+            #echo "skipped duplicate: $path"
+            continue
+        fi
+        #echo -e "prepended to $env_var_name: $path"
         new_paths_array+=("$path")
         added_paths["$path"]=1
     done
 
-    new_paths_array+=("${existing_val}")
+    # Keep the existing entries after ours, dropping the ones we just added:
+    # macOS `path_helper' (run from /etc/profile) rebuilds $PATH with the
+    # system directories first, so an already-inherited entry has to be moved
+    # back to the front rather than left wherever path_helper put it.
+    IFS=':' read -ra existing_paths <<< "${existing_val}"
+    for path in "${existing_paths[@]}"; do
+        if [[ -z "${path}" ]] || [[ "${added_paths["$path"]:-}" ]]; then
+            continue
+        fi
+        new_paths_array+=("$path")
+        added_paths["$path"]=1
+    done
+
     local IFS=":"
     echo "${new_paths_array[*]}"
 }
