@@ -594,6 +594,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :ensure nil
   :no-require t
   :preface
+  (advice-add 'save-buffer :around #'my/silence-advice)
   (defun my/revert-buffer-quick-preserve (&optional auto-save)
     "Like `revert-buffer-quick', but preserves modes (accepts AUTO-SAVE)."
     (interactive "P")
@@ -797,9 +798,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
    ("<tab>" . tempel-next)
    ("S-<tab>" . tempel-previous))
   :preface
-  (defun my/tempel-active-p ()
-    "Return non-nil while a template is being filled in the current buffer."
-    (bound-and-true-p tempel--active))
   (defun my/tempel-other-capfs ()
     "Return the buffer's completion sources, without the Tempel ones."
     (seq-difference completion-at-point-functions
@@ -1277,6 +1275,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
             (lambda () (setq-local apheleia-formatter 'clang-format)))
   (add-hook 'LaTeX-mode-hook
             (lambda () (setq-local apheleia-formatter 'latexindent)))
+  (defun my/apheleia-busy-p ()
+    (process-live-p apheleia--current-process))
   (defun my/apheleia-format-or (fallback &rest args)
     "Format the buffer with Apheleia if a formatter is configured for it.
 Otherwise call FALLBACK (the command normally on \\[fill-paragraph])
@@ -1298,7 +1298,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
     (my/apheleia-format-or #'prog-fill-reindent-defun arg))
   :bind (([remap fill-paragraph] . my/apheleia-format-or-fill-paragraph)
          ([remap prog-fill-reindent-defun] . my/apheleia-format-or-prog-fill))
-  :custom (apheleia-skip-functions '(my/tempel-active-p))
+  :custom (apheleia-skip-functions '(evil-insert-state-p my/apheleia-busy-p))
   :config
   (apheleia-global-mode 1)
   (setf (alist-get 'ruff apheleia-formatters)
