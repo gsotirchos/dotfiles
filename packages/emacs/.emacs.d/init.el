@@ -1080,7 +1080,14 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (add-to-list 'project-switch-commands '(ghostel-project-list-buffers "Ghostel buffers") t)
   (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
 
+;; Vendored from https://github.com/dakra/ghostel (GPL-3.0-or-later):
+;; extensions/consult-ghostel/consult-ghostel.el at commit 2bea18f, the same
+;; commit the installed MELPA `ghostel' is built from on 2026-09-06.
+;; TODO: drop the vendored copy once consult-ghostel ships in an archive;
+;; as of 2026-09-06 only ghostel and evil-ghostel have MELPA recipes.
 (use-package consult-ghostel
+  :ensure nil
+  :load-path "site-lisp/"
   :after (ghostel consult)
   :demand t
   :bind
