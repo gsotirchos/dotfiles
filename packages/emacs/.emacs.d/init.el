@@ -785,7 +785,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (corfu-history-mode))
 
 (use-package cape
-  :init (add-to-list 'completion-at-point-functions #'cape-file))
+  :preface (add-hook 'completion-at-point-functions #'cape-file))
 
 (use-package tempel
   :after my-keybindings
@@ -810,13 +810,10 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
 (use-package tempel-collection
   :after tempel)
 
-;; Left disabled pending confirmation that it is safe: it was suspected of
-;; causing the empty-prefix buffer wipe that `my/eglot-require-completion-prefix'
-;; now guards against, but that reproduces without it.  Re-enable with
-;; `M-x eglot-tempel-mode'.
 (use-package eglot-tempel
   :after eglot
-  :commands (eglot-tempel-mode))
+  :demand t
+  :config (eglot-tempel-mode 1))
 
 (use-package dabbrev
   :ensure nil
@@ -1043,7 +1040,7 @@ commit message.")
       (require 'git-commit)
       (unless (bound-and-true-p git-commit-mode)
         (git-commit-setup-check-buffer))))
-  :init (add-hook 'find-file-hook #'my/git-commit-load-on-demand))
+  (add-hook 'find-file-hook #'my/git-commit-load-on-demand))
 
 (use-package my-git-commit
   :ensure nil
@@ -1152,9 +1149,9 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (markdown-ts-image-max-width (round (* my/scale-factor 250)))
   (markdown-ts-display-remote-inline-images 'download)
   (markdown-ts-appear-enable-math-preview t)
-  (markdown-ts-appear-link-icon "↗")
   (markdown-ts-appear-image-icon "▧")
-  (markdown-ts-appear-label-caps '("<" . ">"))
+  ;; (markdown-ts-appear-link-icon "↗")
+  ;; (markdown-ts-appear-label-caps '("<" . ">"))
   (markdown-ts-appear-render-callouts t)
   (markdown-ts-appear-block-quote-marker "┃")
   :preface
@@ -1281,6 +1278,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
     (my/apheleia-format-or #'prog-fill-reindent-defun arg))
   :bind (([remap fill-paragraph] . my/apheleia-format-or-fill-paragraph)
          ([remap prog-fill-reindent-defun] . my/apheleia-format-or-prog-fill))
+  :custom (apheleia-skip-functions '(my/tempel-active-p))
   :config
   (apheleia-global-mode 1)
   (setf (alist-get 'ruff apheleia-formatters)
@@ -1346,7 +1344,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
             (outline-hide-subtree)
           (outline-show-children)
           (outline-show-entry)))))
-  :init (advice-add 'outline-toggle-children :around #'my/outline-toggle-children-advice))
+  (advice-add 'outline-toggle-children :around #'my/outline-toggle-children-advice))
 
 (use-package outline-indent
   :hook ((conf-mode yaml-ts-mode nxml-mode python-base-mode sh-base-mode
@@ -1600,7 +1598,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :load-path "site-lisp/"
   :commands (my-pixi-mode my-pixi-python-setup my-pixi-refresh)
   ;; Depth -90 so the environment is in place before `eglot-ensure' connects.
-  :init (add-hook 'python-base-mode-hook #'my-pixi-python-setup -90))
+  :preface (add-hook 'python-base-mode-hook #'my-pixi-python-setup -90))
 
 (use-package conda
   :preface
