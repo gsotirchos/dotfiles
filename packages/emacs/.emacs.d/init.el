@@ -797,12 +797,33 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
    ("<tab>" . tempel-next)
    ("S-<tab>" . tempel-previous))
   :preface
+  (defun my/tempel-active-p ()
+    "Return non-nil while a template is being filled in the current buffer."
+    (bound-and-true-p tempel--active))
+  (defun my/tempel-other-capfs ()
+    "Return the buffer's completion sources, without the Tempel ones."
+    (seq-difference completion-at-point-functions
+                    (list #'my/tempel-capf #'tempel-complete)))
+  (defun my/tempel-capf ()
+    "Complete template names alongside the buffer's other sources.
+Corfu only displays the candidates of the first Capf that matches, so
+`tempel-complete' has to be merged into the remaining sources instead of
+merely preceding them, which would hide them behind the templates."
+    (let* ((capfs (my/tempel-other-capfs))
+           ;; Unlike `completion-at-point', `cape-wrap-super' calls the sources
+           ;; directly and cannot resolve the `t' standing for the global ones.
+           (capfs (if (memq t capfs)
+                      (append (remq t capfs)
+                              (default-value 'completion-at-point-functions))
+                    capfs)))
+      (apply #'cape-wrap-super (append capfs '(:with tempel-complete)))))
   (defun my/tempel-setup-capf ()
-    "Put `tempel-expand' in front of the buffer's other completion sources.
+    "Surround the buffer's completion sources with the Tempel ones.
+`my/tempel-capf' merges the templates into the sources that match, while
+the trailing `tempel-complete' still offers them where none does.
 Idempotent, since the hooks below can fire repeatedly in one buffer."
     (setq-local completion-at-point-functions
-                (cons #'tempel-expand
-                      (remq #'tempel-expand completion-at-point-functions))))
+                `(my/tempel-capf ,@(my/tempel-other-capfs) tempel-complete)))
   ;; `eglot--managed-mode' prepends its own exclusive Capf after `prog-mode-hook'
   ;; has run, so the setup is repeated on its hook to stay ahead of it.
   :hook ((prog-mode text-mode conf-mode eglot-managed-mode) . my/tempel-setup-capf))
@@ -812,8 +833,7 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
 
 (use-package eglot-tempel
   :after eglot
-  :demand t
-  :config (eglot-tempel-mode 1))
+  :init (eglot-tempel-mode 1))
 
 (use-package dabbrev
   :ensure nil
