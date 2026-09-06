@@ -1088,8 +1088,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package consult-ghostel
   :ensure nil
   :load-path "site-lisp/"
-  :after (ghostel consult)
-  :demand t
+  ;; :after (ghostel consult)
+  ;; :demand t
   :bind
   (nil
    ([remap ghostel] . consult-ghostel)
