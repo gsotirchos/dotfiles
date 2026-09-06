@@ -1052,17 +1052,19 @@ commit message.")
   :demand t)
 
 (use-package ghostel
-  :bind (("C-x m" . ghostel)
-         :map ghostel-semi-char-mode-map
-         ("C-s"  . consult-line)
-         ("C-k"  . my/ghostel-send-C-k-and-kill)
-         ;; I'm used to go up/down the shell history with M-n/p from eshell
-         ;; Simulate this behavior in ghostel by sending C-p and C-n
-         ("M-p" . (lambda () (interactive) (ghostel-send-key "p" "ctrl")))
-         ("M-n" . (lambda () (interactive) (ghostel-send-key "n" "ctrl")))
-         :map project-prefix-map
-         ("m" . ghostel-project)
-         ("M" . ghostel-project-list-buffers))
+  :bind
+  (nil
+   ("C-x m" . ghostel)
+   :map ghostel-semi-char-mode-map
+   ("C-s"  . consult-line)
+   ("C-k"  . my/ghostel-send-C-k-and-kill)
+   ;; I'm used to go up/down the shell history with M-n/p from eshell
+   ;; Simulate this behavior in ghostel by sending C-p and C-n
+   ("M-p" . (lambda () (interactive) (ghostel-send-key "p" "ctrl")))
+   ("M-n" . (lambda () (interactive) (ghostel-send-key "n" "ctrl")))
+   :map project-prefix-map
+   ("m" . ghostel-project)
+   ("M" . ghostel-project-list-buffers))
   :hook (ghostel-mode . mode-line-invisible-mode)
   :custom
   (ghostel-line-spacing fixed-pitch-line-spacing)
@@ -1081,11 +1083,13 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package consult-ghostel
   :after (ghostel consult)
   :demand t
-  :bind (("C-x m" . consult-ghostel)
-         :map project-prefix-map
-         ("m" . consult-ghostel-project)
-         :map ghostel-semi-char-mode-map
-         ("C-c h" . consult-ghostel-history)))
+  :bind
+  (nil
+   ([remap ghostel] . consult-ghostel)
+   :map project-prefix-map
+   ([remap ghostel-project] . consult-ghostel-project)
+   :map ghostel-semi-char-mode-map
+   ("C-c h" . consult-ghostel-history)))
 
 (use-package evil-ghostel
   :after (ghostel evil)
