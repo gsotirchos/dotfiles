@@ -1657,10 +1657,19 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :commands (flymake-mypy-enable)
   :preface
   (defun my/flymake-mypy-enable ()
-    "Enable the mypy Flymake backend when mypy is available."
-    (when (executable-find "mypy")
-      (setq-local flymake-mypy-executable (executable-find "mypy"))
-      (flymake-mypy-enable)))
+    "Enable the mypy Flymake backend when mypy is available.
+In a devcontainer project it is the container's mypy, which knows the
+image's site-packages; the shadow file it is given has to be written
+where the container can read it."
+    (if-let* ((tmp (my-devcontainer-temporary-directory)))
+        (progn
+          (setq-local temporary-file-directory tmp)
+          (setq-local flymake-mypy-executable
+                      (string-join (my-devcontainer-command "mypy") " "))
+          (flymake-mypy-enable))
+      (when-let* ((mypy (executable-find "mypy")))
+        (setq-local flymake-mypy-executable mypy)
+        (flymake-mypy-enable))))
   :hook (python-base-mode . my/flymake-mypy-enable))
 
 (use-package my-pixi
