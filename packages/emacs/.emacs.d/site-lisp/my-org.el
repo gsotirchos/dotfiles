@@ -9,6 +9,7 @@
 (declare-function my/theme-color "init" (name))
 
 (require 'org)
+(require 'my-latex-preview)
 
 ;;;###autoload
 (defun my/org-emphasize-dwim (&optional char)
@@ -139,20 +140,6 @@ With a prefix ARG, open the most recent journal file dated before today."
   (start-process "open-link" nil "open" (format "message://%%3C%s%%3E" mid)))
 
 ;;;###autoload
-(defun my/adjust-preview-latex-scale ()
-  "Adjust `org-format-latex-options' scale based on text-scaling and monitor DPI."
-  (let* ((step (if (boundp 'text-scale-mode-step) text-scale-mode-step 1.2))
-         (amount (if (boundp 'text-scale-mode-amount)
-                     (or text-scale-mode-amount 0)
-                   0))
-         (text-scaling (expt step amount))
-         (monitor-attrs (car (display-monitor-attributes-list)))
-         (monitor-scale-pair (assoc 'scale-factor monitor-attrs))
-         (monitor-scaling (if monitor-scale-pair (cdr monitor-scale-pair) 1.0))
-         (scaling-fn (lambda (_) (/ text-scaling monitor-scaling))))
-    (my/update-plist-property org-format-latex-options :scale scaling-fn)))
-
-;;;###autoload
 (defun my/customize-org-mode ()
   "Apply my tweaks to theme-controlled settings."
   (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
@@ -192,7 +179,6 @@ With a prefix ARG, open the most recent journal file dated before today."
 (advice-add 'my/org-latex-preview-buffer :around #'my/silence-advice)
 (advice-add 'org-latex-preview :after #'my/text-scale-adjust-latex-previews)
 
-(my/adjust-preview-latex-scale)
 (plist-put org-format-latex-options :background "Transparent")
 (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
 

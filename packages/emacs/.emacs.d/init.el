@@ -72,56 +72,6 @@ Return t so `fill-paragraph' treats the paragraph as handled."
                 evil-shift-width width
                 visual-wrap-extra-indent width))
 
-  ;; List manipulation utilities
-  (defun my/update-plist-property (plist property fn)
-    "Update the PLIST's PROPERTY's value using FN."
-    (let* ((current-value (plist-get plist property))
-           (new-value (funcall fn current-value)))
-      (plist-put plist property new-value)))
-
-  (defun my/update-overlay-property-cdr (overlay property fn)
-    "Update the OVERLAY's PROPERTY's value's cdr using FN."
-    (let* ((current-value (overlay-get overlay property))
-           (current-car (car current-value))
-           (current-cdr (cdr current-value))
-           (new-cdr (funcall fn current-cdr))
-           (new-value (cons current-car new-cdr)))
-      (overlay-put overlay property new-value)))
-
-  ;; Overlay manipulation utilities
-  (defun my/text-scale-overlays (category-type category-name scale)
-    (dolist (overlay (overlays-in (point-min) (point-max)))
-      (let ((overlay-category (overlay-get overlay category-type)))
-        (when (and overlay-category
-                   (eq overlay-category category-name))
-          ;; (overlay-put overlay 'display
-          ;;              (cons 'image (plist-put (cdr (overlay-get overlay 'display))
-          ;;                                      :scale scale)))
-          (let ((scale_fn (lambda (_) scale)))
-            (my/update-overlay-property-cdr
-             overlay
-             'display
-             (lambda (value-cdr-plist)
-               (my/update-plist-property
-                value-cdr-plist
-                :scale
-                scale_fn))))))))
-
-  (defun my/text-scale-adjust-latex-previews (&rest _)
-    "Adjust the size of latex fragments when changing the buffer's text scale."
-    (let ((scale (expt text-scale-mode-step text-scale-mode-amount)))
-      (my/text-scale-overlays 'category 'preview-overlay scale)
-      (my/text-scale-overlays 'org-overlay-type 'org-latex-overlay scale)))
-
-  (defun my/delete-latex-preview-overlays (&rest _)
-    "Delete only LaTeX preview overlays in the current buffer."
-    (dolist (overlay (overlays-in (point-min) (point-max)))
-      (let ((category (overlay-get overlay 'category))
-            (org-type (overlay-get overlay 'org-overlay-type)))
-        (when (or (eq category 'preview-overlay)
-                  (eq org-type 'org-latex-overlay))
-          (delete-overlay overlay)))))
-
   ;; Hook management utilities
   (defun my/run-other-buffers-local-hooks (hook)
     "Run local HOOK in all buffers except the current one."
@@ -1759,6 +1709,11 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
 
 
 ;; LaTeX
+
+(use-package my-latex-preview
+  :ensure nil
+  :load-path "site-lisp/"
+  :demand t)
 
 (use-package auctex
   :ensure nil
