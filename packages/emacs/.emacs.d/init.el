@@ -1036,6 +1036,8 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
     (setq-local adaptive-fill-regexp "[-+ ]?[ \t]*"))
   (add-hook 'magit-mode-hook #'my/magit-mode-hook)
   :config
+  (put 'magit-status-mode 'magit-diff-default-arguments
+       '("--no-ext-diff" "--ignore-submodules=dirty"))
   (with-eval-after-load 'git-commit
     (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
   (when (bound-and-true-p evil-mode)
