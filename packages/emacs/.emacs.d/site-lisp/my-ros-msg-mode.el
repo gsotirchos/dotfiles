@@ -1,13 +1,14 @@
-;;; my-ros-msg-mode.el --- Minimal major mode for ROS .msg files  -*- lexical-binding: t; -*-
+;;; my-ros-msg-mode.el --- Minimal major mode for ROS interface files  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Provides syntax highlighting and basic formatting for ROS message definition files (*.msg).
+;; Provides syntax highlighting and basic formatting for ROS interface
+;; definition files (*.msg, *.srv, *.action).
 
 ;;; Code:
 
 ;;;###autoload
 (define-derived-mode my-ros-msg-mode prog-mode "ROS Msg"
-  "Minimal major mode for ROS .msg files."
+  "Minimal major mode for ROS interface definition files."
   ;; Configure syntax table for # comments
   (modify-syntax-entry ?# "<" my-ros-msg-mode-syntax-table)
   (modify-syntax-entry ?\n ">" my-ros-msg-mode-syntax-table)
@@ -21,7 +22,7 @@
             (1 'font-lock-constant-face))))))
 
 ;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.msg\\'" . my-ros-msg-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(?:msg\\|srv\\|action\\)\\'" . my-ros-msg-mode))
 
 (provide 'my-ros-msg-mode)
 

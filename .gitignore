@@ -41,6 +41,7 @@ Temporary Items
 .\#*
 *.elc
 *.eld
+!packages/emacs/.emacs.d/templates/*.eld
 *.swp
 *.swo
 auto/
