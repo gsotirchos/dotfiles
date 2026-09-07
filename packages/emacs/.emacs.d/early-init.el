@@ -116,8 +116,7 @@
           (unless (file-exists-p autoloads-file)
             (package-generate-autoloads pkg-name pkg-dir)))))))
 
-(unless (or (version<= "29" emacs-version)
-            (package-installed-p 'use-package))
+(unless (package-installed-p 'use-package)
   (package-initialize)
   (unless package-archive-contents
     (setq package-check-signature nil)
