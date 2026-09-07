@@ -1,0 +1,246 @@
+#!/usr/bin/env bash
+#
+# Provision the editing toolchain Emacs drives inside a devcontainer.
+#
+# Devcontainer images carry the project's build environment but none of the
+# editor tooling, so this installs a self-contained prefix -- the counterpart
+# of the ~/.vscode-server that VS Code injects. It runs INSIDE the container,
+# against a prefix bind-mounted from the host, so the install survives the
+# container being recreated.
+#
+#   devcontainer-emacs-tools           install what is missing, then snapshot
+#                                      the environment
+#   devcontainer-emacs-tools env       re-snapshot the environment only
+#   devcontainer-emacs-tools --force   reinstall even if the stamp matches
+#
+# Layout under $EMACS_TOOLS_PREFIX (default /opt/emacs-tools):
+#   pkg/     unpacked distributions
+#   bin/     wrappers that source env.sh before exec'ing the real tool
+#   env.sh   snapshot of the container's login-interactive environment
+#
+# Two container quirks drive that design:
+#
+#   * The ROS setup line images append to ~/.bashrc sits after the
+#     interactive guard, so only a login *interactive* shell ever runs it.
+#     This is why the probe is `bash -lic' -- the same reason the devcontainer
+#     spec defaults userEnvProbe to loginInteractiveShell.
+#   * Tramp's direct-async processes pass the environment on the command
+#     line, which PIPE_BUF caps at 4096 bytes; a sourced ROS environment is
+#     around 12 KB. Wrappers therefore source env.sh in the container instead
+#     of Emacs pushing the environment across.
+
+set -uo pipefail
+
+CLANGD_VERSION="${CLANGD_VERSION:-22.1.6}"
+SHFMT_VERSION="${SHFMT_VERSION:-3.14.1}"
+NODE_VERSION="${NODE_VERSION:-24.20.0}"
+# package:binary -- the two differ wherever a distribution is not named
+# after the command it installs.
+PYTHON_TOOLS=(ruff mypy bashate cmakelang:cmake-lint cmake-language-server
+    clang-format)
+NODE_TOOLS=(pyright)
+
+PREFIX="${EMACS_TOOLS_PREFIX:-/opt/emacs-tools}"
+
+log() { printf '[emacs-tools] %s\n' "$*" >&2; }
+die() { printf '[emacs-tools] error: %s\n' "$*" >&2; exit 1; }
+
+# Identifies an install; changing a pin or a tool list forces a reinstall.
+stamp_value() {
+    printf '%s\n' "clangd=${CLANGD_VERSION}" "shfmt=${SHFMT_VERSION}" \
+        "node=${NODE_VERSION}" "python=${PYTHON_TOOLS[*]}" "npm=${NODE_TOOLS[*]}" \
+        | sha256sum | cut -d' ' -f1
+}
+
+fetch() {
+    curl -fsSL --retry 3 --connect-timeout 20 "$1" -o "$2" \
+        || die "could not download $1"
+}
+
+install_clangd() {
+    local dest="${PREFIX}/pkg/clangd" archive
+    [[ -x "${dest}/bin/clangd" ]] && return 0
+    log "installing clangd ${CLANGD_VERSION}"
+    archive="$(mktemp -d)/clangd.zip"
+    fetch "https://github.com/clangd/clangd/releases/download/${CLANGD_VERSION}/clangd-linux-${CLANGD_VERSION}.zip" \
+        "${archive}"
+    rm -rf "${dest}"
+    mkdir -p "${dest}"
+    # The archive holds a single clangd_<version>/ directory; flatten it.
+    if command -v unzip > /dev/null; then
+        unzip -q "${archive}" -d "${dest}.unpack"
+    else
+        python3 -m zipfile -e "${archive}" "${dest}.unpack"
+    fi
+    mv "${dest}.unpack/clangd_${CLANGD_VERSION}"/* "${dest}/"
+    rm -rf "${dest}.unpack" "$(dirname "${archive}")"
+    chmod +x "${dest}/bin/clangd"
+}
+
+install_shfmt() {
+    local dest="${PREFIX}/pkg/shfmt/bin"
+    [[ -x "${dest}/shfmt" ]] && return 0
+    log "installing shfmt ${SHFMT_VERSION}"
+    mkdir -p "${dest}"
+    fetch "https://github.com/mvdan/sh/releases/download/v${SHFMT_VERSION}/shfmt_v${SHFMT_VERSION}_linux_amd64" \
+        "${dest}/shfmt"
+    chmod +x "${dest}/shfmt"
+}
+
+install_node_tools() {
+    local dest="${PREFIX}/pkg/node" archive tool
+    if [[ ! -x "${dest}/bin/node" ]]; then
+        log "installing node ${NODE_VERSION}"
+        archive="$(mktemp -d)/node.tar.xz"
+        fetch "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" \
+            "${archive}"
+        rm -rf "${dest}"
+        mkdir -p "${dest}"
+        tar -xJf "${archive}" -C "${dest}" --strip-components=1
+        rm -rf "$(dirname "${archive}")"
+    fi
+    for tool in "${NODE_TOOLS[@]}"; do
+        [[ -x "${dest}/bin/${tool}" ]] && continue
+        log "installing ${tool}"
+        PATH="${dest}/bin:${PATH}" "${dest}/bin/npm" install --global \
+            --prefix "${dest}" --no-fund --no-audit "${tool}" \
+            || die "npm could not install ${tool}"
+    done
+}
+
+# Images built on python3-minimal carry the venv module but not the wheels
+# ensurepip seeds from, so `python3 -m venv' fails on an image that has no
+# python3-venv package. Falling back to a pip-less venv and bootstrapping pip
+# into it keeps provisioning free of apt and sudo.
+create_venv() {
+    local venv="$1" bootstrap
+    rm -rf "${venv}"
+    if python3 -m venv "${venv}" 2> /dev/null \
+        && "${venv}/bin/python" -m pip --version &> /dev/null; then
+        return 0
+    fi
+    log "no ensurepip wheels; bootstrapping pip"
+    rm -rf "${venv}"
+    python3 -m venv --without-pip "${venv}" || die "could not create a venv"
+    bootstrap="$(mktemp -d)/get-pip.py"
+    fetch "https://bootstrap.pypa.io/get-pip.py" "${bootstrap}"
+    "${venv}/bin/python" "${bootstrap}" --quiet || die "could not bootstrap pip"
+    rm -rf "$(dirname "${bootstrap}")"
+}
+
+install_python_tools() {
+    local venv="${PREFIX}/pkg/venv" missing=() tool
+    # Probe pip rather than the interpreter: a venv left behind by an
+    # interrupted bootstrap has one without the other.
+    if ! "${venv}/bin/python" -m pip --version &> /dev/null; then
+        log "creating python environment"
+        create_venv "${venv}"
+    fi
+    for tool in "${PYTHON_TOOLS[@]}"; do
+        [[ -e "${venv}/bin/${tool##*:}" ]] || missing+=("${tool%%:*}")
+    done
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        log "installing python tools: ${missing[*]}"
+        "${venv}/bin/python" -m pip install --quiet "${missing[@]}" \
+            || die "could not install ${missing[*]}"
+    fi
+}
+
+# Snapshot the environment a login interactive shell provides, so that the
+# wrappers can restore it without paying to source it on every invocation.
+# `export -p' is used rather than `env' because bash quotes its own output
+# correctly, including values that span lines.
+write_env_snapshot() {
+    local snapshot="${PREFIX}/env.sh"
+    # Variables describing the probing shell rather than the environment.
+    local noise='^declare -x (_|PWD|OLDPWD|SHLVL|PS1|PS2|BASHOPTS|BASH_ENV'
+    noise+='|BASH_EXECUTION_STRING|TERM|LINES|COLUMNS)='
+
+    log "snapshotting the container environment"
+    bash -lic 'export -p' 2> /dev/null | grep -Ev "${noise}" > "${snapshot}.new"
+
+    if [[ ! -s "${snapshot}.new" ]]; then
+        rm -f "${snapshot}.new"
+        die "the environment probe came back empty"
+    fi
+    mv "${snapshot}.new" "${snapshot}"
+}
+
+write_wrapper() {
+    local name="$1" target="$2"
+    cat > "${PREFIX}/bin/${name}" <<WRAPPER
+#!/bin/bash
+# Generated by devcontainer-emacs-tools; edits will be lost.
+# Tools Emacs runs synchronously ride Tramp's session, which holds a tty
+# (\`docker exec -it'), and a tty rewrites every outgoing newline as CRLF.
+# That would corrupt a formatter's output, since it is written straight back
+# into the buffer.  Asynchronous processes get no tty and skip this.
+[ -t 0 ] && stty raw -echo 2> /dev/null
+[ -r "${PREFIX}/env.sh" ] && . "${PREFIX}/env.sh"
+PATH="${PREFIX}/bin:\${PATH}"
+export PATH
+exec "${target}" "\$@"
+WRAPPER
+    chmod +x "${PREFIX}/bin/${name}"
+}
+
+write_wrappers() {
+    local tool
+    mkdir -p "${PREFIX}/bin"
+    write_wrapper clangd "${PREFIX}/pkg/clangd/bin/clangd"
+    write_wrapper shfmt "${PREFIX}/pkg/shfmt/bin/shfmt"
+    for tool in "${PYTHON_TOOLS[@]}"; do
+        tool="${tool##*:}"
+        [[ -e "${PREFIX}/pkg/venv/bin/${tool}" ]] \
+            && write_wrapper "${tool}" "${PREFIX}/pkg/venv/bin/${tool}"
+    done
+    # node itself is wrapped so that the `#!/usr/bin/env node' shebang the npm
+    # tools ship with resolves against this prefix.
+    for tool in node "${NODE_TOOLS[@]}" pyright-langserver; do
+        [[ -e "${PREFIX}/pkg/node/bin/${tool}" ]] \
+            && write_wrapper "${tool}" "${PREFIX}/pkg/node/bin/${tool}"
+    done
+    # Scripts copied in from the dotfiles (see my-devcontainer-payload) are
+    # already executable and need only the environment, not a target rewrite.
+    for tool in "${PREFIX}"/payload/*; do
+        [[ -f "${tool}" ]] && write_wrapper "$(basename "${tool}")" "${tool}"
+    done
+    return 0
+}
+
+main() {
+    local force="" stamp
+
+    case "${1:-}" in
+        env)
+            [[ -d "${PREFIX}" ]] || die "${PREFIX} does not exist"
+            write_env_snapshot
+            return 0
+            ;;
+        --force) force=1 ;;
+        "") ;;
+        *) die "unknown argument: $1" ;;
+    esac
+
+    command -v unzip > /dev/null || command -v python3 > /dev/null \
+        || die "either unzip or python3 is required inside the container"
+    mkdir -p "${PREFIX}/pkg" "${PREFIX}/bin" || die "cannot write to ${PREFIX}"
+
+    stamp="$(stamp_value)"
+    if [[ -z "${force}" && "$(cat "${PREFIX}/.stamp" 2> /dev/null)" == "${stamp}" ]]; then
+        log "toolchain is current; refreshing the environment only"
+        write_env_snapshot
+        return 0
+    fi
+
+    install_clangd
+    install_shfmt
+    install_python_tools
+    install_node_tools
+    write_wrappers
+    write_env_snapshot
+    printf '%s\n' "${stamp}" > "${PREFIX}/.stamp"
+    log "toolchain ready in ${PREFIX}"
+}
+
+main "$@"

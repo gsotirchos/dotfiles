@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+#
+# Route internet over Wi-Fi only, by preventing every wired (ethernet)
+# NetworkManager profile from installing a default route. On-link subnet
+# routes are unaffected, so machines on the wired LAN stay reachable.
+#
+#   wifi-only on       wired links never carry internet traffic
+#   wifi-only off      restore normal metric-based route selection
+#   wifi-only status   show the setting and the active default routes
+#
+# See nm-settings-nmcli(5) for "ipv4.never-default".
+
+set -uo pipefail
+
+ethernet_profiles() {
+    nmcli -t -f UUID,TYPE connection show \
+        | awk -F: '$2 == "802-3-ethernet" { print $1 }'
+}
+
+set_never_default() {
+    local value="$1" uuid
+    for uuid in $(ethernet_profiles); do
+        nmcli connection modify "${uuid}" \
+            ipv4.never-default "${value}" ipv6.never-default "${value}" || return 1
+    done
+}
+
+# Settings only reach a live link on reactivation; reapply avoids dropping it.
+reapply_connected_ethernet() {
+    local device state
+    while IFS=: read -r device _ state; do
+        [[ "${state}" == "connected" ]] || continue
+        nmcli device reapply "${device}" > /dev/null 2>&1 \
+            || echo "wifi-only: could not reapply ${device}" >&2
+    done < <(nmcli -t -f DEVICE,TYPE,STATE device status | grep ':ethernet:')
+}
+
+cmd_toggle() {
+    local value="$1"
+    set_never_default "${value}" || exit 1
+    reapply_connected_ethernet
+    cmd_status
+}
+
+cmd_status() {
+    local uuid
+    echo "wired profiles:"
+    for uuid in $(ethernet_profiles); do
+        printf "  %-28s never-default: %s\n" \
+            "$(nmcli -g connection.id connection show "${uuid}")" \
+            "$(nmcli -g ipv4.never-default connection show "${uuid}")"
+    done
+    echo
+    echo "default routes:"
+    ip route show default | sed 's/^/  /'
+}
+
+usage() {
+    sed -n '3,9p' "$0" | sed 's/^# \{0,1\}//'
+}
+
+main() {
+    case "${1:-}" in
+        on) cmd_toggle yes ;;
+        off) cmd_toggle no ;;
+        status) cmd_status ;;
+        -h | --help | help | "") usage ;;
+        *)
+            echo "wifi-only: unknown command: $1" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+}
+
+main "$@"
