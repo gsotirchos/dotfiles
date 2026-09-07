@@ -798,6 +798,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
    :map tempel-map
    ("<tab>" . tempel-next)
    ("S-<tab>" . tempel-previous))
+  :custom (tempel-path (expand-file-name "templates/*.eld" user-emacs-directory))
   :preface
   (defun my/tempel-other-capfs ()
     "Return the buffer's completion sources, without the Tempel ones."
@@ -1031,7 +1032,7 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   :custom (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :preface
   (defun my/magit-mode-hook ()
-    (setq-local truncate-lines nil)
+    ;; (setq-local truncate-lines nil)
     ;; Let `visual-wrap-prefix-mode' see the diff marker in the first column.
     (setq-local adaptive-fill-regexp "[-+ ]?[ \t]*"))
   (add-hook 'magit-mode-hook #'my/magit-mode-hook)
