@@ -91,12 +91,13 @@
 ;; Basic fonts
 (cond
  ((eq system-type 'darwin)
-  (set-face-attribute 'fixed-pitch nil :family "Menlo")  ;; :height 130
-  (set-face-attribute 'variable-pitch nil :family "Lucida Grande"))  ;; :height 130
+  (set-face-attribute 'default nil :family "Menlo")  ;; :height 130
+  (set-face-attribute 'fixed-pitch nil :family "Menlo")
+  (set-face-attribute 'variable-pitch nil :family "Lucida Grande"))  ;; :height 1.0
  ((eq system-type 'gnu/linux)
-  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 117)
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 110)))
-(copy-face 'fixed-pitch 'default)
+  (set-face-attribute 'default nil :family "Ubuntu Mono" :height 117)
+  (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono")
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 0.94)))
 
 ;; Initialize package sources and set up `use-package'
 (require 'package)
@@ -133,8 +134,8 @@
 ;; TODO: remove old homebrew paths
 ;; Set PATH
 (let ((path-list (split-string (format "/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/opt/findutils/libexec/gnubin:/opt/homebrew/opt/gnu-sed/libexec/gnubin:/opt/homebrew/opt/gnu-which/libexec/gnubin:/opt/homebrew/opt/grep/libexec/gnubin:/opt/homebrew/opt/gsed/libexec/gnubin:/opt/homebrew/opt/libtool/libexec/gnubin:/opt/homebrew/opt/make/libexec/gnubin:/opt/homebrew/opt/openjdk@20/bin:/opt/homebrew/opt/openjdk@21/bin:/opt/homebrew/opt/openjdk@22/bin:/opt/homebrew/opt/openjdk@23/bin:/opt/homebrew/opt/openjdk@24/bin:/opt/homebrew/opt/openjdk@25/bin:/opt/homebrew/opt/openjdk@26/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/llvm/bin:/Applications/Emacs.app/Contents/MacOS:/Applications/Emacs.app/Contents/MacOS/bin:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin:~/.bin:~/.local/bin:~/.dotfiles/bin:~/.dotfiles/bin/%s:~/.opencode/bin:~/.pixi/bin:~/.texlive/current/bin/universal-darwin:~/.texlive/current/bin/x86_64-linux:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/sbin:/opt/pkg/bin:/pkg/env/global/bin:/opt/X11/bin:/opt/miniforge/condabin:/opt/miniforge/condabin/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/Ghostty.app/Contents/MacOS"
-                                     (if (eq system-type 'darwin) "macos" "linux"))
-                             path-separator)))
+                                       (if (eq system-type 'darwin) "macos" "linux"))
+                               path-separator)))
   (setenv "PATH" (mapconcat #'expand-file-name path-list path-separator)))
 (setenv "LIBRARY_PATH" "/opt/homebrew/lib:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib:/usr/local/lib")
 (setq-default exec-path (split-string (getenv "PATH") path-separator))
