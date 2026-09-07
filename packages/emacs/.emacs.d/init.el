@@ -1729,7 +1729,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (preview-auto-cache-preamble t)
   (preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
   (preview-preserve-counters t)
-  (preview-scale-function (/ 1 my/scale-factor))
+  (preview-scale-function my/scale-factor)
   :preface
   (defun my/LaTeX-mode-hook ()
     (outline-minor-mode 1)
@@ -1746,8 +1746,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
 (use-package preview-dvisvgm
   :after (emacs preview)
   :custom
-  (preview-image-type 'dvisvgm)
-  (preview-scale-function my/scale-factor))
+  (preview-image-type 'dvisvgm))
 
 
 ;; Org
@@ -1781,7 +1780,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-fontify-done-headline t)
   (org-export-with-toc nil)
   (org-src-preserve-indentation t)
-  (org-latex-create-formula-image-program 'dvisvgm)
+  (org-preview-latex-default-process 'dvisvgm)
   (org-latex-packages-alist
    (list (concat "\\input{" (expand-file-name "etc/math_commands.tex" dotfiles-dir) "}")))
   (org-special-ctrl-a/e t)
