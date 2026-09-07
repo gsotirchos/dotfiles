@@ -28,15 +28,13 @@
 ;; Make things a little quieter
 (setq byte-compile-warnings '(not obsolete)
       warning-suppress-log-types '((comp) (bytecomp))
-      native-comp-async-report-warnings-errors 'silent
       inhibit-startup-message t
       inhibit-startup-echo-area-message (user-login-name))
 
 (when (and (fboundp 'native-comp-available-p)
            (native-comp-available-p))
-  ;; Make native compilation quieter and asynchronous
+  ;; Make native compilation quieter
   (setq native-comp-async-report-warnings-errors nil)
-  (setq native-comp-deferred-compilation-deny-list '())
 
   ;; Put *.eln files to the non-default directory `var/eln-cache/'
   (when (fboundp 'startup-redirect-eln-cache)
