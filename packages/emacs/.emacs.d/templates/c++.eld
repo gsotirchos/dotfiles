@@ -1,3 +1,4 @@
+;;; ROS 2 templates (rclcpp, tf2, Eigen, GTest).
 ;; `c++-ts-mode' is registered as a child of `c++-mode' via
 ;; `derived-mode-add-parents', so naming both here would list every
 ;; template twice in the completion UI.
@@ -211,56 +212,6 @@ c++-mode
 (ros_rate "rclcpp::WallRate rate(" (p "10.0") ");" n>
           "while (rclcpp::ok()) {" n> q n> "rate.sleep();" n> "}")
 (chrono_literals "using namespace std::chrono_literals;" q)
-
-;;; Modern C++
-
-(header_skeleton "#pragma once" n n "namespace " (p "my_package" ns) n "{" n n
-                 "class " (p "MyClass" cls) n "{" n "public:" n>
-                 q n n "private:" n> p n "};" n n "}  // namespace " (s ns))
-(make_shared "auto " (p "value") " = std::make_shared<" (p "Type") ">(" q ");")
-(make_unique "auto " (p "value") " = std::make_unique<" (p "Type") ">(" q ");")
-(unique_ptr_member "std::unique_ptr<" (p "Type") "> " (p "member") "_;")
-(shared_ptr_member "std::shared_ptr<" (p "Type") "> " (p "member") "_;")
-(optional_return "std::optional<" (p "Type" type) "> " (p "function") "(" p ")" n "{" n>
-                 "if (" (p "condition") ") {" n> "return std::nullopt;" n> "}" n>
-                 "return " q ";" n "}")
-(optional_check "if (const auto " (p "value" name) " = " (p "expression") ";"
-                " " (s name) ".has_value()) {" n> q n "}" >)
-(structured_binding "const auto & [" (p "key") ", " (p "value") "] = " (p "pair") ";" q)
-(range_for "for (const auto & " (p "item") " : " (p "container") ") {" n> q n "}" >)
-(lambda "[" (p "&") "](" p ") { " q " }")
-(enum_class "enum class " (p "Name") " : " (p "std::uint8_t") n "{" n>
-            q n "};")
-(struct_pod "struct " (p "Name") n "{" n> q n "};")
-(template_function "template <typename " (p "T") ">" n
-                   (p "void") " " (p "function") "(" p ")" n "{" n> q n "}")
-(constexpr_function "constexpr " (p "double") " " (p "function")
-                    "(" p ") noexcept" n "{" n> q n "}")
-(scoped_lock "const std::lock_guard<std::mutex> lock(" (p "mutex") "_);" q)
-(mutex_member "mutable std::mutex " (p "mutex") "_;")
-(atomic_member "std::atomic<" (p "bool") "> " (p "flag") "_{" (p "false") "};")
-(thread_worker "std::thread " (p "worker") "_{[this]() {" n>
-               "while (running_) {" n> q n> "}" n "}};" >)
-(try_catch "try {" n> r> n "} catch (const " (p "std::exception") " & exception) {" > n>
-           q n "}" >)
-(find_if "const auto it = std::find_if(" (p "container" c) ".begin(), " (s c)
-         ".end()," n> "[&](const auto & item) { return " q "; });" n>
-         "if (it != " (s c) ".end()) {" n> p n> "}")
-(transform "std::transform(" (p "input" in) ".begin(), " (s in) ".end(),"
-           " std::back_inserter(" (p "output") ")," n>
-           "[](const auto & item) { return " q "; });")
-(accumulate "const auto total = std::accumulate(" (p "container" c) ".begin(), "
-            (s c) ".end(), " (p "0.0") ");" q)
-(chrono_measure "const auto start = std::chrono::steady_clock::now();" n> r> n>
-                "const auto elapsed = std::chrono::duration<double>("
-                "std::chrono::steady_clock::now() - start).count();" q)
-(string_view_param (p "void") " " (p "function") "(std::string_view "
-                   (p "name") ")" n "{" n> q n "}")
-(unordered_map "std::unordered_map<" (p "std::string") ", " (p "Type") "> "
-               (p "map") ";" q)
-(vector_reserve "std::vector<" (p "Type") "> " (p "values" name) ";" n>
-                (s name) ".reserve(" (p "capacity") ");" q)
-(clamp "std::clamp(" (p "value") ", " (p "low") ", " (p "high") ")" q)
 
 ;;; Tests
 
