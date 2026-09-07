@@ -5,5 +5,6 @@ ${HOME}/.dotfiles/bin/${OS}
 ${HOME}/.pixi/bin/
 ${HOME}/.npm-global/bin
 ${HOME}/.opencode/bin
+${HOME}/.texlive/current/bin/*
 #${HOME}/.ghcup/bin
 #${HOME}/.cabal/bin
