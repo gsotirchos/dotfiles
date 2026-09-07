@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""Merge a colcon workspace's per-package compile databases into one.
+
+colcon writes build/<package>/compile_commands.json for every package, but
+clangd reads a single database, which it looks for as compile_commands.json
+in an ancestor of the source file or in that ancestor's build/ directory --
+so build/compile_commands.json at the workspace root serves the whole tree.
+
+Usage:
+    merge-compile-commands [WORKSPACE]    # defaults to the current directory
+"""
+
+import json
+import sys
+from pathlib import Path
+
+
+def main() -> int:
+    workspace = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
+    build = workspace / "build"
+    databases = sorted(build.glob("*/compile_commands.json"))
+    if not databases:
+        print(
+            f"merge-compile-commands: no compile databases under {build}",
+            file=sys.stderr,
+        )
+        return 1
+
+    commands = [
+        entry for database in databases for entry in json.loads(database.read_text())
+    ]
+    merged = build / "compile_commands.json"
+    merged.write_text(json.dumps(commands, indent=2) + "\n")
+    print(f"merged {len(databases)} databases ({len(commands)} commands) into {merged}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -58,12 +58,17 @@
 
 (defun flymake-mypy--run (report-fn &rest _args)
   "Run flymake-mypy reporting diagnostics using the REPORT-FN."
-  (unless (executable-find "python")
-    (error "Cannot find a suitable python executable for flymake-mypy"))
+  ;; Patched (upstream: probes "python"): check the executable that is
+  ;; actually run, which `flymake-mypy-executable' may have redirected.
+  (let ((executable (car (split-string flymake-mypy-executable " "))))
+    (unless (executable-find executable)
+      (error "Cannot find the `%s' executable for flymake-mypy" executable)))
   (let ((source-buffer (current-buffer)))
     (save-restriction
       (widen)
-      (let* ((temp-file (concat (make-temp-file "flymake-mypy") ".py"))
+      ;; Patched (upstream: appends ".py" to a file it never deletes, leaving
+      ;; two files behind per check): one temporary file, removed when done.
+      (let* ((temp-file (make-temp-file "flymake-mypy" nil ".py"))
              ;; Patched (upstream: (car (last (project-current)))): run from
              ;; the file's own directory for buffers outside any project.
              (default-directory (if-let* ((proj (project-current)))
@@ -142,7 +147,8 @@
                                           (funcall report-fn (list))))))
                          (flymake-log :warning "Canceling obsolete check %s" proc))
                      ;; unwind protect is similar to try/finally. this is the finally clause
-                     (kill-buffer (process-buffer proc)))))))))))
+                     (kill-buffer (process-buffer proc))
+                     (delete-file temp-file))))))))))
 
 (provide 'flymake-mypy)
 
