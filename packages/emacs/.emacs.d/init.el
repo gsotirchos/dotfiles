@@ -215,7 +215,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (sentence-end-double-space nil)
   (scroll-margin 0)
   (hscroll-margin 0)
-  (scroll-step 1)
+  (scroll-conservatively 101)
   (hscroll-step 1)
   (scroll-bar-mode (if (eq system-type 'darwin) nil 'right))
   ;; (underline-minimum-offset 2)
@@ -416,6 +416,11 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
     :ensure nil
     :load-path "site-lisp/"
     :hook after-init))
+
+(use-package my-scroll-limit
+  :ensure nil
+  :load-path "site-lisp/"
+  :hook after-init)
 
 (use-package my-modifier-remap
   :ensure nil
