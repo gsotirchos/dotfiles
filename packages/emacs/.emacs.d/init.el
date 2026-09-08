@@ -218,6 +218,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (scroll-conservatively 101)
   (hscroll-step 1)
   (scroll-bar-mode (if (eq system-type 'darwin) nil 'right))
+  (scroll-bar-adjust-thumb-portion nil)
   ;; (underline-minimum-offset 2)
   (text-scale-mode-step 1.1)
   (global-text-scale-adjust-resizes-frames t)

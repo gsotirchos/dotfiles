@@ -55,9 +55,12 @@ Return nil when the end of the buffer is off screen."
          (let ((empty-space (my/scroll-limit-empty-space window)))
            ;; Scrolling counts as a window state change, which runs this
            ;; again; that second pass finds no empty space and ends it.
+           ;; A vscroll is worth undoing even at the beginning of the
+           ;; buffer, where there is no line left to scroll back over.
            (when (and empty-space
                       (> empty-space 0)
-                      (> (window-start) (point-min)))
+                      (or (> (window-start) (point-min))
+                          (> (window-vscroll window t) 0)))
              (my/scroll-limit-scroll-back window empty-space))))))
    nil 'visible))
 
