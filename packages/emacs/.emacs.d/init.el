@@ -263,7 +263,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :defer 1
   :custom
   (global-auto-revert-non-file-buffers t)
-  (auto-revert-remote-files t)
   ;; (auto-revert-verbose nil)
   :config (global-auto-revert-mode 1))
 
@@ -564,7 +563,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :no-require t
   :custom
   (tramp-verbose 2)
-  (tramp-use-connection-share nil)  ;; Let ~/.ssh/config handle it
+  (tramp-use-connection-share nil)  ;; Control* options live in ~/.ssh/config
   (vc-handled-backends '(Git))  ;; Limit VC to Git only
   :config
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
@@ -1362,7 +1361,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :ensure nil
   :no-require t
   :preface
-  (defvar my/fold-ellipsis " ... ")
+  (defvar my/fold-ellipsis "...")
 
   (defface my/fold-ellipsis-face '((t :inherit default))
     "Face for the ellipsis standing in for folded text."
