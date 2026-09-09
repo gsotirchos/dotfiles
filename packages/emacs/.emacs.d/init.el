@@ -339,14 +339,18 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
            (append '("*.png" "*.pdf" "*.jpg" "*.jpeg" "*.gif" "*.zip" "*.gz" "*.tar" "*.mp4")
                    project-vc-ignores)))
       (apply orig-fun args)))
+  (defvar tramp-verbose)
+  (defun my/project-silence-missing-gitmodules (orig-fun &rest args)
+    "Call ORIG-FUN with ARGS, muting Tramp's echo of a missing `.gitmodules'."
+    (let ((tramp-verbose 0))
+      (apply orig-fun args)))
   :config
   ;; Prevent file-loop and query-replace crashes by filtering out directories
   (advice-add 'project-files :filter-return
               (lambda (files)
                 (seq-filter (lambda (f) (not (file-directory-p f))) files)))
-
-  ;; Ignore binaries ONLY during query-replace (so they stay findable in C-x p f)
-  (advice-add 'project-query-replace-regexp :around #'my/project-query-replace-ignore-binaries))
+  (advice-add 'project-query-replace-regexp :around #'my/project-query-replace-ignore-binaries)
+  (advice-add 'project--git-submodules :around #'my/project-silence-missing-gitmodules))
 
 (use-package xref
   :ensure nil
