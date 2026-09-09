@@ -947,8 +947,11 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   :hook (find-file . my/diff-hl-enable)
   :preface
   (defun my/diff-hl-enable ()
-    "Enable diff-hl (margin display, live updates) in vc-tracked buffers."
-    (when (and buffer-file-name (vc-registered buffer-file-name))
+    "Enable diff-hl (margin display, live updates) in vc-tracked buffers.
+Remote files are skipped (`diff-hl-flydiff-update' already ignores them)."
+    (when (and buffer-file-name
+               (not (file-remote-p buffer-file-name))
+               (vc-registered buffer-file-name))
       (diff-hl-margin-mode 1)
       (diff-hl-flydiff-mode 1)
       (diff-hl-mode 1)))
