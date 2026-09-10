@@ -1009,6 +1009,11 @@ Remote files are skipped (`diff-hl-flydiff-update' already ignores them)."
   (when (bound-and-true-p evil-mode)
     (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
 
+(use-package transient
+  :ensure nil
+  :no-require t
+  :custom (transient-mode-line-format nil))
+
 (use-package git-commit
   :ensure nil
   :custom (git-commit-summary-max-length 50)
