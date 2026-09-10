@@ -485,16 +485,15 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
      (bg-inactive "#424242")
      (fg-vertical-border "#000000")))
   (modus-themes-headings
-   '((1 . (1.06666))
-     (2 . (1.06666))
-     (3 . (1.06666))
+   '((1 . (1.0))  ; 1.06666
+     (2 . (1.0))  ; 1.06666
+     (3 . (1.0))  ; 1.06666
      (4 . (1.0))
      (5 . (1.0))
      (6 . (1.0))
      (7 . (1.0))
      (8 . (1.0))))
-  :preface
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)))
+  :preface (setq modus-themes-to-toggle '(modus-operandi modus-vivendi)))
 
 (use-package my-modus-ui-styles
   :ensure nil

@@ -8,6 +8,8 @@
     submodulesummary = 1
 [push]
     recurseSubmodules = check
+[rebase]
+    updateRefs = true
 [submodule]
     recurse = true
 [diff]
