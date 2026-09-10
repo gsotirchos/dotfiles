@@ -1001,6 +1001,8 @@ Remote files are skipped (`diff-hl-flydiff-update' already ignores them)."
   :config
   (put 'magit-status-mode 'magit-diff-default-arguments
        '("--no-ext-diff" "--ignore-submodules=dirty"))
+  (put 'magit-log-mode 'magit-log-default-arguments
+       '("--graph" "--color" "--decorate" "-n256"))
   (with-eval-after-load 'git-commit
     (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
   (when (bound-and-true-p evil-mode)
