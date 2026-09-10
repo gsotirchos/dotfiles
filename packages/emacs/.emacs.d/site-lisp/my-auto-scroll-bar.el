@@ -26,10 +26,14 @@
   "Hooks after which every window's scroll bar is reconsidered.")
 
 (defun my/auto-scroll-bar-needed-p (window)
-  "Return non-nil if WINDOW does not show the whole of its buffer."
-  (with-current-buffer (window-buffer window)
-    (not (and (pos-visible-in-window-p (point-min) window)
-              (pos-visible-in-window-p (point-max) window)))))
+  "Return non-nil if WINDOW does not show the whole of its buffer.
+Minibuffer windows never qualify: completion UIs such as Vertico
+scroll their candidate list themselves and cap its height, so a bar
+there would only take width from the candidates."
+  (and (not (window-minibuffer-p window))
+       (with-current-buffer (window-buffer window)
+         (not (and (pos-visible-in-window-p (point-min) window)
+                   (pos-visible-in-window-p (point-max) window))))))
 
 (defun my/auto-scroll-bar-update (&rest _)
   "Give a vertical scroll bar only to windows that have something to scroll."
