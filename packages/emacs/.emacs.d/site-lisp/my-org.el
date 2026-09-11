@@ -162,11 +162,11 @@ With a prefix ARG, open the most recent journal file dated before today."
             ("WIP" . ,wip)
             ("WAIT" . ,wait)
             ("FAIL" . ,fail))))
-  (when-let* ((bg-color (my/theme-color 'bg-inactive)))
-    (dolist (face
-             '(org-block-begin-line
-               org-block-end-line))
-      (set-face-background face bg-color)))
+  ;; (when-let* ((bg-color (my/theme-color 'bg-inactive)))
+  ;;   (dolist (face
+  ;;            '(org-block-begin-line
+  ;;              org-block-end-line))
+  ;;     (set-face-background face bg-color)))
   (font-lock-update))
 
 

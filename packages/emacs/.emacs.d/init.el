@@ -1170,6 +1170,11 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 ;; Programming
 
+(use-package compile
+  :ensure nil
+  :no-require
+  :custom (compilation-scroll-output 'first-error))
+
 (use-package eglot
   :after my-keybindings
   :ensure nil
