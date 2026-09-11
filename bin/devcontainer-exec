@@ -152,7 +152,9 @@ environment_file() {
 
 # The same-path symlinks give the container a view of each mounted
 # workspace under its host path, so tools without clangd's --path-mappings
-# (pyright, mypy) see the paths the host editor sends them.
+# (pyright, mypy) see the paths the host editor sends them.  The export
+# makes every CMake build in the container -- from a VS Code terminal as
+# much as from here -- write the compile database clangd reads.
 provision() {
     local id="$1" user="$2" mounts="$3" script
     script="$(
@@ -169,9 +171,13 @@ while IFS='=' read -r host container; do
 done << 'MOUNTS'
 ${mounts}
 MOUNTS
+grep -q '^export CMAKE_EXPORT_COMPILE_COMMANDS=' ~/.bashrc \\
+    || printf '\\n# Added by devcontainer-exec, for clangd\\nexport CMAKE_EXPORT_COMPILE_COMMANDS=1\\n' >> ~/.bashrc
 EOF
     )"
     docker exec -i -u "${user}" "${id}" bash -c "${script}"
+    # The environment changed, so the cached snapshot is stale.
+    probe_environment "$(workspace_folder_of "${id}")" "${CACHE_DIR}/${id}.env"
 }
 
 main() {
