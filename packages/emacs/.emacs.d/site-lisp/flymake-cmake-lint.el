@@ -24,11 +24,7 @@
                (unless (buffer-file-name)
                  (error "cmake-lint: buffer is not visiting a file")))
   :write-type 'file
-  ;; The file is named to the checker rather than `fmqd-temp-file' so that
-  ;; cmake-lint still finds the project's configuration next to it; the name
-  ;; has to be local, since the checker may be running in a container.
-  :proc-form (list "cmake-lint" "--suppress-decorations"
-                   (file-local-name (buffer-file-name)))
+  :proc-form (list "cmake-lint" "--suppress-decorations" (buffer-file-name))
   :search-regexp
   "^[^:\n]*:\\([0-9]+\\)\\(?:,\\([0-9]+\\)\\)?: \\[\\([CRWE]\\)[0-9]+\\] \\(.*\\)$"
   :prep-diagnostic

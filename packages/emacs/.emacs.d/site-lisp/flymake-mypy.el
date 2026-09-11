@@ -58,24 +58,17 @@
 
 (defun flymake-mypy--run (report-fn &rest _args)
   "Run flymake-mypy reporting diagnostics using the REPORT-FN."
-  ;; Patched (upstream: probes "python"): check the checker that is actually
-  ;; run.  Images commonly ship python3 without a `python' alias, which made
-  ;; the backend disable itself in a container even with mypy present.
+  ;; Patched (upstream: probes "python"): check the executable that is
+  ;; actually run, which `flymake-mypy-executable' may have redirected.
   (let ((executable (car (split-string flymake-mypy-executable " "))))
-    (unless (if (file-name-absolute-p executable)
-                ;; `executable-find' only searches for bare names, and the
-                ;; path is already absolute once resolved on the remote host.
-                (file-executable-p (concat (or (file-remote-p default-directory) "")
-                                           executable))
-              (executable-find executable))
+    (unless (executable-find executable)
       (error "Cannot find the `%s' executable for flymake-mypy" executable)))
   (let ((source-buffer (current-buffer)))
     (save-restriction
       (widen)
-      ;; Patched (upstream: `make-temp-file'): the shadow file has to be
-      ;; created on the host mypy will run on, which for a buffer visiting a
-      ;; container is the container.
-      (let* ((temp-file (concat (make-nearby-temp-file "flymake-mypy") ".py"))
+      ;; Patched (upstream: appends ".py" to a file it never deletes, leaving
+      ;; two files behind per check): one temporary file, removed when done.
+      (let* ((temp-file (make-temp-file "flymake-mypy" nil ".py"))
              ;; Patched (upstream: (car (last (project-current)))): run from
              ;; the file's own directory for buffers outside any project.
              (default-directory (if-let* ((proj (project-current)))
@@ -87,30 +80,17 @@
               (make-process
                :name "flymake-mypy"
                :noquery t
-               ;; Patched: without this `make-process' spawns locally even
-               ;; when `default-directory' is remote.
-               :file-handler t
                :connection-type 'pipe
                :buffer (generate-new-buffer "*flymake-mypy-output*")
                :command (mapcar (lambda (x) (shell-quote-argument x))
                                 (flatten-list (list (split-string flymake-mypy-executable " ")
-                                                    ;; Patched: Tramp gives
-                                                    ;; remote processes a PTY,
-                                                    ;; and colour codes would
-                                                    ;; defeat the output regexp.
-                                                    "--no-color-output"
                                                     "--show-column-numbers"
                                                     "--show-error-end"
                                                     "--show-absolute-path"
                                                     "--shadow-file"
-                                                    ;; Patched: local names,
-                                                    ;; since mypy may be
-                                                    ;; running in a container.
-                                                    (file-local-name
-                                                     (buffer-file-name source-buffer))
-                                                    (file-local-name temp-file)
-                                                    (file-local-name
-                                                     (buffer-file-name source-buffer)))))
+                                                    (buffer-file-name source-buffer)
+                                                    temp-file
+                                                    (buffer-file-name source-buffer))))
                :sentinel
                (lambda (proc _event)
                  (when (memq (process-status proc) '(exit signal))
@@ -118,10 +98,6 @@
                        ;; If the buffer local var for this process matches proceed
                        (if (with-current-buffer source-buffer (eq proc flymake-mypy--proc))
                            (with-current-buffer (process-buffer proc)
-                             ;; Patched: a remote tty reports CRLF.
-                             (goto-char (point-min))
-                             (while (search-forward "\r" nil t)
-                               (replace-match "" nil t))
                              (goto-char (point-min))
                              (cl-loop
                               while (search-forward-regexp flymake-mypy-output-pattern nil t)
@@ -140,15 +116,7 @@
                               collect
                               ;; for some reason mypy will sometimes randomly include messages
                               ;; for files not asked for
-                              ;; Patched: mypy reports the path it was given,
-                              ;; which for a container buffer is the name
-                              ;; inside the container rather than the Tramp
-                              ;; one; without stripping the prefix every
-                              ;; diagnostic looks like it belongs to another
-                              ;; file and Flymake files it away as foreign.
-                              (if (string-equal
-                                   (file-local-name (buffer-file-name source-buffer))
-                                   filename)
+                              (if (string-equal (buffer-file-name source-buffer) filename)
                                   (progn
                                     (let* ((beg-region (flymake-mypy--get-position
                                                         source-buffer
@@ -180,7 +148,8 @@
                                           (funcall report-fn (list))))))
                          (flymake-log :warning "Canceling obsolete check %s" proc))
                      ;; unwind protect is similar to try/finally. this is the finally clause
-                     (kill-buffer (process-buffer proc)))))))))))
+                     (kill-buffer (process-buffer proc))
+                     (delete-file temp-file))))))))))
 
 (provide 'flymake-mypy)
 

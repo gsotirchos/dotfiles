@@ -1,0 +1,218 @@
+#!/usr/bin/env bash
+#
+# Run a command inside the devcontainer that governs a directory.
+#
+# VS Code moves its whole editor server into the container. This does the
+# opposite: the editor stays on the host and reaches in only for the tools
+# that need the image's filesystem -- clangd for the headers under /opt/ros,
+# pyright and mypy for the image's site-packages. The workspace is a bind
+# mount, so a file on the host is the same file in the container.
+#
+#   devcontainer-exec [-C DIR] CMD [ARG...]  run CMD in the container governing DIR ($PWD)
+#   devcontainer-exec --mappings [DIR]       print the bind mounts as HOST=CONTAINER,
+#                                            comma-joined (clangd's --path-mappings format)
+#   devcontainer-exec --container [DIR]      print the container as USER@ID (Tramp's host part)
+#   devcontainer-exec --refresh [DIR]        re-probe the container's environment
+#   devcontainer-exec --provision [DIR]      install the editing tools into the container
+#
+# Commands go through plain `docker exec' (~40 ms) rather than `devcontainer
+# exec' (~700 ms: node startup plus an environment probe on every call). The
+# devcontainer CLI is used only to start the container and, once per
+# container, to probe the environment its userEnvProbe gives a VS Code
+# terminal; the probe is cached and handed to docker with --env-file.
+
+set -euo pipefail
+shopt -s inherit_errexit
+
+CACHE_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/devcontainer-exec"
+# Tools that only exist in the container: clangd needs the image's headers,
+# pyright and mypy its site-packages. apt has no pyright, and the image has
+# no pip, hence the two steps.
+APT_TOOLS=(clangd python3-pip)
+PIP_TOOLS=(pyright mypy)
+
+die() {
+    printf 'devcontainer-exec: %s\n' "$*" >&2
+    exit 1
+}
+
+# The CLI is installed by npm; in interactive shells an nvm hook puts it
+# (and the node it runs on) on PATH, but scripts get no such hook.
+devcontainer_cli() {
+    local cli
+    cli="$(command -v devcontainer || true)"
+    if [[ -z "${cli}" ]]; then
+        cli="$(printf '%s\n' "${NVM_DIR:-${HOME}/.nvm}"/versions/node/*/bin/devcontainer \
+            | sort -V | tail -n 1)"
+    fi
+    [[ -x "${cli}" ]] || die "the devcontainer CLI is not installed"
+    PATH="$(dirname "${cli}"):${PATH}" "${cli}" "$@"
+}
+
+# The directory the CLI calls the workspace folder: the nearest ancestor of
+# $1 holding a devcontainer configuration.
+workspace_folder() {
+    local dir="$1"
+    while [[ "${dir}" != "/" ]]; do
+        if [[ -f "${dir}/.devcontainer/devcontainer.json" \
+            || -f "${dir}/.devcontainer.json" ]]; then
+            printf '%s\n' "${dir}"
+            return 0
+        fi
+        dir="$(dirname "${dir}")"
+    done
+    die "no .devcontainer above $1"
+}
+
+# Both the CLI and VS Code label containers with the folder they were
+# started from, so whichever editor started one is found and reused.
+running_containers() {
+    docker ps -q --no-trunc --filter "label=devcontainer.local_folder${1:+=$1}"
+}
+
+workspace_folder_of() {
+    docker inspect --format '{{index .Config.Labels "devcontainer.local_folder"}}' "$1"
+}
+
+# The container serving $1: a running one that mounts it -- a colcon
+# workspace holds many packages besides the one carrying .devcontainer --
+# or else one started for the configuration above it.
+container_id() {
+    local dir="$1" id folder
+    for id in $(running_containers); do
+        if container_path "$(bind_mounts "${id}")" "${dir}" > /dev/null; then
+            printf '%s\n' "${id}"
+            return 0
+        fi
+    done
+    folder="$(workspace_folder "${dir}")"
+    printf 'devcontainer-exec: starting the container for %s\n' "${folder}" >&2
+    devcontainer_cli up --workspace-folder "${folder}" > /dev/null
+    id="$(running_containers "${folder}")"
+    [[ -n "${id}" ]] || die "no container is running for ${folder}"
+    printf '%s\n' "${id}"
+}
+
+container_user() {
+    local user
+    user="$(docker inspect --format '{{.Config.User}}' "$1")"
+    printf '%s\n' "${user:-root}"
+}
+
+# Bind mounts as HOST=CONTAINER lines, deepest host path first, so that the
+# first match when translating a path is the most specific one.
+bind_mounts() {
+    docker inspect --format \
+        '{{range .Mounts}}{{if eq .Type "bind"}}{{.Source}}={{.Destination}}{{"\n"}}{{end}}{{end}}' \
+        "$1" \
+        | awk -F= 'NF { print length($1) "\t" $0 }' | sort -rn | cut -f 2-
+}
+
+# Translate host path $2 into the container using the mount table $1;
+# fails if no mount covers it.
+container_path() {
+    local mounts="$1" path="$2" host container
+    while IFS='=' read -r host container; do
+        if [[ "${path}" == "${host}" || "${path}" == "${host}"/* ]]; then
+            printf '%s\n' "${container}${path#"${host}"}"
+            return 0
+        fi
+    done <<< "${mounts}"
+    return 1
+}
+
+# Snapshot the environment a VS Code terminal would get, in the format of
+# docker's --env-file. That format is one NAME=VALUE per line, so values
+# spanning lines (exported bash functions) cannot be carried; the shell's
+# own bookkeeping variables are dropped as they describe the probe itself.
+# ~/.local/bin holds the pip-installed tools; the image's profile only adds
+# it when it already exists at login, which it does not before provisioning.
+probe_environment() {
+    local folder="$1" env_file="$2" entry
+    mkdir -p "$(dirname "${env_file}")"
+    # shellcheck disable=SC2016  # expanded by the container's shell
+    devcontainer_cli exec --workspace-folder "${folder}" \
+        sh -c 'PATH="${HOME}/.local/bin:${PATH}" env -0' \
+        | while IFS= read -r -d '' entry; do
+            [[ "${entry}" == *$'\n'* ]] && continue
+            case "${entry%%=*}" in
+                _ | PWD | OLDPWD | SHLVL) continue ;;
+            esac
+            printf '%s\n' "${entry}"
+        done > "${env_file}.tmp"
+    [[ -s "${env_file}.tmp" ]] || die "could not probe the environment of ${folder}"
+    mv "${env_file}.tmp" "${env_file}"
+}
+
+environment_file() {
+    local id="$1" env_file="${CACHE_DIR}/$1.env"
+    [[ -s "${env_file}" ]] || probe_environment "$(workspace_folder_of "${id}")" "${env_file}"
+    printf '%s\n' "${env_file}"
+}
+
+# The same-path symlinks give the container a view of each mounted
+# workspace under its host path, so tools without clangd's --path-mappings
+# (pyright, mypy) see the paths the host editor sends them.
+provision() {
+    local id="$1" user="$2" mounts="$3" script
+    script="$(
+        cat << EOF
+set -euo pipefail
+shopt -s inherit_errexit
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends ${APT_TOOLS[*]}
+pip install --user --break-system-packages ${PIP_TOOLS[*]}
+while IFS='=' read -r host container; do
+    [[ -d "\${container}" && ! -e "\${host}" ]] || continue
+    mkdir -p "\$(dirname "\${host}")"
+    ln -s "\${container}" "\${host}"
+done << 'MOUNTS'
+${mounts}
+MOUNTS
+EOF
+    )"
+    docker exec -i -u "${user}" "${id}" bash -c "${script}"
+}
+
+main() {
+    local action="run" dir="${PWD}"
+    case "${1:-}" in
+        --mappings | --container | --refresh | --provision)
+            action="${1#--}"
+            dir="${2:-${dir}}"
+            ;;
+        -C)
+            [[ $# -ge 3 ]] || die "usage: devcontainer-exec [-C DIR] CMD [ARG...]"
+            dir="$2"
+            shift 2
+            ;;
+        "" | -h | --help)
+            sed -n '3,/^$/{ s/^# \{0,1\}//; p }' "$0"
+            exit 0
+            ;;
+    esac
+
+    local id mounts
+    dir="$(realpath "${dir}")"
+    id="$(container_id "${dir}")"
+    mounts="$(bind_mounts "${id}")"
+
+    case "${action}" in
+        mappings) paste -sd ',' <<< "${mounts}" ;;
+        container) printf '%s@%s\n' "$(container_user "${id}")" "${id}" ;;
+        refresh) probe_environment "$(workspace_folder_of "${id}")" "${CACHE_DIR}/${id}.env" ;;
+        provision) provision "${id}" "$(container_user "${id}")" "${mounts}" ;;
+        run)
+            # Assigned first: a failure inside a substitution on the exec
+            # line itself would not stop the exec.
+            local workdir env_file
+            workdir="$(container_path "${mounts}" "${dir}")" \
+                || die "${dir} is not mounted into the container"
+            env_file="$(environment_file "${id}")"
+            exec docker exec -i -u "$(container_user "${id}")" -w "${workdir}" \
+                --env-file "${env_file}" "${id}" "$@"
+            ;;
+    esac
+}
+
+main "$@"

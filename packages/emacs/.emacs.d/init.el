@@ -568,41 +568,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (tramp-verbose 2)
   (tramp-use-connection-share nil)  ;; Control* options live in ~/.ssh/config
   (vc-handled-backends '(Git))  ;; Limit VC to Git only
-  :preface
-  (defun my/executable-find-in-buffer-context (fn command &optional remote)
-    "Look for COMMAND on the host the current buffer lives on.
-Callers that omit REMOTE conclude a checker is missing whenever the
-buffer is remote, and silently disable themselves; Eglot and Apheleia
-pass it explicitly and are unaffected."
-    (funcall fn command (or remote (file-remote-p default-directory))))
-  (defvar my/tramp-docker-pipe-methods nil
-    "Cache for `my/tramp-docker-pipe-methods'.")
-  (defun my/tramp-docker-pipe-methods ()
-    "Return `tramp-methods' with docker logging in without a tty."
-    (or my/tramp-docker-pipe-methods
-        (setq my/tramp-docker-pipe-methods
-              (let* ((method (copy-tree (assoc "docker" tramp-methods)))
-                     (login (assq 'tramp-login-args (cdr method))))
-                (setcdr login
-                        (list (mapcar (lambda (arg)
-                                        (if (equal arg '("-it")) '("-i") arg))
-                                      (cadr login))))
-                (cons method (assoc-delete-all "docker" (copy-sequence tramp-methods)))))))
-  (defun my/remote-process-without-pty (fn &rest args)
-    "Spawn a process in a container with `docker exec -i', not `-it'.
-Tramp asks docker for a tty because its own session handshake needs one,
-but a tty echoes everything written to a process straight back into that
-process's output, which corrupts a language server's JSON-RPC framing;
-and while -t is set docker refuses a stdin that is not a terminal, which
-is what Eglot and most Flymake backends ask for.  Dropping the tty for
-spawned processes alone leaves the session, which keeps its own, intact."
-    (if (equal (file-remote-p default-directory 'method) "docker")
-        (let ((tramp-methods (my/tramp-docker-pipe-methods)))
-          (apply fn args))
-      (apply fn args)))
   :config
-  (advice-add 'executable-find :around #'my/executable-find-in-buffer-context)
-  (advice-add 'make-process :around #'my/remote-process-without-pty)
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (add-to-list 'tramp-remote-path "/snap/bin")
   (add-to-list 'tramp-remote-path "~/.local/bin"))
@@ -1204,6 +1170,13 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 ;; Programming
 
+(use-package my-devcontainer
+  :after my-keybindings
+  :ensure nil
+  :load-path "site-lisp/"
+  :demand t  ;; `eglot-server-programs' and the mypy hook call into it
+  :bind (:map my/personal-map ("cr" . my-devcontainer-refresh)))
+
 (use-package compile
   :ensure nil
   :no-require
@@ -1261,15 +1234,17 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (advice-add 'eglot-register-capability :around #'my/eglot-tolerate-watch-limit)
   :config
   (add-to-list 'eglot-server-programs
-               `(python-base-mode . ("pyright-langserver" "--stdio")))
+               `(python-base-mode
+                 . ,(my-devcontainer-eglot-server "pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
                `((c++-ts-mode c-ts-mode c++-mode c-mode)
-                 . ("clangd"
-                    "--clang-tidy"
-                    "--header-insertion=never"
-                    "--background-index"
-                    "--completion-style=detailed"
-                    "--query-driver=/usr/bin/*,**/.pixi/envs/**/bin/*")))
+                 . ,(my-devcontainer-eglot-server
+                     "clangd"
+                     "--clang-tidy"
+                     "--header-insertion=never"
+                     "--background-index"
+                     "--completion-style=detailed"
+                     "--query-driver=/usr/bin/*,**/.pixi/envs/**/bin/*")))
   (add-to-list 'eglot-server-programs
                `((nxml-mode :language-id "xml") . ("lemminx"))))
 
@@ -1315,10 +1290,7 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
     (my/apheleia-format-or #'prog-fill-reindent-defun arg))
   :bind (([remap fill-paragraph] . my/apheleia-format-or-fill-paragraph)
          ([remap prog-fill-reindent-defun] . my/apheleia-format-or-prog-fill))
-  :custom
-  (apheleia-skip-functions '(evil-insert-state-p my/apheleia-busy-p))
-  ;; Formatters run on the buffer's own host; Tramp makes that synchronous.
-  (apheleia-remote-algorithm 'remote)
+  :custom (apheleia-skip-functions '(evil-insert-state-p my/apheleia-busy-p))
   :config
   (apheleia-global-mode 1)
   (setf (alist-get 'ruff apheleia-formatters)
@@ -1617,17 +1589,8 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
             (lambda () (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))))
 
 (use-package flymake-ruff
-  :ensure nil
-  :load-path "site-lisp/"
   :hook (python-base-mode . flymake-ruff-load)
-  :custom
-  (python-flymake-command python-check-command)
-  ;; This backend runs ruff with `process-file', which rides Tramp's session
-  ;; and so has a tty; ruff takes that as licence to colourise, and the
-  ;; escapes would defeat its output regexp.
-  (flymake-ruff-program-args
-   '("check" "--output-format" "concise" "--color" "never"
-     "--exit-zero" "--quiet" "-")))
+  :custom (python-flymake-command python-check-command))
 
 ;; Vendored from https://github.com/com4/flymake-mypy (BSD-2-Clause)
 (use-package flymake-mypy
@@ -1636,10 +1599,19 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :commands (flymake-mypy-enable)
   :preface
   (defun my/flymake-mypy-enable ()
-    "Enable the mypy Flymake backend when mypy is available."
-    (when (executable-find "mypy")
-      (setq-local flymake-mypy-executable (executable-find "mypy"))
-      (flymake-mypy-enable)))
+    "Enable the mypy Flymake backend when mypy is available.
+In a devcontainer project it is the container's mypy, which knows the
+image's site-packages; the shadow file it is given has to be written
+where the container can read it."
+    (if-let* ((tmp (my-devcontainer-temporary-directory)))
+        (progn
+          (setq-local temporary-file-directory tmp)
+          (setq-local flymake-mypy-executable
+                      (string-join (my-devcontainer-command "mypy") " "))
+          (flymake-mypy-enable))
+      (when-let* ((mypy (executable-find "mypy")))
+        (setq-local flymake-mypy-executable mypy)
+        (flymake-mypy-enable))))
   :hook (python-base-mode . my/flymake-mypy-enable))
 
 (use-package my-pixi
@@ -1648,22 +1620,6 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :commands (my-pixi-mode my-pixi-python-setup my-pixi-refresh)
   ;; Depth -90 so the environment is in place before `eglot-ensure' connects.
   :preface (add-hook 'python-base-mode-hook #'my-pixi-python-setup -90))
-
-(use-package my-devcontainer
-  :after my-keybindings
-  :ensure nil
-  :load-path "site-lisp/"
-  :commands (my-devcontainer-find-file
-             my-devcontainer-find-file-locally
-             my-devcontainer-refresh)
-  :bind (:map my/personal-map
-              ("cc" . my-devcontainer-find-file)
-              ("cl" . my-devcontainer-find-file-locally)
-              ("cr" . my-devcontainer-refresh))
-  ;; Depth -90 so the environment is in place before `eglot-ensure' connects,
-  ;; as for `my-pixi-python-setup'; the two are mutually exclusive, each
-  ;; bowing out for the kind of buffer the other serves.
-  :preface (add-hook 'python-base-mode-hook #'my-devcontainer-python-setup -90))
 
 (use-package conda
   :preface
@@ -1702,18 +1658,8 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode))
 
 (use-package flymake-bashate
-  :ensure nil
-  :load-path "site-lisp/"
   :commands flymake-bashate-setup
   :hook (sh-base-mode . flymake-bashate-setup))
-
-;; `flymake-quickdef-backend' is a macro, so a backend keeps whatever
-;; expansion it was compiled with.  The vendored backends above and
-;; `flymake-cmake-lint' are therefore compiled against this copy, which is
-;; the one that knows how to run a checker in a container.
-(use-package flymake-quickdef
-  :ensure nil
-  :load-path "site-lisp/")
 
 ;; YAML
 
