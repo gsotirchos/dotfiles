@@ -117,6 +117,16 @@ is additionally told how the host's paths map to the container's."
                                  mappings)))
     (concat (car mapping) (substring path (length (cdr mapping))))))
 
+(defun my-devcontainer--symlink-target (path mappings)
+  "Return the host side of what symlink PATH points to, or nil.
+A link written inside the container -- every file of a colcon
+--symlink-install space -- carries the container's absolute path, so on
+the host it dangles until its target is translated with MAPPINGS."
+  (when-let* ((target (file-symlink-p path))
+              (host (my-devcontainer--host-path
+                     (expand-file-name target (file-name-directory path)) mappings)))
+    (and (file-exists-p host) host)))
+
 (defun my-devcontainer--localize-path (path)
   "Return PATH as something the host can visit.
 Filter for `eglot-uri-to-path': a container-side server reports the
@@ -126,6 +136,7 @@ name or, for the image's headers, files only the container has."
       path
     (if-let* ((mappings (my-devcontainer-mappings)))
         (or (my-devcontainer--host-path path mappings)
+            (my-devcontainer--symlink-target path mappings)
             (concat "/docker:" (my-devcontainer--query "--container") ":" path))
       path)))
 
