@@ -133,6 +133,55 @@ name or, for the image's headers, files only the container has."
   (advice-add 'eglot-uri-to-path :filter-return #'my-devcontainer--localize-path))
 
 
+;;;; Building
+
+(defun my-devcontainer--colcon-root (file)
+  "Return the colcon workspace holding FILE, or nil.
+That is the outermost ancestor whose src/ contains FILE; the nearest one
+would be a package's own src/ directory."
+  (let ((dir (file-name-directory file))
+        root)
+    (while (not (equal dir "/"))
+      (when (string-prefix-p (expand-file-name "src/" dir) file)
+        (setq root dir))
+      (setq dir (file-name-directory (directory-file-name dir))))
+    root))
+
+(defun my-devcontainer--colcon-package (file)
+  "Return the name of the colcon package holding FILE, or nil."
+  (when-let* ((dir (locate-dominating-file file "package.xml")))
+    (with-temp-buffer
+      (insert-file-contents (expand-file-name "package.xml" dir))
+      (when (re-search-forward "<name>\\s-*\\([^<[:space:]]+\\)\\s-*</name>" nil t)
+        (match-string 1)))))
+
+;;;###autoload
+(defun my-devcontainer-setup-compile-command ()
+  "Make \\[compile] build the current colcon package in its container.
+The compile database flag is passed explicitly, since the exported
+variable seeds a package's CMake cache only on its first configure, and
+the per-package databases are merged afterwards for clangd."
+  (when-let* ((file (buffer-file-name))
+              (package (my-devcontainer--colcon-package file))
+              (root (my-devcontainer--colcon-root file))
+              ((my-devcontainer-mappings root))
+              (root (shell-quote-argument (directory-file-name root))))
+    (setq-local compile-command
+                (format (concat "%s -C %s colcon build --packages-up-to %s"
+                                " --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+                                " && merge-compile-commands %s")
+                        my-devcontainer-executable root package root))))
+
+;;;###autoload
+(defun my-devcontainer-setup-compilation-buffer ()
+  "Translate the container's paths in compiler messages to the host's.
+For `compilation-mode-hook': the build runs in the container, so its
+messages name /workspace/..., which `next-error' could not visit."
+  (when-let* ((mappings (my-devcontainer-mappings)))
+    (setq-local compilation-parse-errors-filename-function
+                (lambda (file) (or (my-devcontainer--host-path file mappings) file)))))
+
+
 ;;;; Refreshing
 
 ;;;###autoload

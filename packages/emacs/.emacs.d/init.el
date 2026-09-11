@@ -1175,6 +1175,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :ensure nil
   :load-path "site-lisp/"
   :demand t  ;; `eglot-server-programs' and the mypy hook call into it
+  :hook ((prog-mode . my-devcontainer-setup-compile-command)
+         (compilation-mode . my-devcontainer-setup-compilation-buffer))
   :bind (:map my/personal-map ("cr" . my-devcontainer-refresh)))
 
 (use-package compile
