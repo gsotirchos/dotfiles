@@ -1192,7 +1192,9 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :bind (:map my/personal-map ("rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
-  (eglot-extend-to-xref nil)
+  ;; A header reached by `M-.' from a TU stays with that TU's server, rather
+  ;; than getting a server of its own per directory it happens to live in.
+  (eglot-extend-to-xref t)
   (eglot-prefer-plaintext t)
   (eglot-send-changes-idle-time 1)
   (eglot-events-buffer-config '(:size 0 :format full))

@@ -86,36 +86,67 @@ no container serves DIR."
     (make-directory tmp t)
     tmp))
 
+(defun my-devcontainer--colcon-root (file)
+  "Return the colcon workspace holding FILE, or nil.
+That is the outermost ancestor whose src/ contains FILE; the nearest one
+would be a package's own src/ directory."
+  (let ((dir (file-name-directory file))
+        root)
+    (while (not (equal dir "/"))
+      (when (string-prefix-p (expand-file-name "src/" dir) file)
+        (setq root dir))
+      (setq dir (file-name-directory (directory-file-name dir))))
+    root))
+
 (defun my-devcontainer-command (program &rest args)
   "Return the command running PROGRAM with ARGS in the current container."
   `(,my-devcontainer-executable ,program ,@args))
 
+(defun my-devcontainer--clangd-args (mappings)
+  "Return the arguments that tie clangd to the container and the workspace.
+MAPPINGS tell it how the host's paths map to the container's.  In a
+colcon workspace it is also pointed at the merged compile database, since
+the per-package one it would find first has nothing for the generated
+headers that `merge-compile-commands' provides for."
+  (cons (concat "--path-mappings="
+                (mapconcat (lambda (mapping) (concat (car mapping) "=" (cdr mapping)))
+                           mappings ","))
+        (when-let* ((root (my-devcontainer--colcon-root (directory-file-name default-directory)))
+                    (build (my-devcontainer--container-path
+                            (expand-file-name "build" root) mappings)))
+          (list (concat "--compile-commands-dir=" build)))))
+
 (defun my-devcontainer-eglot-server (program &rest args)
   "Return an `eglot-server-programs' contact running PROGRAM with ARGS.
-Inside a devcontainer project the server is run in the container; clangd
-is additionally told how the host's paths map to the container's."
+Inside a devcontainer project the server is run in the container."
   (lambda (&optional _interactive _project)
     (if-let* ((mappings (my-devcontainer-mappings)))
         (apply #'my-devcontainer-command program
-               (append args
-                       (when (equal program "clangd")
-                         (list (concat "--path-mappings="
-                                       (mapconcat (lambda (mapping)
-                                                    (concat (car mapping) "=" (cdr mapping)))
-                                                  mappings ","))))))
+               (append args (when (equal program "clangd")
+                              (my-devcontainer--clangd-args mappings))))
       (cons program args))))
 
 
 ;;;; Locations inside the container
 
-(defun my-devcontainer--host-path (path mappings)
-  "Return the host side of container PATH according to MAPPINGS, or nil."
+(defun my-devcontainer--translate (path from to mappings)
+  "Return PATH moved from the FROM side of MAPPINGS to the TO side.
+FROM and TO are `car' and `cdr' in either order; nil if no mount covers PATH."
   (when-let* ((mapping (seq-find (lambda (mapping)
-                                   (or (equal path (cdr mapping))
-                                       (string-prefix-p (file-name-as-directory (cdr mapping))
+                                   (or (equal path (funcall from mapping))
+                                       (string-prefix-p (file-name-as-directory
+                                                         (funcall from mapping))
                                                         path)))
                                  mappings)))
-    (concat (car mapping) (substring path (length (cdr mapping))))))
+    (concat (funcall to mapping) (substring path (length (funcall from mapping))))))
+
+(defun my-devcontainer--host-path (path mappings)
+  "Return the host side of container PATH according to MAPPINGS, or nil."
+  (my-devcontainer--translate path #'cdr #'car mappings))
+
+(defun my-devcontainer--container-path (path mappings)
+  "Return the container side of host PATH according to MAPPINGS, or nil."
+  (my-devcontainer--translate path #'car #'cdr mappings))
 
 (defun my-devcontainer--symlink-target (path mappings)
   "Return the host side of what symlink PATH points to, or nil.
@@ -145,18 +176,6 @@ name or, for the image's headers, files only the container has."
 
 
 ;;;; Building
-
-(defun my-devcontainer--colcon-root (file)
-  "Return the colcon workspace holding FILE, or nil.
-That is the outermost ancestor whose src/ contains FILE; the nearest one
-would be a package's own src/ directory."
-  (let ((dir (file-name-directory file))
-        root)
-    (while (not (equal dir "/"))
-      (when (string-prefix-p (expand-file-name "src/" dir) file)
-        (setq root dir))
-      (setq dir (file-name-directory (directory-file-name dir))))
-    root))
 
 (defun my-devcontainer--colcon-package (file)
   "Return the name of the colcon package holding FILE, or nil."
