@@ -25,31 +25,43 @@
 (defvar my/auto-scroll-bar-triggers '(post-command-hook window-state-change-hook)
   "Hooks after which every window's scroll bar is reconsidered.")
 
+(defun my/auto-scroll-bar-walk-windows (function)
+  "Call FUNCTION on each window of every visible frame.."
+  (walk-windows function t 'visible))
+
+(defun my/auto-scroll-bar-end-of-text ()
+  "Return the last position of the current buffer that a window can show.
+After a final newline comes an empty line holding `point-max'."
+  (if (eq (char-before (point-max)) ?\n)
+      (1- (point-max))
+    (point-max)))
+
 (defun my/auto-scroll-bar-needed-p (window)
   "Return non-nil if WINDOW does not show the whole of its buffer.
-Minibuffer windows never qualify: completion UIs such as Vertico
-scroll their candidate list themselves and cap its height, so a bar
-there would only take width from the candidates."
+Minibuffer windows never qualify."
   (and (not (window-minibuffer-p window))
        (with-current-buffer (window-buffer window)
          (not (and (pos-visible-in-window-p (point-min) window)
-                   (pos-visible-in-window-p (point-max) window))))))
+                   (pos-visible-in-window-p (my/auto-scroll-bar-end-of-text)
+                                            window))))))
 
 (defun my/auto-scroll-bar-update (&rest _)
   "Give a vertical scroll bar only to windows that have something to scroll."
-  (walk-windows
+  (my/auto-scroll-bar-walk-windows
    (lambda (window)
      (let ((needed (and (my/auto-scroll-bar-needed-p window) t)))
        ;; Writing counts as a window state change, which runs this again;
        ;; comparing first makes that second pass a no-op and terminates it.
        (unless (eq needed (nth 2 (window-scroll-bars window)))
-         (set-window-scroll-bars window nil needed))))
-   nil 'visible))
+         ;; Redisplay alternates the echo area between two buffers of its
+         ;; own, out of reach of these hooks, and each swap discards the
+         ;; settings of the window unless they are persistent.
+         (set-window-scroll-bars window nil needed nil nil t))))))
 
 (defun my/auto-scroll-bar-restore ()
   "Give every window back the scroll bar of its frame."
-  (walk-windows (lambda (window) (set-window-scroll-bars window nil t))
-                nil 'visible))
+  (my/auto-scroll-bar-walk-windows
+   (lambda (window) (set-window-scroll-bars window nil t))))
 
 ;;;###autoload
 (define-minor-mode my-auto-scroll-bar-mode
