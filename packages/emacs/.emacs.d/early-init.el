@@ -86,6 +86,7 @@
 (scroll-bar-mode -1)
 (fringe-mode 0)
 (setq frame-resize-pixelwise t
+      window-resize-pixelwise t
       frame-inhibit-implied-resize t)
 
 ;; Basic fonts
