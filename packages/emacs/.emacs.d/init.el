@@ -879,6 +879,14 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
    ([remap isearch-forward] . consult-history)
    ([remap next-matching-history-element] . consult-history)
    ([remap previous-matching-history-element] . consult-history))
+  :custom
+  (consult-async-input-debounce 0.05)
+  (consult-async-input-throttle 0.1)
+  (consult-async-refresh-delay 0.05)
+  (consult-ripgrep-args
+   "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /\
+   --smart-case --no-heading --with-filename --line-number --search-zip --hidden\
+   --glob=!.git --glob=!.venv --glob=!.conda --glob=!.pixi --glob=!pack")
   :preface
   (advice-add 'consult-recent-file :before (lambda (&rest _) (recentf-mode 1)))
   (advice-add 'register-preview :override #'consult-register-window)
