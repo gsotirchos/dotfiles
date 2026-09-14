@@ -127,12 +127,25 @@ container_path() {
 # own bookkeeping variables are dropped as they describe the probe itself.
 # ~/.local/bin holds the pip-installed tools; the image's profile only adds
 # it when it already exists at login, which it does not before provisioning.
+# The colcon overlay above the workspace folder is sourced as well, so that
+# the workspace's own packages resolve once built (--refresh after a build).
 probe_environment() {
-    local folder="$1" env_file="$2" entry
+    local folder="$1" env_file="$2" entry script
     mkdir -p "$(dirname "${env_file}")"
-    # shellcheck disable=SC2016  # expanded by the container's shell
-    devcontainer_cli exec --workspace-folder "${folder}" \
-        sh -c 'PATH="${HOME}/.local/bin:${PATH}" env -0' \
+    script="$(
+        cat << 'EOF'
+dir="${PWD}"
+while [[ "${dir}" != / ]]; do
+    if [[ -f "${dir}/install/setup.bash" ]]; then
+        source "${dir}/install/setup.bash"
+        break
+    fi
+    dir="$(dirname "${dir}")"
+done
+PATH="${HOME}/.local/bin:${PATH}" env -0
+EOF
+    )"
+    devcontainer_cli exec --workspace-folder "${folder}" bash -c "${script}" \
         | while IFS= read -r -d '' entry; do
             [[ "${entry}" == *$'\n'* ]] && continue
             case "${entry%%=*}" in
