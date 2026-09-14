@@ -1521,7 +1521,9 @@ reaches into the preview's `display' property elides the whole preview."
   :bind (:map my/personal-map ("rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
-  (eglot-extend-to-xref nil)
+  ;; A header reached by `M-.' from a TU stays with that TU's server, rather
+  ;; than getting a server of its own per directory it happens to live in.
+  (eglot-extend-to-xref t)
   (eglot-prefer-plaintext t)
   (eglot-send-changes-idle-time 1)
   (eglot-events-buffer-config '(:size 0 :format full))
@@ -1565,15 +1567,17 @@ reaches into the preview's `display' property elides the whole preview."
   (advice-add 'eglot-register-capability :around #'my/eglot-tolerate-watch-limit)
   :config
   (add-to-list 'eglot-server-programs
-               `(python-base-mode . ("pyright-langserver" "--stdio")))
+               `(python-base-mode
+                 . ,(my-devcontainer-eglot-server "pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
                `((c++-ts-mode c-ts-mode c++-mode c-mode)
-                 . ("clangd"
-                    "--clang-tidy"
-                    "--header-insertion=never"
-                    "--background-index"
-                    "--completion-style=detailed"
-                    "--query-driver=**/.pixi/envs/**/bin/*")))
+                 . ,(my-devcontainer-eglot-server
+                     "clangd"
+                     "--clang-tidy"
+                     "--header-insertion=never"
+                     "--background-index"
+                     "--completion-style=detailed"
+                     "--query-driver=/usr/bin/*,**/.pixi/envs/**/bin/*")))
   (add-to-list 'eglot-server-programs
                `((nxml-mode :language-id "xml") . ("lemminx"))))
 
@@ -1692,12 +1696,15 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
     "Enable the mypy Flymake backend when mypy is available.
 In a devcontainer project it is the container's mypy, which knows the
 image's site-packages; the shadow file it is given has to be written
-where the container can read it."
+where the container can read it.  The container has no user-level mypy
+config, so what ~/.config/mypy/config says on the host is passed as a flag."
     (if-let* ((tmp (my-devcontainer-temporary-directory)))
         (progn
           (setq-local temporary-file-directory tmp)
           (setq-local flymake-mypy-executable
-                      (string-join (my-devcontainer-command "mypy") " "))
+                      (string-join (my-devcontainer-command
+                                    "mypy" "--ignore-missing-imports")
+                                   " "))
           (flymake-mypy-enable))
       (when-let* ((mypy (executable-find "mypy")))
         (setq-local flymake-mypy-executable mypy)
