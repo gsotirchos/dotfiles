@@ -66,13 +66,6 @@ if [[ -n "$GHOSTTY_RESOURCES_DIR" ]]; then
     source "${GHOSTTY_RESOURCES_DIR}/shell-integration/bash/ghostty.bash"
 fi
 
-# Keep the stable Xwayland cookie path that devcontainer-exec bind-mounts
-# (see stable_xauthority there) current for containers started by VS Code.
-if [[ -n "${XAUTHORITY}" && "${XAUTHORITY}" != "${XDG_RUNTIME_DIR}/Xauthority" ]]; then
-    ln -sfn "${XAUTHORITY}" "${XDG_RUNTIME_DIR}/Xauthority"
-    export XAUTHORITY="${XDG_RUNTIME_DIR}/Xauthority"
-fi
-
 export CLAUDE_CODE_NO_FLICKER=1
 export BASHRC_SOURCED=1
 
