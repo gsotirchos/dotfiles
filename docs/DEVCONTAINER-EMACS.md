@@ -37,7 +37,7 @@ mounts and VS Code would not recognise it.
 A `devcontainer.json` that bind-mounts `${localEnv:XAUTHORITY}` gets a
 stable path (`$XDG_RUNTIME_DIR/Xauthority`) instead of Mutter's per-login
 cookie file, so the container survives a relogin. The link is refreshed by
-`devcontainer-exec` and by every interactive shell; open a terminal before
+`devcontainer-exec` and by every login shell; open a terminal before
 starting the container from VS Code. A container created before this
 mechanism has to be recreated once with `devcontainer up
 --remove-existing-container` (then `--provision` again).
