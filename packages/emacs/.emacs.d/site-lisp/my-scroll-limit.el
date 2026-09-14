@@ -46,8 +46,17 @@ Return nil when the end of the buffer is off screen."
           (set-window-start window (point) t))
         (set-window-vscroll window (max 0 (- scrolled wanted)) t t)))))
 
+(defun my/scroll-limit-scroll-forward (window pixels)
+  "Scroll WINDOW forward by PIXELS, within its first screen line."
+  (set-window-vscroll window (+ (window-vscroll window t) pixels) t t))
+
+(defun my/scroll-limit-cursor-cut-off-p (window)
+  "Return non-nil when the cursor's line is cut off at the bottom of WINDOW."
+  (let ((below-window (nth 3 (pos-visible-in-window-p (point) window t))))
+    (and below-window (> below-window 0))))
+
 (defun my/scroll-limit-update (&rest _)
-  "Scroll back every window that shows empty space past its buffer's end."
+  "Keep the end of every window's buffer at the bottom of the window."
   ;; Redisplay waits for pending input to be consumed, so this can too:
   ;; a burst of scroll events is then checked once, before its frame.
   (unless (input-pending-p)
@@ -56,23 +65,35 @@ Return nil when the end of the buffer is off screen."
        (unless (window-minibuffer-p window)
          (with-selected-window window
            (let ((empty-space (my/scroll-limit-empty-space window)))
-             ;; Scrolling counts as a window state change, which runs
-             ;; this again; that second pass finds no empty space and
-             ;; ends it.  A vscroll is worth undoing even at the
-             ;; beginning of the buffer, where there is no line left to
-             ;; scroll back over.
-             (when (and empty-space
-                        (> empty-space 0)
-                        (or (> (window-start) (point-min))
-                            (> (window-vscroll window t) 0)))
-               (my/scroll-limit-scroll-back window empty-space))))))
+             (cond
+              ;; Scrolling counts as a window state change, which runs
+              ;; this again; that second pass finds no empty space and
+              ;; ends it.  A vscroll is worth undoing even at the
+              ;; beginning of the buffer, where there is no line left to
+              ;; scroll back over.
+              ((and empty-space
+                    (> empty-space 0)
+                    (or (> (window-start) (point-min))
+                        (> (window-vscroll window t) 0)))
+               (my/scroll-limit-scroll-back window empty-space))
+              ;; `line-move' clears the vscroll that holds the last line
+              ;; flush with the bottom, cutting off the cursor on it.
+              ;; Redisplay would uncover it by scrolling a whole line
+              ;; past the end of the buffer, which the branch above
+              ;; scrolls back on the next command: a jitter per keypress.
+              ((and empty-space
+                    (< empty-space 0)
+                    (my/scroll-limit-cursor-cut-off-p window))
+               (my/scroll-limit-scroll-forward window (- empty-space))))))))
      nil 'visible)))
 
 ;;;###autoload
 (define-minor-mode my-scroll-limit-mode
   "Toggle scrolling limited to the last line of the buffer.
 When enabled, no window shows empty space past the end of its
-buffer, rechecked after each of the `my/scroll-limit-triggers'."
+buffer, and the last line is held flush with the bottom while the
+cursor is on it, rechecked after each of the
+`my/scroll-limit-triggers'."
   :global t
   :group 'my-scroll-limit
   (if my-scroll-limit-mode
