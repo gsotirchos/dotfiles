@@ -63,6 +63,10 @@ can see (new packages on `PYTHONPATH`/`AMENT_PREFIX_PATH`), after the
 container was recreated, or when Eglot connected to the host server because
 the container was not running at the time.
 
+`C-c c t` (`my-devcontainer-terminal`) opens a login shell in the container
+as a new ghostel buffer, starting in the container's view of the current
+directory.
+
 `devcontainer-exec CMD` runs any command in the container from a terminal,
 with the environment a VS Code terminal would have.
 
