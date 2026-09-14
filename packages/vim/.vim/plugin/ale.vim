@@ -4,9 +4,9 @@ scriptencoding utf-8
 let g:ale_disable_lsp = 1
 let g:ale_completion_enabled = 0
 
-let g:ale_sign_info = '●'
-let g:ale_sign_error = '▲'
-let g:ale_sign_warning = '■'  " ◼
+let g:ale_sign_info = '•'  " ●
+let g:ale_sign_error = '■'  " ◼
+let g:ale_sign_warning = '▲'
 let g:ale_virtualtext_delay = &updatetime
 let g:ale_virtualtext_single = 1
 let g:ale_virtualtext_prefix = ' ◀︎ '
