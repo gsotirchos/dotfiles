@@ -48,21 +48,25 @@ Return nil when the end of the buffer is off screen."
 
 (defun my/scroll-limit-update (&rest _)
   "Scroll back every window that shows empty space past its buffer's end."
-  (walk-windows
-   (lambda (window)
-     (unless (window-minibuffer-p window)
-       (with-selected-window window
-         (let ((empty-space (my/scroll-limit-empty-space window)))
-           ;; Scrolling counts as a window state change, which runs this
-           ;; again; that second pass finds no empty space and ends it.
-           ;; A vscroll is worth undoing even at the beginning of the
-           ;; buffer, where there is no line left to scroll back over.
-           (when (and empty-space
-                      (> empty-space 0)
-                      (or (> (window-start) (point-min))
-                          (> (window-vscroll window t) 0)))
-             (my/scroll-limit-scroll-back window empty-space))))))
-   nil 'visible))
+  ;; Redisplay waits for pending input to be consumed, so this can too:
+  ;; a burst of scroll events is then checked once, before its frame.
+  (unless (input-pending-p)
+    (walk-windows
+     (lambda (window)
+       (unless (window-minibuffer-p window)
+         (with-selected-window window
+           (let ((empty-space (my/scroll-limit-empty-space window)))
+             ;; Scrolling counts as a window state change, which runs
+             ;; this again; that second pass finds no empty space and
+             ;; ends it.  A vscroll is worth undoing even at the
+             ;; beginning of the buffer, where there is no line left to
+             ;; scroll back over.
+             (when (and empty-space
+                        (> empty-space 0)
+                        (or (> (window-start) (point-min))
+                            (> (window-vscroll window t) 0)))
+               (my/scroll-limit-scroll-back window empty-space))))))
+     nil 'visible)))
 
 ;;;###autoload
 (define-minor-mode my-scroll-limit-mode
