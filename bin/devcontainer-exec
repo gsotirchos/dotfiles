@@ -74,6 +74,19 @@ workspace_folder_of() {
     docker inspect --format '{{index .Config.Labels "devcontainer.local_folder"}}' "$1"
 }
 
+# Mutter puts the Xwayland cookie at a path with a per-login random suffix,
+# so a devcontainer.json that bind-mounts ${localEnv:XAUTHORITY} produces a
+# container that cannot start after the next login (its mounts are fixed at
+# creation). Hand the CLI a stable path instead: a symlink Docker resolves
+# afresh on every start, retargeted here to the current cookie.
+stable_xauthority() {
+    local link="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/Xauthority"
+    if [[ -n "${XAUTHORITY:-}" && "${XAUTHORITY}" != "${link}" ]]; then
+        ln -sfn "${XAUTHORITY}" "${link}"
+        export XAUTHORITY="${link}"
+    fi
+}
+
 # The container serving $1: a running one that mounts it -- a colcon
 # workspace holds many packages besides the one carrying .devcontainer --
 # or else one started for the configuration above it.
@@ -87,6 +100,7 @@ container_id() {
     done
     folder="$(workspace_folder "${dir}")"
     printf 'devcontainer-exec: starting the container for %s\n' "${folder}" >&2
+    stable_xauthority
     devcontainer_cli up --workspace-folder "${folder}" > /dev/null
     id="$(running_containers "${folder}")"
     [[ -n "${id}" ]] || die "no container is running for ${folder}"
