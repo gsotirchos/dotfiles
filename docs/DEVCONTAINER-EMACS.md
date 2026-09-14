@@ -82,9 +82,9 @@ and has no `.devcontainer/` above it; start the container as under Setup.
 *… is not mounted into the container* — the file is outside every bind
 mount, so the container cannot see it.
 
-Pyright cannot resolve a package of the workspace itself — the container's
-shell has to source `install/setup.bash` (in its `~/.bashrc`, after the ROS
-underlay); then `C-c c r`.
+Pyright cannot resolve a package of the workspace itself — the workspace's
+`install/setup.bash` is sourced when the environment is probed, so it must
+have been built at that time: build it, then `C-c c r`.
 
 The first `devcontainer-exec` call for a container that is not running blocks
 until it is up, which may include building the image; starting it from a
