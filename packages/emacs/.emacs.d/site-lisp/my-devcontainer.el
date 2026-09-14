@@ -32,6 +32,7 @@
 
 (declare-function eglot-current-server "eglot")
 (declare-function eglot-reconnect "eglot" (server &optional interactive))
+(defvar eglot-withhold-process-id)
 
 (defgroup my-devcontainer nil
   "Run language servers inside a devcontainer for buffers on the host."
@@ -171,8 +172,15 @@ name or, for the image's headers, files only the container has."
             (concat "/docker:" (my-devcontainer--query "--container") ":" path))
       path)))
 
+(defun my-devcontainer--withhold-process-id (fn &rest args)
+  "Send no client PID to a container-side server."
+  (let ((eglot-withhold-process-id (or eglot-withhold-process-id
+                                       (my-devcontainer-mappings))))
+    (apply fn args)))
+
 (with-eval-after-load 'eglot
-  (advice-add 'eglot-uri-to-path :filter-return #'my-devcontainer--localize-path))
+  (advice-add 'eglot-uri-to-path :filter-return #'my-devcontainer--localize-path)
+  (advice-add 'eglot--connect :around #'my-devcontainer--withhold-process-id))
 
 
 ;;;; Building
