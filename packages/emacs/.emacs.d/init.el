@@ -1239,7 +1239,11 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :demand t  ;; `eglot-server-programs' and the mypy hook call into it
   :hook ((find-file . my-devcontainer-setup-compile-command)
          (compilation-mode . my-devcontainer-setup-compilation-buffer))
-  :bind (:map my/personal-map ("cr" . my-devcontainer-refresh)))
+  :bind
+  (nil
+   :map my/personal-map
+   ("cr" . my-devcontainer-refresh)
+   ("ct" . my-devcontainer-terminal)))
 
 (use-package visual-wrap
   :ensure nil
