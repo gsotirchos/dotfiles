@@ -410,10 +410,7 @@ Scrolling on would only open empty space below it, which
     (when (and (= (window-end) (point-max))
                (pos-visible-in-window-p (point-max)))
       (signal 'end-of-buffer nil)))
-  :init
-  ;; Named after the wheel direction: this one moves the view towards
-  ;; the end of the buffer, unlike Emacs's own `scroll-down'.
-  (advice-add 'pixel-scroll-precision-scroll-down :before #'my/pixel-scroll-stop-at-end))
+  :init (advice-add 'pixel-scroll-precision-scroll-down :before #'my/pixel-scroll-stop-at-end))
 
 (use-package scroll-bar
   :ensure nil
