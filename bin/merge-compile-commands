@@ -6,6 +6,13 @@ clangd reads a single database, which it looks for as compile_commands.json
 in an ancestor of the source file or in that ancestor's build/ directory --
 so build/compile_commands.json at the workspace root serves the whole tree.
 
+The merged database also gets an entry for every C++ header a message
+package generates. Those live in build/<package>/rosidl_generator_cpp/ and
+no translation unit is compiled from there, so clangd would have to guess
+their flags from a neighbour -- and the C type support sources it tends to
+pick lack the C++ include paths, leaving the headers' own includes
+unresolved. The C++ type support source of the same package has them all.
+
 Usage:
     merge-compile-commands [WORKSPACE]    # defaults to the current directory
 """
@@ -13,6 +20,34 @@ Usage:
 import json
 import sys
 from pathlib import Path
+
+GENERATED_HEADERS_DIR = "rosidl_generator_cpp"
+PROXY_SOURCES_DIR = "rosidl_typesupport_cpp"
+
+
+def generated_header_commands(build: Path, commands: list[dict]) -> list[dict]:
+    """Entries giving each generated C++ header its package's C++ flags."""
+    entries = []
+    for package in sorted(build.iterdir()):
+        headers = sorted((package / GENERATED_HEADERS_DIR).rglob("*.hpp"))
+        proxy = next(
+            (
+                c
+                for c in commands
+                if f"/{package.name}/{PROXY_SOURCES_DIR}/" in c["file"]
+            ),
+            None,
+        )
+        if not headers or proxy is None:
+            continue
+        # The directory is the package's build directory as the container
+        # sees it; a header is named relative to it, since the compiler ran
+        # in there.
+        entries.extend(
+            proxy | {"file": f"{proxy['directory']}/{header.relative_to(package)}"}
+            for header in headers
+        )
+    return entries
 
 
 def main() -> int:
@@ -29,6 +64,7 @@ def main() -> int:
     commands = [
         entry for database in databases for entry in json.loads(database.read_text())
     ]
+    commands += generated_header_commands(build, commands)
     merged = build / "compile_commands.json"
     merged.write_text(json.dumps(commands, indent=2) + "\n")
     print(f"merged {len(databases)} databases ({len(commands)} commands) into {merged}")
