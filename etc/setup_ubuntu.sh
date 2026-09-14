@@ -48,6 +48,8 @@ main() {
         cmake \
         ninja-build \
         gdb \
+        vcstool \
+        git-lfs \
         doxygen \
         cppcheck \
         htop \
