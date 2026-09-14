@@ -43,24 +43,31 @@ reports that exists only in the container — a header under `/opt/ros`, a
 module in the image's `site-packages` — opens read-only over TRAMP at
 `/docker:USER@ID:/...`.
 
-Build in the container, from a VS Code terminal or from the host:
+In a buffer of a colcon package, `M-x compile` is pre-filled with
 
 ```bash
-devcontainer-exec colcon build --packages-select my_pkg
+devcontainer-exec -C WORKSPACE colcon build --packages-select PKG \
+    --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON && merge-compile-commands WORKSPACE
 ```
 
-clangd needs one `compile_commands.json`, while colcon writes one per package.
-After a build that added or reconfigured C++ packages, merge them from the
-host — the `build/` directory is on the host — and reconnect:
+which builds the package in the container and merges the per-package
+databases into the one `build/compile_commands.json` clangd reads. Edit the
+package selection as needed (`--packages-up-to`, none at all); `next-error`
+visits the host's copy of a file the compiler reports as `/workspace/...`.
+The same command works from any terminal.
 
-```bash
-merge-compile-commands ~/Projects/my_workspace
-```
+The flag is passed explicitly, even though `--provision` exports it in the
+container, because the environment variable only seeds a package's CMake cache
+on its first configure: a workspace built before provisioning keeps an empty
+setting until it is reconfigured with the flag. Until a file's package has a
+database entry, clangd guesses its flags and reports
+`'…/some_msgs/msg/x.hpp' file not found` for anything outside the system
+include paths — a build of that package from `compile` fixes it.
 
-then `C-c c r` (`my-devcontainer-refresh`) in a buffer of the workspace.
-The same key is the fix whenever the container's view of the world has
-changed: a build that extended `PYTHONPATH` or `AMENT_PREFIX_PATH`, a
-recreated container. It re-probes the environment and restarts the server.
+`C-c c r` (`my-devcontainer-refresh`) is the fix whenever the container's
+view of the world has changed: a build that extended `PYTHONPATH` or
+`AMENT_PREFIX_PATH`, a recreated container. It re-probes the environment and
+restarts the server.
 
 `devcontainer-exec` is also a plain command runner:
 
@@ -99,9 +106,15 @@ written to `WORKSPACE/.cache/emacs/` rather than the host's `/tmp`, which the
 container cannot see.
 
 On the Emacs side, `site-lisp/my-devcontainer.el` wraps the Eglot contact for
-pyright and clangd, points `flymake-mypy` at the container's mypy, and filters
-`eglot-uri-to-path` so that container-only paths become TRAMP paths. Buffers
-outside any devcontainer are untouched and use the host servers.
+pyright and clangd, points `flymake-mypy` at the container's mypy, filters
+`eglot-uri-to-path` so that container-only paths become TRAMP paths (a
+`--symlink-install` space is full of links with `/workspace/...` targets,
+dangling on the host; those are translated to their `build/` target rather
+than opened over TRAMP), sets
+`compile-command` for buffers under a `package.xml`, and gives compilation
+buffers a `compilation-parse-errors-filename-function` that maps the
+container's paths back. Buffers outside any devcontainer are untouched and use
+the host servers.
 
 ## Troubleshooting
 
