@@ -396,6 +396,49 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :no-require t
   :custom (2C-mode-line-format '(:eval (default-value 'mode-line-format))))
 
+(use-package pixel-scroll
+  :ensure nil
+  :no-require t
+  :preface
+  (defun my/pixel-scroll-stop-at-end (&rest _)
+    "Signal `end-of-buffer' once the end of the buffer is on screen.
+Scrolling on would only open empty space below it, which
+`my-scroll-limit-mode' closes again: a flicker per wheel event."
+    ;; `window-end' is cached by the last redisplay and settles the
+    ;; common case for free; `pos-visible-in-window-p' lays the window
+    ;; out anew, but is only reached near the end of the buffer.
+    (when (and (= (window-end) (point-max))
+               (pos-visible-in-window-p (point-max)))
+      (signal 'end-of-buffer nil)))
+  :init
+  ;; Named after the wheel direction: this one moves the view towards
+  ;; the end of the buffer, unlike Emacs's own `scroll-down'.
+  (advice-add 'pixel-scroll-precision-scroll-down :before #'my/pixel-scroll-stop-at-end))
+
+(use-package scroll-bar
+  :ensure nil
+  :no-require t
+  :if (featurep 'gtk)
+  :preface
+  (defconst my/gtk-scroll-bar-range 9999999
+    "XG_SB_RANGE from src/gtkutil.h: the fixed value range of a GTK scroll bar.")
+  (defun my/scroll-bar-drag-against-range (args)
+    "Scale the thumb position in the drag event of ARGS against the full range.
+With `scroll-bar-adjust-thumb-portion' nil the thumb is placed at
+window-start / buffer-size of the bar's range, but a drag reports
+its position against the range minus the thumb size (see
+`xg_scroll_callback' in src/pgtkterm.c), which `scroll-bar-drag-1'
+then scales by the buffer size again.  The thumb so runs ahead of
+the mouse by 1 / (1 - thumb size), and at the bottom of the bar
+the reported position maps to the end of the buffer at the top of
+the window."
+    (let ((portion-whole (nth 2 (event-start (car args)))))
+      (when (numberp (cdr portion-whole))
+        (setcdr portion-whole my/gtk-scroll-bar-range)))
+    args)
+  :init
+  (advice-add 'scroll-bar-drag-1 :filter-args #'my/scroll-bar-drag-against-range))
+
 (use-package my-mode-line
   :ensure nil
   :load-path "site-lisp/"
@@ -1362,7 +1405,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :custom
   (flymake-no-changes-timeout 1)
   (flymake-mode-line-format '(" " flymake-mode-line-counters))
-  (flymake-show-diagnostics-at-end-of-line t)
+  (flymake-show-diagnostics-at-end-of-line 'short)
   (flymake-indicator-type 'margins)
   (flymake-autoresize-margins nil)      ; width is my-margin's job
   (flymake-margin-indicators-string
@@ -1373,12 +1416,15 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (defun my/customize-flymake ()
     (when-let* (((facep 'flymake-end-of-line-diagnostics-face))
                 (fg-dim (my/theme-color 'fg-dim)))
+      ;; Anything altering the line height (a box, a smaller or
+      ;; proportional font) makes every redisplay measure lines
+      ;; instead of counting them, which lags scrolling badly.
       (set-face-attribute 'flymake-end-of-line-diagnostics-face nil
                           :foreground fg-dim
                           :box '(:line-width (4 . -1) :style flat-button)
-                          :height (round (* 0.92 (face-attribute 'default :height)))
+                          :height 'unspecified
                           :italic t
-                          :inherit 'variable-pitch)
+                          :inherit 'unspecified)
       (pcase-dolist (`(,face ,fg-color ,bg-color)
                      '((flymake-eol-information-face blue-faint   bg-blue-nuanced)
                        (flymake-note-echo-at-eol     cyan-faint   bg-cyan-nuanced)
