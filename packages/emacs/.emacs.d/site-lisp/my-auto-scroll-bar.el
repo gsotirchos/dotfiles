@@ -41,22 +41,28 @@ After a final newline comes an empty line holding `point-max'."
 Minibuffer windows never qualify."
   (and (not (window-minibuffer-p window))
        (with-current-buffer (window-buffer window)
-         (not (and (pos-visible-in-window-p (point-min) window)
-                   (pos-visible-in-window-p (my/auto-scroll-bar-end-of-text)
-                                            window))))))
+         (or (> (window-start window) (point-min))
+             (> (window-vscroll window) 0)
+             (not (pos-visible-in-window-p (my/auto-scroll-bar-end-of-text)
+                                           window))))))
 
 (defun my/auto-scroll-bar-update (&rest _)
   "Give a vertical scroll bar only to windows that have something to scroll."
-  (my/auto-scroll-bar-walk-windows
-   (lambda (window)
-     (let ((needed (and (my/auto-scroll-bar-needed-p window) t)))
-       ;; Writing counts as a window state change, which runs this again;
-       ;; comparing first makes that second pass a no-op and terminates it.
-       (unless (eq needed (nth 2 (window-scroll-bars window)))
-         ;; Redisplay alternates the echo area between two buffers of its
-         ;; own, out of reach of these hooks, and each swap discards the
-         ;; settings of the window unless they are persistent.
-         (set-window-scroll-bars window nil needed nil nil t))))))
+  ;; Redisplay waits for pending input to be consumed, so this can too:
+  ;; a burst of scroll events is then checked once, before its frame.
+  (unless (input-pending-p)
+    (my/auto-scroll-bar-walk-windows
+     (lambda (window)
+       (let ((needed (and (my/auto-scroll-bar-needed-p window) t)))
+         ;; Writing counts as a window state change, which runs this
+         ;; again; comparing first makes that second pass a no-op and
+         ;; terminates it.
+         (unless (eq needed (nth 2 (window-scroll-bars window)))
+           ;; Redisplay alternates the echo area between two buffers of
+           ;; its own, out of reach of these hooks, and each swap
+           ;; discards the settings of the window unless they are
+           ;; persistent.
+           (set-window-scroll-bars window nil needed nil nil t)))))))
 
 (defun my/auto-scroll-bar-restore ()
   "Give every window back the scroll bar of its frame."
