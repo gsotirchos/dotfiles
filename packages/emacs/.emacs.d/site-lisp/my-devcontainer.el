@@ -80,29 +80,22 @@ Each entry is (HOST . CONTAINER), deepest host path first."
               (string-prefix-p (file-name-as-directory (car mapping)) dir))
             mappings))
 
+(defun my-devcontainer-workspace (&optional dir)
+  "Return the host side of the bind mount holding DIR, or nil."
+  (when-let* ((dir (expand-file-name (or dir default-directory)))
+              (mappings (my-devcontainer-mappings dir))
+              (mount (my-devcontainer--mount dir mappings)))
+    (car mount)))
+
 (defun my-devcontainer-temporary-directory (&optional dir)
   "Return a temporary directory both the host and DIR's container can see.
 A checker run in the container cannot read a shadow file written to the
-host's /tmp, so it goes under the bind mount holding DIR instead.  Nil if
+host's /tmp, so it goes under the workspace holding DIR instead.  Nil if
 no container serves DIR."
-  (when-let* ((mappings (my-devcontainer-mappings dir))
-              (dir (expand-file-name (or dir default-directory)))
-              (mount (my-devcontainer--mount dir mappings))
-              (tmp (expand-file-name ".cache/emacs/" (car mount))))
+  (when-let* ((workspace (my-devcontainer-workspace dir))
+              (tmp (expand-file-name ".cache/emacs/" workspace)))
     (make-directory tmp t)
     tmp))
-
-(defun my-devcontainer--colcon-root (file)
-  "Return the colcon workspace holding FILE, or nil.
-That is the outermost ancestor whose src/ contains FILE; the nearest one
-would be a package's own src/ directory."
-  (let ((dir (file-name-directory file))
-        root)
-    (while (not (equal dir "/"))
-      (when (string-prefix-p (expand-file-name "src/" dir) file)
-        (setq root dir))
-      (setq dir (file-name-directory (directory-file-name dir))))
-    root))
 
 (defun my-devcontainer-command (program &rest args)
   "Return the command running PROGRAM with ARGS in the current container."
@@ -110,16 +103,16 @@ would be a package's own src/ directory."
 
 (defun my-devcontainer--clangd-args (mappings)
   "Return the arguments that tie clangd to the container and the workspace.
-MAPPINGS tell it how the host's paths map to the container's.  In a
-colcon workspace it is also pointed at the merged compile database, since
-the per-package one it would find first has nothing for the generated
-headers that `merge-compile-commands' provides for."
+MAPPINGS tell it how the host's paths map to the container's.  It is also
+pointed at the workspace's merged compile database, since the per-package
+one it would find first has nothing for the generated headers that
+`merge-compile-commands' provides for."
   (cons (concat "--path-mappings="
                 (mapconcat (lambda (mapping) (concat (car mapping) "=" (cdr mapping)))
                            mappings ","))
-        (when-let* ((root (my-devcontainer--colcon-root (directory-file-name default-directory)))
+        (when-let* ((workspace (my-devcontainer-workspace))
                     (build (my-devcontainer--container-path
-                            (expand-file-name "build" root) mappings)))
+                            (expand-file-name "build" workspace) mappings)))
           (list (concat "--compile-commands-dir=" build)))))
 
 (defun my-devcontainer-eglot-server (program &rest args)
@@ -206,14 +199,21 @@ variable seeds a package's CMake cache only on its first configure, and
 the per-package databases are merged afterwards for clangd."
   (when-let* ((file (buffer-file-name))
               (package (my-devcontainer--colcon-package file))
-              (root (my-devcontainer--colcon-root file))
-              ((my-devcontainer-mappings root))
-              (root (shell-quote-argument (directory-file-name root))))
+              ((my-devcontainer-workspace)))
     (setq-local compile-command
-                (format (concat "%s -C %s colcon build --packages-up-to %s"
+                (format (concat "%s colcon build --packages-up-to %s"
                                 " --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-                                " && merge-compile-commands %s")
-                        my-devcontainer-executable root package root))))
+                                " && merge-compile-commands")
+                        my-devcontainer-executable package))))
+
+(defun my-devcontainer--compile-in-workspace (fn &rest args)
+  "Start the compilation at the top of the container's workspace.
+colcon builds the workspace it is started in, so a build started from a
+package's own directory would give that package a build/ of its own."
+  (let ((default-directory (or (my-devcontainer-workspace) default-directory)))
+    (apply fn args)))
+
+(advice-add 'compile :around #'my-devcontainer--compile-in-workspace)
 
 ;;;###autoload
 (defun my-devcontainer-setup-compilation-buffer ()
