@@ -1251,6 +1251,161 @@ reaches into the preview's `display' property elides the whole preview."
 
 (use-package mathjax)
 
+;; Programming
+
+(use-package my-devcontainer
+  :after my-keybindings
+  :ensure nil
+  :load-path "site-lisp/"
+  :demand t  ;; `eglot-server-programs' and the mypy hook call into it
+  :hook ((prog-mode . my-devcontainer-setup-compile-command)
+         (compilation-mode . my-devcontainer-setup-compilation-buffer))
+  :bind (:map my/personal-map ("cr" . my-devcontainer-refresh)))
+
+(use-package compile
+  :ensure nil
+  :no-require
+  :custom (compilation-scroll-output 'first-error))
+
+(use-package eglot
+  :after my-keybindings
+  :ensure nil
+  :no-require t
+  :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode nxml-mode) . eglot-ensure)
+  :bind (:map my/personal-map ("rn" . eglot-rename))
+  :custom
+  (eglot-autoshutdown t)
+  ;; A header reached by `M-.' from a TU stays with that TU's server, rather
+  ;; than getting a server of its own per directory it happens to live in.
+  (eglot-extend-to-xref t)
+  (eglot-prefer-plaintext t)
+  (eglot-send-changes-idle-time 1)
+  (eglot-events-buffer-config '(:size 0 :format full))
+  (eglot-ignored-server-capabilities
+   '(:codeLensProvider
+     ;; :codeActionProvider
+     ;; :colorProvider
+     :foldingRangeProvider
+     :executeCommandProvider))
+  :preface
+  (defun my/eglot-mode-hook ()
+    (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
+    (when flymake-mode (flymake-start)))
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
+  (defun my/eglot-require-completion-prefix (fn &rest args)
+    "Suppress the advised Capf's result when nothing precedes point."
+    (let ((res (apply fn args)))
+      (unless (and (consp res)
+                   (integer-or-marker-p (car res))
+                   (<= (point) (car res)))
+        res)))
+  (defun my/eglot-tolerate-watch-limit (fn &rest args)
+    "Degrade to fewer file watches instead of failing the server's request."
+    (condition-case err (apply fn args)
+      (jsonrpc-error (eglot--warn "Capability registration degraded: %S" err))))
+  :init
+  (setq eglot-stay-out-of '(flymake))
+  ;; LemMinX reads its settings from the `xml' section, both from
+  ;; `initializationOptions' and from `workspace/didChangeConfiguration';
+  ;; Eglot sends the latter on connect with exactly this shape.
+  (setq-default eglot-workspace-configuration
+                '(:xml (:useCache t
+                                  :downloadExternalResources (:enabled t)
+                                  :validation (:noGrammar "ignore")
+                                  :format (:enabled t
+                                                    :maxLineWidth 100
+                                                    :splitAttributes "preserve"
+                                                    :preserveAttributeLineBreaks t))))
+  (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
+  (advice-add 'eglot-completion-at-point :around #'my/eglot-require-completion-prefix)
+  (advice-add 'eglot-register-capability :around #'my/eglot-tolerate-watch-limit)
+  :config
+  (add-to-list 'eglot-server-programs
+               `(python-base-mode
+                 . ,(my-devcontainer-eglot-server "pyright-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs
+               `((c++-ts-mode c-ts-mode c++-mode c-mode)
+                 . ,(my-devcontainer-eglot-server
+                     "clangd"
+                     "--clang-tidy"
+                     "--header-insertion=never"
+                     "--background-index"
+                     "--completion-style=detailed"
+                     "--query-driver=/usr/bin/*,**/.pixi/envs/**/bin/*")))
+  (add-to-list 'eglot-server-programs
+               `((nxml-mode :language-id "xml") . ("lemminx"))))
+
+(use-package apheleia
+  :defer 1
+  :preface
+  (add-hook 'python-base-mode-hook
+            (lambda () (setq-local apheleia-formatter '(ruff-check ruff))))
+  (add-hook 'sh-base-mode-hook
+            (lambda () (setq-local apheleia-formatter 'shfmt)))
+  (add-hook 'cmake-ts-mode-hook
+            (lambda () (setq-local apheleia-formatter 'cmake-fmt)))
+  (add-hook 'json-ts-mode-hook
+            (lambda () (setq-local apheleia-formatter 'json-fmt)))
+  (add-hook 'c-ts-base-mode-hook
+            (lambda () (setq-local apheleia-formatter 'clang-format)))
+  (add-hook 'LaTeX-mode-hook
+            (lambda () (setq-local apheleia-formatter 'latexindent)))
+  (defun my/apheleia-format-after-save (&rest _)
+    (apheleia-format-after-save))
+  (advice-add 'save-buffer :after #'my/apheleia-format-after-save)
+  (advice-add 'evil-write :after #'my/apheleia-format-after-save)
+  (defun my/apheleia-busy-p ()
+    (process-live-p apheleia--current-process))
+  (defun my/apheleia-format-or (fallback &rest args)
+    "Format the buffer with Apheleia if a formatter is configured for it.
+Otherwise call FALLBACK (the command normally on \\[fill-paragraph])
+interactively with ARGS.  Used to overload \\[fill-paragraph]."
+    (if-let* ((formatters (and (fboundp 'apheleia--get-formatters)
+                               (apheleia--get-formatters))))
+        (apheleia-format-buffer formatters)
+      (apply #'funcall-interactively fallback args)))
+  (defun my/apheleia-format-or-fill-paragraph (&optional justify region)
+    "Apheleia-format the buffer, else fall back to `fill-paragraph'."
+    (interactive (progn (barf-if-buffer-read-only)
+                        (list (if current-prefix-arg 'full) t)))
+    (if (and region (use-region-p) (not (nth 4 (syntax-ppss))))
+        (indent-region (region-beginning) (region-end))
+      (my/apheleia-format-or #'fill-paragraph justify region)))
+  (defun my/apheleia-format-or-prog-fill (&optional arg)
+    "Apheleia-format the buffer, else fall back to `prog-fill-reindent-defun'."
+    (interactive "P")
+    (my/apheleia-format-or #'prog-fill-reindent-defun arg))
+  :bind (([remap fill-paragraph] . my/apheleia-format-or-fill-paragraph)
+         ([remap prog-fill-reindent-defun] . my/apheleia-format-or-prog-fill))
+  :custom (apheleia-skip-functions '(evil-insert-state-p my/apheleia-busy-p))
+  :config
+  (apheleia-global-mode 1)
+  (setf (alist-get 'ruff apheleia-formatters)
+        '("ruff" "format" "--silent" "--stdin-filename" filepath "-"))
+  (setf (alist-get 'ruff-check apheleia-formatters)
+        '("ruff" "check" "--fix" "--silent" "--stdin-filename" filepath "-"))
+  (setf (alist-get 'shfmt apheleia-formatters)
+        '("shfmt" "-ln" "bash"
+          (apheleia-formatters-indent '("-i" "0") "-i" 'standard-indent)
+          "-ci" "-bn" "-sr"))
+  (setf (alist-get 'cmake-fmt apheleia-formatters)
+        '("format-cmake"))
+  (setf (alist-get 'json-fmt apheleia-formatters)
+        '("format-json" (apheleia-formatters-indent '("--indent" "0") "--indent")))
+  (setf (alist-get 'latexindent apheleia-formatters)
+        '("latexindent" "--logfile=/dev/null" "-m" "-rv")))
+
+(use-package prog-mode
+  :ensure nil
+  :no-require t
+  :preface
+  (defun my/prog-mode-hook ()
+    (which-function-mode 1)
+    (setq show-trailing-whitespace t)
+    ;; (modify-syntax-entry ?- "w")
+    (modify-syntax-entry ?_ "w"))
+  (add-hook 'prog-mode-hook #'my/prog-mode-hook))
+
 (use-package visual-wrap
   :ensure nil
   :no-require t
