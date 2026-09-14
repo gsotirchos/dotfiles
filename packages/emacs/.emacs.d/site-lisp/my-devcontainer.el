@@ -32,6 +32,7 @@
 
 (declare-function eglot-current-server "eglot")
 (declare-function eglot-reconnect "eglot" (server &optional interactive))
+(declare-function ghostel-exec "ghostel" (buffer program &optional args identity))
 (defvar eglot-withhold-process-id)
 
 (defgroup my-devcontainer nil
@@ -73,6 +74,12 @@ Each entry is (HOST . CONTAINER), deepest host path first."
                 (cons (car sides) (cadr sides))))
             (split-string mappings ","))))
 
+(defun my-devcontainer--mount (dir mappings)
+  "Return the entry of MAPPINGS whose host side holds DIR, or nil."
+  (seq-find (lambda (mapping)
+              (string-prefix-p (file-name-as-directory (car mapping)) dir))
+            mappings))
+
 (defun my-devcontainer-temporary-directory (&optional dir)
   "Return a temporary directory both the host and DIR's container can see.
 A checker run in the container cannot read a shadow file written to the
@@ -80,9 +87,7 @@ host's /tmp, so it goes under the bind mount holding DIR instead.  Nil if
 no container serves DIR."
   (when-let* ((mappings (my-devcontainer-mappings dir))
               (dir (expand-file-name (or dir default-directory)))
-              (mount (seq-find (lambda (mapping)
-                                 (string-prefix-p (file-name-as-directory (car mapping)) dir))
-                               mappings))
+              (mount (my-devcontainer--mount dir mappings))
               (tmp (expand-file-name ".cache/emacs/" (car mount))))
     (make-directory tmp t)
     tmp))
@@ -218,6 +223,35 @@ messages name /workspace/..., which `next-error' could not visit."
   (when-let* ((mappings (my-devcontainer-mappings)))
     (setq-local compilation-parse-errors-filename-function
                 (lambda (file) (or (my-devcontainer--host-path file mappings) file)))))
+
+
+;;;; Terminal
+
+(defun my-devcontainer--shell-command (mappings)
+  "Return the docker command opening a login shell in the current container.
+The shell starts in the container's view of `default-directory'.  It is
+given a TERM the image has a terminfo entry for, which ghostel's own
+xterm-ghostty is not."
+  (let ((container (split-string (my-devcontainer--query "--container") "@"))
+        (workdir (my-devcontainer--container-path
+                  (directory-file-name (expand-file-name default-directory)) mappings)))
+    `("docker" "exec" "-it" "-u" ,(car container) "-w" ,workdir
+      "-e" "TERM=xterm-256color" ,(cadr container) "bash" "-l")))
+
+;;;###autoload
+(defun my-devcontainer-terminal ()
+  "Pop to a new ghostel terminal running a login shell in the current container."
+  (interactive)
+  (require 'ghostel)
+  (let* ((mappings (or (my-devcontainer-mappings)
+                       (user-error "my-devcontainer: no devcontainer serves %s"
+                                   (abbreviate-file-name default-directory))))
+         (mount (my-devcontainer--mount (expand-file-name default-directory) mappings))
+         (command (my-devcontainer--shell-command mappings))
+         (buffer (generate-new-buffer
+                  (format "*devcontainer:%s*" (file-name-nondirectory (car mount))))))
+    (pop-to-buffer-same-window buffer)
+    (ghostel-exec buffer (car command) (cdr command))))
 
 
 ;;;; Refreshing
