@@ -43,6 +43,15 @@ if [[ "$OS" == "linux" ]]; then
 
     # Match container users to this account
     export HOST_UID=$(id -u) HOST_GID=$(id -g)
+
+    # Keep the stable Xwayland cookie path that devcontainer-exec bind-mounts
+    # (see stable_xauthority there) current for containers started by VS Code.
+    if [[ -n "${XAUTHORITY}" && "${XAUTHORITY}" != "${XDG_RUNTIME_DIR}/Xauthority" ]]; then
+        if [[ "$(readlink "${XDG_RUNTIME_DIR}/Xauthority")" != "${XAUTHORITY}" ]]; then
+            ln -sfn "${XAUTHORITY}" "${XDG_RUNTIME_DIR}/Xauthority"
+        fi
+        export XAUTHORITY="${XDG_RUNTIME_DIR}/Xauthority"
+    fi
 fi
 
 if [[ "$OS" == "macos" ]]; then
