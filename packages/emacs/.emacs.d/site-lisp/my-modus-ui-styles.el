@@ -77,6 +77,7 @@ If STYLE is \\='cycle, cycle the current style."
           (pcase-dolist
               (`(,face ,box ,fg ,ol ,ul)
                `((vertical-border      nil       ,fg-vertical-border  nil          nil)
+                 (window-divider       nil       ,fg-vertical-border  nil          nil)
                  (mode-line            nil               unspecified  ,bg-inactive nil)
                  (mode-line-active     nil               ,fg-active   ,bg-inactive nil)
                  (mode-line-inactive   nil               ,fg-inactive ,bg-dim      nil)
