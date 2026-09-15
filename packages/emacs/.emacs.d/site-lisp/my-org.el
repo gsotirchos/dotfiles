@@ -9,6 +9,7 @@
 (declare-function my/theme-color "init" (name))
 
 (require 'org)
+(require 'org-archive)
 (require 'my-latex-preview)
 
 ;;;###autoload
