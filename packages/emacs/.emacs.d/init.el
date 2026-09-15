@@ -1372,7 +1372,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package indent-bars
   :preface
   (defun my/indent-bars-maybe-enable ()
-    (unless (derived-mode-p 'emacs-lisp-mode 'lisp-data-mode)
+    (unless (or (derived-mode-p 'emacs-lisp-mode 'lisp-data-mode)
+                (string-prefix-p " " (buffer-name)))
       (indent-bars-mode 1)))
   :hook ((prog-mode yaml-ts-mode) . my/indent-bars-maybe-enable)
   :custom
