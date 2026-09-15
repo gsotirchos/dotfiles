@@ -4,6 +4,10 @@
 
 ;;; Code:
 
+(defgroup my-keybindings nil
+  "My personal keybindings."
+  :group 'convenience)
+
 
 (defun my/delete-back-to-indentation ()
   "Kill back to the first non-whitespace character."
@@ -150,6 +154,7 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
   :global t
   :lighter " MyKeys"
   :keymap my-keybindings-mode-map
+  :group 'my-keybindings
   (when my-keybindings-mode
     ;; Minibuffer specific maps (cannot be done in the minor mode map)
     (keymap-set minibuffer-mode-map "<escape>" #'abort-recursive-edit)
