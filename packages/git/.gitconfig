@@ -4,12 +4,14 @@
     name = George Sotirchos
     #email = gsotirch@gmail.com
     email = G.Sotirchos@tudelft.nl
+[init]
+    defaultBranch = main
+[rebase]
+    updateRefs = true
 [status]
     submodulesummary = 1
 [push]
     recurseSubmodules = check
-[rebase]
-    updateRefs = true
 [submodule]
     recurse = true
 [diff]
@@ -25,5 +27,7 @@
     smudge = git-lfs smudge -- %f
     process = git-lfs filter-process
     required = true
-[init]
-    defaultBranch = main
+[url "git@github.com:"]
+    insetadOf = https://github.com/
+[url "git@gitlab.tudelft.nl:"]
+    insetadOf = https://gitlab.tudelft.nl/
