@@ -1219,7 +1219,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     ;; whatever matches here, padding markup `markdown-ts-hide-markup' hid.
     (setq-local adaptive-fill-regexp "[-–!|%;>·•‣⁃◦ \t]*"))
   (add-hook 'markdown-ts-mode-hook #'my/markdown-ts-mode-hook)
-  (add-hook 'markdown-ts-view-mode-hook #'my/markdown-ts-mode-hook))
+  (add-hook 'markdown-ts-view-mode-hook #'my/markdown-ts-mode-hook)
+  :config (face-spec-set 'markdown-ts-latex '((t (:foreground unspecified))) 'face-override-spec))
 
 (use-package markdown-ts-appear
   :vc (markdown-ts-appear
