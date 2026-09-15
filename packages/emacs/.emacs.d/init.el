@@ -328,15 +328,14 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
 (use-package project
   :ensure nil
   :no-require t
+  :defines (project-vc-ignores tramp-verbose)
   :preface
-  (defvar project-vc-ignores)
   (defun my/project-query-replace-ignore-binaries (orig-fun &rest args)
     "Temporarily ignore binary files during project-wide query-replace."
     (let ((project-vc-ignores
            (append '("*.png" "*.pdf" "*.jpg" "*.jpeg" "*.gif" "*.zip" "*.gz" "*.tar" "*.mp4")
                    project-vc-ignores)))
       (apply orig-fun args)))
-  (defvar tramp-verbose)
   (defun my/project-silence-missing-gitmodules (orig-fun &rest args)
     "Call ORIG-FUN with ARGS, muting Tramp's echo of a missing `.gitmodules'."
     (let ((tramp-verbose 0))
@@ -1227,6 +1226,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
        :url "https://github.com/Thysrael/markdown-ts-appear"
        :rev :newest)
   :hook (markdown-ts-mode . markdown-ts-appear-mode)
+  :defines markdown-ts-hide-markup
   :preface
   (defun my/markdown-ts-math-show-delimiters (fontify node &rest arguments)
     "Keep NODE's math delimiters visible so its preview can cover them.

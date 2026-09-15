@@ -22,7 +22,7 @@
                (unless (executable-find "cmake-lint")
                  (error "Executable `cmake-lint' not found on PATH"))
                (unless (buffer-file-name)
-                 (error "cmake-lint: buffer is not visiting a file")))
+                 (error "Cannot run cmake-lint: buffer is not visiting a file")))
   :write-type 'file
   :proc-form (list "cmake-lint" "--suppress-decorations" (buffer-file-name))
   :search-regexp

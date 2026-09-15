@@ -22,7 +22,7 @@ Used only if native OS events are unavailable."
 (defvar my-system-appearance-change-functions nil
   "Hook run when the system appearance changes.
 Functions in this hook are called with one argument: the new appearance,
-either 'light or 'dark.")
+either \\='light or \\='dark.")
 
 (defvar my/last-system-appearance nil
   "Tracks the last detected system appearance to avoid unnecessary reloads.")
@@ -31,7 +31,7 @@ either 'light or 'dark.")
   "Timer object for the theme poller fallback.")
 
 (defun my/get-macos-appearance ()
-  "Return 'dark if macOS is in Dark Mode, 'light otherwise."
+  "Return \\='dark if macOS is in Dark Mode, \\='light otherwise."
   (let ((default-directory "/"))
     (if (string-equal "Dark\n"
                       (ignore-errors (shell-command-to-string "defaults read -g AppleInterfaceStyle 2>/dev/null")))
@@ -39,7 +39,7 @@ either 'light or 'dark.")
       'light)))
 
 (defun my/get-gnome-appearance ()
-  "Return 'dark if GNOME is in Dark Mode, 'light otherwise."
+  "Return \\='dark if GNOME is in Dark Mode, \\='light otherwise."
   (let ((default-directory "/"))
     (if (string-match-p "dark"
                         (or (ignore-errors (shell-command-to-string "gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null"))

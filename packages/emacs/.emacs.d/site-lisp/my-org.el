@@ -7,8 +7,12 @@
 ;;; Code:
 
 (declare-function my/theme-color "init" (name))
+(declare-function my/silence-advice "init" (fn &rest args))
+(declare-function my/find-file "my-keybindings" (file))
 
+(require 'browse-url)
 (require 'org)
+(require 'org-archive)
 (require 'my-latex-preview)
 
 ;;;###autoload

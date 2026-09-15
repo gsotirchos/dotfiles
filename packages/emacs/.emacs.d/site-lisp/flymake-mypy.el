@@ -44,7 +44,7 @@
 (defun flymake-mypy-disable ()
   "Disable the Mypy checker for Flymake."
   (interactive)
-  (remove-hook 'flymake-diagnostic-functions 'flymake-mypy--run nil t))
+  (remove-hook 'flymake-diagnostic-functions 'flymake-mypy--run t))
 
 (defun flymake-mypy--get-position (buffer line column)
   "Calculate position for the given LINE and COLUMN in the BUFFER."
@@ -96,7 +96,6 @@
                              (goto-char (point-min))
                              (cl-loop
                               while (search-forward-regexp flymake-mypy-output-pattern nil t)
-                              for line = (match-string 0)
                               for filename = (match-string 1)
                               for line-num = (string-to-number (match-string 2))
                               ;; mypy column numbers are off by 1
