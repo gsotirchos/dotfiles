@@ -87,17 +87,23 @@ stable_xauthority() {
     fi
 }
 
-# The container serving $1: a running one that mounts it -- a colcon
-# workspace holds many packages besides the one carrying .devcontainer --
-# or else one started for the configuration above it.
+# The container serving $1: the running one mounting it most specifically
+# -- a colcon workspace holds many packages besides the one carrying
+# .devcontainer, and a container mounting the whole home directory covers
+# every workspace -- or else one started for the configuration above it.
 container_id() {
-    local dir="$1" id folder
+    local dir="$1" id folder mount host best="" best_host=""
     for id in $(running_containers); do
-        if container_path "$(bind_mounts "${id}")" "${dir}" > /dev/null; then
-            printf '%s\n' "${id}"
-            return 0
+        mount="$(covering_mount "$(bind_mounts "${id}")" "${dir}")" || continue
+        host="${mount%%=*}"
+        if (( ${#host} > ${#best_host} )); then
+            best="${id}" best_host="${host}"
         fi
     done
+    if [[ -n "${best}" ]]; then
+        printf '%s\n' "${best}"
+        return 0
+    fi
     folder="$(workspace_folder "${dir}")"
     printf 'devcontainer-exec: starting the container for %s\n' "${folder}" >&2
     stable_xauthority
@@ -122,17 +128,26 @@ bind_mounts() {
         | awk -F= 'NF { print length($1) "\t" $0 }' | sort -rn | cut -f 2-
 }
 
-# Translate host path $2 into the container using the mount table $1;
-# fails if no mount covers it.
-container_path() {
+# The HOST=CONTAINER line of mount table $1 covering host path $2; fails
+# if no mount does.
+covering_mount() {
     local mounts="$1" path="$2" host container
     while IFS='=' read -r host container; do
         if [[ "${path}" == "${host}" || "${path}" == "${host}"/* ]]; then
-            printf '%s\n' "${container}${path#"${host}"}"
+            printf '%s=%s\n' "${host}" "${container}"
             return 0
         fi
     done <<< "${mounts}"
     return 1
+}
+
+# Translate host path $2 into the container using the mount table $1;
+# fails if no mount covers it.
+container_path() {
+    local mount host
+    mount="$(covering_mount "$1" "$2")" || return 1
+    host="${mount%%=*}"
+    printf '%s\n' "${mount#*=}${2#"${host}"}"
 }
 
 # Snapshot the environment a VS Code terminal would get, in the format of
