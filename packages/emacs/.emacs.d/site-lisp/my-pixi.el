@@ -111,9 +111,9 @@ The result is cached until MANIFEST or its lock file changes."
 ;;;###autoload
 (define-minor-mode my-pixi-mode
   "Run subprocesses of this buffer inside its pixi workspace environment.
-Turning the mode on sets `process-environment' and `exec-path' buffer
-locally; it turns itself off again when the buffer is not in a pixi
-workspace, or when pixi cannot report the environment."
+Turning the mode on sets `process-environment' and the variable
+`exec-path' buffer locally; it turns itself off again when the buffer
+is not in a pixi workspace, or when pixi cannot report the environment."
   :lighter " pixi"
   (if (not my-pixi-mode)
       (progn (kill-local-variable 'process-environment)

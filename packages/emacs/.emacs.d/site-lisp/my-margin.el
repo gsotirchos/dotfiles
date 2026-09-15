@@ -24,7 +24,7 @@
 
 (defcustom my/margin-contributors
   '(my/margin-diff-hl-width my/margin-flymake-width)
-  "Functions reporting how many left-margin columns they need.
+  "Functions reporting how many columns of the left margin they need.
 Each is called with no arguments in the buffer being updated and
 should return an integer (usually 0 or 1)."
   :type '(repeat function))
