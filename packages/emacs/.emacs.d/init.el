@@ -217,11 +217,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (hscroll-margin 0)
   (scroll-conservatively 101)
   (hscroll-step 1)
-  (scroll-bar-mode (if (eq system-type 'darwin) nil 'right))
-  (window-divider-mode (if scroll-bar-mode t nil))
-  (window-divider-default-places 'right-only)
-  (window-divider-default-right-width 1)
-  (scroll-bar-adjust-thumb-portion nil)
   ;; (underline-minimum-offset 2)
   (text-scale-mode-step 1.1)
   (global-text-scale-adjust-resizes-frames t)
@@ -418,7 +413,6 @@ Scrolling on would only open empty space below it, which
 (use-package scroll-bar
   :ensure nil
   :no-require t
-  :if (featurep 'gtk)
   :preface
   (defconst my/gtk-scroll-bar-range 9999999
     "XG_SB_RANGE from src/gtkutil.h: the fixed value range of a GTK scroll bar.")
@@ -436,8 +430,20 @@ the window."
       (when (numberp (cdr portion-whole))
         (setcdr portion-whole my/gtk-scroll-bar-range)))
     args)
+  :custom
+  (scroll-bar-mode (if (eq system-type 'darwin) nil 'right))
+  (scroll-bar-adjust-thumb-portion nil)
   :init
-  (advice-add 'scroll-bar-drag-1 :filter-args #'my/scroll-bar-drag-against-range))
+  (when (featurep 'gtk)
+    (advice-add 'scroll-bar-drag-1 :filter-args #'my/scroll-bar-drag-against-range)))
+
+(use-package window-divider
+  :ensure nil
+  :no-require t
+  :custom
+  (window-divider-mode (and scroll-bar-mode t))
+  (window-divider-default-places 'right-only)
+  (window-divider-default-right-width 1))
 
 (use-package my-mode-line
   :ensure nil
