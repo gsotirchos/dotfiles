@@ -1880,7 +1880,8 @@ black image instead of one drawn in `currentColor'."
             (plist-put (copy-sequence appearance-options) :continue-color nil))))
   :init
   ;; TODO: Return to the built-in Org once the asynchronous LaTeX preview
-  ;; system is merged (slated for Org 10.0):
+  ;; system is merged (slated for Org 10.0), following
+  ;; docs/ORG-LATEX-PREVIEW-MERGE.md:
   ;; https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/
   ;;
   ;; TODO: Drop this copy once fixed:
@@ -1980,6 +1981,19 @@ Leaves the line-prefix property `org-indent' also sets untouched."
   :hook org-mode
   ;; :custom (org-appear-autolinks t)
   )
+
+(use-package newsticker
+  :ensure nil
+  :custom
+  (newsticker-url-list-defaults nil)
+  (newsticker-url-list
+   '(("Org: LaTeX preview overhaul (thread)"
+      "https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/t.atom")
+     ("Org: karthink olp branch"
+      "https://github.com/karthink/org-mode/commits/olp.atom")
+     ;; Empty until org-latex-preview.el lands on main, i.e. the merge.
+     ("Org: org-latex-preview.el on main"
+      "https://git.savannah.gnu.org/cgit/emacs/org-mode.git/atom/lisp/org-latex-preview.el?h=main"))))
 
 (provide 'init)
 
