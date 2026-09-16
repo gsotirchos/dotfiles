@@ -1943,7 +1943,8 @@ Leaves the line-prefix property `org-indent' also sets untouched."
 
 (use-package org-appear
   :hook org-mode
-  :custom (org-appear-autolinks t))
+  ;; :custom (org-appear-autolinks t)
+  )
 
 (provide 'init)
 
