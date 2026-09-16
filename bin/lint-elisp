@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    cat >&2 <<'EOF'
+Usage: lint-elisp [--flymake] [path]
+
+Lints Emacs Lisp with the byte-compiler and checkdoc.
+
+  path        File or directory to lint (default: the emacs package config).
+  --flymake   Additionally re-check each file through Flymake inside a daemon
+              started from the real config. Slower, but authoritative: batch
+              mode resolves package symbols differently and misses warnings
+              that the editor reports.
+
+Note: Flymake refuses to byte-compile files Emacs considers untrusted, so
+--flymake reports nothing for files outside `trusted-content'.
+EOF
+}
+
+# Adds every elpa package and every subdirectory of the linted tree to
+# `load-path'. checkdoc only flags symbols that are already bound, so the
+# packages have to be loadable for its symbol checks to fire at all.
+elisp_load_path() {
+    local root="$1" tmp="$2"
+    cat <<EOF
+(progn
+    (let ((default-directory (expand-file-name "~/.emacs.d/elpa/")))
+        (normal-top-level-add-subdirs-to-load-path))
+    (let ((default-directory "${root}/"))
+        (normal-top-level-add-subdirs-to-load-path))
+    (add-to-list 'load-path "${root}")
+    (add-to-list 'load-path "${tmp}"))
+EOF
+}
+
+# Files are compiled as copies: a stray .elc inside a package directory would
+# be symlinked into $HOME by Stow.
+lint_batch() {
+    local target="$1" root="$2" tmp="$3"
+    shift 3
+    local files=("$@")
+
+    local file dest
+    for file in "${files[@]}"; do
+        dest="${tmp}/${file#"${root}"/}"
+        mkdir -p "$(dirname "${dest}")"
+        cp "${file}" "${dest}"
+    done
+
+    echo "Linting ${#files[@]} file(s) in '${target}' with byte-compile and checkdoc..."
+
+    # Byte-compilation must precede checkdoc in the same process: it is what
+    # loads the packages whose symbols checkdoc then recognises.
+    local check
+    check="$(cat <<EOF
+(dolist (f (directory-files-recursively "${tmp}" "[.]el\\\\'"))
+    (byte-compile-file f)
+    (checkdoc-file f))
+EOF
+    )"
+
+    emacs -Q --batch \
+        --eval "$(elisp_load_path "${root}" "${tmp}")" \
+        --eval "(require 'checkdoc)" \
+        --eval "${check}" 2>&1 \
+        | grep -v '^Loading\|^Wrote\|/elpa/\|^Warning (emacs): *$' || true
+}
+
+lint_flymake() {
+    local target="$1"
+    shift
+    local files=("$@")
+
+    echo "Re-checking ${#files[@]} file(s) in '${target}' with Flymake..."
+
+    local server="lint-elisp-$$"
+    emacs --daemon="${server}" > /dev/null 2>&1
+    # shellcheck disable=SC2064  # expand the server name now, not at trap time
+    trap "emacsclient -s '${server}' -e '(kill-emacs)' > /dev/null 2>&1 || true" RETURN
+
+    local file check
+    for file in "${files[@]}"; do
+        # Flymake caches diagnostics per buffer and happily reports a stale
+        # result after an edit, so each file gets a fresh buffer.
+        check="$(cat <<EOF
+(with-current-buffer (find-file-noselect "${file}")
+    (flymake-mode 1)
+    (flymake-start)
+    (sleep-for 20)
+    (prog1 (mapconcat
+            (lambda (d)
+                (format "%s:%s: %s" "${file}"
+                        (line-number-at-pos (flymake-diagnostic-beg d))
+                        (flymake-diagnostic-text d)))
+            (flymake-diagnostics) "\n")
+        (kill-buffer)))
+EOF
+        )"
+        emacsclient -s "${server}" -e "${check}" \
+            | sed -e 's/^"//' -e 's/"$//' -e 's/\\n/\n/g' \
+            | grep . || true
+    done
+}
+
+collect_files() {
+    local target="$1"
+    if [[ -f "${target}" ]]; then
+        printf '%s\0' "${target}"
+    else
+        find "${target}" -name '.git' -prune -o -type f -name '*.el' -print0
+    fi
+}
+
+main() {
+    local flymake=0
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --flymake) flymake=1; shift ;;
+            -h | --help) usage; return 0 ;;
+            -*)
+                echo "Error: unknown option '$1'." >&2
+                usage
+                return 1
+                ;;
+            *) break ;;
+        esac
+    done
+
+    if ! command -v emacs &> /dev/null; then
+        echo "Error: emacs is not installed or not in PATH." >&2
+        return 1
+    fi
+
+    local target="${1:-"${DOTFILES:-.}/packages/emacs/.emacs.d"}"
+
+    if [[ ! -e "${target}" ]]; then
+        echo "Error: Path '${target}' does not exist." >&2
+        return 1
+    fi
+
+    target="$(realpath "${target}")"
+
+    local root="${target}"
+    [[ -f "${target}" ]] && root="$(dirname "${target}")"
+
+    local files=()
+    while IFS= read -r -d '' file; do
+        files+=("${file}")
+    done < <(collect_files "${target}")
+
+    if [[ ${#files[@]} -eq 0 ]]; then
+        echo "No Emacs Lisp files found to lint in '${target}'."
+        return 0
+    fi
+
+    local tmp log
+    tmp="$(mktemp -d)"
+    log="$(mktemp)"
+    # shellcheck disable=SC2064  # expand the paths now, not at trap time
+    trap "rm -rf '${tmp}' '${log}'" EXIT
+
+    {
+        lint_batch "${target}" "${root}" "${tmp}" "${files[@]}"
+        if [[ ${flymake} -eq 1 ]]; then
+            lint_flymake "${target}" "${files[@]}"
+        fi
+    } | tee "${log}"
+
+    # Only the headline progress lines are expected on a clean run.
+    if grep -qv '^Linting \|^Re-checking ' "${log}"; then
+        echo "Some checks failed."
+        return 1
+    fi
+
+    echo "All checks passed successfully!"
+    return 0
+}
+
+main "$@"
