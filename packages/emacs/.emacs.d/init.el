@@ -22,8 +22,8 @@
 
   (defun my/silence-advice (fn &rest args)
     "Silence the advised function's execution."
-    (let ( ;; (message-log-max nil)  ;; don't log message
-          (inhibit-message t))  ;; don't echo message
+    (let ( ; (message-log-max nil)  ; don't log message
+          (inhibit-message t))  ; don't echo message
       (apply fn args)))
 
   (defun my/read-envvar-from-file (envvar file)
@@ -573,7 +573,7 @@ the window."
 
 (use-package stripes
   :after (my-keybindings modus-themes)
-  :demand t  ;; load at startup so the face is themed and my-stripes can build on it
+  :demand t ; load at startup so the face is themed and my-stripes can build on it
   :hook dired-mode
   :bind (:map my/toggles-map ("s" . stripes-mode))
   :custom
@@ -583,11 +583,11 @@ the window."
   (defun my/customize-stripes ()
     (when-let* ((bg (my/theme-color 'bg-dim)))
       (set-face-attribute 'stripes nil
-                          :extend t  ;; fill candidate lines to the full width
+                          :extend t ; fill candidate lines to the full width
                           :background bg)))
   (add-hook 'stripes-mode-hook #'my/customize-stripes)
   :config
-  (my/customize-stripes)  ;; set the face now, not only on theme reload
+  (my/customize-stripes)  ; set the face now, not only on theme reload
   (add-hook 'after-load-theme-hook #'my/customize-stripes))
 
 (use-package my-stripes
@@ -613,8 +613,8 @@ the window."
   :no-require t
   :custom
   (tramp-verbose 2)
-  (tramp-use-connection-share nil)  ;; Control* options live in ~/.ssh/config
-  (vc-handled-backends '(Git))  ;; Limit VC to Git only
+  (tramp-use-connection-share nil)  ; Control* options live in ~/.ssh/config
+  (vc-handled-backends '(Git))  ; Limit VC to Git only
   :config
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (add-to-list 'tramp-remote-path "/snap/bin")
@@ -780,13 +780,13 @@ the window."
              (bound-and-true-p vertico--input)
              (eq (current-local-map) read-passwd-map))))
   :custom
-  (corfu-auto t)  ;; auto-completion
+  (corfu-auto t)  ; auto-completion
   (corfu-quit-no-match t)
   (corfu-auto-prefix 2)
   (corfu-auto-delay 0.2)
   (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-preview-current 'insert)  ;; insert previewed candidate
-  (corfu-on-exact-match nil)  ;; Don't auto expand tempel snippets
+  (corfu-preview-current 'insert)  ; insert previewed candidate
+  (corfu-on-exact-match nil)  ; Don't auto expand tempel snippets
   (corfu-cycle t)
   (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
   :config
@@ -862,9 +862,9 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   :bind (:map vertico-map ("TAB" . minibuffer-complete))
   :custom
   (vertico-scroll-margin 1)
-  (vertico-count 10)  ;; Limit to a fixed size
-  (vertico-cycle t)  ;; Enable cycling for `vertico-next/previous'
-  (vertico-resize 'grow-only)  ;; Grow and shrink the Vertico minibuffer
+  (vertico-count 10)  ; Limit to a fixed size
+  (vertico-cycle t)  ; Enable cycling for `vertico-next/previous'
+  (vertico-resize 'grow-only)  ; Grow and shrink the Vertico minibuffer
   :config
   (vertico-mode)
   (vertico-mouse-mode 1))
@@ -904,7 +904,7 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   (completion-styles '(orderless basic))
   (completion-category-overrides
    '((file (styles (partial-completion ((completion-pcm-leading-wildcard t)))))))
-  (completion-category-defaults nil))  ;; Disable defaults, use our settings
+  (completion-category-defaults nil))  ; Disable defaults, use our settings
 
 (use-package consult
   :after (evil vertico)
@@ -978,10 +978,10 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   :bind
   (nil
    :map help-map
-   ("B" . embark-bindings)  ;; alternative for `describe-bindings'
+   ("B" . embark-bindings)  ; alternative for `describe-bindings'
    :map minibuffer-local-map
-   ("C-." . embark-act)  ;; begin the embark process
-   ("C-<return>" . embark-dwim))  ;; run the default action
+   ("C-." . embark-act)  ; begin the embark process
+   ("C-<return>" . embark-dwim))  ; run the default action
   :custom (embark-quit-after-action nil))
 
 (use-package embark-consult
@@ -1159,8 +1159,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package buffer-terminator
   :custom
   (buffer-terminator-verbose nil)
-  (buffer-terminator-inactivity-timeout (* 30 60)) ; 30 minutes
-  (buffer-terminator-interval (* 10 60)) ; 10 minutes
+  (buffer-terminator-inactivity-timeout (* 30 60))  ; 30 minutes
+  (buffer-terminator-interval (* 10 60))  ; 10 minutes
   :init (buffer-terminator-mode 1))
 
 (use-package pdf-tools
@@ -1405,7 +1405,7 @@ reaches into the preview's `display' property elides the whole preview."
   :hook ((prog-mode yaml-ts-mode) . my/indent-bars-maybe-enable)
   :custom
   (indent-bars-display-on-blank-lines nil)
-  ;; (indent-bars-no-descend-lists t)  ;; no extra bars in contd. func. args
+  ;; (indent-bars-no-descend-lists t)  ; no extra bars in contd. func. args
   (indent-bars-treesit-support t)
   ;; (indent-bars-treesit-scope
   ;;  '((python
@@ -1435,9 +1435,9 @@ reaches into the preview's `display' property elides the whole preview."
   (flymake-mode-line-format '(" " flymake-mode-line-counters))
   (flymake-show-diagnostics-at-end-of-line 'short)
   (flymake-indicator-type 'margins)
-  (flymake-autoresize-margins nil)      ; width is my-margin's job
+  (flymake-autoresize-margins nil)  ; width is my-margin's job
   (flymake-margin-indicators-string
-   '((note "•" flymake-note-echo)  ;; ●
+   '((note "•" flymake-note-echo)  ; ●
      (warning "▲" flymake-warning-echo)
      (error "◼" flymake-error-echo)))
   :preface
