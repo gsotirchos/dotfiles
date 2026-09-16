@@ -2,15 +2,15 @@
 
 ;;; Commentary:
 
-;; Org and AUCTeX both display LaTeX fragments as images in an overlay, at a
-;; size fixed when the image was generated.  This package keeps that size in
-;; step with the text around it, for both `text-scale-mode' and
+;; AUCTeX displays LaTeX fragments as images in an overlay, at a size fixed
+;; when the image was generated.  This package keeps that size in step with
+;; the text around it, for both `text-scale-mode' and
 ;; `global-text-scale-adjust', and clears the previews when the theme (and
 ;; with it the foreground colour baked into the images) changes.
 ;;
-;; The functions are meant to be hooked up by whoever configures Org and
-;; AUCTeX; only the `global-text-scale-adjust' advice is installed here,
-;; since that command is global and offers no hook.
+;; The functions are meant to be hooked up by whoever configures AUCTeX;
+;; only the `global-text-scale-adjust' advice is installed here, since that
+;; command is global and offers no hook.
 
 ;;; Code:
 
@@ -63,8 +63,7 @@ Combines the buffer's `text-scale-mode' factor with the ratio by which
 (defun my/text-scale-adjust-latex-previews (&rest _)
   "Adjust the size of latex fragments when changing the buffer's text scale."
   (let ((scale (my/latex-preview-scale)))
-    (my/text-scale-overlays 'category 'preview-overlay scale)
-    (my/text-scale-overlays 'org-overlay-type 'org-latex-overlay scale)))
+    (my/text-scale-overlays 'category 'preview-overlay scale)))
 
 ;;;###autoload
 (defun my/global-text-scale-adjust-latex-previews (&rest _)
@@ -77,11 +76,8 @@ Combines the buffer's `text-scale-mode' factor with the ratio by which
 (defun my/delete-latex-preview-overlays (&rest _)
   "Delete only LaTeX preview overlays in the current buffer."
   (dolist (overlay (overlays-in (point-min) (point-max)))
-    (let ((category (overlay-get overlay 'category))
-          (org-type (overlay-get overlay 'org-overlay-type)))
-      (when (or (eq category 'preview-overlay)
-                (eq org-type 'org-latex-overlay))
-        (delete-overlay overlay)))))
+    (when (eq (overlay-get overlay 'category) 'preview-overlay)
+      (delete-overlay overlay))))
 
 ;; `global-text-scale-adjust' resizes the `default' face rather than adding a
 ;; buffer-local remapping, so it runs no hook to attach this to.

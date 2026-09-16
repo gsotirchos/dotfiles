@@ -25,10 +25,13 @@ main() {
     local current_dir="${texlive_dir}/current"
     local installer_url="https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz"
 
-    # NOTE: dvisvgm renders the Org mode LaTeX fragment previews
+    # NOTE: dvisvgm, preview, and mylatexformat render the Org mode LaTeX
+    # fragment previews
     local packages=(
         latexmk
         dvisvgm
+        preview
+        mylatexformat
         babel-greek
         greek-fontenc
         cbfonts
