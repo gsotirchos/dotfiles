@@ -6,6 +6,8 @@
     email = G.Sotirchos@tudelft.nl
 [init]
     defaultBranch = main
+[pull]
+    rebase = true
 [rebase]
     updateRefs = true
 [status]
