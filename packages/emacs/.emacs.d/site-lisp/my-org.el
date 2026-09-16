@@ -183,7 +183,6 @@ With a prefix ARG, open the most recent journal file dated before today."
 (advice-add 'my/org-latex-preview-buffer :around #'my/silence-advice)
 (advice-add 'org-latex-preview :after #'my/text-scale-adjust-latex-previews)
 
-(plist-put org-format-latex-options :background "Transparent")
 (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
 
 (font-lock-add-keywords 'org-mode

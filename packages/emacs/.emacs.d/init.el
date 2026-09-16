@@ -1901,6 +1901,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
   :config
+  (plist-put org-format-latex-options :background "Transparent")
   (face-spec-set 'org-latex-and-related '((t (:foreground unspecified)))
                  'face-override-spec))
 
