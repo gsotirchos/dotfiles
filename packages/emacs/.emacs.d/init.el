@@ -797,6 +797,14 @@ the window."
 (use-package cape
   :preface (add-hook 'completion-at-point-functions #'cape-file))
 
+(use-package math-symbol-lists)
+
+(use-package my-latex-capf
+  :ensure nil
+  :load-path "site-lisp/"
+  :commands my-latex-capf
+  :init (add-hook 'completion-at-point-functions #'my-latex-capf))
+
 (use-package tempel
   :after my-keybindings
   :bind
@@ -1880,6 +1888,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-tags-column 0)
   (org-catch-invisible-edits 'error)
   (org-hide-emphasis-markers t)
+  ;; Also what `my-latex-capf' completes macros in.
+  (org-highlight-latex-and-related '(script entities))  ; '(latex script entities)
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
   (org-export-with-toc nil)
@@ -1889,7 +1899,10 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
    (list (concat "\\input{" (expand-file-name "etc/math_commands.tex" dotfiles-dir) "}")))
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
-  (org-special-ctrl-o t))
+  (org-special-ctrl-o t)
+  :config
+  (face-spec-set 'org-latex-and-related '((t (:foreground unspecified)))
+                 'face-override-spec))
 
 (use-package my-org
   :after my-keybindings
