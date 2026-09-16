@@ -6,3 +6,4 @@
 
 * **Git operations:** Never commit or push code without explicit authorization.
 * **Suggest commit messages:** Any time you implement anything we worked on together, at the very end of your answer for that you will provide me with a *concise yet informative commit message (summary: max. 50 chars line length; body: max. 73 chars line length, if any)* describing all *uncommitted changes* as reported at the moment of its composition by `git status` and `git diff` (and inspect untracked files). Base the message solely on that output and never solely on your memory of what was changed during the conversation.
+* **Check before reporting issues:** when identifying an issue in a repo, do not jump into the conclusion it has to be reported before checking that repo's open issues first. Human maintainers and reviewers are very limited.

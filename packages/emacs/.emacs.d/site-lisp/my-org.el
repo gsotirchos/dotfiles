@@ -7,13 +7,11 @@
 ;;; Code:
 
 (declare-function my/theme-color "init" (name))
-(declare-function my/silence-advice "init" (fn &rest args))
 (declare-function my/find-file "my-keybindings" (file))
 
 (require 'browse-url)
 (require 'org)
 (require 'org-archive)
-(require 'my-latex-preview)
 
 ;;;###autoload
 (defun my/org-emphasize-dwim (&optional char)
@@ -57,12 +55,6 @@ With a prefix ARG, open the most recent journal file dated before today."
              (user-error "No journal entries before today"))
            (expand-file-name previous dir))
        (expand-file-name today dir)))))
-
-;;;###autoload
-(defun my/org-latex-preview-buffer ()
-  "Preview all LaTeX fragments in buffer."
-  (interactive)
-  (org-latex-preview '(16)))
 
 ;;;###autoload
 (defun my/convert-md-region-to-org (start end)
@@ -180,8 +172,6 @@ With a prefix ARG, open the most recent journal file dated before today."
 
 (advice-add 'org-archive-subtree :before #'my/org-create-archive-dir)
 (advice-add 'org-fill-paragraph :around #'my/unlimited-fill-column-advice)
-(advice-add 'my/org-latex-preview-buffer :around #'my/silence-advice)
-(advice-add 'org-latex-preview :after #'my/text-scale-adjust-latex-previews)
 
 (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
 
@@ -217,23 +207,9 @@ With a prefix ARG, open the most recent journal file dated before today."
         (visual-line-mode 1)
         (visual-wrap-prefix-mode -1)
         (my/customize-org-mode)
-        (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t)
-        (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
-        (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t)
-        (dolist (hook
-                 '(after-load-theme-hook
-                   auto-save-hook
-                   after-save-hook))
-          (add-hook hook #'my/org-latex-preview-buffer nil t)))
+        (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t))
     ;; Cleanup if turned off
-    (remove-hook 'after-load-theme-hook #'my/customize-org-mode t)
-    (remove-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews t)
-    (remove-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays t)
-    (dolist (hook
-             '(after-load-theme-hook
-               auto-save-hook
-               after-save-hook))
-      (remove-hook hook #'my/org-latex-preview-buffer t))))
+    (remove-hook 'after-load-theme-hook #'my/customize-org-mode t)))
 
 (provide 'my-org)
 

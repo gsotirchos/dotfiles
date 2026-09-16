@@ -1867,7 +1867,44 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :ensure nil
   :no-require t
   :bind (:map org-mode-map ("M-<return>" . org-meta-return))
+  :hook (org-mode . org-latex-preview-mode)
+  :preface
+  (defun my/org-latex-preview-color-every-fragment-advice (args)
+    "Make `org-latex-preview--tex-styled' set the colors of every fragment.
+ARGS are its arguments.  With :continue-color, it omits them for a fragment
+colored like the previous one, but each fragment is typeset in its own
+preview environment, so the color does not carry over and dvisvgm emits a
+black image instead of one drawn in `currentColor'."
+    (pcase-let ((`(,processing-type ,value ,appearance-options) args))
+      (list processing-type value
+            (plist-put (copy-sequence appearance-options) :continue-color nil))))
+  :init
+  ;; TODO: Return to the built-in Org once the asynchronous LaTeX preview
+  ;; system is merged (slated for Org 10.0):
+  ;; https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/
+  ;;
+  ;; TODO: Drop this copy once fixed:
+  ;; https://github.com/karthink/org-mode/issues/1
+  ;; Copied from org-latex-preview.el: the fork's autoloads compute
+  ;; `org-latex-preview-process-alist' from it before that file defines it,
+  ;; which aborts loading them.
+  (defvar org-latex-preview--dvisvgm3-minor-version
+    (or (and (executable-find "dvisvgm")
+             (with-temp-buffer
+               (call-process "dvisvgm" nil t nil "--version")
+               (let ((ver (version-to-list
+                           (string-trim (buffer-string) "dvisvgm "))))
+                 (and (= (car ver) 3) (cadr ver)))))
+        -1))
+  (package-vc-install-selected-packages)
+  ;; The fork calls itself 9.8pre, older than the built-in Org, so
+  ;; `package-activate-all' passes it over.
+  (package-activate-1 (cadr (assq 'org package-alist)))
   :custom
+  (package-vc-selected-packages
+   '((org :url "https://github.com/karthink/org-mode" :branch "olp"
+          :lisp-dir "lisp" :make "autoloads")))
+  (package-vc-allow-build-commands '(org))
   (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
   (org-startup-truncated nil)
@@ -1875,7 +1912,6 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-startup-indented t)
   (org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
   (org-cycle-separator-lines 1)
-  (org-preview-latex-image-directory (no-littering-expand-var-file-name "ltximg/"))
   (org-image-max-width (/ 2 (+ 1 (sqrt 5))))
   (org-archive-location "org_archive/%s_archive::")
   (org-directory "~/Documents/org")
@@ -1894,14 +1930,15 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-fontify-done-headline t)
   (org-export-with-toc nil)
   (org-src-preserve-indentation t)
-  (org-preview-latex-default-process 'dvisvgm)
   (org-latex-packages-alist
    (list (concat "\\input{" (expand-file-name "etc/math_commands.tex" dotfiles-dir) "}")))
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
   :config
-  (plist-put org-format-latex-options :background "Transparent")
+  ;; TODO: Report the :continue-color bug upstream, then drop this advice.
+  (advice-add 'org-latex-preview--tex-styled :filter-args
+              #'my/org-latex-preview-color-every-fragment-advice)
   (face-spec-set 'org-latex-and-related '((t (:foreground unspecified)))
                  'face-override-spec))
 
@@ -1938,9 +1975,6 @@ Leaves the line-prefix property `org-indent' also sets untouched."
           (put-text-property beg end 'wrap-prefix (concat wrap-prop wrap-prefix))))))
   :config
   (advice-add 'org-indent-set-line-properties :around #'my/org-indent-set-line-properties-advice))
-
-(use-package org-fragtog
-  :hook org-mode)
 
 (use-package org-appear
   :hook org-mode
