@@ -196,13 +196,17 @@ name or, for the image's headers, files only the container has."
   "Make \\[compile] build the current colcon package in its container.
 The compile database flag is passed explicitly, since the exported
 variable seeds a package's CMake cache only on its first configure, and
-the per-package databases are merged afterwards for clangd."
+the per-package databases are merged afterwards for clangd.  A
+--cmake-args on the command line replaces, rather than extends, the
+list in a workspace's colcon_defaults.yaml, so the generator is named
+here too or a workspace configured for Ninja would fall back to Make."
   (when-let* ((file (buffer-file-name))
               (package (my-devcontainer--colcon-package file))
               ((my-devcontainer-workspace)))
     (setq-local compile-command
-                (format (concat "%s colcon build --packages-up-to %s"
-                                " --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+                (format (concat "%s colcon build --symlink-install --packages-up-to %s"
+                                " --cmake-args -GNinja -DCMAKE_BUILD_TYPE=Release"
+                                " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
                                 " && merge-compile-commands")
                         my-devcontainer-executable package))))
 
