@@ -1868,44 +1868,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :no-require t
   :bind (:map org-mode-map ("M-<return>" . org-meta-return))
   :hook (org-mode . org-latex-preview-mode)
-  :preface
-  (defun my/org-latex-preview-color-every-fragment-advice (args)
-    "Make `org-latex-preview--tex-styled' set the colors of every fragment.
-ARGS are its arguments.  With :continue-color, it omits them for a fragment
-colored like the previous one, but each fragment is typeset in its own
-preview environment, so the color does not carry over and dvisvgm emits a
-black image instead of one drawn in `currentColor'."
-    (pcase-let ((`(,processing-type ,value ,appearance-options) args))
-      (list processing-type value
-            (plist-put (copy-sequence appearance-options) :continue-color nil))))
-  :init
-  ;; TODO: Return to the built-in Org once the asynchronous LaTeX preview
-  ;; system is merged (slated for Org 10.0), following
-  ;; docs/ORG-LATEX-PREVIEW-MERGE.md:
-  ;; https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/
-  ;;
-  ;; TODO: Drop this copy once fixed:
-  ;; https://github.com/karthink/org-mode/issues/1
-  ;; Copied from org-latex-preview.el: the fork's autoloads compute
-  ;; `org-latex-preview-process-alist' from it before that file defines it,
-  ;; which aborts loading them.
-  (defvar org-latex-preview--dvisvgm3-minor-version
-    (or (and (executable-find "dvisvgm")
-             (with-temp-buffer
-               (call-process "dvisvgm" nil t nil "--version")
-               (let ((ver (version-to-list
-                           (string-trim (buffer-string) "dvisvgm "))))
-                 (and (= (car ver) 3) (cadr ver)))))
-        -1))
-  (package-vc-install-selected-packages)
-  ;; The fork calls itself 9.8pre, older than the built-in Org, so
-  ;; `package-activate-all' passes it over.
-  (package-activate-1 (cadr (assq 'org package-alist)))
   :custom
-  (package-vc-selected-packages
-   '((org :url "https://github.com/karthink/org-mode" :branch "olp"
-          :lisp-dir "lisp" :make "autoloads")))
-  (package-vc-allow-build-commands '(org))
   (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
   (org-startup-truncated nil)
@@ -1937,9 +1900,6 @@ black image instead of one drawn in `currentColor'."
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
   :config
-  ;; TODO: Report the :continue-color bug upstream, then drop this advice.
-  (advice-add 'org-latex-preview--tex-styled :filter-args
-              #'my/org-latex-preview-color-every-fragment-advice)
   (face-spec-set 'org-latex-and-related '((t (:foreground unspecified)))
                  'face-override-spec))
 
@@ -1981,19 +1941,6 @@ Leaves the line-prefix property `org-indent' also sets untouched."
   :hook org-mode
   ;; :custom (org-appear-autolinks t)
   )
-
-(use-package newsticker
-  :ensure nil
-  :custom
-  (newsticker-url-list-defaults nil)
-  (newsticker-url-list
-   '(("Org: LaTeX preview overhaul (thread)"
-      "https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/t.atom")
-     ("Org: karthink olp branch"
-      "https://github.com/karthink/org-mode/commits/olp.atom")
-     ;; Empty until org-latex-preview.el lands on main, i.e. the merge.
-     ("Org: org-latex-preview.el on main"
-      "https://git.savannah.gnu.org/cgit/emacs/org-mode.git/atom/lisp/org-latex-preview.el?h=main"))))
 
 (provide 'init)
 
