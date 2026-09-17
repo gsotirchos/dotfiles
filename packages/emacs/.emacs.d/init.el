@@ -1868,39 +1868,6 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :no-require t
   :bind (:map org-mode-map ("M-<return>" . org-meta-return))
   :hook (org-mode . org-latex-preview-mode)
-  :preface
-  (defun my/org-latex-preview-color-every-fragment-advice (args)
-    "Make `org-latex-preview--tex-styled' set the colors of every fragment.
-ARGS are its arguments.  With :continue-color, it omits them for a fragment
-colored like the previous one, but each fragment is typeset in its own
-preview environment, so the color does not carry over and dvisvgm emits a
-black image instead of one drawn in `currentColor'."
-    (pcase-let ((`(,processing-type ,value ,appearance-options) args))
-      (list processing-type value
-            (plist-put (copy-sequence appearance-options) :continue-color nil))))
-  :init
-  ;; TODO: Return to the built-in Org once the asynchronous LaTeX preview
-  ;; system is merged (slated for Org 10.0), following
-  ;; docs/ORG-LATEX-PREVIEW-MERGE.md:
-  ;; https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/
-  ;;
-  ;; TODO: Drop this copy once fixed:
-  ;; https://github.com/karthink/org-mode/issues/1
-  ;; Copied from org-latex-preview.el: the fork's autoloads compute
-  ;; `org-latex-preview-process-alist' from it before that file defines it,
-  ;; which aborts loading them.
-  (defvar org-latex-preview--dvisvgm3-minor-version
-    (or (and (executable-find "dvisvgm")
-             (with-temp-buffer
-               (call-process "dvisvgm" nil t nil "--version")
-               (let ((ver (version-to-list
-                           (string-trim (buffer-string) "dvisvgm "))))
-                 (and (= (car ver) 3) (cadr ver)))))
-        -1))
-  (package-vc-install-selected-packages)
-  ;; The fork calls itself 9.8pre, older than the built-in Org, so
-  ;; `package-activate-all' passes it over.
-  (package-activate-1 (cadr (assq 'org package-alist)))
   :custom
   (package-vc-selected-packages
    '((org :url "https://github.com/karthink/org-mode" :branch "olp"
@@ -1936,15 +1903,56 @@ black image instead of one drawn in `currentColor'."
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
+  :preface
+  (defun my/org-latex-preview-color-every-fragment-advice (args)
+    "Make `org-latex-preview--tex-styled' set the colors of every fragment.
+ARGS are its arguments.  With :continue-color, it omits them for a fragment
+colored like the previous one, but each fragment is typeset in its own
+preview environment, so the color does not carry over and dvisvgm emits a
+black image instead of one drawn in `currentColor'."
+    (pcase-let ((`(,processing-type ,value ,appearance-options) args))
+      (list processing-type value
+            (plist-put (copy-sequence appearance-options) :continue-color nil))))
+  :init
+  (when (eq system-type 'darwin)
+    (setenv "LIBGS" "/opt/homebrew/lib/libgs.dylib"))
+  ;; TODO: Return to the built-in Org once the asynchronous LaTeX preview
+  ;; system is merged (slated for Org 10.0), following
+  ;; docs/ORG-LATEX-PREVIEW-MERGE.md:
+  ;; https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/
+  ;;
+  ;; TODO: Drop this copy once fixed:
+  ;; https://github.com/karthink/org-mode/issues/1
+  ;; Copied from org-latex-preview.el: the fork's autoloads compute
+  ;; `org-latex-preview-process-alist' from it before that file defines it,
+  ;; which aborts loading them.
+  (defvar org-latex-preview--dvisvgm3-minor-version
+    (or (and (executable-find "dvisvgm")
+             (with-temp-buffer
+               (call-process "dvisvgm" nil t nil "--version")
+               (let ((ver (version-to-list
+                           (string-trim (buffer-string) "dvisvgm "))))
+                 (and (= (car ver) 3) (cadr ver)))))
+        -1))
+  (package-vc-install-selected-packages)
+  ;; The fork calls itself 9.8pre, older than the built-in Org, so
+  ;; `package-activate-all' passes it over.
+  (package-activate-1 (cadr (assq 'org package-alist)))
   :config
+  ;; Also fontify emphasis inside link descriptions, e.g. [[url][~code~]],
+  (org-set-emph-re 'org-emphasis-regexp-components
+                   '("-[:space:]('\"{[" "][:space:].,:!?;'\")}\\[-" "[:space:]" "." 1))
+  (face-spec-set 'org-latex-and-related '((t (:foreground unspecified)))
+                 'face-override-spec)
   ;; TODO: Report the :continue-color bug upstream, then drop this advice.
   (advice-add 'org-latex-preview--tex-styled :filter-args
               #'my/org-latex-preview-color-every-fragment-advice)
-  (face-spec-set 'org-latex-and-related '((t (:foreground unspecified)))
-                 'face-override-spec)
-  ;; Also fontify emphasis inside link descriptions, e.g. [[url][~code~]],
-  (org-set-emph-re 'org-emphasis-regexp-components
-                   '("-[:space:]('\"{[" "][:space:].,:!?;'\")}\\[-" "[:space:]" "." 1)))
+  ;; TODO: Drop this once :page-width survives precompilation;
+  ;; mylatexformat skips everything before \begin{document}, where Org
+  ;; inserts it.
+  (setq org-latex-preview-preamble
+        (concat org-latex-preview-preamble
+                "\n\\setlength{\\textwidth}{0.5\\paperwidth}")))
 
 (use-package my-org
   :after my-keybindings
