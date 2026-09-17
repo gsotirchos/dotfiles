@@ -1984,7 +1984,10 @@ Leaves the line-prefix property `org-indent' also sets untouched."
 
 (use-package newsticker
   :ensure nil
+  :after my-keybindings
+  :bind (:map my/personal-map ("nt" . newsticker-treeview))
   :custom
+  (widget-image-enable nil)
   (newsticker-url-list-defaults nil)
   (newsticker-url-list
    '(("Org: LaTeX preview overhaul (thread)"
