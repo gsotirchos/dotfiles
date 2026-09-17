@@ -1941,7 +1941,10 @@ black image instead of one drawn in `currentColor'."
   (advice-add 'org-latex-preview--tex-styled :filter-args
               #'my/org-latex-preview-color-every-fragment-advice)
   (face-spec-set 'org-latex-and-related '((t (:foreground unspecified)))
-                 'face-override-spec))
+                 'face-override-spec)
+  ;; Also fontify emphasis inside link descriptions, e.g. [[url][~code~]],
+  (org-set-emph-re 'org-emphasis-regexp-components
+                   '("-[:space:]('\"{[" "][:space:].,:!?;'\")}\\[-" "[:space:]" "." 1)))
 
 (use-package my-org
   :after my-keybindings
