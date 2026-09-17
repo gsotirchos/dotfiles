@@ -2157,14 +2157,6 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :hook ((org-mode . org-latex-preview-mode)
          (org-babel-after-execute . org-link-preview-refresh))
   :custom
-  ;; TODO: Return to the built-in Org once the asynchronous LaTeX preview
-  ;; system is merged (slated for Org 10.0), following
-  ;; docs/ORG-LATEX-PREVIEW-MERGE.md:
-  ;; https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/
-  (package-vc-selected-packages
-   '((org :url "https://github.com/karthink/org-mode" :branch "olp"
-          :lisp-dir "lisp" :make "autoloads")))
-  (package-vc-allow-build-commands '(org))
   (org-startup-with-latex-preview t)
   (org-startup-with-inline-images t)
   (org-startup-truncated nil)
@@ -2219,25 +2211,6 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :init
   (when (eq system-type 'darwin)
     (setenv "LIBGS" "/opt/homebrew/lib/libgs.dylib"))
-  ;; TODO: Drop this copy here once it's fixed:
-  ;; https://github.com/karthink/org-mode/issues/1
-  ;; Copied from org-latex-preview.el: the fork's autoloads compute
-  ;; `org-latex-preview-process-alist' from it before that file defines it,
-  ;; which aborts loading them.
-  (defvar org-latex-preview--dvisvgm3-minor-version
-    (or (and (executable-find "dvisvgm")
-             (with-temp-buffer
-               (call-process "dvisvgm" nil t nil "--version")
-               (let ((ver (version-to-list
-                           (string-trim (buffer-string) "dvisvgm "))))
-                 (and (= (car ver) 3) (cadr ver)))))
-        -1))
-  ;; A fresh install activates the package, so the defvar above must precede this.
-  (unless (assq 'org package-alist)
-    (package-vc-install-selected-packages))
-  ;; The fork calls itself 9.8pre, older than the built-in Org, so
-  ;; `package-activate-all' passes it over.
-  (package-activate-1 (cadr (assq 'org package-alist)))
   :config
   ;; Also fontify emphasis inside link descriptions, e.g. [[url][~code~]],
   (org-set-emph-re 'org-emphasis-regexp-components
@@ -2327,15 +2300,7 @@ Rerun after upgrading mermaid-cli, whose Puppeteer pins a new build."
   :bind (:map my/personal-map ("nt" . newsticker-treeview))
   :custom
   (widget-image-enable nil)
-  (newsticker-url-list-defaults nil)
-  (newsticker-url-list
-   '(("Org: LaTeX preview overhaul (thread)"
-      "https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/t.atom")
-     ("Org: karthink olp branch"
-      "https://github.com/karthink/org-mode/commits/olp.atom")
-     ;; Empty until org-latex-preview.el lands on main, i.e. the merge.
-     ("Org: org-latex-preview.el on main"
-      "https://git.savannah.gnu.org/cgit/emacs/org-mode.git/atom/lisp/org-latex-preview.el?h=main"))))
+  (newsticker-url-list-defaults nil))
 
 (provide 'init)
 
