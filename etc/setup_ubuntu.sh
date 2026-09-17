@@ -191,7 +191,7 @@ main() {
 
     # --- shell linters / formatters -------------------------------------
     header "Installing shell linters and formatters"
-    sudo apt install -y shellcheck
+    sudo apt install -y shellcheck libxml2-utils
     if command -v snap &> /dev/null; then
         sudo snap install shfmt
         sudo snap install universal-ctags --classic
