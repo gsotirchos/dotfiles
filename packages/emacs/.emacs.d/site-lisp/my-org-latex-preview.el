@@ -3,7 +3,7 @@
 ;;; Commentary:
 
 ;; Org renders each LaTeX fragment to an image whose box comes from preview.sty.
-;; Three things about that box do not match how the fragment reads on screen:
+;; Two things about that box do not match how the fragment reads on screen:
 ;;
 ;; - A display fragment arrives padded out to `:page-width', because Org ends it
 ;;   with a blank line and because maths is centred on the line it occupies.  The
@@ -15,9 +15,6 @@
 ;; - That image is then placed at the left margin, where display maths belongs in
 ;;   the middle of the window.  A `line-prefix' aligns it to the window centre,
 ;;   and is dropped while the overlay shows its LaTeX source instead.
-;;
-;; - Fragments coloured like their predecessor are typeset without any colour of
-;;   their own, which dvisvgm renders black rather than in `currentColor'.
 ;;
 ;; `my/org-latex-preview-setup' installs all of it and extends
 ;; `org-latex-preview-preamble'.  Note that `org-latex-preview--hash' covers the
@@ -89,16 +86,6 @@ only with \\hsize zeroed; the rest keep the width they centre in."
             value)
           appearance-options)))
 
-(defun my/org-latex-preview-color-every-fragment-advice (args)
-  "Make `org-latex-preview--tex-styled' set the colors of every fragment.
-ARGS are its arguments.  With :continue-color, it omits them for a fragment
-colored like the previous one, but each fragment is typeset in its own
-preview environment, so the color does not carry over and dvisvgm emits a
-black image instead of one drawn in `currentColor'."
-  (pcase-let ((`(,processing-type ,value ,appearance-options) args))
-    (list processing-type value
-          (plist-put (copy-sequence appearance-options) :continue-color nil))))
-
 (defun my/org-latex-preview-center-block (overlay)
   "Center OVERLAY's preview image in the window, as display math is on the page.
 Dropped while the overlay shows its LaTeX source, which should stay where the
@@ -132,12 +119,9 @@ surrounding text is."
 
 ;;;###autoload
 (defun my/org-latex-preview-setup ()
-  "Install the preview sizing, placement and coloring done here.
+  "Install the preview sizing and placement done here.
 Org loads `org-latex-preview' more than once, so the preamble is only
 extended when its marker is missing."
-  ;; TODO: Report the :continue-color bug upstream, then drop this advice.
-  (advice-add 'org-latex-preview--tex-styled :filter-args
-              #'my/org-latex-preview-color-every-fragment-advice)
   (advice-add 'org-latex-preview--tex-styled :filter-args
               #'my/org-latex-preview-natural-width-advice)
   (dolist (hook '(org-latex-preview-overlay-update-functions
