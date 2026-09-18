@@ -97,6 +97,15 @@ alias gps="git push"
 alias gpl="git pull"
 alias grs="git reset"
 alias grb="git rebase -i"
+if command -v "docker" &> /dev/null; then
+    function devcontainer-shell {
+        docker exec \
+            -w /workspace \
+            -it "${1:-$(docker ps --format '{{.Names}}' | head -n1)}" \
+            env TERM=xterm-256color \
+            bash -l
+    }
+fi
 alias magit="emacs  --eval '(magit-status)'" # start emacs with magit
 alias tree="tree \
     -FNC -L 2 \
