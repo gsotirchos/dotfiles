@@ -904,7 +904,8 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   (completion-styles '(orderless basic))
   (completion-category-overrides
    '((file (styles (partial-completion ((completion-pcm-leading-wildcard t)))))))
-  (completion-category-defaults nil))  ; Disable defaults, use our settings
+  (completion-category-defaults nil)  ; Disable defaults, use our settings
+  (read-file-name-completion-ignore-case t))
 
 (use-package consult
   :after (evil vertico)
