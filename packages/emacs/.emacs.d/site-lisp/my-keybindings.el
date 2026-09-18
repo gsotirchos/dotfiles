@@ -4,6 +4,11 @@
 
 ;;; Code:
 
+(declare-function ns-do-hide-emacs "term/ns-win" ())
+(declare-function ns-do-show-character-palette "term/ns-win" ())
+(declare-function ns-next-frame "term/ns-win" ())
+(declare-function ns-prev-frame "term/ns-win" ())
+
 (defgroup my-keybindings nil
   "My personal keybindings."
   :group 'convenience)
