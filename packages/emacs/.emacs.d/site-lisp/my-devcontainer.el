@@ -210,14 +210,12 @@ here too or a workspace configured for Ninja would fall back to Make."
                                 " && merge-compile-commands")
                         my-devcontainer-executable package))))
 
-(defun my-devcontainer--compile-in-workspace (fn &rest args)
-  "Start the compilation at the top of the container's workspace.
-colcon builds the workspace it is started in, so a build started from a
-package's own directory would give that package a build/ of its own."
+(defun my-devcontainer--in-workspace (fn &rest args)
+  "Execute FN with ARGS the top of the container's workspace."
   (let ((default-directory (or (my-devcontainer-workspace) default-directory)))
     (apply fn args)))
 
-(advice-add 'compile :around #'my-devcontainer--compile-in-workspace)
+(advice-add 'compile :around #'my-devcontainer--in-workspace)
 
 ;;;###autoload
 (defun my-devcontainer-setup-compilation-buffer ()
@@ -231,27 +229,23 @@ messages name /workspace/..., which `next-error' could not visit."
 
 ;;;; Terminal
 
-(defun my-devcontainer--shell-command (mappings)
-  "Return the docker command opening a login shell in the current container.
-The shell starts in the container's view of `default-directory'.  It is
-given a TERM the image has a terminfo entry for, which ghostel's own
-xterm-ghostty is not."
-  (let ((container (split-string (my-devcontainer--query "--container") "@"))
-        (workdir (my-devcontainer--container-path
-                  (directory-file-name (expand-file-name default-directory)) mappings)))
+(defun my-devcontainer--shell-command (workdir)
+  "Return the docker command opening a login shell in WORKDIR of the container."
+  (let ((container (split-string (my-devcontainer--query "--container") "@")))
     `("docker" "exec" "-it" "-u" ,(car container) "-w" ,workdir
       "-e" "TERM=xterm-256color" ,(cadr container) "bash" "-l")))
 
 ;;;###autoload
 (defun my-devcontainer-terminal ()
-  "Pop to a new ghostel terminal running a login shell in the current container."
+  "Pop to a new ghostel terminal running a login shell in the current container.
+The shell starts at the top of the container's workspace."
   (interactive)
   (require 'ghostel)
   (let* ((mappings (or (my-devcontainer-mappings)
                        (user-error "my-devcontainer: no devcontainer serves %s"
                                    (abbreviate-file-name default-directory))))
          (mount (my-devcontainer--mount (expand-file-name default-directory) mappings))
-         (command (my-devcontainer--shell-command mappings))
+         (command (my-devcontainer--shell-command (cdr mount)))
          (buffer (generate-new-buffer
                   (format "*devcontainer:%s*" (file-name-nondirectory (car mount))))))
     (pop-to-buffer-same-window buffer)
