@@ -33,4 +33,4 @@
 [url "git@github.com:"]
     insetadOf = https://github.com/
 [url "git@gitlab.tudelft.nl:"]
-    insetadOf = https://gitlab.tudelft.nl/
+    insteadOf = https://gitlab.tudelft.nl/
