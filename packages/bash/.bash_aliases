@@ -84,13 +84,13 @@ alias mv="mv -iv"  # confirmatory, verbose
 alias cp="cp -ivr" # confirmatory, verbose, recursive
 alias ln="ln -iv"  # confirmatory, verbose
 alias ls="ls -vh --color=always \
-    --group-directories-first"               # human-readable, version-ordered, colored, dirs first
-alias ll="ls -l"                             # ll := list
-alias la="ls -la"                            # la := list all
-alias mkdir="mkdir -pv"                      # recursive, verbose
-alias chmod="chmod -v"                       # verbose
-alias chown="chown -v"                       # verbose
-alias ec="emacsclient -a '' -c &"            # start emacs daemon and/or client
+    --group-directories-first"    # human-readable, version-ordered, colored, dirs first
+alias ll="ls -l"                  # ll := list
+alias la="ls -la"                 # la := list all
+alias mkdir="mkdir -pv"           # recursive, verbose
+alias chmod="chmod -v"            # verbose
+alias chown="chown -v"            # verbose
+alias ec="emacsclient -a '' -c &" # start emacs daemon and/or client
 alias ga="git add"
 alias gc="git commit"
 alias gps="git push"
@@ -111,6 +111,10 @@ alias py="python3"
 alias ipy="ipython"
 alias pyclean="find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete"
 
+function port-info {
+    sudo lsof -i -n | grep "${1:-""}"
+}
+
 if command -v "rg" &> /dev/null; then
     alias grep='rg -p -g "!.git" -g "!.venv" -g "!.conda" -g "!.pixi" -g "!pack"'
 else
@@ -120,6 +124,7 @@ fi
 if command -v "fdfind" &> /dev/null; then
     alias fd="fdfind"
 fi
+
 if command -v "fd" &> /dev/null; then
     alias find="fd -E .git -E .venv -E .conda -E .pixi -E pack"
 else
