@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Clone or fast-forward every project of a GitLab group (subgroups included)
+# into <dir>, mirroring the group's namespace layout.
+if [[ $# -ne 2 ]]; then
+    echo "Usage: $(basename "$0") <group-path> <dir>" >&2
+    exit 1
+fi
+
+group="$1"
+dir="$2"
+
+glab api --paginate "groups/${group//\//%2F}/projects?include_subgroups=true&per_page=100" \
+    | jq -r '.[] | "\(.path_with_namespace)\t\(.ssh_url_to_repo)"' \
+    | while IFS=$'\t' read -r path url; do
+        target="${dir}/${path#"${group}/"}"
+        if [[ -d "${target}/.git" ]]; then
+            git -C "${target}" pull --ff-only --quiet \
+                || echo "Could not fast-forward ${path}" >&2
+        else
+            git clone --quiet "${url}" "${target}"
+        fi
+    done
