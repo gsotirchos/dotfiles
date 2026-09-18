@@ -171,7 +171,7 @@ name or, for the image's headers, files only the container has."
       path)))
 
 (defun my-devcontainer--withhold-process-id (fn &rest args)
-  "Send no client PID to a container-side server."
+  "Call FN with ARGS, sending no client PID to a container-side server."
   (let ((eglot-withhold-process-id (or eglot-withhold-process-id
                                        (my-devcontainer-mappings))))
     (apply fn args)))
@@ -211,7 +211,7 @@ here too or a workspace configured for Ninja would fall back to Make."
                         my-devcontainer-executable package))))
 
 (defun my-devcontainer--in-workspace (fn &rest args)
-  "Execute FN with ARGS the top of the container's workspace."
+  "Execute FN with ARGS at the top of the container's workspace."
   (let ((default-directory (or (my-devcontainer-workspace) default-directory)))
     (apply fn args)))
 
@@ -242,7 +242,7 @@ The shell starts at the top of the container's workspace."
   (interactive)
   (require 'ghostel)
   (let* ((mappings (or (my-devcontainer-mappings)
-                       (user-error "my-devcontainer: no devcontainer serves %s"
+                       (user-error "No devcontainer serves %s"
                                    (abbreviate-file-name default-directory))))
          (mount (my-devcontainer--mount (expand-file-name default-directory) mappings))
          (command (my-devcontainer--shell-command (cdr mount)))
@@ -262,7 +262,7 @@ after the container was recreated: what `devcontainer-exec' hands them is
 a snapshot."
   (interactive)
   (unless (my-devcontainer--run "--refresh" default-directory)
-    (user-error "my-devcontainer: no devcontainer serves %s"
+    (user-error "No devcontainer serves %s"
                 (abbreviate-file-name default-directory)))
   (clrhash my-devcontainer--cache)
   (when-let* ((server (and (featurep 'eglot) (eglot-current-server))))
