@@ -1730,6 +1730,12 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :commands flymake-bashate-setup
   :hook (sh-base-mode . flymake-bashate-setup))
 
+(use-package flymake-shfmt
+  :ensure nil
+  :load-path "site-lisp/"
+  :commands (flymake-shfmt-setup)
+  :hook (sh-base-mode . flymake-shfmt-setup))
+
 ;; YAML
 
 (use-package yaml-ts-mode

@@ -91,6 +91,12 @@ alias mkdir="mkdir -pv"                      # recursive, verbose
 alias chmod="chmod -v"                       # verbose
 alias chown="chown -v"                       # verbose
 alias ec="emacsclient -a '' -c &"            # start emacs daemon and/or client
+alias ga="git add"
+alias gc="git commit"
+alias gps="git push"
+alias gpl="git pull"
+alias grs="git reset"
+alias grb="git rebase -i"
 alias magit="emacs  --eval '(magit-status)'" # start emacs with magit
 alias tree="tree \
     -FNC -L 2 \
