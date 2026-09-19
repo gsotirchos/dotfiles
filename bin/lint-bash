@@ -1,6 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Report the parse errors shfmt finds, which neither shellcheck nor bashate
+# catch: bash validates a parameter expansion only when the word is expanded, so
+# "${1foo}" passes both and fails at run time.
+# See https://github.com/koalaman/shellcheck/issues/1712
+check_syntax() {
+    local status=0 file output
+
+    for file in "$@"; do
+        # Piping is the only option when shfmt is a snap: its `home' interface
+        # grants `owner @{HOME}/[^.]** rwkl', so opening anything under a
+        # dotted directory is denied.
+        if ! output="$(shfmt -ln bash -l < "${file}" 2>&1 > /dev/null)"; then
+            echo "${output//<standard input>/${file}}" >&2
+            status=1
+        fi
+    done
+
+    return "${status}"
+}
+
 main() {
     # Check for realpath
     if ! command -v "realpath" &> /dev/null; then
@@ -20,6 +40,11 @@ main() {
     # Verify shellcheck and bashate are available
     if ! command -v shellcheck &> /dev/null; then
         echo "Error: shellcheck is not installed or not in PATH." >&2
+        exit 1
+    fi
+
+    if ! command -v shfmt &> /dev/null; then
+        echo "Error: shfmt is not installed or not in PATH." >&2
         exit 1
     fi
 
@@ -68,7 +93,13 @@ main() {
     local bashate_status=0
     "${bashate_cmd}" "${files[@]}" || bashate_status=$?
 
-    if [[ ${shellcheck_status} -eq 0 ]] && [[ ${bashate_status} -eq 0 ]]; then
+    echo "Linting ${#files[@]} file(s) in '${target}' with shfmt..."
+    local shfmt_status=0
+    check_syntax "${files[@]}" || shfmt_status=$?
+
+    if [[ ${shellcheck_status} -eq 0 ]] \
+        && [[ ${bashate_status} -eq 0 ]] \
+        && [[ ${shfmt_status} -eq 0 ]]; then
         echo "All checks passed successfully!"
         return 0
     else
