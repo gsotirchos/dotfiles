@@ -1907,7 +1907,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-export-with-toc nil)
   (org-src-preserve-indentation t)
   (org-latex-packages-alist
-   (list (concat "\\input{" (expand-file-name "etc/math_commands.tex" dotfiles-dir) "}")))
+   (list (concat "\\input{" (expand-file-name "etc/math_commands.tex" dotfiles-dir) "}")
+         '("" "tikz" t)))  ; The trailing t also loads TikZ for fragment previews, not just export.
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
