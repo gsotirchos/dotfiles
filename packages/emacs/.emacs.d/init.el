@@ -1874,7 +1874,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :ensure nil
   :no-require t
   :bind (:map org-mode-map ("M-<return>" . org-meta-return))
-  :hook (org-mode . org-latex-preview-mode)
+  :hook ((org-mode . org-latex-preview-mode)
+         (org-babel-after-execute . org-link-preview-refresh))
   :custom
   (package-vc-selected-packages
    '((org :url "https://github.com/karthink/org-mode" :branch "olp"
@@ -1999,6 +2000,10 @@ Leaves the line-prefix property `org-indent' also sets untouched."
   :hook org-mode
   ;; :custom (org-appear-autolinks t)
   )
+
+(use-package ob-mermaid
+  :after org
+  :demand t)
 
 (use-package newsticker
   :ensure nil
