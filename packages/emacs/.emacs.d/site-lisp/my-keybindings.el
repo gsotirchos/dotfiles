@@ -9,7 +9,7 @@
 (declare-function ns-next-frame "term/ns-win" ())
 (declare-function ns-prev-frame "term/ns-win" ())
 
-(defgroup my-keybindings nil
+(defgroup my/keybindings nil
   "My personal keybindings."
   :group 'convenience)
 
@@ -159,7 +159,7 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
   :global t
   :lighter " MyKeys"
   :keymap my-keybindings-mode-map
-  :group 'my-keybindings
+  :group 'my/keybindings
   (when my-keybindings-mode
     ;; Minibuffer specific maps (cannot be done in the minor mode map)
     (keymap-set minibuffer-mode-map "<escape>" #'abort-recursive-edit)

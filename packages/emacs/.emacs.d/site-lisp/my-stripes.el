@@ -24,26 +24,26 @@
 
 ;;;; Corfu candidate popup
 
-(defun my-stripes--line-has-face-p (face)
+(defun my/stripes--line-has-face-p (face)
   "Non-nil if the face property at the start of the current line includes FACE."
   (let ((f (get-text-property (line-beginning-position) 'face)))
     (or (eq f face) (and (listp f) (memq face f)))))
 
 ;;;###autoload
-(defun my-stripes-corfu-popup (&rest _)
+(defun my/stripes-corfu-popup (&rest _)
   "Zebra-stripe the *corfu* candidate buffer, skipping the selected row."
   (when-let* ((buf (get-buffer " *corfu*")))
     (with-current-buffer buf
-      (remove-overlays nil nil 'my-stripes t)
+      (remove-overlays nil nil 'my/stripes t)
       (save-excursion
         (goto-char (point-min))
         (let ((row 0))
           (while (not (eobp))
             (when (and (cl-oddp row)
-                       (not (my-stripes--line-has-face-p 'corfu-current)))
+                       (not (my/stripes--line-has-face-p 'corfu-current)))
               (let ((ov (make-overlay (line-beginning-position)
                                       (min (point-max) (1+ (line-end-position))))))
-                (overlay-put ov 'my-stripes t)
+                (overlay-put ov 'my/stripes t)
                 (overlay-put ov 'face 'stripes)
                 (overlay-put ov 'priority stripes-overlay-priority)))
             (cl-incf row)
@@ -52,7 +52,7 @@
 ;;;; Vertico minibuffer completion list (e.g. M-x)
 
 ;;;###autoload
-(defun my-stripes-vertico-candidate (orig cand prefix suffix index start)
+(defun my/stripes-vertico-candidate (orig cand prefix suffix index start)
   "Zebra-stripe Vertico candidates by visible row, skipping the selected row.
 ORIG is the advised `vertico--format-candidate'; CAND, PREFIX, SUFFIX, INDEX
 and START are its arguments."
@@ -65,10 +65,10 @@ and START are its arguments."
 
 ;;;###autoload
 (with-eval-after-load 'corfu
-  (advice-add 'corfu--popup-show :after #'my-stripes-corfu-popup))
+  (advice-add 'corfu--popup-show :after #'my/stripes-corfu-popup))
 ;;;###autoload
 (with-eval-after-load 'vertico
-  (advice-add 'vertico--format-candidate :around #'my-stripes-vertico-candidate))
+  (advice-add 'vertico--format-candidate :around #'my/stripes-vertico-candidate))
 
 (provide 'my-stripes)
 

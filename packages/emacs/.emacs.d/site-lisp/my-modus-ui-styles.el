@@ -8,7 +8,7 @@
 
 (require 'modus-themes nil t)
 
-(defvar my-system-appearance-change-functions)
+(defvar my/system-appearance-change-functions)
 
 ;;;###autoload
 (defvar my/modus-themes/ui-style 'minimal
@@ -179,7 +179,7 @@ If STYLE is \\='cycle, cycle the current style."
     ('dark (modus-themes-load-theme (nth 1 modus-themes-to-toggle)))))
 
 ;;;###autoload
-(add-hook 'my-system-appearance-change-functions #'my/apply-theme)
+(add-hook 'my/system-appearance-change-functions #'my/apply-theme)
 ;;;###autoload
 (add-hook 'after-load-theme-hook #'my/modus-themes/set-ui-style)
 ;;;###autoload
