@@ -130,6 +130,19 @@ With a prefix ARG, open the most recent journal file dated before today."
   (let ((fill-column most-positive-fixnum))
     (apply fn args)))
 
+;; Upstream fixed only the `[[*' case of this (Org commit 97951352b); the
+;; entity, keyword, drawer and property handlers still slice the stub:
+;; https://list.orgmode.org/DB9PR06MB7753E0E548B2FB6614285847C61B9@DB9PR06MB7753.eurprd06.prod.outlook.com
+;;;###autoload
+(defun my/org-parse-arguments-to-point (fn)
+  "Call FN with the buffer narrowed to the text before point.
+The function `org-parse-arguments' splits the whole line, so the variable
+`pcomplete-stub' ends up holding its last token instead of the one being
+completed."
+  (save-restriction
+    (narrow-to-region (point-min) (point))
+    (funcall fn)))
+
 ;;;###autoload
 (defun my/org-mac-mail-link-open-link (mid _)
   "Follow link (MID) function for Apple Mail messages."
@@ -172,6 +185,7 @@ With a prefix ARG, open the most recent journal file dated before today."
 
 (advice-add 'org-archive-subtree :before #'my/org-create-archive-dir)
 (advice-add 'org-fill-paragraph :around #'my/unlimited-fill-column-advice)
+(advice-add 'org-parse-arguments :around #'my/org-parse-arguments-to-point)
 
 (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
 
