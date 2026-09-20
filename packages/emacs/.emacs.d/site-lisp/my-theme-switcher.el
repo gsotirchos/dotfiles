@@ -9,7 +9,7 @@
 
 (require 'dbus nil t)
 
-(defgroup my-theme-switcher nil
+(defgroup my/theme-switcher nil
   "Configuration for the custom theme switcher."
   :group 'convenience)
 
@@ -17,9 +17,9 @@
   "Interval in seconds to check for system appearance changes.
 Used only if native OS events are unavailable."
   :type 'integer
-  :group 'my-theme-switcher)
+  :group 'my/theme-switcher)
 
-(defvar my-system-appearance-change-functions nil
+(defvar my/system-appearance-change-functions nil
   "Hook run when the system appearance changes.
 Functions in this hook are called with one argument: the new appearance,
 either \\='light or \\='dark.")
@@ -64,14 +64,14 @@ If FORCE is non-nil, run hooks even if the appearance hasn't changed."
   (let ((current-appearance (my/get-current-appearance)))
     (when (or force (not (eq current-appearance my/last-system-appearance)))
       (setq my/last-system-appearance current-appearance)
-      (run-hook-with-args 'my-system-appearance-change-functions current-appearance))))
+      (run-hook-with-args 'my/system-appearance-change-functions current-appearance))))
 
 (defun my/mac-ns-theme-handler (appearance)
   "Handler for native macOS APPEARANCE change."
   ;; The hook gives us 'dark or 'light
   (unless (eq appearance my/last-system-appearance)
     (setq my/last-system-appearance appearance)
-    (run-hook-with-args 'my-system-appearance-change-functions appearance)))
+    (run-hook-with-args 'my/system-appearance-change-functions appearance)))
 
 (defun my/dbus-gnome-theme-handler (namespace key _value)
   "Handler for D-Bus SettingChanged signals (NAMESPACE KEY _VALUE)."
@@ -86,7 +86,7 @@ If FORCE is non-nil, run hooks even if the appearance hasn't changed."
 (define-minor-mode my-theme-switcher-mode
   "Global minor mode to switch themes automatically based on OS events."
   :global t
-  :group 'my-theme-switcher
+  :group 'my/theme-switcher
   (if my-theme-switcher-mode
       (progn
         ;; Check immediately so correct theme applies on startup

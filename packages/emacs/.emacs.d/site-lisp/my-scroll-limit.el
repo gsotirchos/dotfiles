@@ -13,7 +13,7 @@
 
 ;;; Code:
 
-(defgroup my-scroll-limit nil
+(defgroup my/scroll-limit nil
   "Keep the end of the buffer at the bottom of the window."
   :group 'convenience)
 
@@ -95,7 +95,7 @@ buffer, and the last line is held flush with the bottom while the
 cursor is on it, rechecked after each of the
 `my/scroll-limit-triggers'."
   :global t
-  :group 'my-scroll-limit
+  :group 'my/scroll-limit
   (if my-scroll-limit-mode
       (progn
         (dolist (hook my/scroll-limit-triggers)

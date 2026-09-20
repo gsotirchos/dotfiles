@@ -37,7 +37,7 @@
     mode-line-end-spaces))
 
 ;;;###autoload
-(defun my-mode-line-setup ()
+(defun my/mode-line-setup ()
   "Install `my/mode-line-format' as the default mode line.
 Buffers that predate this call carry a buffer-local `mode-line-format':
 `early-init.el' hides the mode line during startup, and `evil-mode' copies

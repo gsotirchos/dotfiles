@@ -172,11 +172,11 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
     (add-hook 'minibuffer-setup-hook #'my/pad-minibuffer-prompt))
 
   ;; Suppress blank tooltips
-  (defun my-suppress-blank-tooltips (str &rest _)
+  (defun my/suppress-blank-tooltips (str &rest _)
     "Suppress tooltips with nil, empty, or all-whitespace STR."
     (or (null str) (string-blank-p (string-trim str))))
 
-  (advice-add #'x-show-tip :before-until #'my-suppress-blank-tooltips)
+  (advice-add #'x-show-tip :before-until #'my/suppress-blank-tooltips)
 
   ;; Startup time
   (defun my/display-startup-stats ()
@@ -451,7 +451,7 @@ the window."
 (use-package my-mode-line
   :ensure nil
   :load-path "site-lisp/"
-  :hook (after-init . my-mode-line-setup)
+  :hook (after-init . my/mode-line-setup)
   :custom
   (mode-line-modes-delimiters nil)
   (mode-line-collapse-minor-modes '(not flymake-mode)))
@@ -482,7 +482,7 @@ the window."
   :load-path "site-lisp/"
   :when (eq system-type 'gnu/linux)
   :demand t
-  :custom (my-modifier-remap-alist '((super . meta) (meta . alt)))
+  :custom (my/modifier-remap-alist '((super . meta) (meta . alt)))
   :config (my-modifier-remap-mode 1))
 
 (use-package my-keybindings
@@ -577,7 +577,7 @@ the window."
 
 (use-package stripes
   :after (my-keybindings modus-themes)
-  :demand t ; load at startup so the face is themed and my-stripes can build on it
+  :demand t ; load at startup so the face is themed and my/stripes can build on it
   :hook dired-mode
   :bind (:map my/toggles-map ("s" . stripes-mode))
   :custom
@@ -740,10 +740,10 @@ the window."
   (evil-global-set-key 'normal (kbd "zo") #'kirigami-open-fold)
   (evil-global-set-key 'normal (kbd "zO") #'kirigami-open-fold-rec)
   (evil-global-set-key 'normal (kbd "zc") #'kirigami-close-fold)
-  (evil-global-set-key 'normal (kbd "zm") #'my-fold-level-decrease)
-  (evil-global-set-key 'normal (kbd "zr") #'my-fold-level-increase)
-  (evil-global-set-key 'normal (kbd "zM") #'my-fold-level-close-all)
-  (evil-global-set-key 'normal (kbd "zR") #'my-fold-level-open-all)
+  (evil-global-set-key 'normal (kbd "zm") #'my/fold-level-decrease)
+  (evil-global-set-key 'normal (kbd "zr") #'my/fold-level-increase)
+  (evil-global-set-key 'normal (kbd "zM") #'my/fold-level-close-all)
+  (evil-global-set-key 'normal (kbd "zR") #'my/fold-level-open-all)
   (evil-global-set-key 'visual (kbd "p") #'evil-paste-before)
   (evil-global-set-key 'visual (kbd "P") #'evil-visual-paste)
   (define-key evil-command-line-map (kbd "C-a") nil)
@@ -806,8 +806,8 @@ the window."
 (use-package my-latex-capf
   :ensure nil
   :load-path "site-lisp/"
-  :commands my-latex-capf
-  :init (add-hook 'completion-at-point-functions #'my-latex-capf))
+  :commands my/latex-capf
+  :init (add-hook 'completion-at-point-functions #'my/latex-capf))
 
 (use-package tempel
   :after my-keybindings
@@ -1317,10 +1317,10 @@ reaches into the preview's `display' property elides the whole preview."
 (use-package my-fold-level
   :ensure nil
   :load-path "site-lisp/"
-  :commands (my-fold-level-decrease
-             my-fold-level-increase
-             my-fold-level-close-all
-             my-fold-level-open-all))
+  :commands (my/fold-level-decrease
+             my/fold-level-increase
+             my/fold-level-close-all
+             my/fold-level-open-all))
 
 (use-package my-fold-ellipsis
   :ensure nil
@@ -1402,7 +1402,7 @@ reaches into the preview's `display' property elides the whole preview."
   (flymake-mode-line-format '(" " flymake-mode-line-counters))
   (flymake-show-diagnostics-at-end-of-line 'short)
   (flymake-indicator-type 'margins)
-  (flymake-autoresize-margins nil)  ; width is my-margin's job
+  (flymake-autoresize-margins nil)  ; width is my/margin's job
   (flymake-margin-indicators-string
    '((note "•" flymake-note-echo)  ; ●
      (warning "▲" flymake-warning-echo)
@@ -1653,9 +1653,9 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
 (use-package my-pixi
   :ensure nil
   :load-path "site-lisp/"
-  :commands (my-pixi-mode my-pixi-python-setup my-pixi-refresh)
+  :commands (my-pixi-mode my/pixi-python-setup my/pixi-refresh)
   ;; Depth -90 so the environment is in place before `eglot-ensure' connects.
-  :preface (add-hook 'python-base-mode-hook #'my-pixi-python-setup -90))
+  :preface (add-hook 'python-base-mode-hook #'my/pixi-python-setup -90))
 
 (use-package conda
   :preface
@@ -1866,7 +1866,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-tags-column 0)
   (org-catch-invisible-edits 'error)
   (org-hide-emphasis-markers t)
-  ;; Also what `my-latex-capf' completes macros in.
+  ;; Also what `my/latex-capf' completes macros in.
   (org-highlight-latex-and-related '(script entities))  ; '(latex script entities)
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)

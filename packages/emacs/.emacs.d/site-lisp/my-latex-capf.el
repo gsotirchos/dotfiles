@@ -18,15 +18,15 @@
 (require 'math-symbol-lists)
 (require 'subr-x)
 
-(defgroup my-latex-capf nil
+(defgroup my/latex-capf nil
   "LaTeX macro completion inside math markup."
   :group 'completion)
 
-(defcustom my-latex-capf-faces
+(defcustom my/latex-capf-faces
   '(font-latex-math-face tex-math org-latex-and-related markdown-ts-latex)
   "Faces marking the text that LaTeX macros are completed in."
   :type '(repeat face)
-  :group 'my-latex-capf)
+  :group 'my/latex-capf)
 
 (defconst my/latex-capf-macros
   (let ((macros (make-hash-table :test #'equal)))
@@ -71,11 +71,11 @@
           :exclusive 'no)))
 
 ;;;###autoload
-(defun my-latex-capf ()
+(defun my/latex-capf ()
   "Complete LaTeX macro names while point is inside math markup.
 Math is whatever the major mode fontifies with one of
-`my-latex-capf-faces'.  Meant for `completion-at-point-functions'."
-  (apply #'cape-wrap-inside-faces #'my/latex-capf-complete my-latex-capf-faces))
+`my/latex-capf-faces'.  Meant for `completion-at-point-functions'."
+  (apply #'cape-wrap-inside-faces #'my/latex-capf-complete my/latex-capf-faces))
 
 (provide 'my-latex-capf)
 ;;; my-latex-capf.el ends here

@@ -39,21 +39,21 @@
 (declare-function kirigami-open-folds "kirigami" ())
 (declare-function kirigami-close-folds "kirigami" ())
 
-(defvar-local my-fold-level nil
+(defvar-local my/fold-level nil
   "Number of nesting levels left visible, the analogue of Vim's `foldlevel'.
 1 leaves only the outermost constructs visible.  nil means the level has not
-been set yet, in which case it is taken to be `my-fold-level--max-level', i.e.
+been set yet, in which case it is taken to be `my/fold-level--max-level', i.e.
 nothing folded.")
 
-(defvar-local my-fold-level--max nil
-  "Cached result of `my-fold-level--max-level'.")
+(defvar-local my/fold-level--max nil
+  "Cached result of `my/fold-level--max-level'.")
 
-(defvar-local my-fold-level--tick nil
-  "Value of `buffer-chars-modified-tick' when `my-fold-level--max' was computed.")
+(defvar-local my/fold-level--tick nil
+  "Value of `buffer-chars-modified-tick' when `my/fold-level--max' was computed.")
 
 ;;;; Backends
 
-(defun my-fold-level--backend ()
+(defun my/fold-level--backend ()
   "Return the folding backend of the current buffer.
 Either the symbol `outline' or `hideshow', or nil if neither is in use.
 Outline wins when both are active: it is the more faithful of the two."
@@ -63,7 +63,7 @@ Outline wins when both are active: it is the more faithful of the two."
         ((bound-and-true-p hs-minor-mode)
          'hideshow)))
 
-(defun my-fold-level--outline-max ()
+(defun my/fold-level--outline-max ()
   "Return the level at which no outline heading is left folded.
 That is the deepest heading level, plus one if any heading has a body:
 `outline-hide-sublevels' hides every body, so where bodies exist one further
@@ -85,7 +85,7 @@ earlier."
                              (buffer-substring-no-properties from to)))))))
       (max 1 (+ deepest (if body 1 0))))))
 
-(defun my-fold-level--hideshow-max ()
+(defun my/fold-level--hideshow-max ()
   "Return the level at which no hideshow block is left folded.
 A block's nesting level is the syntactic paren depth at its opening delimiter,
 which is what `hs-hide-level-recursive' descends through.  Only blocks that
@@ -112,7 +112,7 @@ nothing."
                 (setq deepest level))))))
       (1+ deepest))))
 
-(defun my-fold-level--hideshow-hide (level)
+(defun my/fold-level--hideshow-hide (level)
   "Fold every hideshow block nested LEVEL levels deep or deeper.
 `hs-hide-level' gives an overlay of its own only to the blocks at the depth
 it is asked for, so opening one of them uncovers its whole subtree.  Folding
@@ -122,7 +122,7 @@ what makes opening a block uncover just the next level, as in Vim.  Relies on
   (save-excursion
     (goto-char (point-min))
     (let (blocks)
-      ;; Same traversal as `my-fold-level--hideshow-max'.
+      ;; Same traversal as `my/fold-level--hideshow-max'.
       (while (and (stringp hs-block-start-regexp)
                   (re-search-forward hs-block-start-regexp nil t))
         (let* ((start (match-beginning hs-block-start-mdata-select))
@@ -138,24 +138,24 @@ what makes opening a block uncover just the next level, as in Vim.  Relies on
         (hs-hide-block-at-point)))))
 
 
-(defun my-fold-level--max-level ()
+(defun my/fold-level--max-level ()
   "Return the lowest level at which the buffer is fully unfolded.
 The result is cached until the buffer text changes."
   (let ((tick (buffer-chars-modified-tick)))
-    (unless (and my-fold-level--max (eql my-fold-level--tick tick))
-      (setq my-fold-level--tick tick
-            my-fold-level--max
-            (pcase (my-fold-level--backend)
-              ('outline (my-fold-level--outline-max))
-              ('hideshow (my-fold-level--hideshow-max))
+    (unless (and my/fold-level--max (eql my/fold-level--tick tick))
+      (setq my/fold-level--tick tick
+            my/fold-level--max
+            (pcase (my/fold-level--backend)
+              ('outline (my/fold-level--outline-max))
+              ('hideshow (my/fold-level--hideshow-max))
               (_ 1))))
-    my-fold-level--max))
+    my/fold-level--max))
 
-(defun my-fold-level--apply (level)
+(defun my/fold-level--apply (level)
   "Leave LEVEL nesting levels visible and fold everything deeper."
-  (pcase (my-fold-level--backend)
+  (pcase (my/fold-level--backend)
     ('outline
-     (if (>= level (my-fold-level--max-level))
+     (if (>= level (my/fold-level--max-level))
          (outline-show-all)
        (outline-hide-sublevels level)))
     ('hideshow
@@ -163,77 +163,77 @@ The result is cached until the buffer text changes."
      ;; the state left by the previous level has to be cleared before laying
      ;; down the new one.
      (hs-show-all)
-     (unless (>= level (my-fold-level--max-level))
-       (my-fold-level--hideshow-hide level)))))
+     (unless (>= level (my/fold-level--max-level))
+       (my/fold-level--hideshow-hide level)))))
 
 ;;;; Level stepping
 
-(defun my-fold-level--reveal-point ()
+(defun my/fold-level--reveal-point ()
   "Move point to the first visible line of the fold hiding it, as Vim does."
   (when (invisible-p (point))
     (goto-char (previous-single-char-property-change (point) 'invisible))
     (forward-line 0)))
 
-(defun my-fold-level--fallback (action)
+(defun my/fold-level--fallback (action)
   "Fold the buffer with `kirigami'.  ACTION is either `open' or `close'."
   (unless (require 'kirigami nil t)
     (user-error "No folding backend is active in this buffer"))
   (if (eq action 'open) (kirigami-open-folds) (kirigami-close-folds)))
 
-(defun my-fold-level--set (level)
+(defun my/fold-level--set (level)
   "Set the fold level to LEVEL, clamped to the buffer's range, and report it."
-  (let* ((max (my-fold-level--max-level))
+  (let* ((max (my/fold-level--max-level))
          (level (max 1 (min level max))))
-    (setq my-fold-level level)
-    (my-fold-level--apply level)
-    (my-fold-level--reveal-point)
+    (setq my/fold-level level)
+    (my/fold-level--apply level)
+    (my/fold-level--reveal-point)
     ;; Reported the way Vim counts it, where 0 means every fold is closed.
     (message "foldlevel=%d/%d" (1- level) (1- max))))
 
-(defun my-fold-level--current ()
+(defun my/fold-level--current ()
   "Return the current fold level, defaulting to a fully unfolded buffer."
-  (or my-fold-level (my-fold-level--max-level)))
+  (or my/fold-level (my/fold-level--max-level)))
 
-(defun my-fold-level--steppable-p ()
+(defun my/fold-level--steppable-p ()
   "Return non-nil if the buffer has more than one fold level to step through.
 A backend that cannot measure nesting reports a single level, which leaves
 nothing for `zm' and `zr' to do; such buffers are folded whole instead."
-  (and (my-fold-level--backend)
-       (> (my-fold-level--max-level) 1)))
+  (and (my/fold-level--backend)
+       (> (my/fold-level--max-level) 1)))
 
 ;;;###autoload
-(defun my-fold-level-decrease (&optional count)
+(defun my/fold-level-decrease (&optional count)
   "Fold one nesting level more, like Vim's `zm'.
 With a numeric prefix COUNT, fold COUNT levels more."
   (interactive "p")
-  (if (my-fold-level--steppable-p)
-      (my-fold-level--set (- (my-fold-level--current) (or count 1)))
-    (my-fold-level--fallback 'close)))
+  (if (my/fold-level--steppable-p)
+      (my/fold-level--set (- (my/fold-level--current) (or count 1)))
+    (my/fold-level--fallback 'close)))
 
 ;;;###autoload
-(defun my-fold-level-increase (&optional count)
+(defun my/fold-level-increase (&optional count)
   "Unfold one nesting level more, like Vim's `zr'.
 With a numeric prefix COUNT, unfold COUNT levels more."
   (interactive "p")
-  (if (my-fold-level--steppable-p)
-      (my-fold-level--set (+ (my-fold-level--current) (or count 1)))
-    (my-fold-level--fallback 'open)))
+  (if (my/fold-level--steppable-p)
+      (my/fold-level--set (+ (my/fold-level--current) (or count 1)))
+    (my/fold-level--fallback 'open)))
 
 ;;;###autoload
-(defun my-fold-level-close-all ()
+(defun my/fold-level-close-all ()
   "Close every fold in the buffer, like Vim's `zM'."
   (interactive)
-  (if (my-fold-level--steppable-p)
-      (my-fold-level--set 1)
-    (my-fold-level--fallback 'close)))
+  (if (my/fold-level--steppable-p)
+      (my/fold-level--set 1)
+    (my/fold-level--fallback 'close)))
 
 ;;;###autoload
-(defun my-fold-level-open-all ()
+(defun my/fold-level-open-all ()
   "Open every fold in the buffer, like Vim's `zR'."
   (interactive)
-  (if (my-fold-level--steppable-p)
-      (my-fold-level--set (my-fold-level--max-level))
-    (my-fold-level--fallback 'open)))
+  (if (my/fold-level--steppable-p)
+      (my/fold-level--set (my/fold-level--max-level))
+    (my/fold-level--fallback 'open)))
 
 (provide 'my-fold-level)
 
