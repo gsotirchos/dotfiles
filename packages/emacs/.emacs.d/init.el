@@ -116,10 +116,14 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
            (and (stringp value) value))))
 
   ;; Variable pitch
+  (defun my/variable-pitch-p ()
+    "Return non-nil if the current buffer is shown in a proportional font."
+    (and (bound-and-true-p buffer-face-mode)
+         (equal buffer-face-mode-face 'variable-pitch)))
+
   (defun my/set-line-spacing-advice (&rest _)
     "Set `line-spacing' after the advised function is executed."
-    (if (and (bound-and-true-p buffer-face-mode)
-             (equal buffer-face-mode-face 'variable-pitch))
+    (if (my/variable-pitch-p)
         (when (boundp 'variable-pitch-line-spacing)
           (setq-local line-spacing variable-pitch-line-spacing))
       (when (boundp 'fixed-pitch-line-spacing)
@@ -1318,48 +1322,10 @@ reaches into the preview's `display' property elides the whole preview."
              my-fold-level-close-all
              my-fold-level-open-all))
 
-(use-package disp-table
+(use-package my-fold-ellipsis
   :ensure nil
-  :no-require t
-  :preface
-  (defvar my/fold-ellipsis "...")
-
-  (defface my/fold-ellipsis-face '((t :inherit default))
-    "Face for the ellipsis standing in for folded text."
-    :group 'faces)
-
-  (defun my/customize-fold-ellipsis ()
-    "Give the folding ellipsis a dimmed, boxed badge look."
-    (when-let* ((fg (my/theme-color 'fg-dim))
-                (bg (my/theme-color 'bg-dim))
-                (border (my/theme-color 'border)))
-      (set-face-attribute
-       'my/fold-ellipsis-face nil
-       :foreground fg
-       :background bg
-       :box `(:line-width (-1 . -1) :color ,border)))
-    (unless standard-display-table
-      (setq standard-display-table (make-display-table)))
-    (set-display-table-slot
-     standard-display-table 'selective-display
-     (vconcat (mapcar (lambda (c) (make-glyph-code c 'my/fold-ellipsis-face)) my/fold-ellipsis))))
-  (add-hook 'after-load-theme-hook #'my/customize-fold-ellipsis)
-
-  (defvar my/fold-ellipsis-string (propertize my/fold-ellipsis 'face 'my/fold-ellipsis-face)
-    "Marker shown in place of folded text to avoid mis-painting a `:box'.")
-
-  (defun my/fold-ellipsis-mark-overlay (from to flag &rest _)
-    "Sync the fold marker across the overlays between FROM and TO; FLAG hides."
-    (dolist (o (overlays-in from to))
-      (cond ((and flag (overlay-get o 'invisible) (= (overlay-start o) from))
-             (overlay-put o 'display my/fold-ellipsis-string))
-            ((and (eq (overlay-get o 'display) my/fold-ellipsis-string)
-                  (not (overlay-get o 'invisible)))
-             (overlay-put o 'display nil)))))
-  ;; Neither has a hook that hands over the overlay it just created.
-  (advice-add 'outline-flag-region :after #'my/fold-ellipsis-mark-overlay)
-  (advice-add 'org-fold-core-region :after #'my/fold-ellipsis-mark-overlay)
-  :custom (hs-set-up-overlay (lambda (ov) (overlay-put ov 'display my/fold-ellipsis-string))))
+  :load-path "site-lisp/"
+  :hook after-init)
 
 (use-package electric-pair
   :ensure nil
