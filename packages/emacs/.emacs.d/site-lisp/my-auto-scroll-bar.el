@@ -18,7 +18,7 @@
 
 ;;; Code:
 
-(defgroup my-auto-scroll-bar nil
+(defgroup my/auto-scroll-bar nil
   "Hide scroll bars in windows that show their whole buffer."
   :group 'convenience)
 
@@ -76,7 +76,7 @@ When enabled, each window keeps its frame's scroll bar only while
 part of its buffer is off screen, rechecked after each of the
 `my/auto-scroll-bar-triggers'."
   :global t
-  :group 'my-auto-scroll-bar
+  :group 'my/auto-scroll-bar
   (if my-auto-scroll-bar-mode
       (progn
         (dolist (hook my/auto-scroll-bar-triggers)

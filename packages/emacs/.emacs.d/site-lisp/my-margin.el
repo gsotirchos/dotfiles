@@ -18,7 +18,7 @@
 
 (declare-function flymake-diagnostics "flymake")
 
-(defgroup my-margin nil
+(defgroup my/margin nil
   "Single owner of the left margin."
   :group 'convenience)
 
@@ -64,7 +64,7 @@ When enabled, the margin width in each buffer is the sum of what
 the `my/margin-contributors' report, recomputed after each of the
 `my/margin-triggers'."
   :global t
-  :group 'my-margin
+  :group 'my/margin
   (if my-margin-mode
       (progn
         (dolist (fn my/margin-triggers)
