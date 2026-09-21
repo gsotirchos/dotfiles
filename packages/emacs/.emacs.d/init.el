@@ -1843,6 +1843,10 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :hook ((org-mode . org-latex-preview-mode)
          (org-babel-after-execute . org-link-preview-refresh))
   :custom
+  ;; TODO: Return to the built-in Org once the asynchronous LaTeX preview
+  ;; system is merged (slated for Org 10.0), following
+  ;; docs/ORG-LATEX-PREVIEW-MERGE.md:
+  ;; https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/
   (package-vc-selected-packages
    '((org :url "https://github.com/karthink/org-mode" :branch "olp"
           :lisp-dir "lisp" :make "autoloads")))
@@ -1881,6 +1885,9 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
   :preface
+  (defun my/org-mode-hook ()
+    (my/set-local-indent-width org-src-content-indentation))
+  (add-hook 'org-mode-hook #'my/org-mode-hook)
   (defun my/org-latex-preview-color-every-fragment-advice (args)
     "Make `org-latex-preview--tex-styled' set the colors of every fragment.
 ARGS are its arguments.  With :continue-color, it omits them for a fragment
@@ -1893,12 +1900,7 @@ black image instead of one drawn in `currentColor'."
   :init
   (when (eq system-type 'darwin)
     (setenv "LIBGS" "/opt/homebrew/lib/libgs.dylib"))
-  ;; TODO: Return to the built-in Org once the asynchronous LaTeX preview
-  ;; system is merged (slated for Org 10.0), following
-  ;; docs/ORG-LATEX-PREVIEW-MERGE.md:
-  ;; https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/
-  ;;
-  ;; TODO: Drop this copy once fixed:
+  ;; TODO: Drop this copy here once it's fixed:
   ;; https://github.com/karthink/org-mode/issues/1
   ;; Copied from org-latex-preview.el: the fork's autoloads compute
   ;; `org-latex-preview-process-alist' from it before that file defines it,
@@ -1911,6 +1913,7 @@ black image instead of one drawn in `currentColor'."
                            (string-trim (buffer-string) "dvisvgm "))))
                  (and (= (car ver) 3) (cadr ver)))))
         -1))
+  ;; A fresh install activates the package, so the defvar above must precede this.
   (package-vc-install-selected-packages)
   ;; The fork calls itself 9.8pre, older than the built-in Org, so
   ;; `package-activate-all' passes it over.
@@ -1924,12 +1927,18 @@ black image instead of one drawn in `currentColor'."
   ;; TODO: Report the :continue-color bug upstream, then drop this advice.
   (advice-add 'org-latex-preview--tex-styled :filter-args
               #'my/org-latex-preview-color-every-fragment-advice)
-  ;; TODO: Drop this once :page-width survives precompilation;
-  ;; mylatexformat skips everything before \begin{document}, where Org
-  ;; inserts it.
   (setq org-latex-preview-preamble
         (concat org-latex-preview-preamble
-                "\n\\setlength{\\textwidth}{0.5\\paperwidth}")))
+                ;; TODO: Drop this once :page-width survives precompilation;
+                ;; mylatexformat skips everything before \begin{document}, where Org
+                ;; inserts it.
+                "\n\\setlength{\\textwidth}{0.5\\paperwidth}"
+                ;; Glyphs whose outline overshoots their TeX box metrics (arrows especially)
+                ;; get clipped by the SVG viewport dvisvgm derives from preview.sty; a wider
+                ;; \PreviewBorder pads the box.  Deferred because Org loads preview.sty after
+                ;; this preamble.
+                ;; https://github.com/tecosaur/org-latex-preview-todos/issues/14
+                "\n\\AtBeginDocument{\\setlength{\\PreviewBorder}{1.8pt}}")))
 
 (use-package my-org
   :after my-keybindings
