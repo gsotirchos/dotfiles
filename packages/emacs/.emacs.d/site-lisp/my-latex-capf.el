@@ -7,10 +7,11 @@
 ;; `org-entities' and reports a completion region that keeps the
 ;; backslash its candidates lack, and Markdown registers nothing at all.
 ;;
-;; Both modes do fontify math with a face of their own, so that face is
-;; what tells a macro apart from a stray backslash in prose.  Candidates
-;; come from `math-symbol-lists', annotated with the character each
-;; macro stands for.
+;; Both modes do fontify math with a face of their own -- font-latex's,
+;; where Org highlights LaTeX natively -- so that face is what tells a
+;; macro apart from a stray backslash in prose.  Candidates come from
+;; `math-symbol-lists', annotated with the character each macro stands
+;; for.
 
 ;;; Code:
 
@@ -23,7 +24,8 @@
   :group 'completion)
 
 (defcustom my/latex-capf-faces
-  '(font-latex-math-face tex-math org-latex-and-related markdown-ts-latex)
+  '(font-latex-math-face font-latex-sedate-face tex-math org-latex-and-related
+                         markdown-ts-latex)
   "Faces marking the text that LaTeX macros are completed in."
   :type '(repeat face)
   :group 'my/latex-capf)
