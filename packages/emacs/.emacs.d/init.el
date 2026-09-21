@@ -1877,6 +1877,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-fontify-done-headline t)
   (org-export-with-toc nil)
   (org-src-preserve-indentation t)
+  (org-confirm-babel-evaluate nil)
   (org-latex-packages-alist
    (list (with-temp-buffer
            (insert-file-contents (expand-file-name "etc/math_commands.tex" dotfiles-dir))
@@ -1983,7 +1984,8 @@ Leaves the line-prefix property `org-indent' also sets untouched."
 
 (use-package ob-mermaid
   :after org
-  :demand t)
+  :demand t
+  :config (setf (alist-get :output-dir org-babel-default-header-args:mermaid) "mermaid"))
 
 (use-package newsticker
   :ensure nil
