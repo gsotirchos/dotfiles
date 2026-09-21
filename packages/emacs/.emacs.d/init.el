@@ -1880,7 +1880,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
    (list (with-temp-buffer
            (insert-file-contents (expand-file-name "etc/math_commands.tex" dotfiles-dir))
            (buffer-string))
-         '("" "tikz" t)))  ; The trailing t also loads TikZ for fragment previews, not just export.
+         '("" "tikz" t)  ; The trailing t also loads TikZ for fragment previews, not just export.
+         "\\usetikzlibrary{calc}"))
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
