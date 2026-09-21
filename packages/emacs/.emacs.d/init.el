@@ -1870,8 +1870,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-tags-column 0)
   (org-catch-invisible-edits 'error)
   (org-hide-emphasis-markers t)
-  ;; Also what `my/latex-capf' completes macros in.
-  (org-highlight-latex-and-related '(script entities))  ; '(latex script entities)
+  (org-highlight-latex-and-related '(native script entities))
+  (org-src-block-faces '(("latex" (:inherit (fixed-pitch default) :extend t))))
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
   (org-export-with-toc nil)
