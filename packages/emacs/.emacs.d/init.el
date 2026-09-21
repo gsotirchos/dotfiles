@@ -1166,7 +1166,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (buffer-terminator-verbose nil)
   (buffer-terminator-inactivity-timeout (* 30 60))  ; 30 minutes
   (buffer-terminator-interval (* 10 60))  ; 10 minutes
-  :init (buffer-terminator-mode 1))
+  :init (buffer-terminator-mode 1)
+  :config (push '(keep-buffer-major-modes . dired-mode) buffer-terminator-rules-alist))
 
 (use-package pdf-tools
   :commands (pdf-loader-install)
