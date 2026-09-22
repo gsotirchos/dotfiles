@@ -1929,13 +1929,26 @@ black image instead of one drawn in `currentColor'."
                  'face-override-spec)
   ;; TODO: Report the :continue-color bug upstream, then drop this advice.
   (advice-add 'org-latex-preview--tex-styled :filter-args
-              #'my/org-latex-preview-color-every-fragment-advice)
+              #'my/org-latex-preview-color-every-fragment-advice))
+
+(use-package org-latex-preview
+  :ensure nil
+  :no-require t
+  :after org
+  :custom
+  ;; Setting this in the `org' `use-package' form is too early.
+  ;; The zoom restores parity.  Leave :scale alone: it only
+  ;; feeds the %D dpi placeholder, which the dvisvgm converter does not use.
+  (org-latex-preview-appearance-options
+   '(:foreground auto :background "Transparent" :scale 1.0 :zoom 1.25 :page-width 0.6))
+  :config
   (setq org-latex-preview-preamble
         (concat org-latex-preview-preamble
-                ;; TODO: Drop this once :page-width survives precompilation;
-                ;; mylatexformat skips everything before \begin{document}, where Org
-                ;; inserts it.
-                "\n\\setlength{\\textwidth}{0.5\\paperwidth}"
+                ;; TODO: Drop this mirror of :page-width once Org's own copy survives
+                ;; precompilation.  Org emits it after the %& line, by which point the
+                ;; dumped format has fixed \linewidth at \begin{document}.
+                (format "\n\\setlength{\\textwidth}{%s\\paperwidth}"
+                        (plist-get org-latex-preview-appearance-options :page-width))
                 ;; Glyphs whose outline overshoots their TeX box metrics (arrows especially)
                 ;; get clipped by the SVG viewport dvisvgm derives from preview.sty; a wider
                 ;; \PreviewBorder pads the box.  Deferred because Org loads preview.sty after
