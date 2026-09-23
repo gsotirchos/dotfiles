@@ -1891,15 +1891,6 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (defun my/org-mode-hook ()
     (my/set-local-indent-width org-src-content-indentation))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
-  (defun my/org-latex-preview-color-every-fragment-advice (args)
-    "Make `org-latex-preview--tex-styled' set the colors of every fragment.
-ARGS are its arguments.  With :continue-color, it omits them for a fragment
-colored like the previous one, but each fragment is typeset in its own
-preview environment, so the color does not carry over and dvisvgm emits a
-black image instead of one drawn in `currentColor'."
-    (pcase-let ((`(,processing-type ,value ,appearance-options) args))
-      (list processing-type value
-            (plist-put (copy-sequence appearance-options) :continue-color nil))))
   :init
   (when (eq system-type 'darwin)
     (setenv "LIBGS" "/opt/homebrew/lib/libgs.dylib"))
@@ -1926,35 +1917,22 @@ black image instead of one drawn in `currentColor'."
   (org-set-emph-re 'org-emphasis-regexp-components
                    '("-[:space:]('\"{[" "][:space:].,:!?;'\")}\\[-" "[:space:]" "." 1))
   (face-spec-set 'org-latex-and-related '((t (:foreground unspecified)))
-                 'face-override-spec)
-  ;; TODO: Report the :continue-color bug upstream, then drop this advice.
-  (advice-add 'org-latex-preview--tex-styled :filter-args
-              #'my/org-latex-preview-color-every-fragment-advice))
+                 'face-override-spec))
 
-(use-package org-latex-preview
+(use-package my-org-latex-preview
   :ensure nil
-  :no-require t
+  :load-path "site-lisp/"
   :after org
+  :demand t
   :custom
-  ;; Setting this in the `org' `use-package' form is too early.
-  ;; The zoom restores parity.  Leave :scale alone: it only
-  ;; feeds the %D dpi placeholder, which the dvisvgm converter does not use.
+  ;;Setting this in the `org' `use-package' form is too early. Previews are
+  ;; sized so a TeX em is a buffer em, but Computer Modern's x-height (0.442em)
+  ;; is far below a screen font's, so fragments read small next to the text.
+  ;; The zoom restores parity.  Leave :scale alone: it only feeds the %D dpi
+  ;; placeholder, which the dvisvgm converter does not use.
   (org-latex-preview-appearance-options
    '(:foreground auto :background "Transparent" :scale 1.0 :zoom 1.25 :page-width 0.6))
-  :config
-  (setq org-latex-preview-preamble
-        (concat org-latex-preview-preamble
-                ;; TODO: Drop this mirror of :page-width once Org's own copy survives
-                ;; precompilation.  Org emits it after the %& line, by which point the
-                ;; dumped format has fixed \linewidth at \begin{document}.
-                (format "\n\\setlength{\\textwidth}{%s\\paperwidth}"
-                        (plist-get org-latex-preview-appearance-options :page-width))
-                ;; Glyphs whose outline overshoots their TeX box metrics (arrows especially)
-                ;; get clipped by the SVG viewport dvisvgm derives from preview.sty; a wider
-                ;; \PreviewBorder pads the box.  Deferred because Org loads preview.sty after
-                ;; this preamble.
-                ;; https://github.com/tecosaur/org-latex-preview-todos/issues/14
-                "\n\\AtBeginDocument{\\setlength{\\PreviewBorder}{1.8pt}}")))
+  :config (my/org-latex-preview-setup))
 
 (use-package my-org
   :after my-keybindings
