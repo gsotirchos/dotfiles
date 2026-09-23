@@ -93,12 +93,15 @@ surrounding text is."
    (format "\n\\setlength{\\textwidth}{%s\\paperwidth}"
            (plist-get org-latex-preview-appearance-options :page-width))
    "\n" my/org-latex-preview--preamble-marker
-   ;; Glyphs whose outline overshoots their TeX box metrics (arrows especially)
-   ;; get clipped by the SVG viewport dvisvgm derives from preview.sty; a wider
-   ;; \PreviewBorder pads the box.  Deferred because Org loads preview.sty after
-   ;; this preamble.
+   ;; Glyphs whose outline overshoots their TeX box metrics get clipped by the
+   ;; SVG viewport dvisvgm derives from preview.sty, so the box needs padding.
+   ;; \PreviewBorder pads all four sides alike, which spends on every fragment
+   ;; what only a few need; measured over a spread of fragments, the ink stays
+   ;; inside the box horizontally (worst case 0.03pt) and below it (0.22pt),
+   ;; and only overshoots upwards, by 1.62pt for arrows.  \PreviewBbAdjust
+   ;; takes the sides separately, as (left bottom right top) offsets.
    ;; https://github.com/tecosaur/org-latex-preview-todos/issues/14
-   "\n\\AtBeginDocument{\\setlength{\\PreviewBorder}{1.8pt}}"))
+   "\n\\AtBeginDocument{\\def\\PreviewBbAdjust{-0.3pt -0.5pt 0.3pt 2pt}}"))
 
 ;;;###autoload
 (defun my/org-latex-preview-setup ()
