@@ -1,0 +1,12 @@
+# Let bubblewrap create user namespaces despite Ubuntu 24.04+'s
+# kernel.apparmor_restrict_unprivileged_userns; without it the GNOME
+# thumbnailer sandbox fails and Nautilus shows no previews.
+# https://ubuntu.com/blog/ubuntu-23-10-restricted-unprivileged-user-namespaces
+abi <abi/4.0>,
+include <tunables/global>
+
+profile bwrap /usr/bin/bwrap flags=(unconfined) {
+  userns,
+
+  include if exists <local/bwrap>
+}
