@@ -1931,7 +1931,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   ;; The zoom restores parity.  Leave :scale alone: it only feeds the %D dpi
   ;; placeholder, which the dvisvgm converter does not use.
   (org-latex-preview-appearance-options
-   '(:foreground auto :background "Transparent" :scale 1.0 :zoom 1.25 :page-width 0.6))
+   '(:foreground auto :background "Transparent" :scale 1.0 :zoom 1.20 :page-width 0.6))
   :config (my/org-latex-preview-setup))
 
 (use-package my-org
