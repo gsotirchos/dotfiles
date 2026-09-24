@@ -5,12 +5,12 @@
 ;; Org renders each LaTeX fragment to an image whose box comes from preview.sty.
 ;; Three things about that box do not match how the fragment reads on screen:
 ;;
-;; - A display environment is typeset at the full line width with the equation
-;;   centred inside it, and preview.sty records that box rather than the ink, so
-;;   the image arrives padded out to `:page-width'.  The fragment is rewritten to
-;;   zero that width, leaving an overfull box that hugs the maths.  Inline
-;;   fragments keep the full width, which is what stops them from wrapping
-;;   mid-formula, so this cannot be done from the preamble.
+;; - A display fragment arrives padded out to `:page-width', because Org ends it
+;;   with a blank line and because maths is centred on the line it occupies.  The
+;;   fragment is rewritten to bring the box back to the ink, as described in
+;;   `my/org-latex-preview-natural-width-advice'.  Inline fragments keep the full
+;;   width, which is what stops them from wrapping mid-formula, so this cannot be
+;;   done from the preamble.
 ;;
 ;; - That image is then placed at the left margin, where display maths belongs in
 ;;   the middle of the window.  A `line-prefix' aligns it to the window centre,
@@ -30,16 +30,33 @@
 (defvar org-latex-preview-preamble)
 
 (defconst my/org-latex-preview--preamble-marker
-  "% fragment rewriting: natural-width displays v1"
+  "% fragment rewriting: natural-width displays v2"
   "Preamble comment standing in for the fragment rewriting done here.
 `org-latex-preview--hash' covers the preamble and the raw fragment, so
 bumping the version is what expires previews cached before a change to
 `my/org-latex-preview-natural-width-advice'.  It doubles as the guard
 that keeps `my/org-latex-preview-setup' from extending the preamble twice.")
 
+(defconst my/org-latex-preview-natural-width-environments
+  '("align" "alignat" "flalign" "xalignat" "xxalignat")
+  "Environments that hug their ink once \\hsize is zeroed.
+These abandon centring and left-align their box when it does not fit
+`\\displaywidth', which zeroing \\hsize guarantees.  Every other display
+stays centred in a box that wide, and so would collapse onto its own
+centre rather than hug anything.")
+
 (defun my/org-latex-preview-display-fragment-p (string)
   "Return non-nil when STRING opens a display fragment rather than an inline one."
   (string-match-p "\\`[ \t\n]*\\(?:\\\\\\[\\|\\\\begin{\\|\\$\\$\\)" string))
+
+(defun my/org-latex-preview-natural-width-environment-p (string)
+  "Return non-nil when STRING opens a natural-width environment.
+See `my/org-latex-preview-natural-width-environments'."
+  (string-match-p
+   (concat "\\`[ \t\n]*\\\\begin{"
+           (regexp-opt my/org-latex-preview-natural-width-environments)
+           "\\*?}")
+   string))
 
 (defun my/org-latex-preview-block-overlay-p (overlay)
   "Return non-nil when OVERLAY covers a display fragment."
@@ -50,15 +67,25 @@ that keeps `my/org-latex-preview-setup' from extending the preamble twice.")
 
 (defun my/org-latex-preview-natural-width-advice (args)
   "Typeset display fragments at their natural width.
-ARGS are `org-latex-preview--tex-styled''s arguments.  A display fills the
-line and centres the equation in it, and preview.sty records that box rather
-than the ink, so previews come out padded to `:page-width'.  Zeroing the
-width inside the fragment's own preview environment leaves an overfull box
-that hugs the maths."
+ARGS are `org-latex-preview--tex-styled''s arguments.  Previews come out
+padded to `:page-width' for two reasons, each with its own remedy.
+
+An environment's own trailing newline plus the one Org emits before
+\\end{preview} leave the fragment in vertical mode, where preview.sty keeps
+the paragraph line whole, and a line is \\hsize wide.  Dropping the trailing
+newlines ends the fragment in horizontal mode instead, where preview.sty
+repacks that line into a box holding just its contents.
+
+That is all a self-boxing fragment needs, a tikzpicture included, but not
+maths, which TeX centres in a box of width \\hsize.  Only the environments
+in `my/org-latex-preview-natural-width-environments' escape that box, and
+only with \\hsize zeroed; the rest keep the width they centre in."
   (pcase-let ((`(,processing-type ,value ,appearance-options) args))
     (list processing-type
           (if (my/org-latex-preview-display-fragment-p value)
-              (concat "\\setlength{\\hsize}{0pt}\\setlength{\\linewidth}{0pt}%\n" value)
+              (concat (and (my/org-latex-preview-natural-width-environment-p value)
+                           "\\setlength{\\hsize}{0pt}\\setlength{\\linewidth}{0pt}%\n")
+                      (string-trim-right value))
             value)
           appearance-options)))
 
