@@ -785,6 +785,9 @@ the window."
              (eq (current-local-map) read-passwd-map))))
   (defun my/customize-corfu-annotations ()
     (set-face-attribute 'corfu-annotations nil :slant 'normal))
+  (defun my/corfu-widen-popup (formatted)
+    (pcase-let ((`(,prefix-width ,width ,lines) formatted))
+      (list prefix-width (+ width 1) lines)))
   :custom
   (corfu-auto t)  ; auto-completion
   (corfu-quit-no-match t)
@@ -798,6 +801,7 @@ the window."
   :config
   (my/customize-corfu-annotations)  ; set the face now, not only on theme reload
   (add-hook 'after-load-theme-hook #'my/customize-corfu-annotations)
+  (advice-add 'corfu--format-candidates :filter-return #'my/corfu-widen-popup)
   (global-corfu-mode)
   (corfu-popupinfo-mode)
   (corfu-history-mode))
