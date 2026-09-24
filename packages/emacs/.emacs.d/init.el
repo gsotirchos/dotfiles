@@ -1872,6 +1872,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-catch-invisible-edits 'error)
   (org-hide-emphasis-markers t)
   (org-highlight-latex-and-related '(native script entities))
+  (org-use-sub-superscripts '{})
   (org-src-block-faces '(("latex" (:inherit (fixed-pitch default) :extend t))))
   (org-fontify-todo-headline nil)
   (org-fontify-done-headline t)
