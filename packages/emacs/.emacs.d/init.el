@@ -783,6 +783,8 @@ the window."
     (not (or (bound-and-true-p mct--active)
              (bound-and-true-p vertico--input)
              (eq (current-local-map) read-passwd-map))))
+  (defun my/customize-corfu-annotations ()
+    (set-face-attribute 'corfu-annotations nil :slant 'normal))
   :custom
   (corfu-auto t)  ; auto-completion
   (corfu-quit-no-match t)
@@ -794,6 +796,8 @@ the window."
   (corfu-cycle t)
   (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
   :config
+  (my/customize-corfu-annotations)  ; set the face now, not only on theme reload
+  (add-hook 'after-load-theme-hook #'my/customize-corfu-annotations)
   (global-corfu-mode)
   (corfu-popupinfo-mode)
   (corfu-history-mode))
