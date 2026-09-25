@@ -1688,11 +1688,14 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
     "Enable the mypy Flymake backend when mypy is available.
 In a devcontainer project it is the container's mypy, which knows the
 image's site-packages; the shadow file it is given has to be written
-where the container can read it.  The container has no user-level mypy
-config, so what ~/.config/mypy/config says on the host is passed as a flag."
+where the container can read it.  It runs from the top of the workspace,
+where no source package folder can shadow the installed one.  The
+container has no user-level mypy config, so what ~/.config/mypy/config
+says on the host is passed as a flag."
     (if-let* ((tmp (my-devcontainer-temporary-directory)))
         (progn
           (setq-local temporary-file-directory tmp)
+          (setq-local flymake-mypy-directory (my-devcontainer-workspace))
           (setq-local flymake-mypy-executable
                       (string-join (my-devcontainer-command
                                     "mypy" "--ignore-missing-imports")
