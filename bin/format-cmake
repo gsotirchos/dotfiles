@@ -86,19 +86,26 @@ class CMakeFormatter:
                 toks.append(("rp",))
                 i += 1
             elif c == '"':
-                j = i + 1
-                while j < n and src[j] != '"':
-                    j += 2 if src[j] == "\\" else 1
-                j = min(j + 1, n)
+                j = CMakeFormatter._quoted_end(src, i)
                 toks.append(("word", src[i:j]))
                 i = j
             else:
+                # an unquoted argument may embed quoted text, e.g. NAME="a b"
+                # https://cmake.org/cmake/help/latest/manual/cmake-language.7.html#unquoted-argument
                 j = i
-                while j < n and src[j] not in ' \t\r\n()#"':
-                    j += 1
+                while j < n and src[j] not in " \t\r\n()#":
+                    j = CMakeFormatter._quoted_end(src, j) if src[j] == '"' else j + 1
                 toks.append(("word", src[i:j]))
                 i = j
         return toks
+
+    @staticmethod
+    def _quoted_end(src, start):
+        """Index just past the quoted string opening at src[start]."""
+        j = start + 1
+        while j < len(src) and src[j] != '"':
+            j += 2 if src[j] == "\\" else 1
+        return min(j + 1, len(src))
 
     @staticmethod
     def parse(toks):
