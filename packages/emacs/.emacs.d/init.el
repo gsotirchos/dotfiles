@@ -272,7 +272,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :ensure nil
   :no-require t
   :defer 1
-  :preface (advice-add 'find-file-noselect :before (lambda (&rest _) (save-place-mode 1)))
+  :init (advice-add 'find-file-noselect :before (lambda (&rest _) (save-place-mode 1)))
   :config (save-place-mode 1))
 
 (use-package savehist
@@ -289,7 +289,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
    '(kill-ring
      search-ring
      regexp-search-ring))
-  :preface
+  :init
   (advice-add 'completing-read :before (lambda (&rest _) (unless savehist-mode (savehist-mode 1))))
   (advice-add 'previous-history-element :before (lambda (&rest _) (unless savehist-mode (savehist-mode 1))))
   :config (savehist-mode 1))
@@ -711,6 +711,19 @@ the window."
 
 (use-package evil
   :demand t
+  :preface
+  (defun my/evil-select-quote-on-line (orig-fun &rest args)
+    "Call ORIG-FUN with ARGS, pairing quotes on the current line as Vim does."
+    (let ((select-on-line
+           (lambda ()
+             (save-restriction
+               (narrow-to-region (line-beginning-position) (line-end-position))
+               (apply orig-fun args)))))
+      (if (derived-mode-p 'text-mode)
+          (funcall select-on-line)
+        (condition-case nil
+            (apply orig-fun args)
+          (error (funcall select-on-line))))))
   :init
   (setq evil-want-integration t
         evil-want-keybinding nil
@@ -723,6 +736,7 @@ the window."
         evil-undo-system 'undo-redo
         evil-mode-line-format nil)
   :config
+  (advice-add 'evil-select-quote :around #'my/evil-select-quote-on-line)
   (evil-mode 1)
   (global-set-key [remap kill-ring-save] #'evil-yank)
   (global-set-key [remap my/quit-dwim] #'evil-quit)
