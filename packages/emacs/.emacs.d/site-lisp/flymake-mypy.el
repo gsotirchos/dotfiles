@@ -34,6 +34,12 @@
 (defvar flymake-mypy-output-pattern "^\\(.*\\.py\\):\\([0-9]+?\\):\\(?:\\([0-9]+?\\):\\([0-9]+?\\):\\([0-9]+?\\):\\)? \\(.*?\\): \\(.*\\)$"
   "The regex to use for parsing mypy output.")
 
+;; mypy puts its working directory ahead of site-packages on the search
+;; path, so a source folder there (a ROS *_msgs package holding only
+;; .srv files) shadows the installed package as an empty namespace package.
+(defvar-local flymake-mypy-directory nil
+  "Directory to run mypy from, or nil for the project root.")
+
 (defvar-local flymake-mypy--proc nil)
 
 (defun flymake-mypy-enable ()
@@ -70,10 +76,12 @@
       ;; two files behind per check): one temporary file, removed when done.
       (let* ((temp-file (make-temp-file "flymake-mypy" nil ".py"))
              ;; Patched (upstream: (car (last (project-current)))): run from
-             ;; the file's own directory for buffers outside any project.
-             (default-directory (if-let* ((proj (project-current)))
-                                    (project-root proj)
-                                  default-directory)))
+             ;; `flymake-mypy-directory', or the file's own directory for
+             ;; buffers outside any project.
+             (default-directory (or flymake-mypy-directory
+                                    (if-let* ((proj (project-current)))
+                                        (project-root proj)
+                                      default-directory))))
         (write-region (point-min) (point-max) temp-file nil 'quiet)
 
         (setq flymake-mypy--proc
