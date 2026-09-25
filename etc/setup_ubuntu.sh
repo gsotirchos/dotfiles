@@ -204,9 +204,10 @@ main() {
     pipx install vim-vint
 
     # --- python linters / tools -----------------------------------------
-    if prompt_yn "Install Python linters and tools (ruff, pylint, lsp, proselint, vint…)?"; then
+    if prompt_yn "Install Python linters and tools (uv, pylint, lsp, proselint, vint…)?"; then
         header "Installing Python linters and tools"
-        for pkg in pyright pylint ruff proselint mypy cmakelang; do
+        # No ruff: bin/ruff runs it through uvx at the version a repo pins
+        for pkg in pyright pylint uv proselint mypy cmakelang; do
             pipx install "${pkg}"
         done
         pipx inject cmakelang pyyaml

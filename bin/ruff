@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Stands in for ruff so that editors and scripts run the version the enclosing
+# git repository pins in a tracked requirements file (e.g. `ruff==0.8.1' in
+# .ci/python/requirements.txt), and thus format exactly as that repo's CI does:
+# ruff's style changes between minor releases (see
+# https://astral.sh/blog/ruff-v0.9.0).
+
+pinned_version() {
+    local pin
+    pin="$(git grep -h -o -E '^ruff==[^[:space:];#]+' \
+        -- ':/*requirements*.txt' 2> /dev/null)" || return 0
+    pin="${pin%%$'\n'*}"
+    echo "${pin#ruff==}"
+}
+
+main() {
+    local version
+    version="$(pinned_version)"
+    exec uvx --quiet "ruff${version:+@${version}}" "$@"
+}
+
+main "$@"
