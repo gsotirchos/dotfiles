@@ -11,8 +11,9 @@ check_syntax() {
     for file in "$@"; do
         # Piping is the only option when shfmt is a snap: its `home' interface
         # grants `owner @{HOME}/[^.]** rwkl', so opening anything under a
-        # dotted directory is denied.
-        if ! output="$(shfmt -ln bash -l < "${file}" 2>&1 > /dev/null)"; then
+        # dotted directory is denied.  Reformatting to /dev/null is the check:
+        # `-l' would also exit non-zero for a file that merely needs formatting.
+        if ! output="$(shfmt -ln bash < "${file}" 2>&1 > /dev/null)"; then
             echo "${output//<standard input>/${file}}" >&2
             status=1
         fi
