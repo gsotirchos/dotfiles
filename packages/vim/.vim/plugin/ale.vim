@@ -57,7 +57,6 @@ let g:ale_fixers = {
 " Custom Tool Flags matching your modern outside-vim setup
 let g:ale_sh_shellcheck_options = '--shell=bash'
 let g:ale_sh_shfmt_options = '-ln=bash -i ' . &tabstop . ' -ci -bn -sr'
-let g:ale_python_ruff_options = '--config ' .  expand(g:dotfiles_dir  . '/pyproject.toml')
 let g:ale_tex_latexindent_options = '-m -rv'
 let g:ale_markdown_markdownlint_options = '--config ' . expand(g:dotfiles_dir . '/markdownlint.json')
 let g:ale_sh_bashate_executable = expand(g:dotfiles_dir . '/bin/bashate')
