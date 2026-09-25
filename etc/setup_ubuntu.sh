@@ -66,6 +66,7 @@ main() {
         pipx \
         python3-pip \
         python3-bashate \
+        libfile-homedir-perl \
         light \
         gnome-tweaks \
         dconf-editor \

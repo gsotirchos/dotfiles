@@ -16,10 +16,20 @@ main() {
     )"
     local bright='\033[1m'
     local reset='\033[0m'
+    local os
+    os="$(uname -s)"
 
     header() { echo -e "\n${bright}- ${1}${reset}"; }
     warn() { echo -e "${bright}Warning: ${1}${reset}" >&2; }
     die() { echo -e "${bright}Error: ${1}${reset}" >&2; exit 1; }
+    hint_install() {
+        warn "${1}"
+        if [[ "${os}" == "Darwin" ]]; then
+            echo "  Install it with: ${2}" >&2
+        else
+            echo "  Install it with: ${3}" >&2
+        fi
+    }
 
     local texlive_dir="${HOME}/.texlive"
     local current_dir="${texlive_dir}/current"
@@ -81,6 +91,13 @@ main() {
         doublestroke
         enumitem
     )
+
+    # latexindent is a Perl script and TeX Live ships none of the modules it
+    # loads; on macOS Homebrew's bottle brings its own Perl and shadows this
+    # one on $PATH, so only Linux has anything to gain from installing it.
+    if [[ "${os}" != "Darwin" ]]; then
+        packages+=(latexindent)
+    fi
 
     # --- validate -------------------------------------------------------
     for cmd in curl tar perl realpath; do
@@ -175,16 +192,23 @@ main() {
         echo "Every style Org and ${preamble##*/} need resolves."
     fi
 
-    # dvisvgm loads libgs at run time for PostScript specials; TeX Live does
-    # not ship it, and installing it needs a package manager (sudo on Linux),
-    # so only point at the command rather than running it from here.
+    # Neither of the two below is TeX Live's to install, and both need a
+    # package manager (sudo on Linux), so only point at the command.
+
+    # dvisvgm loads libgs at run time for PostScript specials.
     if ! command -v gs &> /dev/null; then
-        local ghostscript_hint="sudo apt install ghostscript"
-        if [[ "$(uname -s)" == "Darwin" ]]; then
-            ghostscript_hint="brew install ghostscript"
-        fi
-        warn "ghostscript is missing, dvisvgm needs it for PostScript specials."
-        echo "  Install it with: ${ghostscript_hint}" >&2
+        hint_install \
+            "ghostscript is missing, dvisvgm needs it for PostScript specials." \
+            "brew install ghostscript" \
+            "sudo apt install ghostscript"
+    fi
+
+    # See the note by the package list for why macOS gets it from Homebrew.
+    if ! latexindent --version &> /dev/null; then
+        hint_install \
+            "latexindent cannot run, Apheleia formats .tex files with it." \
+            "brew install latexindent" \
+            "sudo apt install libfile-homedir-perl"
     fi
 
     header "Start a new login shell to pick up ${current_dir}/bin on \$PATH"
