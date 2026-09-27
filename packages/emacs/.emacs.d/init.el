@@ -1417,7 +1417,7 @@ reaches into the preview's `display' property elides the whole preview."
   :ensure nil
   :no-require t
   :after (my-keybindings modus-themes)
-  :hook prog-mode
+  :hook (prog-mode nxml-mode)
   :bind (:map my/personal-map ("M-f" . flymake-show-buffer-diagnostics))
   :custom
   (flymake-no-changes-timeout 1)
@@ -1500,7 +1500,6 @@ reaches into the preview's `display' property elides the whole preview."
   (eglot-autoshutdown t)
   (eglot-extend-to-xref nil)
   (eglot-prefer-plaintext t)
-  (eglot-code-action-indications '(eldoc-hint))
   (eglot-send-changes-idle-time 1)
   (eglot-events-buffer-config '(:size 0 :format full))
   (eglot-ignored-server-capabilities
@@ -1795,8 +1794,9 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
     (flyspell-mode -1)
     (outline-minor-mode 1)
     (visual-line-mode -1)
-    (my/set-local-indent-width nxml-child-indent)
-    (setq-local nxml-attribute-indent nxml-child-indent))
+    (setq-local eglot-code-action-indications nil)
+    (setq-local nxml-attribute-indent nxml-child-indent)
+    (my/set-local-indent-width nxml-child-indent))
   (defun my/nxml-close-tag-indent (orig pos)
     "Indent a lone tag-closer (`>' or `/>') to the start-tag's column.
 ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
