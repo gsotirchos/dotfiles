@@ -1500,6 +1500,7 @@ reaches into the preview's `display' property elides the whole preview."
   (eglot-autoshutdown t)
   (eglot-extend-to-xref nil)
   (eglot-prefer-plaintext t)
+  (eglot-code-action-indications '(eldoc-hint))
   (eglot-send-changes-idle-time 1)
   (eglot-events-buffer-config '(:size 0 :format full))
   (eglot-ignored-server-capabilities
