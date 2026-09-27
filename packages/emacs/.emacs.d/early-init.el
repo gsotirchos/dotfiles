@@ -128,6 +128,16 @@
     (package-refresh-contents))
   (package-install 'use-package))
 
+;; Recompile packages after an Emacs upgrade to match the freshly built elns
+(let ((stamp (expand-file-name "var/compiled-by-emacs-version" user-emacs-directory)))
+  (unless (equal emacs-version
+                 (and (file-readable-p stamp)
+                      (with-temp-buffer (insert-file-contents stamp) (buffer-string))))
+    (package-activate-all)
+    (package-recompile-all)
+    (make-directory (file-name-directory stamp) t)
+    (with-temp-file stamp (insert emacs-version))))
+
 (require 'use-package)
 (setq use-package-always-ensure t
       use-package-always-defer t)
