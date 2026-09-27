@@ -83,6 +83,8 @@ main() {
 
     # OS-specific
     if [[ "${os}" == "linux" ]]; then
+        stow -vd "${dotfiles}/packages" -t "${HOME}" -R fontconfig
+
         local dmi_product
         dmi_product=$(cat /sys/devices/virtual/dmi/id/product_name 2> /dev/null)
         if [[ "${dmi_product}" == "iMac14,1" ]]; then

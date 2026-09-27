@@ -70,7 +70,8 @@ main() {
         light \
         gnome-tweaks \
         dconf-editor \
-        chrome-gnome-shell
+        chrome-gnome-shell \
+        fonts-ubuntu
 
     # --- backlight permissions (for light utility) ----------------------
     header "Configuring backlight permissions"
