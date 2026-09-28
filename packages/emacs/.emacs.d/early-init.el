@@ -98,7 +98,7 @@
  ((eq system-type 'gnu/linux)
   (set-face-attribute 'default nil :family "Ubuntu Mono" :height 110)
   (set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono")
-  (set-face-attribute 'variable-pitch nil :family "Ubuntu" :height 0.94)
+  (set-face-attribute 'variable-pitch nil :family "Ubuntu")
   ;; DejaVu Sans (Mono) fallback (1.164em) grows the line unless shrunk.
   (add-to-list 'face-font-rescale-alist '("DejaVu Sans" . 0.8))))
 
