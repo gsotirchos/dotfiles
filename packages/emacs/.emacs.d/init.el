@@ -1779,6 +1779,15 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
   :mode ("\\(?:Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'"))
 
 
+;; Git
+
+(use-package conf-mode
+  :ensure nil
+  :no-require t
+  :mode (("/\\.gitignore\\'" . conf-unix-mode)
+         ("/\\.git/info/exclude\\'" . conf-unix-mode)))
+
+
 ;; XML
 
 (use-package nxml-mode
