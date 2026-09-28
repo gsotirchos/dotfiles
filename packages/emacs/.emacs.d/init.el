@@ -1545,6 +1545,10 @@ reaches into the preview's `display' property elides the whole preview."
   (advice-add 'eglot-completion-at-point :around #'my/eglot-require-completion-prefix)
   (advice-add 'eglot-register-capability :around #'my/eglot-tolerate-watch-limit)
   :config
+  (evil-define-key 'normal eglot-mode-map
+    "gd" #'eglot-find-declaration
+    "gD" #'eglot-find-typeDefinition
+    "gi" #'eglot-find-implementation)
   (add-to-list 'eglot-server-programs
                `(python-base-mode . ("pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
