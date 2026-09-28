@@ -1251,7 +1251,11 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (my/set-local-indent-width my/markdown-list-indent-width)
     ;; Drop `#' and `*': `visual-wrap-prefix-mode' reserves a `min-width' for
     ;; whatever matches here, padding markup `markdown-ts-hide-markup' hid.
-    (setq-local adaptive-fill-regexp "[-–!|%;>·•‣⁃◦ \t]*"))
+    (setq-local adaptive-fill-regexp "[-–!|%;>·•‣⁃◦ \t]*")
+    ;; `markdown-ts-mode' leaves these at their `text-mode' values, so filling
+    ;; glues an ATX heading onto the paragraph that follows it.
+    (setq-local paragraph-start (concat paragraph-start "\\|[ \t]*#+ ")
+                paragraph-separate (concat paragraph-separate "\\|[ \t]*#+ ")))
   (add-hook 'markdown-ts-mode-hook #'my/markdown-ts-mode-hook)
   (add-hook 'markdown-ts-view-mode-hook #'my/markdown-ts-mode-hook)
   :config (face-spec-set 'markdown-ts-latex '((t (:foreground unspecified))) 'face-override-spec))
@@ -1584,10 +1588,14 @@ interactively with ARGS.  Used to overload \\[fill-paragraph]."
         (apheleia-format-buffer formatters)
       (apply #'funcall-interactively fallback args)))
   (defun my/apheleia-format-or-fill-paragraph (&optional justify region)
-    "Apheleia-format the buffer, else fall back to `fill-paragraph'."
+    "Apheleia-format the buffer, else fall back to `fill-paragraph'.
+In code buffers an active region is re-indented instead, unless it lies
+inside a comment."
     (interactive (progn (barf-if-buffer-read-only)
                         (list (if current-prefix-arg 'full) t)))
-    (if (and region (use-region-p) (not (nth 4 (syntax-ppss))))
+    (if (and region (use-region-p)
+             (not (derived-mode-p 'text-mode))
+             (not (nth 4 (syntax-ppss))))
         (indent-region (region-beginning) (region-end))
       (my/apheleia-format-or #'fill-paragraph justify region)))
   (defun my/apheleia-format-or-prog-fill (&optional arg)
