@@ -1031,7 +1031,12 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   :config (which-key-mode))
 
 (use-package eldoc-box
-  :hook (prog-mode . eldoc-box-hover-at-point-mode))
+  :hook (prog-mode . eldoc-box-hover-at-point-mode)
+  :preface
+  (defun my/eldoc-box-raise-frame (&rest _)
+    (when (frame-live-p eldoc-box--frame)
+      (raise-frame eldoc-box--frame)))
+  :config (advice-add 'eldoc-box--get-frame :after #'my/eldoc-box-raise-frame))
 
 (use-package diff-hl
   :custom
