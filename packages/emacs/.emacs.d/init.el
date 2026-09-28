@@ -1843,7 +1843,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
 (use-package my-ros-msg-mode
   :ensure nil
   :load-path "site-lisp/"
-  :mode ("\\.msg\\'" . my-ros-msg-mode))
+  :mode ("\\.\\(?:msg\\|srv\\)\\'" . my-ros-msg-mode))
 
 
 ;; LaTeX
