@@ -1032,11 +1032,15 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
 
 (use-package eldoc-box
   :hook (prog-mode . eldoc-box-hover-at-point-mode)
+  :defines pgtk-wait-for-event-timeout
   :preface
-  (defun my/eldoc-box-raise-frame (&rest _)
-    (when (frame-live-p eldoc-box--frame)
-      (raise-frame eldoc-box--frame)))
-  :config (advice-add 'eldoc-box--get-frame :after #'my/eldoc-box-raise-frame))
+  (defun my/eldoc-box-recreate-hidden-frame (get-frame &rest args)
+    (when (and (frame-live-p eldoc-box--frame)
+               (not (frame-visible-p eldoc-box--frame)))
+      (delete-frame eldoc-box--frame))
+    (let ((pgtk-wait-for-event-timeout nil))
+      (apply get-frame args)))
+  :config (advice-add 'eldoc-box--get-frame :around #'my/eldoc-box-recreate-hidden-frame))
 
 (use-package diff-hl
   :custom
