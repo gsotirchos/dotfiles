@@ -45,6 +45,8 @@ Temporary Items
 *.swp
 *.swo
 auto/
+ltximg/
+org-tex-*.tex
 
 # Python
 __pycache__/
