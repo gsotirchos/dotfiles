@@ -207,7 +207,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   ;; (enable-local-eval nil)
   (ffap-machine-p-known 'reject)
   ;; (package-check-signature t)
-  (package-review-policy t)
+  ;; (package-review-policy t)
   (auth-sources '("~/.authinfo.gpg"))
   (vc-follow-symlinks t)
   (browse-url-mailto-function 'browse-url-default-browser)
