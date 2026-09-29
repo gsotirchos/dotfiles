@@ -1421,8 +1421,7 @@ reaches into the preview's `display' property elides the whole preview."
   :ensure nil
   :load-path "site-lisp/"
   :demand t  ;; `eglot-server-programs' and the mypy hook call into it
-  :hook ((find-file . my-devcontainer-setup-compile-command)
-         (compilation-mode . my-devcontainer-setup-compilation-buffer))
+  :hook (compilation-mode . my-devcontainer-setup-compilation-buffer)
   :bind
   (nil
    :map my/personal-map
@@ -1847,12 +1846,8 @@ inside a comment."
   :preface
   (defun my/flymake-mypy-enable ()
     "Enable the mypy Flymake backend when mypy is available.
-In a devcontainer project it is the container's mypy, which knows the
-image's site-packages; the shadow file it is given has to be written
-where the container can read it.  It runs from the top of the workspace,
-where no source package folder can shadow the installed one.  The
-container has no user-level mypy config, so what ~/.config/mypy/config
-says on the host is passed as a flag."
+In a devcontainer project the container's mypy is run from the top of
+the workspace, where no source folder shadows an installed package."
     (if-let* ((tmp (my-devcontainer-temporary-directory)))
         (progn
           (setq-local temporary-file-directory tmp)
