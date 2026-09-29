@@ -7,7 +7,6 @@
 ;;; Code:
 
 (declare-function my/theme-color "init" (name))
-(declare-function my/find-file "my-keybindings" (file))
 
 (require 'browse-url)
 (require 'org)
@@ -43,10 +42,9 @@ Otherwise, apply emphasis to the word at point (CHAR)."
 With a prefix ARG, open the most recent journal file dated before today."
   (interactive "P")
   (let ((dir (expand-file-name "journal" org-directory))
-        (today (format-time-string "%Y-%m-%d.org"))
-        (current-prefix-arg nil))
+        (today (format-time-string "%Y-%m-%d.org")))
     (make-directory dir t)
-    (my/find-file
+    (find-file
      (if arg
          (let ((previous (car (last (seq-filter
                                      (lambda (file) (string< file today))
