@@ -10,7 +10,9 @@
 ;;
 ;; Enable `my-margin-mode' and make sure the contributing packages'
 ;; own width management is disabled (e.g. `flymake-autoresize-margins'
-;; nil, and don't set `diff-hl-autohide-margin').
+;; nil, and don't set `diff-hl-autohide-margin').  What a package
+;; insists on managing from code instead of a setting is disabled in
+;; `my/margin-foreign-width-managers'.
 
 ;;; Code:
 
@@ -30,8 +32,18 @@ should return an integer (usually 0 or 1)."
   :type '(repeat function))
 
 (defvar my/margin-triggers
-  '(diff-hl-update diff-hl-remove-overlays flymake--handle-report)
+  ;; diff-hl updates asynchronously, so its overlays are not in place
+  ;; yet when `diff-hl-update' returns; see `diff-hl--update'.
+  '(diff-hl--update-overlays diff-hl-remove-overlays flymake--handle-report)
   "Functions after which the margin width is recomputed.")
+
+(defvar my/margin-foreign-width-managers
+  '(diff-hl-margin-ensure-visible)
+  "Functions with which contributing packages widen the margin themselves.
+These are disabled while `my-margin-mode' is on, which owns the
+width.  `diff-hl-margin-ensure-visible' also applies its width with
+`set-window-buffer', which resets the window's vscroll and so undoes
+`my-scroll-limit-mode' several times a second.")
 
 (defun my/margin-diff-hl-width ()
   "Return 1 if diff-hl currently shows any indicators here, else 0."
@@ -69,12 +81,16 @@ the `my/margin-contributors' report, recomputed after each of the
       (progn
         (dolist (fn my/margin-triggers)
           (advice-add fn :after #'my/margin-update))
+        (dolist (fn my/margin-foreign-width-managers)
+          (advice-add fn :override #'ignore))
         ;; Correct any buffers that already exist (e.g. restored by desktop)
         (dolist (buf (buffer-list))
           (with-current-buffer buf
             (my/margin-update))))
     (dolist (fn my/margin-triggers)
-      (advice-remove fn #'my/margin-update))))
+      (advice-remove fn #'my/margin-update))
+    (dolist (fn my/margin-foreign-width-managers)
+      (advice-remove fn #'ignore))))
 
 (provide 'my-margin)
 ;;; my-margin.el ends here
