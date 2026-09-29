@@ -29,6 +29,7 @@
 ;;; Code:
 
 (require 'seq)
+(require 'format-spec)
 (require 'subr-x)
 
 (declare-function eglot-current-server "eglot")
@@ -200,23 +201,20 @@ variable seeds a package's CMake cache only on its first configure, and
 the per-package databases are merged afterwards for clangd.  A
 --cmake-args on the command line replaces, rather than extends, the
 list in a workspace's colcon_defaults.yaml, so the generator is named
-here too or a workspace configured for Ninja would fall back to Make."
+here too or a workspace configured for Ninja would fall back to Make.
+colcon builds the workspace it is started in, so the build is anchored
+at the top of the workspace, wherever \\[compile] is run from."
   (when-let* ((file (buffer-file-name))
               (package (my-devcontainer--colcon-package file))
-              ((my-devcontainer-workspace)))
+              (workspace (my-devcontainer-workspace)))
     (setq-local compile-command
-                (format (concat "%s colcon build --symlink-install --packages-up-to %s"
-                                " --cmake-args -GNinja -DCMAKE_BUILD_TYPE=Release"
-                                " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-                                " && merge-compile-commands")
-                        my-devcontainer-executable package))))
-
-(defun my-devcontainer--in-workspace (fn &rest args)
-  "Execute FN with ARGS at the top of the container's workspace."
-  (let ((default-directory (or (my-devcontainer-workspace) default-directory)))
-    (apply fn args)))
-
-(advice-add 'compile :around #'my-devcontainer--in-workspace)
+                (format-spec (concat "%e -C %w colcon build --symlink-install --packages-up-to %p"
+                                     " --cmake-args -GNinja -DCMAKE_BUILD_TYPE=Release"
+                                     " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+                                     " && merge-compile-commands %w")
+                             `((?e . ,my-devcontainer-executable)
+                               (?w . ,(shell-quote-argument (directory-file-name workspace)))
+                               (?p . ,package))))))
 
 ;;;###autoload
 (defun my-devcontainer-setup-compilation-buffer ()
