@@ -1671,14 +1671,18 @@ inside a comment."
   :ensure nil
   :no-require t
   :after treesit
-  :custom (python-check-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
+  :custom (python-check-command "ruff check --output-format=concise")
   :init
   (add-hook 'inferior-python-mode-hook
             (lambda () (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))))
 
 (use-package flymake-ruff
-  :hook (python-base-mode . flymake-ruff-load)
-  :custom (python-flymake-command python-check-command))
+  :preface
+  (defun my/flymake-ruff-load ()
+    "Lint with ruff in place of `python-flymake', which would duplicate its reports."
+    (remove-hook 'flymake-diagnostic-functions #'python-flymake t)
+    (flymake-ruff-load))
+  :hook (python-base-mode . my/flymake-ruff-load))
 
 ;; Vendored from https://github.com/com4/flymake-mypy (BSD-2-Clause)
 (use-package flymake-mypy
