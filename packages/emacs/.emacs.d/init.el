@@ -831,6 +831,7 @@ under /."
   (corfu-history-mode))
 
 (use-package cape
+  :demand t
   :preface (add-hook 'completion-at-point-functions #'cape-file))
 
 (use-package math-symbol-lists)
@@ -838,8 +839,8 @@ under /."
 (use-package my-latex-capf
   :ensure nil
   :load-path "site-lisp/"
-  :commands my/latex-capf
-  :init (add-hook 'completion-at-point-functions #'my/latex-capf))
+  :after cape
+  :hook (org-mode markdown-ts-mode LaTeX-mode))
 
 (use-package tempel
   :after my-keybindings
