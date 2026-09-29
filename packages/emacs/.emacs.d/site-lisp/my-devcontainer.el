@@ -29,6 +29,7 @@
 ;;; Code:
 
 (require 'seq)
+(require 'subr-x)
 
 (declare-function eglot-current-server "eglot")
 (declare-function eglot-reconnect "eglot" (server &optional interactive))
@@ -229,27 +230,42 @@ messages name /workspace/..., which `next-error' could not visit."
 
 ;;;; Terminal
 
-(defun my-devcontainer--shell-command (workdir)
-  "Return the docker command opening a login shell in WORKDIR of the container."
+(defun my-devcontainer--container ()
+  "Return the current container as (USER . ID)."
   (let ((container (split-string (my-devcontainer--query "--container") "@")))
-    `("docker" "exec" "-it" "-u" ,(car container) "-w" ,workdir
-      "-e" "TERM=xterm-256color" ,(cadr container) "bash" "-l")))
+    (cons (car container) (cadr container))))
+
+(defun my-devcontainer--container-name (id)
+  "Return the name docker knows container ID by."
+  (with-temp-buffer
+    (call-process "docker" nil '(t nil) nil "inspect" "--format" "{{.Name}}" id)
+    (string-remove-prefix "/" (string-trim (buffer-string)))))
+
+(defun my-devcontainer--shell-command (container workdir)
+  "Return the docker command opening a login shell in WORKDIR of CONTAINER.
+CONTAINER is a (USER . ID) pair."
+  `("docker" "exec" "-it" "-u" ,(car container) "-w" ,workdir
+    "-e" "TERM=xterm-256color" ,(cdr container) "bash" "-l"))
 
 ;;;###autoload
-(defun my-devcontainer-terminal ()
-  "Pop to a new ghostel terminal running a login shell in the current container.
-The shell starts at the top of the container's workspace."
-  (interactive)
+(defun my-devcontainer-terminal (&optional new)
+  "Pop to a ghostel terminal running a login shell in the current container.
+The shell starts at the top of the container's workspace.  As with
+`project-shell', an existing terminal is reused, and restarted if its
+shell has exited; with prefix argument NEW, another one is started."
+  (interactive "P")
   (require 'ghostel)
   (let* ((mappings (or (my-devcontainer-mappings)
                        (user-error "No devcontainer serves %s"
                                    (abbreviate-file-name default-directory))))
          (mount (my-devcontainer--mount (expand-file-name default-directory) mappings))
-         (command (my-devcontainer--shell-command (cdr mount)))
-         (buffer (generate-new-buffer
-                  (format "*devcontainer:%s*" (file-name-nondirectory (car mount))))))
+         (container (my-devcontainer--container))
+         (name (format "*%s-ghostel*" (my-devcontainer--container-name (cdr container))))
+         (buffer (if new (generate-new-buffer name) (get-buffer-create name))))
     (pop-to-buffer-same-window buffer)
-    (ghostel-exec buffer (car command) (cdr command))))
+    (unless (process-live-p (get-buffer-process buffer))
+      (let ((command (my-devcontainer--shell-command container (cdr mount))))
+        (ghostel-exec buffer (car command) (cdr command))))))
 
 
 ;;;; Refreshing
