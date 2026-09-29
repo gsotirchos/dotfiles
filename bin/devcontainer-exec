@@ -2,12 +2,6 @@
 #
 # Run a command inside the devcontainer that governs a directory.
 #
-# VS Code moves its whole editor server into the container. This does the
-# opposite: the editor stays on the host and reaches in only for the tools
-# that need the image's filesystem -- clangd for the headers under /opt/ros,
-# pyright and mypy for the image's site-packages. The workspace is a bind
-# mount, so a file on the host is the same file in the container.
-#
 #   devcontainer-exec [-C DIR] CMD [ARG...]  run CMD in the container governing DIR ($PWD)
 #   devcontainer-exec --mappings [DIR]       print the bind mounts as HOST=CONTAINER,
 #                                            comma-joined (clangd's --path-mappings format)
@@ -15,11 +9,8 @@
 #   devcontainer-exec --refresh [DIR]        re-probe the container's environment
 #   devcontainer-exec --provision [DIR]      install the editing tools into the container
 #
-# Commands go through plain `docker exec' (~40 ms) rather than `devcontainer
-# exec' (~700 ms: node startup plus an environment probe on every call). The
-# devcontainer CLI is used only to start the container and, once per
-# container, to probe the environment its userEnvProbe gives a VS Code
-# terminal; the probe is cached and handed to docker with --env-file.
+# Commands go through plain `docker exec' (~40 ms, vs ~700 ms for
+# `devcontainer exec'), with the container's probed environment cached.
 
 set -euo pipefail
 shopt -s inherit_errexit
@@ -74,11 +65,9 @@ workspace_folder_of() {
     docker inspect --format '{{index .Config.Labels "devcontainer.local_folder"}}' "$1"
 }
 
-# Mutter puts the Xwayland cookie at a path with a per-login random suffix,
-# so a devcontainer.json that bind-mounts ${localEnv:XAUTHORITY} produces a
-# container that cannot start after the next login (its mounts are fixed at
-# creation). Hand the CLI a stable path instead: a symlink Docker resolves
-# afresh on every start, retargeted here to the current cookie.
+# Mutter's Xwayland cookie path changes per login, while a container's
+# ${localEnv:XAUTHORITY} mount is fixed at creation: hand the CLI a stable
+# symlink to the current cookie instead.
 stable_xauthority() {
     local link="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/Xauthority"
     if [[ -n "${XAUTHORITY:-}" && "${XAUTHORITY}" != "${link}" ]]; then
@@ -87,10 +76,8 @@ stable_xauthority() {
     fi
 }
 
-# The container serving $1: the running one mounting it most specifically
-# -- a colcon workspace holds many packages besides the one carrying
-# .devcontainer, and a container mounting the whole home directory covers
-# every workspace -- or else one started for the configuration above it.
+# The container serving $1: the running one mounting it most specifically,
+# or else one started for the configuration above it.
 container_id() {
     local dir="$1" id folder mount host best="" best_host=""
     for id in $(running_containers); do
@@ -150,14 +137,9 @@ container_path() {
     printf '%s\n' "${mount#*=}${2#"${host}"}"
 }
 
-# Snapshot the environment a VS Code terminal would get, in the format of
-# docker's --env-file. That format is one NAME=VALUE per line, so values
-# spanning lines (exported bash functions) cannot be carried; the shell's
-# own bookkeeping variables are dropped as they describe the probe itself.
-# ~/.local/bin holds the pip-installed tools; the image's profile only adds
-# it when it already exists at login, which it does not before provisioning.
-# The colcon overlay above the workspace folder is sourced as well, so that
-# the workspace's own packages resolve once built (--refresh after a build).
+# Snapshot a VS Code terminal's environment, plus ~/.local/bin and the
+# workspace's colcon overlay, as docker --env-file lines (so multi-line
+# values are dropped).
 probe_environment() {
     local folder="$1" env_file="$2" entry script
     mkdir -p "$(dirname "${env_file}")"
@@ -192,11 +174,8 @@ environment_file() {
     printf '%s\n' "${env_file}"
 }
 
-# The same-path symlinks give the container a view of each mounted
-# workspace under its host path, so tools without clangd's --path-mappings
-# (pyright, mypy) see the paths the host editor sends them.  The export
-# makes every CMake build in the container -- from a VS Code terminal as
-# much as from here -- write the compile database clangd reads.
+# Same-path symlinks let tools without --path-mappings (pyright, mypy) see
+# host paths; the export makes every CMake build write a compile database.
 provision() {
     local id="$1" user="$2" mounts="$3" script
     script="$(

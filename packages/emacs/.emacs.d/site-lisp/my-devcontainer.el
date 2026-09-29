@@ -2,29 +2,10 @@
 
 ;;; Commentary:
 
-;; A devcontainer image carries the project's build environment -- its
-;; compiler, its ROS underlay, its headers -- but none of the editor tooling.
-;; VS Code deals with that by moving its whole editor server into the
-;; container.  This does the opposite: buffers stay on the host (the
-;; workspace is a bind mount, so the host copy of a file is the same file)
-;; and only the tools that need the image's filesystem are run inside the
-;; container, through the `devcontainer-exec' script.
-;;
-;; That is clangd, which needs the headers under /opt/ros, and pyright and
-;; mypy, which need the image's site-packages.  Everything that merely
-;; reads the source and its configuration -- ruff, the formatters, the
-;; other Flymake backends -- keeps running on the host untouched.
-;;
-;; Two things bridge the path difference between the two sides:
-;;
-;;   * clangd is handed the container's bind mounts as `--path-mappings',
-;;     since it is the one server that reads a compile database written
-;;     inside the container.  The other tools see the host's paths through
-;;     same-path symlinks that `devcontainer-exec --provision' creates.
-;;
-;;   * A location a server reports under /opt or /usr exists only in the
-;;     container; `eglot-uri-to-path' is taught to point those at the
-;;     container's copy over Tramp, which is enough to read a header.
+;; Buffers stay on the host while the tools needing the image's filesystem
+;; (clangd, pyright, mypy, colcon) run in the container via `devcontainer-exec'.
+;; clangd gets the bind mounts as --path-mappings; paths only the container
+;; has are visited over Tramp.
 
 ;;; Code:
 
@@ -56,9 +37,7 @@ A nil value records that DIRECTORY belongs to no container.")
       (string-trim (buffer-string)))))
 
 (defun my-devcontainer--query (action &optional dir)
-  "Return the answer of `devcontainer-exec ACTION' for DIR, or nil.
-Answers are cached: docker is not free, and a container that is not yet
-running is started on the first question, which takes a while."
+  "Return the cached answer of `devcontainer-exec ACTION' for DIR, or nil."
   (let* ((dir (directory-file-name (expand-file-name (or dir default-directory))))
          (key (cons action dir)))
     (unless (file-remote-p dir)
@@ -91,9 +70,7 @@ Each entry is (HOST . CONTAINER), deepest host path first."
 
 (defun my-devcontainer-temporary-directory (&optional dir)
   "Return a temporary directory both the host and DIR's container can see.
-A checker run in the container cannot read a shadow file written to the
-host's /tmp, so it goes under the workspace holding DIR instead.  Nil if
-no container serves DIR."
+Nil if no container serves DIR."
   (when-let* ((workspace (my-devcontainer-workspace dir))
               (tmp (expand-file-name ".cache/emacs/" workspace)))
     (make-directory tmp t)
@@ -104,11 +81,9 @@ no container serves DIR."
   `(,my-devcontainer-executable ,program ,@args))
 
 (defun my-devcontainer--clangd-args (mappings)
-  "Return the arguments that tie clangd to the container and the workspace.
-MAPPINGS tell it how the host's paths map to the container's.  It is also
-pointed at the workspace's merged compile database, since the per-package
-one it would find first has nothing for the generated headers that
-`merge-compile-commands' provides for."
+  "Return clangd's arguments for the container's MAPPINGS.
+It is pointed at the workspace's merged compile database, the only one
+covering generated headers."
   (cons (concat "--path-mappings="
                 (mapconcat (lambda (mapping) (concat (car mapping) "=" (cdr mapping)))
                            mappings ","))
@@ -151,19 +126,16 @@ FROM and TO are `car' and `cdr' in either order; nil if no mount covers PATH."
 
 (defun my-devcontainer--symlink-target (path mappings)
   "Return the host side of what symlink PATH points to, or nil.
-A link written inside the container -- every file of a colcon
---symlink-install space -- carries the container's absolute path, so on
-the host it dangles until its target is translated with MAPPINGS."
+Links made in the container (colcon --symlink-install) carry its paths,
+which MAPPINGS translate."
   (when-let* ((target (file-symlink-p path))
               (host (my-devcontainer--host-path
                      (expand-file-name target (file-name-directory path)) mappings)))
     (and (file-exists-p host) host)))
 
 (defun my-devcontainer--localize-path (path)
-  "Return PATH as something the host can visit.
-Filter for `eglot-uri-to-path': a container-side server reports the
-container's paths, which are either the host's own files under another
-name or, for the image's headers, files only the container has."
+  "Return container PATH as something the host can visit.
+Filter for `eglot-uri-to-path'."
   (if (or (file-exists-p path) (file-remote-p path))
       path
     (if-let* ((mappings (my-devcontainer-mappings)))
@@ -193,34 +165,38 @@ name or, for the image's headers, files only the container has."
       (when (re-search-forward "<name>\\s-*\\([^<[:space:]]+\\)\\s-*</name>" nil t)
         (match-string 1)))))
 
-;;;###autoload
-(defun my-devcontainer-setup-compile-command ()
-  "Make \\[compile] build the current colcon package in its container.
-The compile database flag is passed explicitly, since the exported
-variable seeds a package's CMake cache only on its first configure, and
-the per-package databases are merged afterwards for clangd.  A
---cmake-args on the command line replaces, rather than extends, the
-list in a workspace's colcon_defaults.yaml, so the generator is named
-here too or a workspace configured for Ninja would fall back to Make.
-colcon builds the workspace it is started in, so the build is anchored
-at the top of the workspace, wherever \\[compile] is run from."
-  (when-let* ((file (buffer-file-name))
-              (package (my-devcontainer--colcon-package file))
-              (workspace (my-devcontainer-workspace)))
-    (setq-local compile-command
-                (format-spec (concat "%e -C %w colcon build --symlink-install --packages-up-to %p"
-                                     " --cmake-args -GNinja -DCMAKE_BUILD_TYPE=Release"
-                                     " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-                                     " && merge-compile-commands %w")
-                             `((?e . ,my-devcontainer-executable)
-                               (?w . ,(shell-quote-argument (directory-file-name workspace)))
-                               (?p . ,package))))))
+(defun my-devcontainer-compile-command ()
+  "Return the command building the current colcon package in its container.
+Outside any package the whole workspace is built; outside any container,
+return nil.  --cmake-args replaces colcon_defaults.yaml's list, hence the
+explicit generator."
+  (when-let* ((workspace (my-devcontainer-workspace)))
+    (let ((package (my-devcontainer--colcon-package
+                    (or (buffer-file-name) default-directory))))
+      (format-spec (concat "%e -C %w colcon build --symlink-install%p"
+                           " --cmake-args -GNinja -DCMAKE_BUILD_TYPE=Release"
+                           " -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+                           " && merge-compile-commands %w")
+                   `((?e . ,my-devcontainer-executable)
+                     (?w . ,(shell-quote-argument (directory-file-name workspace)))
+                     (?p . ,(if package (concat " --packages-up-to " package) "")))))))
+
+(defun my-devcontainer--propose-compile-command (&rest _)
+  "Make \\[compile] propose `my-devcontainer-compile-command'.
+Proposed once per buffer, so an edit made at the prompt is kept."
+  (interactive
+   (lambda (spec)
+     (unless (local-variable-p 'compile-command)
+       (when-let* ((command (my-devcontainer-compile-command)))
+         (setq-local compile-command command)))
+     (advice-eval-interactive-spec spec))))
+
+(advice-add 'compile :before #'my-devcontainer--propose-compile-command)
 
 ;;;###autoload
 (defun my-devcontainer-setup-compilation-buffer ()
   "Translate the container's paths in compiler messages to the host's.
-For `compilation-mode-hook': the build runs in the container, so its
-messages name /workspace/..., which `next-error' could not visit."
+For `compilation-mode-hook'."
   (when-let* ((mappings (my-devcontainer-mappings)))
     (setq-local compilation-parse-errors-filename-function
                 (lambda (file) (or (my-devcontainer--host-path file mappings) file)))))
@@ -247,10 +223,9 @@ CONTAINER is a (USER . ID) pair."
 
 ;;;###autoload
 (defun my-devcontainer-terminal (&optional new)
-  "Pop to a ghostel terminal running a login shell in the current container.
-The shell starts at the top of the container's workspace.  As with
-`project-shell', an existing terminal is reused, and restarted if its
-shell has exited; with prefix argument NEW, another one is started."
+  "Pop to a ghostel login shell at the top of the container's workspace.
+An existing terminal is reused, as in `project-shell'; with prefix
+argument NEW, another one is started."
   (interactive "P")
   (require 'ghostel)
   (let* ((mappings (or (my-devcontainer-mappings)
@@ -271,9 +246,7 @@ shell has exited; with prefix argument NEW, another one is started."
 ;;;###autoload
 (defun my-devcontainer-refresh ()
   "Re-read the container's environment and reconnect the language server.
-Needed after a build has extended what the container's tools can see, or
-after the container was recreated: what `devcontainer-exec' hands them is
-a snapshot."
+Needed after a build or after the container was recreated."
   (interactive)
   (unless (my-devcontainer--run "--refresh" default-directory)
     (user-error "No devcontainer serves %s"
