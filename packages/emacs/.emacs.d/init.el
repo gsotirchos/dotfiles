@@ -712,6 +712,14 @@ the window."
 (use-package evil
   :demand t
   :preface
+  (defun my/evil-ex-drop-global-capfs ()
+    "Complete Ex syntax only, since the global Capfs complete buffer text.
+`evil-ex-setup' adds its own Capf buffer-locally, which leaves the `t'
+standing for the global ones behind it: `cape-file' then reads a
+substitution like %s/ /b as the file name /b and offers the directories
+under /."
+    (setq-local completion-at-point-functions
+                (remq t completion-at-point-functions)))
   (defun my/evil-select-quote-on-line (orig-fun &rest args)
     "Call ORIG-FUN with ARGS, pairing quotes on the current line as Vim does."
     (let ((select-on-line
@@ -737,6 +745,7 @@ the window."
         evil-mode-line-format nil)
   :config
   (advice-add 'evil-select-quote :around #'my/evil-select-quote-on-line)
+  (advice-add 'evil-ex-setup :after #'my/evil-ex-drop-global-capfs)
   (evil-mode 1)
   (global-set-key [remap kill-ring-save] #'evil-yank)
   (global-set-key [remap my/quit-dwim] #'evil-quit)
@@ -792,10 +801,11 @@ the window."
    ("S-SPC" . corfu-insert-separator))
   :preface
   (defun my/corfu-minibuffer-filter ()
-    "Do not show Corfu in minibuffer for MCT, Vertico, or password prompts."
+    "Do not show Corfu in minibuffer for MCT, Vertico, Ex, or password prompts."
     (interactive)
     (not (or (bound-and-true-p mct--active)
              (bound-and-true-p vertico--input)
+             (evil-ex-p)
              (eq (current-local-map) (bound-and-true-p read-passwd-map)))))
   (defun my/customize-corfu-annotations ()
     (set-face-attribute 'corfu-annotations nil :slant 'normal))
