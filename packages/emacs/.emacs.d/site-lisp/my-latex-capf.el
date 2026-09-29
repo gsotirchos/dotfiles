@@ -79,5 +79,15 @@ Math is whatever the major mode fontifies with one of
 `my/latex-capf-faces'.  Meant for `completion-at-point-functions'."
   (apply #'cape-wrap-inside-faces #'my/latex-capf-complete my/latex-capf-faces))
 
+;;;###autoload
+(define-minor-mode my-latex-capf-mode
+  "Complete LaTeX macro names while typing in this buffer.
+Meant for the modes that fontify math with one of
+`my/latex-capf-faces'."
+  :group 'my/latex-capf
+  (if my-latex-capf-mode
+      (add-hook 'completion-at-point-functions #'my/latex-capf nil t)
+    (remove-hook 'completion-at-point-functions #'my/latex-capf t)))
+
 (provide 'my-latex-capf)
 ;;; my-latex-capf.el ends here
