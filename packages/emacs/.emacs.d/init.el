@@ -796,7 +796,7 @@ the window."
     (interactive)
     (not (or (bound-and-true-p mct--active)
              (bound-and-true-p vertico--input)
-             (eq (current-local-map) read-passwd-map))))
+             (eq (current-local-map) (bound-and-true-p read-passwd-map)))))
   (defun my/customize-corfu-annotations ()
     (set-face-attribute 'corfu-annotations nil :slant 'normal))
   (defun my/corfu-widen-popup (formatted)
