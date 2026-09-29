@@ -166,7 +166,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (when (eq system-type 'darwin)
     (defun my/pad-minibuffer-prompt ()
       "Add a prefix to the minibuffer prompt to prevent rounded corner obstruction."
-      (let ((inhibit-read-only t))
+      (with-silent-modifications
         (put-text-property (point-min) (minibuffer-prompt-end) 'line-prefix " ")
         (put-text-property (point-min) (minibuffer-prompt-end) 'wrap-prefix " ")))
     (add-hook 'minibuffer-setup-hook #'my/pad-minibuffer-prompt))
