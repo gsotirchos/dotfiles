@@ -552,6 +552,17 @@ the window."
   :after modus-themes
   :demand t)
 
+(use-package frame
+  :ensure nil
+  :no-require t
+  :preface
+  (defun my/make-surviving-frame-key (frame)
+    "Make the frame that outlives FRAME the macOS key window."
+    (when (and (eq system-type 'darwin) (eq frame (selected-frame)))
+      (when-let* ((survivor (get-mru-frame 'visible nil frame)))
+        (x-focus-frame survivor))))
+  :init (add-hook 'delete-frame-functions #'my/make-surviving-frame-key))
+
 (use-package tab-bar
   :ensure nil
   :no-require t
