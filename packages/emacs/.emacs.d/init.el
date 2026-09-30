@@ -1155,8 +1155,7 @@ commit message.")
 
 (use-package ghostel
   :bind
-  (nil
-   ("C-x m" . ghostel)
+  (("C-x m" . ghostel)
    :map ghostel-semi-char-mode-map
    ("C-s"  . consult-line)
    ("C-k"  . my/ghostel-send-C-k-and-kill)
@@ -1193,8 +1192,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   ;; :after (ghostel consult)
   ;; :demand t
   :bind
-  (nil
-   ([remap ghostel] . consult-ghostel)
+  (([remap ghostel] . consult-ghostel)
    :map project-prefix-map
    ([remap ghostel-project] . consult-ghostel-project)
    :map ghostel-semi-char-mode-map
@@ -1489,7 +1487,36 @@ reaches into the preview's `display' property elides the whole preview."
 (use-package flyspell
   :ensure nil
   :no-require t
+  :bind
+  (([remap ispell-word] . flyspell-correct-word-before-point)
+   :map evil-normal-state-map
+   ("zg" . my/flyspell-learn-word)
+   ("zw" . my/flyspell-unlearn-word)
+   ("zug" . my/flyspell-unlearn-word)
+   :map flyspell-mode-map
+   :filter prefix-arg
+   ([remap ispell-word] . flyspell-auto-correct-word))
   :custom (flyspell-delay-use-timer t)
+  :preface
+  (defun my/flyspell-learn-word ()
+    "Add the word at point to the personal dictionary, as Vim's zg does."
+    (interactive)
+    (ispell-accept-buffer-local-defs)
+    (pcase-let ((`(,word ,start ,_) (save-excursion (ispell-get-word nil))))
+      (ispell-send-string (concat "*" word "\n#\n"))
+      (flyspell-unhighlight-at start)))
+  (defun my/flyspell-unlearn-word ()
+    "Remove the word at point from the personal dictionary, as Vim's zug does.
+Aspell has no command to drop a saved word, so edit its file instead;
+kill Aspell first so that it cannot save the word back."
+    (interactive)
+    (ispell-kill-ispell t)
+    (let ((word (car (save-excursion (ispell-get-word nil))))
+          (case-fold-search nil))
+      (with-temp-file ispell-current-personal-dictionary
+        (insert-file-contents ispell-current-personal-dictionary)
+        (flush-lines (concat "^" (regexp-quote word) "$"))))
+    (flyspell-word))
   :init
   (add-hook 'text-mode-hook #'flyspell-mode)
   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
@@ -1504,6 +1531,7 @@ reaches into the preview's `display' property elides the whole preview."
   (ispell-extra-args '("--ignore-case"))
   (ispell-local-dictionary-alist
    '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+  (ispell-personal-dictionary "~/.aspell.en.pws")
   (ispell-dictionary "en_US")
   (ispell-local-dictionary "en_US"))
 
