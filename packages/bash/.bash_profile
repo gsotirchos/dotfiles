@@ -42,7 +42,19 @@ if [[ "$OS" == "linux" ]]; then
     export ROS_DOMAIN_ID=4
 
     # Match container users to this account
-    export HOST_UID=$(id -u) HOST_GID=$(id -g)
+    export HOST_UID=$(id -u) HOST_GID=$(id -g) HOST_RENDER_GID=$(getent group render | cut -d: -f3)
+
+    # Keep the stable Xwayland cookie path for devcontainers.
+    # ssh -X sessions leave XAUTHORITY unset and use ~/.Xauthority
+    if [[ -n "${DISPLAY}" ]]; then
+        xauthority="${XAUTHORITY:-${HOME}/.Xauthority}"
+        if [[ "${xauthority}" != "${XDG_RUNTIME_DIR}/Xauthority" ]]; then
+            if [[ "$(readlink "${XDG_RUNTIME_DIR}/Xauthority")" != "${xauthority}" ]]; then
+                ln -sfn "${xauthority}" "${XDG_RUNTIME_DIR}/Xauthority"
+            fi
+            export XAUTHORITY="${XDG_RUNTIME_DIR}/Xauthority"
+        fi
+    fi
 fi
 
 if [[ "$OS" == "macos" ]]; then
