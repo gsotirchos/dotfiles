@@ -5,11 +5,25 @@
     "pr": "",
     "sessionUrl": false
   },
+  "permissions": {
+    "allow": [
+      "Bash(emacs-query:*)"
+    ]
+  },
   "model": "opus",
   "workflowKeywordTriggerEnabled": false,
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true
+    "pyright-lsp@claude-plugins-official": true,
+    "emacs-query@gsotirchos-emacs-query": true
+  },
+  "extraKnownMarketplaces": {
+    "gsotirchos-emacs-query": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/george/Projects/emacs-query"
+      }
+    }
   },
   "spinnerTipsEnabled": false,
   "promptSuggestionEnabled": false,
