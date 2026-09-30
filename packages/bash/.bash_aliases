@@ -105,6 +105,18 @@ function gsync {
         && git push \
         && git stash clear
 }
+if command -v "docker" &> /dev/null; then
+    function devcontainer-shell {
+        local devcontainer_name="${1:-"$(docker ps --format '{{.Names}}' | head -n1)"}"
+        echo "$devcontainer_name"
+        docker exec \
+            -w /workspace \
+            -it "$devcontainer_name" \
+            env TERM=xterm-256color \
+            bash -l
+    }
+    alias ds=devcontainer-shell
+fi
 alias magit="emacs  --eval '(magit-status)'" # start emacs with magit
 alias tree="tree \
     -FNC -L 2 \
