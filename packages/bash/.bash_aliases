@@ -107,8 +107,10 @@ function gsync {
 }
 if command -v "docker" &> /dev/null; then
     function devcontainer-shell {
-        local devcontainer_name="${1:-"$(docker ps --format '{{.Names}}' | head -n1)"}"
-        echo "$devcontainer_name"
+        local last_file="${XDG_STATE_HOME:-${HOME}/.local/state}/devcontainer-shell-last"
+        local devcontainer_name="${1:-$(cat "$last_file" 2> /dev/null)}"
+        devcontainer_name="${devcontainer_name:-$(docker ps --format '{{.Names}}' | head -n1)}"
+        echo "$devcontainer_name" | tee "$last_file"
         docker exec \
             -w /workspace \
             -it "$devcontainer_name" \
