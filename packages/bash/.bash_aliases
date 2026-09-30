@@ -91,14 +91,20 @@ alias mkdir="mkdir -pv"           # recursive, verbose
 alias chmod="chmod -v"            # verbose
 alias chown="chown -v"            # verbose
 alias ec="emacsclient -a '' -c &" # start emacs daemon and/or client
+alias gs="git status"
+alias gd="git diff"
 alias ga="git add"
 alias gc="git commit"
-alias gs="git switch"
-alias gb="git branch"
-alias gps="git push"
-alias gpl="git pull"
-alias grs="git reset"
-alias grb="git rebase -i"
+alias glog="git log --graph --decorate --all --oneline"
+function gsync {
+    git stash \
+        && git pull --recurse-submodules=off \
+        && git stash apply \
+        && git add . \
+        && git commit -m "${1:-"Update locally"}" \
+        && git push \
+        && git stash clear
+}
 alias magit="emacs  --eval '(magit-status)'" # start emacs with magit
 alias tree="tree \
     -FNC -L 2 \
