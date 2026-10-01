@@ -22,7 +22,7 @@
 
   (defun my/silence-advice (fn &rest args)
     "Silence the advised function's execution."
-    (let ( ; (message-log-max nil)  ; don't log message
+    (let (  ; (message-log-max nil)  ; don't log message
           (inhibit-message t))  ; don't echo message
       (apply fn args)))
 
@@ -1996,6 +1996,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
   (org-special-ctrl-o t)
+  ;; Load only a few link modules and skip the slow ones (Gnus, EWW, DocView, ...).
+  (org-modules '(ol-doi ol-info))  ; ol-bibtex
   :preface
   (defun my/org-mode-hook ()
     (my/set-local-indent-width org-src-content-indentation))
