@@ -2022,7 +2022,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-modules '(ol-doi ol-info))  ; ol-bibtex
   :preface
   (defun my/org-mode-hook ()
-    (my/set-local-indent-width org-src-content-indentation))
+    (my/set-local-indent-width org-src-content-indentation)
+    (setq-local tab-width 8))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   :init
   (when (eq system-type 'darwin)
