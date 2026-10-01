@@ -20,7 +20,8 @@ Once per container, from anywhere inside the workspace:
 devcontainer-exec --provision
 ```
 
-Re-run it after the container has been rebuilt.
+This installs `clangd`, `pyright` and `mypy` in the container. Re-run it
+after the container has been rebuilt.
 
 If the container is not running yet, start it from the package that holds
 `.devcontainer/` (or from VS Code):
