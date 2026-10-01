@@ -1559,7 +1559,7 @@ kill Aspell first so that it cannot save the word back."
   :after my-keybindings
   :ensure nil
   :no-require t
-  :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode nxml-mode) . eglot-ensure)
+  :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode nxml-mode) . my/eglot-ensure-file-buffer)
   :bind (:map my/personal-map ("rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
@@ -1574,6 +1574,10 @@ kill Aspell first so that it cannot save the word back."
      :foldingRangeProvider
      :executeCommandProvider))
   :preface
+  (defun my/eglot-ensure-file-buffer ()
+    "Only run `eglot-ensure' in a buffer visiting a file."
+    (when buffer-file-name
+      (eglot-ensure)))
   (defun my/eglot-mode-hook ()
     (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
     (when flymake-mode (flymake-start)))
