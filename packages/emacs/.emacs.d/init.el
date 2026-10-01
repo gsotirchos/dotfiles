@@ -662,7 +662,6 @@ the window."
   (dired-omit-verbose nil)
   (dired-dwim-target 'dired-dwim-target-next)
   (dired-hide-details-hide-symlink-targets nil)
-  (dired-kill-when-opening-new-dired-buffer t)
   (dired-clean-confirm-killing-deleted-buffers nil)
   (dired-vc-rename-file t)
   (dired-auto-revert-buffer 'dired-directory-changed-p)
