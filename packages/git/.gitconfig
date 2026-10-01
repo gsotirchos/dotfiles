@@ -26,6 +26,8 @@
     smudge = git-lfs smudge -- %f
     process = git-lfs filter-process
     required = true
+[pager]
+    log = "sed 's/\\x1b\\[1;31m\\(upstream\\/\\)/\\x1b[1;35m\\1/g' | less"
 [url "git@github.com:"]
     insetadOf = https://github.com/
 [url "git@gitlab.tudelft.nl:"]
