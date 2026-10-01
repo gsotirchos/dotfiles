@@ -16,11 +16,6 @@ set -euo pipefail
 shopt -s inherit_errexit
 
 CACHE_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/devcontainer-exec"
-# Tools that only exist in the container: clangd needs the image's headers,
-# pyright and mypy its site-packages. apt has no pyright, and the image has
-# no pip, hence the two steps.
-APT_TOOLS=(clangd python3-pip)
-PIP_TOOLS=(pyright mypy)
 
 die() {
     printf 'devcontainer-exec: %s\n' "$*" >&2
@@ -174,31 +169,31 @@ environment_file() {
     printf '%s\n' "${env_file}"
 }
 
-# Same-path symlinks let tools without --path-mappings (pyright, mypy) see
-# host paths; the export makes every CMake build write a compile database.
-provision() {
-    local id="$1" user="$2" mounts="$3" script
-    script="$(
-        cat << EOF
+# Tools that only exist in the container: clangd needs the image's headers,
+# pyright and mypy its site-packages. apt has no pyright, and an image may
+# have no pip, hence the two steps. The same-path symlink lets tools without
+# --path-mappings (pyright, mypy) see host paths. Takes the workspace's host
+# and container paths.
+provision_script() {
+    cat << 'EOF'
 set -euo pipefail
-shopt -s inherit_errexit
+host="$1" container="$2"
 sudo apt-get update
-sudo apt-get install -y --no-install-recommends ${APT_TOOLS[*]}
-pip install --user --break-system-packages ${PIP_TOOLS[*]}
-while IFS='=' read -r host container; do
-    [[ -d "\${container}" && ! -e "\${host}" ]] || continue
-    mkdir -p "\$(dirname "\${host}")"
-    ln -s "\${container}" "\${host}"
-done << 'MOUNTS'
-${mounts}
-MOUNTS
-grep -q '^export CMAKE_EXPORT_COMPILE_COMMANDS=' ~/.bashrc \\
-    || printf '\\n# Added by devcontainer-exec, for clangd\\nexport CMAKE_EXPORT_COMPILE_COMMANDS=1\\n' >> ~/.bashrc
+sudo apt-get install -y --no-install-recommends clangd python3-pip
+/usr/bin/python3 -m pip install --user --break-system-packages pyright mypy
+if [[ ! -e "${host}" ]]; then
+    mkdir -p "$(dirname "${host}")"
+    ln -s "${container}" "${host}"
+fi
 EOF
-    )"
-    docker exec -i -u "${user}" "${id}" bash -c "${script}"
-    # The environment changed, so the cached snapshot is stale.
-    probe_environment "$(workspace_folder_of "${id}")" "${CACHE_DIR}/${id}.env"
+}
+
+# Provision container $1 for the workspace mounted over $3 (mount table $2).
+provision() {
+    local id="$1" mount
+    mount="$(covering_mount "$2" "$3")" || die "$3 is not mounted into the container"
+    docker exec -i -u "$(container_user "${id}")" "${id}" \
+        bash -c "$(provision_script)" bash "${mount%%=*}" "${mount#*=}"
 }
 
 main() {
@@ -228,7 +223,7 @@ main() {
         mappings) paste -sd ',' <<< "${mounts}" ;;
         container) printf '%s@%s\n' "$(container_user "${id}")" "${id}" ;;
         refresh) probe_environment "$(workspace_folder_of "${id}")" "${CACHE_DIR}/${id}.env" ;;
-        provision) provision "${id}" "$(container_user "${id}")" "${mounts}" ;;
+        provision) provision "${id}" "${mounts}" "${dir}" ;;
         run)
             # Assigned first: a failure inside a substitution on the exec
             # line itself would not stop the exec.
