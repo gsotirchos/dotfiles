@@ -7,7 +7,9 @@
   },
   "permissions": {
     "allow": [
-      "Bash(emacs-query:*)"
+      "Bash(emacs-query:*)",
+      "Bash(glab api:*)",
+      "Bash(glab repo:*)"
     ]
   },
   "model": "opus",
@@ -21,7 +23,7 @@
     "gsotirchos-emacs-query": {
       "source": {
         "source": "directory",
-        "path": "/Users/george/Projects/emacs-query"
+        "path": "~/Projects/emacs-query"
       }
     }
   },
@@ -32,5 +34,24 @@
   "preferredNotifChannel": "ghostty",
   "wheelScrollAccelerationEnabled": false,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r \".tool_input.file_path // empty\"); [[ \"$f\" =~ \\.(c|cc|cpp|cxx|h|hh|hpp|hxx)$ ]] || exit 0; clang-format -i --style=file --fallback-style=none \"$f\" >&2 || exit 2",
+            "statusMessage": "Formatting C/C++ with clang-format"
+          },
+          {
+            "type": "command",
+            "command": "f=$(jq -r \".tool_input.file_path // empty\"); [[ \"$f\" == *.py ]] || exit 0; ruff-fix \"$f\" >&2 || exit 2",
+            "statusMessage": "Fixing Python with ruff"
+          }
+        ]
+      }
+    ]
+  }
 }
