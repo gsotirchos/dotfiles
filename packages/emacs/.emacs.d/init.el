@@ -1122,7 +1122,26 @@ Remote files are skipped (`diff-hl-flydiff-update' already ignores them)."
     ;; Let `visual-wrap-prefix-mode' see the diff marker in the first column.
     (setq-local adaptive-fill-regexp "[-+ ]?[ \t]*"))
   (add-hook 'magit-mode-hook #'my/magit-mode-hook)
+  (defface my/magit-branch-upstream-remote '((t nil))
+    "Face for branches of the `upstream' remote."
+    :group 'magit-faces)
+  (defun my/magit-match-git-log-colors ()
+    "Color refs the way `git log' decorates them.
+The `upstream' color mirrors the `pager.log' filter in ~/.gitconfig."
+    (pcase-dolist (`(,face ,color ,weight)
+                   '((magit-hash                      yellow         normal)
+                     (magit-tag                       yellow-warmer  normal)
+                     (magit-head                      cyan           normal)
+                     (magit-branch-local              green-faint    normal)
+                     (magit-branch-remote             red-faint      normal)
+                     (my/magit-branch-upstream-remote magenta-warmer normal)))
+      (when-let* ((fg (my/theme-color color)))
+        (set-face-attribute face nil :foreground fg :weight weight))))
   :config
+  (my/magit-match-git-log-colors)
+  (add-hook 'after-load-theme-hook #'my/magit-match-git-log-colors)
+  (push '("\\`refs/remotes/\\(upstream/.+\\)" . my/magit-branch-upstream-remote)
+        magit-ref-namespaces)
   (put 'magit-status-mode 'magit-diff-default-arguments
        '("--no-ext-diff" "--ignore-submodules=dirty"))
   (put 'magit-log-mode 'magit-log-default-arguments
