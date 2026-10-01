@@ -136,6 +136,10 @@
                  (and (file-readable-p stamp)
                       (with-temp-buffer (insert-file-contents stamp) (buffer-string))))
     (package-activate-all)
+    ;; `package-activate-all' normally passes over the Org fork set up in init.el,
+    ;; which would then be compiled against the built-in Org.
+    (when-let* ((org-fork (cadr (assq 'org package-alist))))
+      (add-to-list 'load-path (expand-file-name "lisp" (package-desc-dir org-fork))))
     (package-recompile-all)
     (make-directory (file-name-directory stamp) t)
     (with-temp-file stamp (insert emacs-version))))
