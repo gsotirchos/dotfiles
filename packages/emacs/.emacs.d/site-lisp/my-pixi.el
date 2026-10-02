@@ -12,9 +12,8 @@
 ;; what puts `install/*/lib/python3.X/site-packages' on PYTHONPATH) and
 ;; installs it as buffer-local `process-environment' and `exec-path'.
 ;;
-;; Pyright ignores PYTHONPATH, so `my/pixi-python-setup' additionally hands
-;; it the interpreter and the PYTHONPATH entries through
-;; `eglot-workspace-configuration'.
+;; A language server started from such a buffer finds the environment's
+;; interpreter first on PATH, which reports the PYTHONPATH entries itself.
 ;;
 ;; The dump is cached per manifest and invalidated when pixi.toml or
 ;; pixi.lock changes.  Anything else that alters the activated environment
@@ -25,9 +24,7 @@
 
 (require 'seq)
 
-(defvar eglot-workspace-configuration)
 (declare-function eglot-current-server "eglot")
-(declare-function eglot-signal-didChangeConfiguration "eglot" (server))
 (declare-function eglot-reconnect "eglot" (server &optional interactive))
 
 (defgroup my/pixi nil
@@ -147,25 +144,12 @@ is not in a pixi workspace, or when pixi cannot report the environment."
 (defun my/pixi-python-setup ()
   "Point the Python tooling of this buffer at its pixi environment.
 Meant for `python-base-mode-hook', where it has to run before
-`eglot-ensure' so that the language server is told about the
-environment on connection."
+`eglot-ensure' so that the language server is started in the
+environment."
   (my-pixi-mode 1)
   (when-let* ((my-pixi-mode)
               (python (my/pixi-python-executable)))
-    (setq-local python-shell-interpreter python)
-    ;; Pyright resolves imports through the interpreter and its own
-    ;; extraPaths only; it never reads PYTHONPATH.
-    (setq-local eglot-workspace-configuration
-                `(:python
-                  (:pythonPath
-                   ,python
-                   :analysis
-                   (:extraPaths
-                    ,(vconcat (seq-filter #'file-directory-p
-                                          (split-string (or (getenv "PYTHONPATH") "")
-                                                        path-separator t)))))))
-    (when-let* ((server (and (featurep 'eglot) (eglot-current-server))))
-      (eglot-signal-didChangeConfiguration server))))
+    (setq-local python-shell-interpreter python)))
 
 ;;;###autoload
 (defun my/pixi-refresh ()
