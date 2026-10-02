@@ -1628,23 +1628,27 @@ kill Aspell first so that it cannot save the word back."
     "Degrade to fewer file watches instead of failing the server's request."
     (condition-case err (apply fn args)
       (jsonrpc-error (eglot--warn "Capability registration degraded: %S" err))))
+  (defun my/eglot-workspace-configuration (_server)
+    "Return the settings of the servers of `default-directory'."
+    `(;; LemMinX reads its settings from the `xml' section, both from
+      ;; `initializationOptions' and from `workspace/didChangeConfiguration';
+      ;; Eglot sends the latter on connect with exactly this shape.
+      :xml (:useCache t
+                      :downloadExternalResources (:enabled t)
+                      :validation (:noGrammar "ignore")
+                      :format (:enabled t
+                                        :maxLineWidth 100
+                                        :splitAttributes "preserve"
+                                        :preserveAttributeLineBreaks t))
+      ,@(when-let* ((paths (my-devcontainer-python-extra-paths)))
+          `(:python (:analysis (:extraPaths ,(vconcat paths)))))))
   :init
   (setq eglot-stay-out-of '(flymake))
   ;; pyright asks to watch every directory on its search path (venv, system
   ;; dist-packages, colcon overlay), ~6000 watches per server against the
   ;; `eglot-max-file-watches' shared by all of them.
   (setq eglot-watch-files-outside-project-root nil)
-  ;; LemMinX reads its settings from the `xml' section, both from
-  ;; `initializationOptions' and from `workspace/didChangeConfiguration';
-  ;; Eglot sends the latter on connect with exactly this shape.
-  (setq-default eglot-workspace-configuration
-                '(:xml (:useCache t
-                                  :downloadExternalResources (:enabled t)
-                                  :validation (:noGrammar "ignore")
-                                  :format (:enabled t
-                                                    :maxLineWidth 100
-                                                    :splitAttributes "preserve"
-                                                    :preserveAttributeLineBreaks t))))
+  (setq-default eglot-workspace-configuration #'my/eglot-workspace-configuration)
   (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
   (advice-add 'eglot-completion-at-point :around #'my/eglot-require-completion-prefix)
   (advice-add 'eglot-register-capability :around #'my/eglot-tolerate-watch-limit)
