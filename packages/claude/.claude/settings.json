@@ -17,14 +17,27 @@
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
-    "emacs-query@gsotirchos-emacs-query": true
+    "emacs-query@gsotirchos": true
   },
   "extraKnownMarketplaces": {
-    "gsotirchos-emacs-query": {
+    "gsotirchos": {
       "source": {
-        "source": "directory",
-        "path": "~/Projects/emacs-query"
-      }
+        "source": "settings",
+        "name": "gsotirchos",
+        "owner": {
+          "name": "George Sotirchos"
+        },
+        "plugins": [
+          {
+            "name": "emacs-query",
+            "source": {
+              "source": "github",
+              "repo": "gsotirchos/emacs-query"
+            }
+          }
+        ]
+      },
+      "autoUpdate": true
     }
   },
   "spinnerTipsEnabled": false,
