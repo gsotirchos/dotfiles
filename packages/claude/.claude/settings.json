@@ -42,12 +42,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "f=$(jq -r \".tool_input.file_path // empty\"); [[ \"$f\" =~ \\.(c|cc|cpp|cxx|h|hh|hpp|hxx)$ ]] || exit 0; clang-format -i --style=file --fallback-style=none \"$f\" >&2 || exit 2",
+            "command": "f=$(jq -r \".tool_input.file_path // empty\"); case \"$f\" in *.c|*.cc|*.cpp|*.cxx|*.h|*.hh|*.hpp|*.hxx) ;; *) exit 0 ;; esac; clang-format -i --style=file --fallback-style=none \"$f\" >&2 || exit 2",
             "statusMessage": "Formatting C/C++ with clang-format"
           },
           {
             "type": "command",
-            "command": "f=$(jq -r \".tool_input.file_path // empty\"); [[ \"$f\" == *.py ]] || exit 0; ruff-fix \"$f\" >&2 || exit 2",
+            "command": "f=$(jq -r \".tool_input.file_path // empty\"); case \"$f\" in *.py) ;; *) exit 0 ;; esac; cd \"$(dirname \"$f\")\" || exit 2; ruff check --fix --quiet \"$f\" >&2; unfixed=$?; ruff format --silent \"$f\" >&2 || exit 2; [ \"$unfixed\" -eq 0 ] || exit 2",
             "statusMessage": "Fixing Python with ruff"
           }
         ]
