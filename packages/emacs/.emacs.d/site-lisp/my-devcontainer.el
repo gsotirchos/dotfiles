@@ -102,6 +102,17 @@ Inside a devcontainer project the server is run in the container."
                               (my-devcontainer--clangd-args mappings))))
       (cons program args))))
 
+(defun my-devcontainer-python-extra-paths (&optional dir)
+  "Return the site-packages of the ament_virtualenv environments serving DIR.
+Those are private to the nodes of their packages, which re-execute
+themselves in them, so the container's interpreter does not report them
+to pyright.  Every environment of the workspace is returned: pyright
+takes one configuration per project, which may hold several packages."
+  (when-let* ((workspace (my-devcontainer-workspace dir)))
+    (file-expand-wildcards
+     (expand-file-name "install/*/share/*/venv/lib/python*/site-packages"
+                       workspace))))
+
 
 ;;;; Locations inside the container
 
