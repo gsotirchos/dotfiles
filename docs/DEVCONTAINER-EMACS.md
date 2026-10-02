@@ -102,6 +102,11 @@ package must have been built at that time. The environment is probed again
 once `install/` gains or loses a package, but a server already running keeps
 the old one: `C-c c r` after building the package from a terminal.
 
+Pyright cannot resolve a `pip_requirements` dependency of an
+`ament_virtualenv` package — the `site-packages` of every such environment
+under `install/` is handed to pyright when the server connects, so the
+package must have been built by then: `C-c c r` after building it.
+
 The first `devcontainer-exec` call for a container that is not running blocks
 until it is up, which may include building the image; starting it from a
 terminal first avoids waiting inside Emacs.
