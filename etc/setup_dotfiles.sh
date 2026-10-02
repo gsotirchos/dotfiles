@@ -8,7 +8,7 @@ main() {
     local normal_style='\033[0m'
 
     # check for required commands
-    for cmd in realpath stow; do
+    for cmd in realpath stow jq; do
         if ! command -v "${cmd}" &> /dev/null; then
             echo -e "${bright_style}Error: \`${cmd}\` command could not be found. Aborted${normal_style}" >&2
             exit 1
@@ -80,6 +80,11 @@ main() {
 
     # OS-specific overrides layered on top of shared packages (e.g. ghostty)
     stow -vd "${dotfiles}/packages" -t "${HOME}" -R "ghostty-${os}"
+
+    echo -e "${bright_style}- Cloning Claude plugins${normal_style}"
+    "${dotfiles}/etc/setup_claude_plugins.sh" \
+        "${dotfiles}/packages/claude/.claude/settings.json" \
+        ~/.local/src/claude-plugins
 
     # OS-specific
     if [[ "${os}" == "linux" ]]; then
