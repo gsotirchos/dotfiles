@@ -22,91 +22,87 @@ check_syntax() {
     return "${status}"
 }
 
-main() {
-    # Check for realpath
-    if ! command -v "realpath" &> /dev/null; then
-        echo "Error: \`realpath\` command could not be found. Aborted" >&2
-        exit 1
-    fi
+# Check for realpath
+if ! command -v "realpath" &> /dev/null; then
+    echo "Error: \`realpath\` command could not be found. Aborted" >&2
+    exit 1
+fi
 
-    local target="${1:-"."}"
+target="${1:-"."}"
 
-    if [[ ! -e "${target}" ]]; then
-        echo "Error: Path '${target}' does not exist." >&2
-        exit 1
-    fi
+if [[ ! -e "${target}" ]]; then
+    echo "Error: Path '${target}' does not exist." >&2
+    exit 1
+fi
 
-    target="$(realpath "${target}")"
+target="$(realpath "${target}")"
 
-    # Verify shellcheck and bashate are available
-    if ! command -v shellcheck &> /dev/null; then
-        echo "Error: shellcheck is not installed or not in PATH." >&2
-        exit 1
-    fi
+# Verify shellcheck and bashate are available
+if ! command -v shellcheck &> /dev/null; then
+    echo "Error: shellcheck is not installed or not in PATH." >&2
+    exit 1
+fi
 
-    if ! command -v shfmt &> /dev/null; then
-        echo "Error: shfmt is not installed or not in PATH." >&2
-        exit 1
-    fi
+if ! command -v shfmt &> /dev/null; then
+    echo "Error: shfmt is not installed or not in PATH." >&2
+    exit 1
+fi
 
-    # Locate custom bashate executable
-    if [[ -x "${MACOS_DOTFILES:-}/bin/bashate" ]]; then
-        local bashate_cmd="${MACOS_DOTFILES:-}/bin/bashate"
-    else
-        local bashate_cmd="${DOTFILES:-}/bin/bashate"
-    fi
+# Locate custom bashate executable
+if [[ -x "${MACOS_DOTFILES:-}/bin/bashate" ]]; then
+    bashate_cmd="${MACOS_DOTFILES:-}/bin/bashate"
+else
+    bashate_cmd="${DOTFILES:-}/bin/bashate"
+fi
 
-    # Dynamically find all bash/shell files in the target directory or use the target file directly
-    # - Excludes the 'vim' and '.git' directories to avoid third-party clutter
-    # - Matches files ending in .sh, specific bash config files, and any files with shell shebangs
-    local files=()
-    if [[ -f "${target}" ]]; then
-        files+=("${target}")
-    else
-        while IFS= read -r -d '' file; do
-            files+=("$file")
-        done < <(
-            find "${target}" \
-                -path "${target}/vim" -prune \
-                -o -path "${target}/.git" -prune \
-                -o -type f \( \
-                -name "*.sh" \
-                -o -name "bash_aliases" \
-                -o -name "bashrc" \
-                -o -name "bash_profile" \
-                -o -exec sh -c '
-                    head -n 1 "$1" | grep -qE "^#!(.*/bin/|/usr/bin/env )(bash|sh)"
-                ' _ {} \; \
-                \) -print0
-        )
-    fi
+# Dynamically find all bash/shell files in the target directory or use the target file directly
+# - Excludes the 'vim' and '.git' directories to avoid third-party clutter
+# - Matches files ending in .sh, specific bash config files, and any files with shell shebangs
+files=()
+if [[ -f "${target}" ]]; then
+    files+=("${target}")
+else
+    while IFS= read -r -d '' file; do
+        files+=("$file")
+    done < <(
+        find "${target}" \
+            -path "${target}/vim" -prune \
+            -o -path "${target}/.git" -prune \
+            -o -type f \( \
+            -name "*.sh" \
+            -o -name "bash_aliases" \
+            -o -name "bashrc" \
+            -o -name "bash_profile" \
+            -o -exec sh -c '
+                head -n 1 "$1" | grep -qE "^#!(.*/bin/|/usr/bin/env )(bash|sh)"
+            ' _ {} \; \
+            \) -print0
+    )
+fi
 
-    if [[ ${#files[@]} -eq 0 ]]; then
-        echo "No bash/shell files found to lint in '${target}'."
-        return 0
-    fi
+if [[ ${#files[@]} -eq 0 ]]; then
+    echo "No bash/shell files found to lint in '${target}'."
+    exit 0
+fi
 
-    echo "Linting ${#files[@]} file(s) in '${target}' with shellcheck..."
-    local shellcheck_status=0
-    shellcheck "${files[@]}" || shellcheck_status=$?
+echo "Linting ${#files[@]} file(s) in '${target}' with shellcheck..."
+shellcheck_status=0
+shellcheck "${files[@]}" || shellcheck_status=$?
 
-    echo "Linting ${#files[@]} file(s) in '${target}' with bashate..."
-    local bashate_status=0
-    "${bashate_cmd}" "${files[@]}" || bashate_status=$?
+echo "Linting ${#files[@]} file(s) in '${target}' with bashate..."
+bashate_status=0
+"${bashate_cmd}" "${files[@]}" || bashate_status=$?
 
-    echo "Linting ${#files[@]} file(s) in '${target}' with shfmt..."
-    local shfmt_status=0
-    check_syntax "${files[@]}" || shfmt_status=$?
+echo "Linting ${#files[@]} file(s) in '${target}' with shfmt..."
+shfmt_status=0
+check_syntax "${files[@]}" || shfmt_status=$?
 
-    if [[ ${shellcheck_status} -eq 0 ]] \
-        && [[ ${bashate_status} -eq 0 ]] \
-        && [[ ${shfmt_status} -eq 0 ]]; then
-        echo "All checks passed successfully!"
-        return 0
-    else
-        echo "Some checks failed."
-        return 1
-    fi
-}
-
-main "$@"
+if [[ ${shellcheck_status} -eq 0 ]] \
+    && [[ ${bashate_status} -eq 0 ]] \
+    && [[ ${shfmt_status} -eq 0 ]]; then
+    echo "All checks passed successfully!"
+    exit 0
+else
+    echo "Some checks failed."
+    exit 1
+fi
