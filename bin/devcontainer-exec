@@ -163,9 +163,35 @@ EOF
     mv "${env_file}.tmp" "${env_file}"
 }
 
+# The install directory of the colcon overlay at or above host directory $1;
+# fails if there is none.
+overlay_install_dir() {
+    local dir="$1"
+    while [[ "${dir}" != "/" ]]; do
+        if [[ -f "${dir}/install/setup.bash" ]]; then
+            printf '%s\n' "${dir}/install"
+            return 0
+        fi
+        dir="$(dirname "${dir}")"
+    done
+    return 1
+}
+
+# Whether the overlay above workspace folder $2 gained or lost a package
+# since environment file $1 was probed: colcon gives each package an entry
+# in the install directory, whose mtime thus changes with the set of them.
+environment_is_stale() {
+    local env_file="$1" install_dir
+    install_dir="$(overlay_install_dir "$2")" || return 1
+    [[ "${install_dir}" -nt "${env_file}" ]]
+}
+
 environment_file() {
-    local id="$1" env_file="${CACHE_DIR}/$1.env"
-    [[ -s "${env_file}" ]] || probe_environment "$(workspace_folder_of "${id}")" "${env_file}"
+    local id="$1" env_file="${CACHE_DIR}/$1.env" folder
+    folder="$(workspace_folder_of "${id}")"
+    if [[ ! -s "${env_file}" ]] || environment_is_stale "${env_file}" "${folder}"; then
+        probe_environment "${folder}" "${env_file}"
+    fi
     printf '%s\n' "${env_file}"
 }
 
