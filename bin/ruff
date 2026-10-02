@@ -15,10 +15,5 @@ pinned_version() {
     echo "${pin#ruff==}"
 }
 
-main() {
-    local version
-    version="$(pinned_version)"
-    exec uvx --quiet "ruff${version:+@${version}}" "$@"
-}
-
-main "$@"
+version="$(pinned_version)"
+exec uvx --quiet "ruff${version:+@${version}}" "$@"
