@@ -2,86 +2,81 @@
 # shellcheck disable=SC2016,2029,2087
 set -euo pipefail
 
-main() {
-    # Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
-    set +x
+# Disable shell tracing to prevent secrets from being exposed in logs if set -x is active
+set +x
 
-    if [ "$#" -lt 3 ]; then
-        echo "Usage: opencode-remote <vm_host> <password> <remote_dir> [args...]"
-        exit 1
+if [ "$#" -lt 3 ]; then
+    echo "Usage: opencode-remote <vm_host> <password> <remote_dir> [args...]"
+    exit 1
+fi
+
+vm_host="$1" # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
+port="4096"
+password="$2"
+remote_dir="$3"
+shift 3
+
+args=("$@")
+remote_opencode_bin='$HOME/.opencode/bin/opencode'
+local_config="$HOME/.config/opencode/opencode.json"
+local_tui="$HOME/.config/opencode/tui.json"
+SSH_PID=""
+
+sync_file_to_vm() {
+    local local_file="$1"
+    echo "Syncing ${local_file} to VM..."
+    if [ -f "$local_file" ]; then
+        local remote_file_dir="$(dirname "${local_file/"$HOME"/"\$HOME"}")"
+        ssh "$vm_host" "mkdir -p \"$remote_file_dir\""
+        rsync -azLK "$local_file" "$vm_host":"$remote_file_dir"
+    else
+        echo "Warning: Local ${local_file} not found. Skipping sync."
     fi
+}
 
-    vm_host="$1" # "${USER}@${VM_NAME}.${LOCATION}.${PROJECT_ID}"
-    port="4096"
-    local password="$2"
-    local remote_dir="$3"
-    shift 3
+# 1. Sync local files to remote VM
+sync_file_to_vm "$local_config"
+sync_file_to_vm "$local_tui"
 
-    local args=("$@")
-    local remote_opencode_bin='$HOME/.opencode/bin/opencode'
-    local local_config="$HOME/.config/opencode/opencode.json"
-    local local_tui="$HOME/.config/opencode/tui.json"
-    local SSH_PID=""
+# 2. Pre-emptively clear local and remote processes from previous runs
+(lsof -ti:"$port" | xargs kill -9 2> /dev/null) || true
+ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" > /dev/null 2>&1 || true
 
-    function sync_file_to_vm() {
-        local local_file="$1"
-        echo "Syncing ${local_file} to VM..."
-        if [ -f "$local_file" ]; then
-            local remote_file_dir="$(dirname "${local_file/"$HOME"/"\$HOME"}")"
-            ssh "$vm_host" "mkdir -p \"$remote_file_dir\""
-            rsync -azLK "$local_file" "$vm_host":"$remote_file_dir"
-        else
-            echo "Warning: Local ${local_file} not found. Skipping sync."
-        fi
-    }
-
-    # 1. Sync local files to remote VM
-    sync_file_to_vm "$local_config"
-    sync_file_to_vm "$local_tui"
-
-    # 2. Pre-emptively clear local and remote processes from previous runs
-    (lsof -ti:"$port" | xargs kill -9 2> /dev/null) || true
+# 3. Define cleanup to run automatically on script exit or interrupt (Ctrl+C)
+cleanup() {
+    echo -e "\nSession ended. Cleaning up..."
+    if [[ -n "${SSH_PID:-}" ]]; then
+        kill "$SSH_PID" 2> /dev/null || true
+    fi
     ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" > /dev/null 2>&1 || true
+}
+trap cleanup EXIT INT
 
-    # 3. Define cleanup to run automatically on script exit or interrupt (Ctrl+C)
-    cleanup() {
-        echo -e "\nSession ended. Cleaning up..."
-        if [[ -n "${SSH_PID:-}" ]]; then
-            kill "$SSH_PID" 2> /dev/null || true
-        fi
-        ssh "$vm_host" "pkill -f 'opencode serve'; killall opencode; fuser -k ${port}/tcp" > /dev/null 2>&1 || true
-    }
-    trap cleanup EXIT INT
+echo "Starting remote server and establishing tunnel..."
+# 4. Build remote env and execute via stdin to avoid ps leaks
+remote_inject=$(op-env)
 
-    echo "Starting remote server and establishing tunnel..."
-    # 4. Build remote env and execute via stdin to avoid ps leaks
-    local remote_inject=$(op-env)
-
-    # ShellCheck SC2087: EOF is intentionally unquoted to expand local variables
-    ssh -L "$port":localhost:"$port" "$vm_host" "bash -s" << EOF &
+# ShellCheck SC2087: EOF is intentionally unquoted to expand local variables
+ssh -L "$port":localhost:"$port" "$vm_host" "bash -s" << EOF &
 $remote_inject
 cd $remote_dir
 OPENCODE_SERVER_PASSWORD="$password" $remote_opencode_bin serve --port "$port"
 EOF
 
-    SSH_PID="$!"
+SSH_PID="$!"
 
-    echo "Waiting for remote server to initialize..."
-    # 5. Polling mechanism using curl to verify actual HTTP connectivity through the tunnel
-    while ! curl -s --max-time 1 "http://localhost:$port" > /dev/null; do
-        sleep 0.2
-    done
+echo "Waiting for remote server to initialize..."
+# 5. Polling mechanism using curl to verify actual HTTP connectivity through the tunnel
+while ! curl -s --max-time 1 "http://localhost:$port" > /dev/null; do
+    sleep 0.2
+done
 
-    if [ "${args[0]:-}" = "web" ]; then
-        echo "Opening web interface..."
-        open "http://localhost:$port"
-        echo "Press Ctrl+C to stop the remote server and tunnel."
-        wait "$SSH_PID"
-    else
-        echo "Attaching local OpenCode client..."
-        OPENCODE_SERVER_PASSWORD="$password" opencode attach "http://localhost:$port" "${args[@]}"
-    fi
-}
-
-main "$@"
-unset main
+if [ "${args[0]:-}" = "web" ]; then
+    echo "Opening web interface..."
+    open "http://localhost:$port"
+    echo "Press Ctrl+C to stop the remote server and tunnel."
+    wait "$SSH_PID"
+else
+    echo "Attaching local OpenCode client..."
+    OPENCODE_SERVER_PASSWORD="$password" opencode attach "http://localhost:$port" "${args[@]}"
+fi

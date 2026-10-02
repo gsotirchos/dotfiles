@@ -29,27 +29,21 @@ DCONF_GROUPS=(
     org/gnome/system/location
 )
 
-main() {
-    local dotfiles
-    dotfiles="$(builtin cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../.." > /dev/null && pwd)"
-    local outfile="${dotfiles}/config/dconf/user.conf"
-    mkdir -p "$(dirname "${outfile}")"
+dotfiles="$(builtin cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../.." > /dev/null && pwd)"
+outfile="${dotfiles}/config/dconf/user.conf"
+mkdir -p "$(dirname "${outfile}")"
 
-    # Filter the full dump down to the allowlisted sections, preserving dconf's
-    # own ordering and formatting.
-    local tmp
-    tmp="$(mktemp "${outfile}.XXXXXX")"
-    dconf dump / | awk '
-        # First input (allowlist): one "[section]" header per line.
-        FNR == NR { allowed[$0] = 1; next }
-        # Second input (fresh dump on stdin): emit only allowed sections.
-        /^\[.*\]$/ { keep = allowed[$0] }
-        keep
-    ' <(printf '[%s]\n' "${DCONF_GROUPS[@]}") - > "${tmp}"
+# Filter the full dump down to the allowlisted sections, preserving dconf's
+# own ordering and formatting.
+tmp="$(mktemp "${outfile}.XXXXXX")"
+dconf dump / | awk '
+    # First input (allowlist): one "[section]" header per line.
+    FNR == NR { allowed[$0] = 1; next }
+    # Second input (fresh dump on stdin): emit only allowed sections.
+    /^\[.*\]$/ { keep = allowed[$0] }
+    keep
+' <(printf '[%s]\n' "${DCONF_GROUPS[@]}") - > "${tmp}"
 
-    mv "${tmp}" "${outfile}"
-    echo "Exported dconf → config/dconf/user.conf (tracked groups only)"
-    echo "Review with: git -C '${dotfiles}' diff config/dconf/user.conf"
-}
-
-main "$@"
+mv "${tmp}" "${outfile}"
+echo "Exported dconf → config/dconf/user.conf (tracked groups only)"
+echo "Review with: git -C '${dotfiles}' diff config/dconf/user.conf"

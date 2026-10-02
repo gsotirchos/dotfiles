@@ -266,24 +266,20 @@ usage() {
     sed -n '3,18p' "$0" | sed 's/^# \{0,1\}//'
 }
 
-main() {
-    local cmd="${1:-}"
-    [[ $# -gt 0 ]] && shift
-    case "${cmd}" in
-        get) cmd_get ;;
-        set) cmd_set "${1:?usage: brightness set <0-100>}" ;;
-        up) cmd_step 1 "${1:-}" ;;
-        down) cmd_step -1 "${1:-}" ;;
-        auto) cmd_auto ;;
-        daemon) cmd_daemon ;;
-        status) cmd_status ;;
-        -h | --help | help | "") usage ;;
-        *)
-            echo "brightness: unknown command: ${cmd}" >&2
-            usage >&2
-            exit 2
-            ;;
-    esac
-}
-
-main "$@"
+cmd="${1:-}"
+[[ $# -gt 0 ]] && shift
+case "${cmd}" in
+    get) cmd_get ;;
+    set) cmd_set "${1:?usage: brightness set <0-100>}" ;;
+    up) cmd_step 1 "${1:-}" ;;
+    down) cmd_step -1 "${1:-}" ;;
+    auto) cmd_auto ;;
+    daemon) cmd_daemon ;;
+    status) cmd_status ;;
+    -h | --help | help | "") usage ;;
+    *)
+        echo "brightness: unknown command: ${cmd}" >&2
+        usage >&2
+        exit 2
+        ;;
+esac

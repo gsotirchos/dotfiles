@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# shellcheck shell=bash
 
 # the main function appends paths from file contents to $PATH, $LIBRARY_PATH, etc.
 # input argument: the directory containing the files specifying the paths to be appended
@@ -16,9 +16,9 @@ main() {
     extra_paths_dir="$(realpath "$1")"
     local -A modified_env_vars
 
+    local extra_paths_file env_var_name
     for extra_paths_file in "${extra_paths_dir}"/*; do
         if [[ -f "$extra_paths_file" ]]; then
-            local env_var_name
             env_var_name="$(basename "${extra_paths_file}")"
             env_var_name="${env_var_name%%.*}"
 

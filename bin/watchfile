@@ -118,35 +118,30 @@ wait_for_changes() {
     return 0
 }
 
-main() {
-    local exec_pid=""
+exec_pid=""
 
-    # exit script on ctrl-c
-    trap 'echo & message "Terminated" && { kill "${exec_pid}" &> /dev/null || true; } & exit 1' INT
+# exit script on ctrl-c
+trap 'echo & message "Terminated" && { kill "${exec_pid}" &> /dev/null || true; } & exit 1' INT
 
-    # execute command once first
+# execute command once first
+execute_command &
+exec_pid=$!
+
+# watch file for changes, terminate and re-execute
+while true; do
+    # wait for changes...
+    wait_for_changes "${watched_file}"
+    message "File changed (aborting any execution)"
+
+    # interrupt current execution
+    kill_and_wait "${exec_pid}"
+
+    # keep watching for ${timeout} seconds for further changes
+    while wait_for_changes "${watched_file}" "${TIMEOUT}"; do
+        message "Waiting for further changes..."
+    done
+
+    # execute command
     execute_command &
     exec_pid=$!
-
-    # watch file for changes, terminate and re-execute
-    while true; do
-        # wait for changes...
-        wait_for_changes "${watched_file}"
-        message "File changed (aborting any execution)"
-
-        # interrupt current execution
-        kill_and_wait "${exec_pid}"
-
-        # keep watching for ${timeout} seconds for further changes
-        while wait_for_changes "${watched_file}" "${TIMEOUT}"; do
-            message "Waiting for further changes..."
-        done
-
-        # execute command
-        execute_command &
-        exec_pid=$!
-    done
-}
-
-main
-unset main
+done
