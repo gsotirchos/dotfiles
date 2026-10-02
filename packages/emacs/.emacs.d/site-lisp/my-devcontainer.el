@@ -193,13 +193,36 @@ Proposed once per buffer, so an edit made at the prompt is kept."
 
 (advice-add 'compile :before #'my-devcontainer--propose-compile-command)
 
+(defvar-local my-devcontainer--overlay-time-before-build nil
+  "What `my-devcontainer--overlay-time' returned when the build started.")
+
+(defun my-devcontainer--overlay-time ()
+  "Return when the workspace's overlay last gained or lost a package, or nil.
+colcon gives each package an entry in the install directory, whose
+modification time thus changes with the set of them."
+  (file-attribute-modification-time
+   (file-attributes (expand-file-name "install" (my-devcontainer-workspace)))))
+
+(defun my-devcontainer--refresh-after-build (buffer _status)
+  "Refresh if the build in BUFFER changed the overlay's set of packages.
+For `compilation-finish-functions'."
+  (with-current-buffer buffer
+    (unless (equal my-devcontainer--overlay-time-before-build
+                   (my-devcontainer--overlay-time))
+      (my-devcontainer-refresh))))
+
 ;;;###autoload
 (defun my-devcontainer-setup-compilation-buffer ()
-  "Translate the container's paths in compiler messages to the host's.
-For `compilation-mode-hook'."
+  "Fit a compilation buffer to a build running in the container.
+The container's paths in compiler messages are translated to the host's,
+and the language servers get to see the packages the build adds.  For
+`compilation-mode-hook'."
   (when-let* ((mappings (my-devcontainer-mappings)))
     (setq-local compilation-parse-errors-filename-function
-                (lambda (file) (or (my-devcontainer--host-path file mappings) file)))))
+                (lambda (file) (or (my-devcontainer--host-path file mappings) file)))
+    (setq my-devcontainer--overlay-time-before-build (my-devcontainer--overlay-time))
+    (add-hook 'compilation-finish-functions #'my-devcontainer--refresh-after-build
+              nil t)))
 
 
 ;;;; Terminal
@@ -243,17 +266,29 @@ argument NEW, another one is started."
 
 ;;;; Refreshing
 
+(defun my-devcontainer--servers (workspace)
+  "Return the language servers of the buffers under directory WORKSPACE."
+  (when (featurep 'eglot)
+    (seq-uniq
+     (seq-keep (lambda (buffer)
+                 (with-current-buffer buffer
+                   (and (string-prefix-p (file-name-as-directory workspace)
+                                         (expand-file-name default-directory))
+                        (eglot-current-server))))
+               (buffer-list)))))
+
 ;;;###autoload
 (defun my-devcontainer-refresh ()
-  "Re-read the container's environment and reconnect the language server.
-Needed after a build or after the container was recreated."
+  "Re-read the container's environment and reconnect its language servers.
+Done automatically after a \\[compile] that added packages to the workspace;
+needed by hand after such a build from a terminal, or after the container
+was recreated."
   (interactive)
   (unless (my-devcontainer--run "--refresh" default-directory)
     (user-error "No devcontainer serves %s"
                 (abbreviate-file-name default-directory)))
   (clrhash my-devcontainer--cache)
-  (when-let* ((server (and (featurep 'eglot) (eglot-current-server))))
-    (eglot-reconnect server))
+  (mapc #'eglot-reconnect (my-devcontainer--servers (my-devcontainer-workspace)))
   (message "my-devcontainer: refreshed"))
 
 (provide 'my-devcontainer)

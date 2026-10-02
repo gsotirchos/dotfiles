@@ -59,8 +59,9 @@ before this setup has none of that yet — until then clangd reports
 `'…/msg/x.hpp' file not found` for anything outside the system headers.
 
 `C-c c r` (`my-devcontainer-refresh`) re-reads the container's environment
-and restarts the server. Use it after a build that extended what the tools
-can see (new packages on `PYTHONPATH`/`AMENT_PREFIX_PATH`), after the
+and restarts the workspace's servers. A build from `compile` that adds
+packages to the workspace (new entries on `PYTHONPATH`/`AMENT_PREFIX_PATH`)
+does this by itself. Use it after such a build from a terminal, after the
 container was recreated, or when Eglot connected to the host server because
 the container was not running at the time.
 
@@ -96,8 +97,10 @@ and has no `.devcontainer/` above it; start the container as under Setup.
 mount, so the container cannot see it.
 
 Pyright cannot resolve a package of the workspace itself — the workspace's
-`install/setup.bash` is sourced when the environment is probed, so it must
-have been built at that time: build it, then `C-c c r`.
+`install/setup.bash` is sourced when the environment is probed, so the
+package must have been built at that time. The environment is probed again
+once `install/` gains or loses a package, but a server already running keeps
+the old one: `C-c c r` after building the package from a terminal.
 
 The first `devcontainer-exec` call for a container that is not running blocks
 until it is up, which may include building the image; starting it from a
