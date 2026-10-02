@@ -1615,6 +1615,10 @@ kill Aspell first so that it cannot save the word back."
       (jsonrpc-error (eglot--warn "Capability registration degraded: %S" err))))
   :init
   (setq eglot-stay-out-of '(flymake))
+  ;; pyright asks to watch every directory on its search path (venv, system
+  ;; dist-packages, colcon overlay), ~6000 watches per server against the
+  ;; `eglot-max-file-watches' shared by all of them.
+  (setq eglot-watch-files-outside-project-root nil)
   ;; LemMinX reads its settings from the `xml' section, both from
   ;; `initializationOptions' and from `workspace/didChangeConfiguration';
   ;; Eglot sends the latter on connect with exactly this shape.
