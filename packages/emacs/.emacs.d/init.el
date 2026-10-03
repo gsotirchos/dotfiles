@@ -574,6 +574,7 @@ the window."
   (tab-bar-separator "")
   (tab-bar-auto-width t)
   (tab-bar-auto-width-max nil)
+  (tab-bar-truncate t)
   (tab-bar-format
    '(tab-bar-format-tabs
      tab-bar-separator
