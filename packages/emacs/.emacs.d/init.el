@@ -941,6 +941,39 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   (vertico-mode)
   (vertico-mouse-mode 1))
 
+(use-package vertico-mouse
+  :after vertico
+  :ensure nil  ;; comes with vertico
+  :bind
+  (nil
+   :map vertico-mouse-map
+   ("<wheel-up>" . my/vertico-mouse-wheel)
+   ("<wheel-down>" . my/vertico-mouse-wheel))
+  :preface
+  (defvar my/vertico-wheel-pixels 0
+    "Wheel travel in pixels not yet turned into a candidate step.")
+  (defun my/vertico-mouse-wheel (event)
+    "Step the Vertico selection one candidate per line of EVENT's travel.
+Replaces the buffer-local `mwheel-coalesce-scroll-events' that
+`vertico-mouse-mode' sets for the same purpose: the NS port reads it
+from the current buffer, i.e. the minibuffer, so it also coalesces
+the pixel scrolling of any other window under the mouse."
+    (interactive "e")
+    (let* ((line-height (default-line-height))
+           (pixels (abs (or (cdr (nth 4 event)) line-height)))
+           (travel (if (eq (event-basic-type event) 'wheel-up) (- pixels) pixels)))
+      (when (< (* travel my/vertico-wheel-pixels) 0)
+        (setq my/vertico-wheel-pixels 0))
+      (cl-incf my/vertico-wheel-pixels travel)
+      (let ((candidates (truncate my/vertico-wheel-pixels line-height)))
+        (cl-decf my/vertico-wheel-pixels (* candidates line-height))
+        (unless (zerop candidates)
+          (vertico-next candidates)))))
+  (defun my/vertico-mouse-uncoalesce (&rest _)
+    "Undo the coalescing that `vertico-mouse-mode' sets in the minibuffer."
+    (kill-local-variable 'mwheel-coalesce-scroll-events))
+  :config (advice-add 'vertico--setup :after #'my/vertico-mouse-uncoalesce))
+
 (use-package vertico-directory
   :after vertico
   :ensure nil  ;; comes with vertico
