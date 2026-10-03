@@ -1244,6 +1244,7 @@ commit message.")
    :map ghostel-semi-char-mode-map
    ("C-s"  . consult-line)
    ("C-k"  . my/ghostel-send-C-k-and-kill)
+   ("M-v"  . ghostel-yank)
    ;; I'm used to go up/down the shell history with M-n/p from eshell
    ;; Simulate this behavior in ghostel by sending C-p and C-n
    ("M-p" . (lambda () (interactive) (ghostel-send-key "p" "ctrl")))
@@ -1285,7 +1286,18 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package evil-ghostel
   :after (ghostel evil)
-  :hook (ghostel-mode . evil-ghostel-mode))
+  :hook (ghostel-mode . evil-ghostel-mode)
+  :config
+  ;; Send the readline equivalents of my line-editing keys, and paste the
+  ;; Emacs kill ring instead of readline's
+  (let ((send-kill-word (lambda () (interactive) (ghostel-send-key "d" "alt"))))
+    (evil-define-key 'insert evil-ghostel-mode-map
+      (kbd "C-y") #'ghostel-yank
+      (kbd "M-<backspace>") (lambda () (interactive) (ghostel-send-key "u" "ctrl"))
+      (kbd "M-<delete>") #'my/ghostel-send-C-k-and-kill
+      (kbd "A-<backspace>") (lambda () (interactive) (ghostel-send-key "backspace" "alt"))
+      (kbd "A-<delete>") send-kill-word
+      (kbd "A-<kp-delete>") send-kill-word)))
 
 (use-package buffer-terminator
   :custom
