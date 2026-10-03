@@ -215,6 +215,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (use-short-answers t)
   (confirm-kill-emacs #'yes-or-no-p)
   (save-silently t)
+  (completion-ignore-case t)
   (global-completion-preview-mode t)
   (sentence-end-double-space nil)
   (scroll-margin 0)
@@ -651,6 +652,7 @@ the window."
    :map dired-mode-map
    ("M-<up>" . dired-up-directory)
    ("M-<down>" . dired-find-file)
+   ("SPC" . dired-display-file)
    ([remap dired-view-file] . my/dired-find-file-other-frame))
   :custom
   (dired-listing-switches "-alF")
@@ -791,7 +793,23 @@ candidate instead of running the command."
 (use-package evil-collection
   :after evil
   :demand t
-  :config (evil-collection-init))
+  :preface
+  (defvar my/evil-collection-passthrough-keys
+    '((dired-mode-map "SPC")
+      (magit-section-mode-map "C-<tab>"))
+    "(MAP KEY [STATE]) keys Evil Collection defers to MAP's own binding.
+STATE defaults to `normal'.")
+  (defun my/evil-collection-pass-through (_mode keymaps &rest _rest)
+    "Make `my/evil-collection-passthrough-keys' in KEYMAPS use their map."
+    (pcase-dolist (`(,map ,key ,state) my/evil-collection-passthrough-keys)
+      (when (memq map keymaps)
+        (evil-collection-define-key
+          (or state 'normal) map (key-parse key)
+          `(menu-item "" nil :filter
+                      ,(lambda (_) (keymap-lookup (symbol-value map) key)))))))
+  :config
+  (add-hook 'evil-collection-setup-hook #'my/evil-collection-pass-through)
+  (evil-collection-init))
 
 (use-package evil-surround
   :demand t
@@ -1149,9 +1167,7 @@ The `upstream' color mirrors the `pager.log' filter in ~/.gitconfig."
   (oset (get 'magit-rebase 'transient--prefix) default-value
         '("--autostash" "--update-refs"))
   (with-eval-after-load 'git-commit
-    (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
-  (when (bound-and-true-p evil-mode)
-    (evil-define-key 'normal magit-section-mode-map (kbd "C-<tab>") nil)))
+    (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf)))
 
 (use-package transient
   :ensure nil
