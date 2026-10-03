@@ -571,8 +571,8 @@ the window."
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
   (tab-bar-separator "")
-  (tab-bar-auto-width nil)
-  (tab-bar-truncate t)
+  (tab-bar-auto-width t)
+  (tab-bar-auto-width-max nil)
   (tab-bar-format
    '(tab-bar-format-tabs
      tab-bar-separator
@@ -585,6 +585,11 @@ the window."
   (tab-bar-mode 1)
   (add-to-list 'tab-bar-tab-name-format-functions #'my/format-tab-spacing)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
+
+(use-package my-tab-bar-fill
+  :ensure nil
+  :load-path "site-lisp/"
+  :hook after-init)
 
 (use-package stripes
   :after (my-keybindings modus-themes)
