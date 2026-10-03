@@ -566,6 +566,7 @@ the window."
 (use-package tab-bar
   :ensure nil
   :no-require t
+  :bind (:map tab-bar-map ("M-<mouse-1>" . ignore))
   :custom
   (tab-bar-show (if (eq system-type 'darwin) t 1))
   (tab-bar-new-button-show nil)
