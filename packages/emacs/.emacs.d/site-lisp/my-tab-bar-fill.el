@@ -112,7 +112,7 @@ Each name is centered in its tab."
     (seq-do-indexed
      (lambda (tab index)
        (let* ((label (nth 2 tab))
-              (edge (substring label 0 1))
+              (edge (apply #'propertize " " (text-properties-at 0 label)))
               (name (string-trim label))
               (share (+ (/ room (length tabs))
                         (if (< index (% room (length tabs))) 1 0)))

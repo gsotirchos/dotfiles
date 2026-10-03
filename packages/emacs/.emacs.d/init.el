@@ -578,12 +578,8 @@ the window."
      tab-bar-separator
      tab-bar-format-align-right
      tab-bar-format-global))
-  :preface
-  (defun my/format-tab-spacing (string _ _)
-    (concat "  " string "  "))
   :config
   (tab-bar-mode 1)
-  (add-to-list 'tab-bar-tab-name-format-functions #'my/format-tab-spacing)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
 (use-package my-tab-bar-fill
