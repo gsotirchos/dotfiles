@@ -17,8 +17,21 @@
   "Keep the end of the buffer at the bottom of the window."
   :group 'convenience)
 
-(defvar my/scroll-limit-triggers '(post-command-hook window-state-change-hook)
+(defvar my/scroll-limit-triggers '(post-command-hook)
   "Hooks after which every window's scroll position is reconsidered.")
+
+(defvar my/scroll-limit-deferred-triggers '(window-state-change-hook)
+  "Hooks after whose bursts every window's scroll position is reconsidered.
+Each run postpones the check by `my/scroll-limit-settle-delay'.  A
+frame resize runs `window-state-change-hook' on every step, and
+walking the windows from inside each redisplay makes the NS port
+flicker throughout the resize.")
+
+(defvar my/scroll-limit-settle-delay 0.05
+  "Seconds without a deferred trigger after which the check runs.")
+
+(defvar my/scroll-limit--settle-timer nil
+  "Timer running the check once the deferred triggers settle.")
 
 (defun my/scroll-limit-empty-space (window)
   "Return the pixels of empty space below the last line of WINDOW's buffer.
@@ -87,22 +100,37 @@ Return nil when the end of the buffer is off screen."
                (my/scroll-limit-scroll-forward window (- empty-space))))))))
      nil 'visible)))
 
+(defun my/scroll-limit-update-when-settled (&rest _)
+  "Run `my/scroll-limit-update' once no call to this has come for a while.
+The while is `my/scroll-limit-settle-delay'."
+  (when (timerp my/scroll-limit--settle-timer)
+    (cancel-timer my/scroll-limit--settle-timer))
+  (setq my/scroll-limit--settle-timer
+        (run-with-timer my/scroll-limit-settle-delay nil #'my/scroll-limit-update)))
+
 ;;;###autoload
 (define-minor-mode my-scroll-limit-mode
   "Toggle scrolling limited to the last line of the buffer.
 When enabled, no window shows empty space past the end of its
 buffer, and the last line is held flush with the bottom while the
 cursor is on it, rechecked after each of the
-`my/scroll-limit-triggers'."
+`my/scroll-limit-triggers' and after each burst of the
+`my/scroll-limit-deferred-triggers'."
   :global t
   :group 'my/scroll-limit
   (if my-scroll-limit-mode
       (progn
         (dolist (hook my/scroll-limit-triggers)
           (add-hook hook #'my/scroll-limit-update))
+        (dolist (hook my/scroll-limit-deferred-triggers)
+          (add-hook hook #'my/scroll-limit-update-when-settled))
         (my/scroll-limit-update))
     (dolist (hook my/scroll-limit-triggers)
-      (remove-hook hook #'my/scroll-limit-update))))
+      (remove-hook hook #'my/scroll-limit-update))
+    (dolist (hook my/scroll-limit-deferred-triggers)
+      (remove-hook hook #'my/scroll-limit-update-when-settled))
+    (when (timerp my/scroll-limit--settle-timer)
+      (cancel-timer my/scroll-limit--settle-timer))))
 
 (provide 'my-scroll-limit)
 ;;; my-scroll-limit.el ends here
