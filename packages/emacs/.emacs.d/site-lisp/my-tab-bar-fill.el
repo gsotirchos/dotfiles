@@ -11,12 +11,12 @@
 ;; - it pads with whole spaces, so each tab falls short of its share;
 ;; - it ignores the borders that adjacent tabs sharing a :box face merge.
 ;;
-;; This package corrects all of these, centers each name in its tab, and
-;; drops the right-alignment stretch while nothing follows it: at the
-;; frame's edge it wraps the tab bar onto an empty second line and, under
-;; a :box face, erases the last tab's right border.  An underlined last
-;; tab ends on a pixel-wide unboxed sliver instead, as Emacs does not
-;; underline the box border that ends the tab bar.
+;; This package corrects all of these and centers each name in its tab.
+;; An underlined last tab ends on a pixel-wide unboxed sliver, as Emacs
+;; does not underline the box border that ends the tab bar.
+;;
+;; Pair it with `tab-bar-truncate': a tab bar filled to the frame's edge
+;; otherwise wraps onto an empty second line.
 ;;
 ;; TODO: Report the `tab-bar-auto-width' issues above to bug-gnu-emacs;
 ;; none reported as of 2026-10-03.
@@ -57,17 +57,6 @@
                     item))
                 (car args))))
 
-(defun my/tab-bar-fill-drop-idle-align-right (items)
-  "Remove the right-alignment stretch from ITEMS when nothing follows it."
-  (let ((align-right (assq 'align-right items)))
-    (if (and align-right
-             (seq-every-p (lambda (item)
-                            (or (not (stringp (nth 2 item)))
-                                (string-empty-p (nth 2 item))))
-                          (cdr (memq align-right items))))
-        (delq align-right items)
-      items)))
-
 (defun my/tab-bar-fill-underlined-p (label)
   "Return non-nil if the end of LABEL is drawn underlined."
   (seq-some (lambda (face)
@@ -82,6 +71,21 @@
                             'face (get-text-property (1- (length label)) 'face label))))
     (add-face-text-property 0 1 '(:box nil) nil sliver)
     sliver))
+
+(defun my/tab-bar-fill-fit-name (name edge share)
+  "Shorten NAME until it fits SHARE pixels between two EDGEs.
+Function `tab-bar-auto-width' truncates a name together with its
+trailing edge, so putting that edge back can overflow the tab and
+the tab bar.  A further shortened name has its last two characters
+faded with `shadow', as that function does."
+  (let ((fitted name))
+    (while (and (> (string-pixel-width (concat edge fitted edge)) share)
+                (length> fitted 0))
+      (setq fitted (substring fitted 0 -1)))
+    (when (length< fitted (length name))
+      (add-face-text-property (max 0 (- (length fitted) 2)) (length fitted)
+                              'shadow nil fitted))
+    fitted))
 
 (defun my/tab-bar-fill-stretch-tabs (items)
   "Stretch the auto-width tabs in ITEMS to fill the frame exactly.
@@ -113,9 +117,9 @@ Each name is centered in its tab."
      (lambda (tab index)
        (let* ((label (nth 2 tab))
               (edge (apply #'propertize " " (text-properties-at 0 label)))
-              (name (string-trim label))
               (share (+ (/ room (length tabs))
                         (if (< index (% room (length tabs))) 1 0)))
+              (name (my/tab-bar-fill-fit-name (string-trim label) edge share))
               (slack (max 0 (- share (string-pixel-width (concat edge name edge)))))
               (stretch (lambda (width)
                          (apply #'propertize " " 'display `(space :width (,width))
@@ -134,8 +138,7 @@ Each name is centered in its tab."
 (defconst my/tab-bar-fill-advice
   '((:before . my/tab-bar-fill-invalidate-cache)
     (:filter-args . my/tab-bar-fill-measure-with-base-face)
-    (:filter-return . my/tab-bar-fill-stretch-tabs)
-    (:filter-return . my/tab-bar-fill-drop-idle-align-right))
+    (:filter-return . my/tab-bar-fill-stretch-tabs))
   "How each function of this package advises function `tab-bar-auto-width'.")
 
 ;;;###autoload
