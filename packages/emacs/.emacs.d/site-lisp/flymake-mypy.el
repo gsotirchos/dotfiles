@@ -40,6 +40,9 @@
 (defvar-local flymake-mypy-directory nil
   "Directory to run mypy from, or nil for the project root.")
 
+(defvar-local flymake-mypy-temporary-directory nil
+  "Directory for the checked buffer's copy, or nil for the default one.")
+
 (defvar-local flymake-mypy--proc nil)
 
 (defun flymake-mypy-enable ()
@@ -74,7 +77,10 @@
       (widen)
       ;; Patched (upstream: appends ".py" to a file it never deletes, leaving
       ;; two files behind per check): one temporary file, removed when done.
-      (let* ((temp-file (make-temp-file "flymake-mypy" nil ".py"))
+      (let* ((temp-file (let ((temporary-file-directory
+                                (or flymake-mypy-temporary-directory
+                                    temporary-file-directory)))
+                          (make-temp-file "flymake-mypy" nil ".py")))
              ;; Patched (upstream: (car (last (project-current)))): run from
              ;; `flymake-mypy-directory', or the file's own directory for
              ;; buffers outside any project.

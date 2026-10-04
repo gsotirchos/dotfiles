@@ -1725,8 +1725,7 @@ kill Aspell first so that it cannot save the word back."
                  . ,(my-devcontainer-eglot-server "pyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
                `((c++-ts-mode c-ts-mode c++-mode c-mode)
-                 . ,(my-devcontainer-eglot-server
-                     "clangd"
+                 . ,(my-devcontainer-clangd-server
                      "--clang-tidy"
                      "--header-insertion=never"
                      "--background-index"
@@ -1852,18 +1851,17 @@ inside a comment."
     "Enable the mypy Flymake backend when mypy is available.
 In a devcontainer project the container's mypy is run from the top of
 the workspace, where no source folder shadows an installed package."
-    (if-let* ((tmp (my-devcontainer-temporary-directory)))
-        (progn
-          (setq-local temporary-file-directory tmp)
-          (setq-local flymake-mypy-directory (my-devcontainer-workspace))
-          (setq-local flymake-mypy-executable
-                      (string-join (my-devcontainer-command
-                                    "mypy" "--ignore-missing-imports")
-                                   " "))
-          (flymake-mypy-enable))
-      (when-let* ((mypy (executable-find "mypy")))
-        (setq-local flymake-mypy-executable mypy)
-        (flymake-mypy-enable))))
+    (when-let* ((mypy (if-let* ((tmp (my-devcontainer-temporary-directory)))
+                          (progn
+                            (setq-local flymake-mypy-temporary-directory tmp)
+                            (setq-local flymake-mypy-directory
+                                        (my-devcontainer-workspace))
+                            (string-join (my-devcontainer-command
+                                          "mypy" "--ignore-missing-imports")
+                                         " "))
+                        (executable-find "mypy"))))
+      (setq-local flymake-mypy-executable mypy)
+      (flymake-mypy-enable)))
   :hook (python-base-mode . my/flymake-mypy-enable))
 
 (use-package my-pixi

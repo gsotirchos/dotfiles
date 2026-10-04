@@ -55,11 +55,15 @@ Each entry is (HOST . CONTAINER), deepest host path first."
                 (cons (car sides) (cadr sides))))
             (split-string mappings ","))))
 
-(defun my-devcontainer--mount (dir mappings)
-  "Return the entry of MAPPINGS whose host side holds DIR, or nil."
-  (seq-find (lambda (mapping)
-              (string-prefix-p (file-name-as-directory (car mapping)) dir))
-            mappings))
+(defun my-devcontainer--mount (path mappings &optional side)
+  "Return the entry of MAPPINGS whose SIDE holds PATH, or nil.
+SIDE is `car' (the host, by default) or `cdr' (the container)."
+  (let ((side (or side #'car)))
+    (seq-find (lambda (mapping)
+                (let ((root (funcall side mapping)))
+                  (or (equal path root)
+                      (string-prefix-p (file-name-as-directory root) path))))
+              mappings)))
 
 (defun my-devcontainer-workspace (&optional dir)
   "Return the host side of the bind mount holding DIR, or nil."
@@ -84,23 +88,32 @@ Nil if no container serves DIR."
   "Return clangd's arguments for the container's MAPPINGS.
 It is pointed at the workspace's merged compile database, the only one
 covering generated headers."
-  (cons (concat "--path-mappings="
-                (mapconcat (lambda (mapping) (concat (car mapping) "=" (cdr mapping)))
-                           mappings ","))
+  (cons (concat "--path-mappings=" (my-devcontainer--query "--mappings"))
         (when-let* ((workspace (my-devcontainer-workspace))
                     (build (my-devcontainer--container-path
                             (expand-file-name "build" workspace) mappings)))
           (list (concat "--compile-commands-dir=" build)))))
 
-(defun my-devcontainer-eglot-server (program &rest args)
+(defun my-devcontainer--eglot-server (container-args program args)
   "Return an `eglot-server-programs' contact running PROGRAM with ARGS.
-Inside a devcontainer project the server is run in the container."
+Inside a devcontainer project the server is run in the container, with
+the arguments CONTAINER-ARGS returns for its mappings appended."
   (lambda (&optional _interactive _project)
     (if-let* ((mappings (my-devcontainer-mappings)))
         (apply #'my-devcontainer-command program
-               (append args (when (equal program "clangd")
-                              (my-devcontainer--clangd-args mappings))))
+               (append args (funcall container-args mappings)))
       (cons program args))))
+
+(defun my-devcontainer-eglot-server (program &rest args)
+  "Return an `eglot-server-programs' contact running PROGRAM with ARGS.
+Inside a devcontainer project the server is run in the container."
+  (my-devcontainer--eglot-server #'ignore program args))
+
+(defun my-devcontainer-clangd-server (&rest args)
+  "Return an `eglot-server-programs' contact running clangd with ARGS.
+Inside a devcontainer project clangd is run in the container, mapping
+its paths to the host's."
+  (my-devcontainer--eglot-server #'my-devcontainer--clangd-args "clangd" args))
 
 (defun my-devcontainer-python-extra-paths (&optional dir)
   "Return the site-packages of the ament_virtualenv environments serving DIR.
@@ -119,12 +132,7 @@ takes one configuration per project, which may hold several packages."
 (defun my-devcontainer--translate (path from to mappings)
   "Return PATH moved from the FROM side of MAPPINGS to the TO side.
 FROM and TO are `car' and `cdr' in either order; nil if no mount covers PATH."
-  (when-let* ((mapping (seq-find (lambda (mapping)
-                                   (or (equal path (funcall from mapping))
-                                       (string-prefix-p (file-name-as-directory
-                                                         (funcall from mapping))
-                                                        path)))
-                                 mappings)))
+  (when-let* ((mapping (my-devcontainer--mount path mappings from)))
     (concat (funcall to mapping) (substring path (length (funcall from mapping))))))
 
 (defun my-devcontainer--host-path (path mappings)
@@ -214,13 +222,14 @@ modification time thus changes with the set of them."
   (file-attribute-modification-time
    (file-attributes (expand-file-name "install" (my-devcontainer-workspace)))))
 
-(defun my-devcontainer--refresh-after-build (buffer _status)
-  "Refresh if the build in BUFFER changed the overlay's set of packages.
-For `compilation-finish-functions'."
+(defun my-devcontainer--reconnect-after-build (buffer _status)
+  "Reconnect if the build in BUFFER changed the overlay's set of packages.
+The servers' next start re-probes the environment, now stale.  For
+`compilation-finish-functions'."
   (with-current-buffer buffer
     (unless (equal my-devcontainer--overlay-time-before-build
                    (my-devcontainer--overlay-time))
-      (my-devcontainer-refresh))))
+      (my-devcontainer--reconnect-servers))))
 
 ;;;###autoload
 (defun my-devcontainer-setup-compilation-buffer ()
@@ -232,28 +241,17 @@ and the language servers get to see the packages the build adds.  For
     (setq-local compilation-parse-errors-filename-function
                 (lambda (file) (or (my-devcontainer--host-path file mappings) file)))
     (setq my-devcontainer--overlay-time-before-build (my-devcontainer--overlay-time))
-    (add-hook 'compilation-finish-functions #'my-devcontainer--refresh-after-build
+    (add-hook 'compilation-finish-functions #'my-devcontainer--reconnect-after-build
               nil t)))
 
 
 ;;;; Terminal
-
-(defun my-devcontainer--container ()
-  "Return the current container as (USER . ID)."
-  (let ((container (split-string (my-devcontainer--query "--container") "@")))
-    (cons (car container) (cadr container))))
 
 (defun my-devcontainer--container-name (id)
   "Return the name docker knows container ID by."
   (with-temp-buffer
     (call-process "docker" nil '(t nil) nil "inspect" "--format" "{{.Name}}" id)
     (string-remove-prefix "/" (string-trim (buffer-string)))))
-
-(defun my-devcontainer--shell-command (container workdir)
-  "Return the docker command opening a login shell in WORKDIR of CONTAINER.
-CONTAINER is a (USER . ID) pair."
-  `("docker" "exec" "-it" "-u" ,(car container) "-w" ,workdir
-    "-e" "TERM=xterm-256color" ,(cdr container) "bash" "-l"))
 
 ;;;###autoload
 (defun my-devcontainer-terminal (&optional new)
@@ -262,17 +260,16 @@ An existing terminal is reused, as in `project-shell'; with prefix
 argument NEW, another one is started."
   (interactive "P")
   (require 'ghostel)
-  (let* ((mappings (or (my-devcontainer-mappings)
-                       (user-error "No devcontainer serves %s"
-                                   (abbreviate-file-name default-directory))))
-         (mount (my-devcontainer--mount (expand-file-name default-directory) mappings))
-         (container (my-devcontainer--container))
-         (name (format "*%s-ghostel*" (my-devcontainer--container-name (cdr container))))
+  (let* ((workspace (or (my-devcontainer-workspace)
+                        (user-error "No devcontainer serves %s"
+                                    (abbreviate-file-name default-directory))))
+         (id (cadr (split-string (my-devcontainer--query "--container") "@")))
+         (name (format "*%s-ghostel*" (my-devcontainer--container-name id)))
          (buffer (if new (generate-new-buffer name) (get-buffer-create name))))
     (pop-to-buffer-same-window buffer)
     (unless (process-live-p (get-buffer-process buffer))
-      (let ((command (my-devcontainer--shell-command container (cdr mount))))
-        (ghostel-exec buffer (car command) (cdr command))))))
+      (ghostel-exec buffer my-devcontainer-executable
+                    (list "-C" workspace "env" "TERM=xterm-256color" "bash" "-l")))))
 
 
 ;;;; Refreshing
@@ -288,6 +285,10 @@ argument NEW, another one is started."
                         (eglot-current-server))))
                (buffer-list)))))
 
+(defun my-devcontainer--reconnect-servers ()
+  "Reconnect the language servers of the current workspace."
+  (mapc #'eglot-reconnect (my-devcontainer--servers (my-devcontainer-workspace))))
+
 ;;;###autoload
 (defun my-devcontainer-refresh ()
   "Re-read the container's environment and reconnect its language servers.
@@ -299,7 +300,7 @@ was recreated."
     (user-error "No devcontainer serves %s"
                 (abbreviate-file-name default-directory)))
   (clrhash my-devcontainer--cache)
-  (mapc #'eglot-reconnect (my-devcontainer--servers (my-devcontainer-workspace)))
+  (my-devcontainer--reconnect-servers)
   (message "my-devcontainer: refreshed"))
 
 (provide 'my-devcontainer)
