@@ -14,8 +14,8 @@
     submodulesummary = 1
 [push]
     recurseSubmodules = check
-[submodule]
-    recurse = true
+[alias]
+    spull = submodule update --init --recursive
 [diff]
     tool = vimdiff
     submodule = log
