@@ -1090,8 +1090,11 @@ the pixel scrolling of any other window under the mouse."
    ("B" . embark-bindings)  ; alternative for `describe-bindings'
    :map minibuffer-local-map
    ("C-." . embark-act)
-   ("C-<return>" . embark-dwim))
-  :custom (embark-quit-after-action nil))
+   ("C-<return>" . embark-dwim)
+   :map embark-file-map
+   ("P" . project-forget-project))
+  :custom (embark-quit-after-action nil)
+  :config (add-to-list 'embark-post-action-hooks '(project-forget-project embark--restart)))
 
 (use-package embark-consult
   :after (embark consult))
