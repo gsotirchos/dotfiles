@@ -68,8 +68,7 @@ With a prefix ARG, open the most recent journal file dated before today."
     (goto-char start)
     (let ((drawer-regexp "^\s*:\\w*:\n\\(\s*:.*\n\\)*\s*:END:\s*\n"))
       (while (re-search-forward drawer-regexp end t)
-        ;; Delete the match, including the newline
-        (replace-match "" nil nil)))))
+        (replace-match "")))))
 
 ;;;###autoload
 (defun my/org-mac-mail-link-get-selected-message-id ()
@@ -93,7 +92,7 @@ With a prefix ARG, open the most recent journal file dated before today."
 
 
 ;;; ----------------------------------------------------------------------------
-;;; Custom Advices & Auxiliary Functions (Migrated from init.el)
+;;; Custom Advices & Auxiliary Functions
 ;;; ----------------------------------------------------------------------------
 
 ;;;###autoload
@@ -101,16 +100,14 @@ With a prefix ARG, open the most recent journal file dated before today."
   "Promote the heading at point one level, no-op if not on a heading."
   (interactive)
   (when (org-at-heading-p)
-    (org-promote)
-    (org-fix-position-after-promote)))
+    (org-do-promote)))
 
 ;;;###autoload
 (defun my/org-demote-heading ()
   "Demote the heading at point one level, no-op if not on a heading."
   (interactive)
   (when (org-at-heading-p)
-    (org-demote)
-    (org-fix-position-after-promote)))
+    (org-do-demote)))
 
 ;;;###autoload
 (defun my/org-create-archive-dir (&rest _)
@@ -146,9 +143,8 @@ completed."
   "Follow link (MID) function for Apple Mail messages."
   (start-process "open-link" nil "open" (format "message://%%3C%s%%3E" mid)))
 
-;;;###autoload
-(defun my/customize-org-mode ()
-  "Apply my tweaks to theme-controlled settings."
+(defun my/customize-org-faces ()
+  "Apply my tweaks to theme-controlled Org settings."
   (set-face-attribute 'org-headline-done nil :strike-through t :family nil :inherit 'variable-pitch)
   (set-face-bold 'org-checkbox t)
   (let ((bg-color (face-background 'org-agenda-clocking)))
@@ -168,13 +164,7 @@ completed."
           `(("NEXT" . ,next)
             ("WIP" . ,wip)
             ("WAIT" . ,wait)
-            ("FAIL" . ,fail))))
-  ;; (when-let* ((bg-color (my/theme-color 'bg-inactive)))
-  ;;   (dolist (face
-  ;;            '(org-block-begin-line
-  ;;              org-block-end-line))
-  ;;     (set-face-background face bg-color)))
-  (font-lock-update))
+            ("FAIL" . ,fail)))))
 
 
 ;;; ----------------------------------------------------------------------------
@@ -184,6 +174,9 @@ completed."
 (advice-add 'org-archive-subtree :before #'my/org-create-archive-dir)
 (advice-add 'org-fill-paragraph :around #'my/unlimited-fill-column-advice)
 (advice-add 'org-parse-arguments :around #'my/org-parse-arguments-to-point)
+
+(my/customize-org-faces)
+(add-hook 'after-load-theme-hook #'my/customize-org-faces)
 
 (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
 
@@ -212,16 +205,13 @@ completed."
   "Minor mode for personal Org Mode utilities and bindings."
   :lighter " MyOrg"
   :keymap my-org-mode-map
-  ;; This mode is NOT global; it turns on per-buffer
-  :global nil
   (if my-org-mode
       (progn
         (visual-line-mode 1)
         (visual-wrap-prefix-mode -1)
-        (my/customize-org-mode)
-        (add-hook 'after-load-theme-hook #'my/customize-org-mode nil t))
-    ;; Cleanup if turned off
-    (remove-hook 'after-load-theme-hook #'my/customize-org-mode t)))
+        ;; Re-fontify for the new `org-todo-keyword-faces' and emphasis.
+        (add-hook 'after-load-theme-hook #'font-lock-flush nil t))
+    (remove-hook 'after-load-theme-hook #'font-lock-flush t)))
 
 (provide 'my-org)
 

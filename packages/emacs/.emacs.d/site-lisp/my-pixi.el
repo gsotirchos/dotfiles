@@ -99,12 +99,6 @@ The result is cached until MANIFEST or its lock file changes."
         (puthash key (cons stamp vars) my/pixi--cache)
         vars))))
 
-(defun my/pixi--value (vars name)
-  "Return the value of NAME in VARS, a list of \"NAME=VALUE\"."
-  (let ((prefix (concat name "=")))
-    (when-let* ((entry (seq-find (lambda (var) (string-prefix-p prefix var)) vars)))
-      (substring entry (length prefix)))))
-
 ;;;###autoload
 (define-minor-mode my-pixi-mode
   "Run subprocesses of this buffer inside its pixi workspace environment.
@@ -129,7 +123,7 @@ is not in a pixi workspace, or when pixi cannot report the environment."
           (setq my-pixi-mode nil)
         (setq-local process-environment (copy-sequence vars))
         (setq-local exec-path
-                    (append (split-string (or (my/pixi--value vars "PATH") "")
+                    (append (split-string (or (getenv-internal "PATH" vars) "")
                                           path-separator t)
                             (list exec-directory)))))))
 

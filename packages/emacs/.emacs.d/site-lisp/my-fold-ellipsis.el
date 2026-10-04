@@ -74,7 +74,7 @@ folding through the display table, which boxes each glyph separately.")
    standard-display-table 'selective-display
    (my/fold-ellipsis-glyphs my/fold-ellipsis-fixed-pitch)))
 
-(defun my/fold-ellipsis-set-display-table (&rest _)
+(defun my/fold-ellipsis-set-display-table ()
   "Give a proportional buffer its own ellipsis, and every other one none.
 The table is a copy of `standard-display-table' because a buffer-local one
 takes over from it whole, wrap and truncation glyphs included."
@@ -117,7 +117,7 @@ ellipsis from, and the `display' property of the fold overlays made by
         ;; Style the badge now, not only on the next theme load.
         (my/customize-fold-ellipsis)
         (add-hook 'after-load-theme-hook #'my/customize-fold-ellipsis)
-        (advice-add 'variable-pitch-mode :after #'my/fold-ellipsis-set-display-table)
+        (add-hook 'buffer-face-mode-hook #'my/fold-ellipsis-set-display-table)
         (advice-add 'outline-flag-region :after #'my/fold-ellipsis-mark-overlay)
         ;; Set before hideshow loads: its `defcustom' leaves a value that is
         ;; already there alone, and it calls nil as no handler at all.
@@ -130,7 +130,7 @@ ellipsis from, and the `display' property of the fold overlays made by
           (with-current-buffer buf
             (my/fold-ellipsis-set-display-table))))
     (remove-hook 'after-load-theme-hook #'my/customize-fold-ellipsis)
-    (advice-remove 'variable-pitch-mode #'my/fold-ellipsis-set-display-table)
+    (remove-hook 'buffer-face-mode-hook #'my/fold-ellipsis-set-display-table)
     (advice-remove 'outline-flag-region #'my/fold-ellipsis-mark-overlay)
     (setq hs-set-up-overlay my/fold-ellipsis-saved-hs-set-up-overlay)
     (dolist (buf (buffer-list))

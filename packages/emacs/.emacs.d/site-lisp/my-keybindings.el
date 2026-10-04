@@ -32,17 +32,13 @@
   (interactive)
   (condition-case nil
       (tab-close)
-    (error (condition-case nil
-               (delete-frame)
-             (error nil)))))
+    (error (ignore-errors (delete-frame)))))
 
-;; Helper for the edit-init functions below
 (defun my/find-file (file)
   "Open buffer with FILE in new frame or tab."
-  (interactive)
   (let ((file-name (file-truename file)))
     (unless (string-equal buffer-file-name file-name)
-      (if (cdr (assoc 'fullscreen (frame-parameters)))
+      (if (frame-parameter nil 'fullscreen)
           (find-file-other-tab file-name)
         (find-file-other-frame file-name)))))
 
@@ -88,26 +84,6 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
   ;; Mouse/Wheel
   ;; "<wheel-left>" #'ignore
   ;; "<wheel-right>" #'ignore
-  "C-<wheel-left>" #'ignore
-  "S-<wheel-left>" #'ignore
-  "M-<wheel-left>" #'ignore
-  "A-<wheel-left>" #'ignore
-  "s-<wheel-left>" #'ignore
-  "C-<wheel-right>" #'ignore
-  "S-<wheel-right>" #'ignore
-  "M-<wheel-right>" #'ignore
-  "A-<wheel-right>" #'ignore
-  "s-<wheel-right>" #'ignore
-  "C-<wheel-up>" #'ignore
-  "S-<wheel-up>" #'ignore
-  "M-<wheel-up>" #'ignore
-  "A-<wheel-up>" #'ignore
-  "s-<wheel-up>" #'ignore
-  "C-<wheel-down>" #'ignore
-  "S-<wheel-down>" #'ignore
-  "M-<wheel-down>" #'ignore
-  "A-<wheel-down>" #'ignore
-  "s-<wheel-down>" #'ignore
 
   ;; Navigation/Edit
   "C-<delete>" #'ignore
@@ -150,6 +126,10 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
   ;; Apply Prefix Map to C-c
   "C-c" my/personal-map)
 
+(dolist (modifier '("C" "S" "M" "A" "s"))
+  (dolist (direction '("left" "right" "up" "down"))
+    (keymap-set my-keybindings-mode-map
+                (format "%s-<wheel-%s>" modifier direction) #'ignore)))
 
 ;;; Mode Definition
 

@@ -9,54 +9,42 @@
 (require 'modus-themes nil t)
 
 (defvar my/system-appearance-change-functions)
+(declare-function my/theme-color "init" (name))
 
 ;;;###autoload
 (defvar my/modus-themes/ui-style 'minimal
   "The current style of the mode-line, tab-bar, and buttons.
-Can be `flat' (or nil), `3d' (or t), or `minimal'.")
+Can be `flat', `3d', or `minimal'.")
 
 ;;;###autoload
 (defun my/modus-themes/set-ui-style (&optional style)
   "Activate style theme (mode-line, buttons, etc.).
-STYLE can be `flat' (or nil), `3d' (or t), or `minimal'.
+STYLE can be `flat', `3d', or `minimal'.
 If STYLE is \\='cycle, cycle the current style."
   (interactive "P")
   (when style
     (setq my/modus-themes/ui-style
           (if (eq style 'cycle)
               (pcase my/modus-themes/ui-style
-                ((or 'nil 'flat) '3d)
-                ((or 't '3d) 'minimal)
-                ('minimal 'flat)
-                (_ 'minimal))
+                ('flat '3d)
+                ('3d 'minimal)
+                (_ 'flat))
             style)))
-  (let* ((is-3d (memq my/modus-themes/ui-style '(3d t)))
-         (is-minimal (eq my/modus-themes/ui-style 'minimal))
-         (button-style (when is-3d 'released-button))
-         (width (if is-3d 2 1))
-         (bold-tab-faces-p t)
-         (bg-main (modus-themes-get-color-value 'bg-main t))
-         (bg-dim (modus-themes-get-color-value 'bg-dim t))
-         (bg-hover (modus-themes-get-color-value 'bg-hover t))
-         (fg-vertical-border (modus-themes-get-color-value 'fg-vertical-border t))
-         (fg-active (modus-themes-get-color-value 'fg-mode-line-active t))
-         (fg-inactive (modus-themes-get-color-value 'fg-mode-line-inactive t))
-         (bg-active (modus-themes-get-color-value 'bg-mode-line-active t))
-         (bg-inactive (modus-themes-get-color-value 'bg-mode-line-inactive t))
-         (border-active (modus-themes-get-color-value 'border-mode-line-active t))
-         (border-inactive (modus-themes-get-color-value 'border-mode-line-inactive t))
-         (color-active (if is-3d bg-active border-active))
-         (color-inactive (if is-3d bg-inactive border-inactive))
+  (let* ((is-3d (eq my/modus-themes/ui-style '3d))
+         (bg-main (my/theme-color 'bg-main))
+         (bg-dim (my/theme-color 'bg-dim))
+         (bg-hover (my/theme-color 'bg-hover))
+         (fg-vertical-border (my/theme-color 'fg-vertical-border))
+         (fg-active (my/theme-color 'fg-mode-line-active))
+         (fg-inactive (my/theme-color 'fg-mode-line-inactive))
+         (bg-active (my/theme-color 'bg-mode-line-active))
+         (bg-inactive (my/theme-color 'bg-mode-line-inactive))
          (box-minimal (list :line-width 8 :color bg-main))
          (box-minimal-thin (list :line-width 6 :color bg-main))
-         (box-minimal-highlight (list :line-width (plist-get box-minimal :line-width) :color bg-hover))
-         (box-minimal-highlight-thin (list :line-width (plist-get box-minimal-thin :line-width) :color bg-hover))
+         (box-minimal-highlight (list :line-width 8 :color bg-hover))
+         (box-minimal-highlight-thin (list :line-width 6 :color bg-hover))
          (underline-minimal (list :color bg-inactive :position 0))
-         (underline-minimal-thin (list :color bg-dim :position 0))
-         (box-active (append (list :line-width width :color color-active)
-                             (when button-style (list :style button-style))))
-         (box-inactive (append (list :line-width width :color color-inactive)
-                               (when button-style (list :style button-style)))))
+         (underline-minimal-thin (list :color bg-dim :position 0)))
     ;;;;; In ordered of increasing intensity:
     ;; 1. bg-main
     ;; 2. bg-dim
@@ -67,12 +55,9 @@ If STYLE is \\='cycle, cycle the current style."
     ;; 7. fg-inactive
     ;; 8. fg-active
     ;;;;;
-    (dolist (face
-             '(tab-bar
-               tab-bar-tab
-               tab-bar-tab-inactive))
-      (set-face-bold face bold-tab-faces-p))
-    (if is-minimal
+    (dolist (face '(tab-bar tab-bar-tab tab-bar-tab-inactive))
+      (set-face-bold face t))
+    (if (eq my/modus-themes/ui-style 'minimal)
         (progn
           (pcase-dolist
               (`(,face ,box ,fg ,ol ,ul)
@@ -93,50 +78,43 @@ If STYLE is \\='cycle, cycle the current style."
                                 :overline ol
                                 :underline ul))
           (pcase-dolist
-              (`(,face ,ol ,ul)
-               `((mode-line-highlight   ,bg-inactive nil)
-                 (tab-bar-tab-highlight nil          ,underline-minimal)
-                 (header-line-highlight nil          ,underline-minimal-thin)))
+              (`(,face ,box ,ol ,ul)
+               `((mode-line-highlight   nil                         ,bg-inactive nil)
+                 (tab-bar-tab-highlight ,box-minimal-highlight      nil          ,underline-minimal)
+                 (header-line-highlight ,box-minimal-highlight-thin nil          ,underline-minimal-thin)))
             (set-face-attribute face nil
-                                :box nil
+                                :box box
                                 :overline ol
                                 :underline ul))
-          (set-face-attribute 'tab-bar-tab-highlight nil
-                              :box box-minimal-highlight)
-          (set-face-attribute 'header-line-highlight nil
-                              :box box-minimal-highlight-thin)
           (set-face-attribute 'modus-themes-button nil
                               :overline nil
                               :underline nil))
-      (progn
-        (set-face-attribute 'tab-bar nil
-                            :box nil
-                            :overline 'unspecified
-                            :underline 'unspecified
-                            :background bg-main)
-        (dolist (face
-                 '(mode-line
-                   mode-line-active
-                   tab-bar-tab
-                   modus-themes-button))
+      (let* ((width (if is-3d 2 1))
+             (button-style (when is-3d '(:style released-button)))
+             (box-active
+              `(:line-width ,width
+                :color ,(my/theme-color (if is-3d 'bg-mode-line-active 'border-mode-line-active))
+                ,@button-style))
+             (box-inactive
+              `(:line-width ,width
+                :color ,(my/theme-color (if is-3d 'bg-mode-line-inactive 'border-mode-line-inactive))
+                ,@button-style)))
+        (pcase-dolist
+            (`(,face ,box ,bg)
+             `((tab-bar              nil           ,bg-main)
+               (mode-line            ,box-active   ,bg-active)
+               (mode-line-active     ,box-active   ,bg-active)
+               (tab-bar-tab          ,box-active   ,bg-active)
+               (modus-themes-button  ,box-active   ,bg-active)
+               (header-line          ,box-inactive ,bg-inactive)
+               (mode-line-inactive   ,box-inactive ,bg-inactive)
+               (tab-bar-tab-inactive ,box-inactive ,bg-inactive)))
           (set-face-attribute face nil
-                              :box box-active
+                              :box box
                               :overline 'unspecified
                               :underline 'unspecified
-                              :background bg-active))
-        (dolist (face
-                 '(header-line
-                   mode-line-inactive
-                   tab-bar-tab-inactive))
-          (set-face-attribute face nil
-                              :box box-inactive
-                              :overline 'unspecified
-                              :underline 'unspecified
-                              :background bg-inactive))
-        (dolist (face
-                 '(mode-line-highlight
-                   tab-bar-tab-highlight
-                   header-line-highlight))
+                              :background bg))
+        (dolist (face '(mode-line-highlight tab-bar-tab-highlight header-line-highlight))
           (set-face-attribute face nil
                               :box box-active
                               :overline nil
@@ -164,7 +142,7 @@ If STYLE is \\='cycle, cycle the current style."
       (if (eq my/modus-themes/ui-style 'minimal)
           (let* ((bg (face-attribute face :background nil t))
                  (bg-color (if (or (eq bg 'unspecified) (null bg))
-                               (modus-themes-get-color-value 'bg-mode-line-inactive t)
+                               (my/theme-color 'bg-mode-line-inactive)
                              bg)))
             (set-face-attribute face nil :box (list :line-width '(4 . 2) :color bg-color)))
         (set-face-attribute face nil :box (face-attribute 'modus-themes-button :box)))))

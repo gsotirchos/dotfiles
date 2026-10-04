@@ -32,11 +32,12 @@ either \\='light or \\='dark.")
 
 (defun my/get-macos-appearance ()
   "Return \\='dark if macOS is in Dark Mode, \\='light otherwise."
-  (let ((default-directory "/"))
-    (if (string-equal "Dark\n"
-                      (ignore-errors (shell-command-to-string "defaults read -g AppleInterfaceStyle 2>/dev/null")))
-        'dark
-      'light)))
+  (or (bound-and-true-p ns-system-appearance)
+      (let ((default-directory "/"))
+        (if (string-equal "Dark\n"
+                          (ignore-errors (shell-command-to-string "defaults read -g AppleInterfaceStyle 2>/dev/null")))
+            'dark
+          'light))))
 
 (defun my/get-gnome-appearance ()
   "Return \\='dark if GNOME is in Dark Mode, \\='light otherwise."
@@ -58,20 +59,17 @@ either \\='light or \\='dark.")
    (t
     'light)))
 
+(defun my/set-system-appearance (appearance &optional force)
+  "Record APPEARANCE and run the change hooks if it differs from the last one.
+If FORCE is non-nil, run hooks even if the appearance hasn't changed."
+  (when (or force (not (eq appearance my/last-system-appearance)))
+    (setq my/last-system-appearance appearance)
+    (run-hook-with-args 'my/system-appearance-change-functions appearance)))
+
 (defun my/check-system-appearance (&optional force)
   "Check system appearance and run hooks if changed.
 If FORCE is non-nil, run hooks even if the appearance hasn't changed."
-  (let ((current-appearance (my/get-current-appearance)))
-    (when (or force (not (eq current-appearance my/last-system-appearance)))
-      (setq my/last-system-appearance current-appearance)
-      (run-hook-with-args 'my/system-appearance-change-functions current-appearance))))
-
-(defun my/mac-ns-theme-handler (appearance)
-  "Handler for native macOS APPEARANCE change."
-  ;; The hook gives us 'dark or 'light
-  (unless (eq appearance my/last-system-appearance)
-    (setq my/last-system-appearance appearance)
-    (run-hook-with-args 'my/system-appearance-change-functions appearance)))
+  (my/set-system-appearance (my/get-current-appearance) force))
 
 (defun my/dbus-gnome-theme-handler (namespace key _value)
   "Handler for D-Bus SettingChanged signals (NAMESPACE KEY _VALUE)."
@@ -92,11 +90,9 @@ If FORCE is non-nil, run hooks even if the appearance hasn't changed."
         ;; Check immediately so correct theme applies on startup
         (my/check-system-appearance t)
 
-        ;; Register event listeners or fallback to polling
         (cond
          ((and (eq system-type 'gnu/linux)
                (featurep 'dbus))
-          ;; Linux with D-Bus
           (setq my/dbus-theme-signal
                 (dbus-register-signal
                  :session
@@ -107,15 +103,13 @@ If FORCE is non-nil, run hooks even if the appearance hasn't changed."
                  #'my/dbus-gnome-theme-handler)))
          ((and (eq system-type 'darwin)
                (boundp 'ns-system-appearance-change-functions))
-          ;; macOS Emacs NS Port
-          (add-hook 'ns-system-appearance-change-functions #'my/mac-ns-theme-handler))
+          (add-hook 'ns-system-appearance-change-functions #'my/set-system-appearance))
          (t
           ;; Fallback to polling (e.g., terminal Emacs on macOS, or unrecognized OS)
           (setq my/theme-poll-timer
                 (run-at-time my/theme-poll-interval my/theme-poll-interval #'my/check-system-appearance)))))
-    ;; Disable
     (when (and (eq system-type 'darwin) (boundp 'ns-system-appearance-change-functions))
-      (remove-hook 'ns-system-appearance-change-functions #'my/mac-ns-theme-handler))
+      (remove-hook 'ns-system-appearance-change-functions #'my/set-system-appearance))
     (when my/dbus-theme-signal
       (dbus-unregister-object my/dbus-theme-signal)
       (setq my/dbus-theme-signal nil))

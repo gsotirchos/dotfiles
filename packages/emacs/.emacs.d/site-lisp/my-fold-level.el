@@ -85,32 +85,40 @@ earlier."
                              (buffer-substring-no-properties from to)))))))
       (max 1 (+ deepest (if body 1 0))))))
 
+(defun my/fold-level--hideshow-blocks ()
+  "Return a (DEPTH . START) pair for each hideshow block outside comments.
+DEPTH is the syntactic paren depth at the block's opening delimiter START,
+which is what `hs-hide-level-recursive' descends through."
+  (when (stringp hs-block-start-regexp)
+    (save-excursion
+      (goto-char (point-min))
+      (let (blocks)
+        (while (re-search-forward hs-block-start-regexp nil t)
+          ;; `syntax-ppss' leaves point at the position it parsed up to, which
+          ;; would send the search back over the delimiter it just matched.
+          (let* ((start (match-beginning hs-block-start-mdata-select))
+                 (state (save-excursion (syntax-ppss start))))
+            ;; Same guard `hs-hide-level-recursive' applies.
+            (unless (nth 8 state)
+              (push (cons (1+ (car state)) start) blocks))))
+        blocks))))
+
 (defun my/fold-level--hideshow-max ()
   "Return the level at which no hideshow block is left folded.
-A block's nesting level is the syntactic paren depth at its opening delimiter,
-which is what `hs-hide-level-recursive' descends through.  Only blocks that
-`hs-hide-block-at-point' would really hide count, that is those whose body spans
-more than one line, so that deep single-line nesting adds no levels that fold
-nothing."
-  (save-excursion
-    (goto-char (point-min))
-    (let ((deepest 0))
-      (while (and (stringp hs-block-start-regexp)
-                  (not (bound-and-true-p hs-indentation-mode))
-                  (re-search-forward hs-block-start-regexp nil t))
-        ;; `syntax-ppss' leaves point at the position it parsed up to, which
-        ;; would send the search back over the delimiter it just matched.
-        (let* ((start (match-beginning hs-block-start-mdata-select))
-               (state (save-excursion (syntax-ppss start)))
-               (level (1+ (car state))))
-          ;; Same guard `hs-hide-level-recursive' applies.  Blocks that cannot
-          ;; raise the maximum are dismissed before the costly `scan-lists'.
-          (unless (or (nth 8 state) (<= level deepest))
-            (let ((p (line-end-position))
-                  (q (ignore-errors (scan-lists start 1 0))))
-              (when (and q (< p q) (> (count-lines p q) 1))
-                (setq deepest level))))))
-      (1+ deepest))))
+Only blocks that `hs-hide-block-at-point' would really hide count, that is
+those whose body spans more than one line, so that deep single-line nesting
+adds no levels that fold nothing."
+  (let ((deepest 0))
+    (unless (bound-and-true-p hs-indentation-mode)
+      (pcase-dolist (`(,level . ,start) (my/fold-level--hideshow-blocks))
+        ;; Blocks that cannot raise the maximum are dismissed before the
+        ;; costly `scan-lists'.
+        (when (> level deepest)
+          (let ((p (save-excursion (goto-char start) (line-end-position)))
+                (q (ignore-errors (scan-lists start 1 0))))
+            (when (and q (< p q) (> (count-lines p q) 1))
+              (setq deepest level))))))
+    (1+ deepest)))
 
 (defun my/fold-level--hideshow-hide (level)
   "Fold every hideshow block nested LEVEL levels deep or deeper.
@@ -120,22 +128,14 @@ every level instead leaves each nested block an overlay of its own, which is
 what makes opening a block uncover just the next level, as in Vim.  Relies on
 `hs-allow-nesting', without which hideshow discards the nested overlays."
   (save-excursion
-    (goto-char (point-min))
-    (let (blocks)
-      ;; Same traversal as `my/fold-level--hideshow-max'.
-      (while (and (stringp hs-block-start-regexp)
-                  (re-search-forward hs-block-start-regexp nil t))
-        (let* ((start (match-beginning hs-block-start-mdata-select))
-               (state (save-excursion (syntax-ppss start)))
-               (depth (1+ (car state))))
-          (unless (or (nth 8 state) (< depth level))
-            (push (cons depth start) blocks))))
-      ;; Deepest first: `hs-hide-block-at-point' deletes whichever overlay
-      ;; covers the header of the block it folds, which for an outer block
-      ;; would be the overlay of a child folded earlier.
-      (dolist (block (sort blocks (lambda (a b) (> (car a) (car b)))))
-        (goto-char (cdr block))
-        (hs-hide-block-at-point)))))
+    ;; Deepest first: `hs-hide-block-at-point' deletes whichever overlay
+    ;; covers the header of the block it folds, which for an outer block
+    ;; would be the overlay of a child folded earlier.
+    (dolist (block (sort (seq-filter (lambda (block) (>= (car block) level))
+                                     (my/fold-level--hideshow-blocks))
+                         (lambda (a b) (> (car a) (car b)))))
+      (goto-char (cdr block))
+      (hs-hide-block-at-point))))
 
 
 (defun my/fold-level--max-level ()
