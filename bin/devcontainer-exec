@@ -35,19 +35,28 @@ devcontainer_cli() {
     PATH="$(dirname "${cli}"):${PATH}" "${cli}" "$@"
 }
 
+# The nearest ancestor of directory $1 (itself included) holding any of
+# the files $2...; fails if none does.
+nearest_ancestor_with() {
+    local dir="$1" file
+    shift
+    while [[ "${dir}" != "/" ]]; do
+        for file in "$@"; do
+            if [[ -f "${dir}/${file}" ]]; then
+                printf '%s\n' "${dir}"
+                return 0
+            fi
+        done
+        dir="$(dirname "${dir}")"
+    done
+    return 1
+}
+
 # The directory the CLI calls the workspace folder: the nearest ancestor of
 # $1 holding a devcontainer configuration.
 workspace_folder() {
-    local dir="$1"
-    while [[ "${dir}" != "/" ]]; do
-        if [[ -f "${dir}/.devcontainer/devcontainer.json" \
-            || -f "${dir}/.devcontainer.json" ]]; then
-            printf '%s\n' "${dir}"
-            return 0
-        fi
-        dir="$(dirname "${dir}")"
-    done
-    die "no .devcontainer above $1"
+    nearest_ancestor_with "$1" .devcontainer/devcontainer.json .devcontainer.json \
+        || die "no .devcontainer above $1"
 }
 
 # Both the CLI and VS Code label containers with the folder they were
@@ -134,24 +143,19 @@ container_path() {
 
 # Snapshot a VS Code terminal's environment, plus ~/.local/bin and the
 # workspace's colcon overlay, as docker --env-file lines (so multi-line
-# values are dropped).
+# values are dropped). Takes the container's ID and mount table.
 probe_environment() {
-    local folder="$1" env_file="$2" entry script
+    local id="$1" mounts="$2" env_file folder overlay entry
+    env_file="$(environment_file_of "${id}")"
+    folder="$(workspace_folder_of "${id}")"
+    overlay="$(overlay_install_dir "${folder}")" \
+        && overlay="$(container_path "${mounts}" "${overlay}")" \
+        || overlay=""
     mkdir -p "$(dirname "${env_file}")"
-    script="$(
-        cat << 'EOF'
-dir="${PWD}"
-while [[ "${dir}" != / ]]; do
-    if [[ -f "${dir}/install/setup.bash" ]]; then
-        source "${dir}/install/setup.bash"
-        break
-    fi
-    dir="$(dirname "${dir}")"
-done
-PATH="${HOME}/.local/bin:${PATH}" env -0
-EOF
-    )"
-    devcontainer_cli exec --workspace-folder "${folder}" bash -c "${script}" \
+    # shellcheck disable=SC2016  # expanded by the container's shell
+    devcontainer_cli exec --workspace-folder "${folder}" bash -c \
+        '[[ -z "$1" ]] || source "$1/setup.bash"; PATH="${HOME}/.local/bin:${PATH}" env -0' \
+        bash "${overlay}" \
         | while IFS= read -r -d '' entry; do
             [[ "${entry}" == *$'\n'* ]] && continue
             case "${entry%%=*}" in
@@ -166,15 +170,9 @@ EOF
 # The install directory of the colcon overlay at or above host directory $1;
 # fails if there is none.
 overlay_install_dir() {
-    local dir="$1"
-    while [[ "${dir}" != "/" ]]; do
-        if [[ -f "${dir}/install/setup.bash" ]]; then
-            printf '%s\n' "${dir}/install"
-            return 0
-        fi
-        dir="$(dirname "${dir}")"
-    done
-    return 1
+    local dir
+    dir="$(nearest_ancestor_with "$1" install/setup.bash)" || return 1
+    printf '%s\n' "${dir}/install"
 }
 
 # Whether the overlay above workspace folder $2 gained or lost a package
@@ -186,11 +184,18 @@ environment_is_stale() {
     [[ "${install_dir}" -nt "${env_file}" ]]
 }
 
+environment_file_of() {
+    printf '%s\n' "${CACHE_DIR}/$1.env"
+}
+
+# The environment file of container $1 (mount table $2), probed anew if
+# missing or stale.
 environment_file() {
-    local id="$1" env_file="${CACHE_DIR}/$1.env" folder
-    folder="$(workspace_folder_of "${id}")"
-    if [[ ! -s "${env_file}" ]] || environment_is_stale "${env_file}" "${folder}"; then
-        probe_environment "${folder}" "${env_file}"
+    local env_file
+    env_file="$(environment_file_of "$1")"
+    if [[ ! -s "${env_file}" ]] \
+        || environment_is_stale "${env_file}" "$(workspace_folder_of "$1")"; then
+        probe_environment "$1" "$2"
     fi
     printf '%s\n' "${env_file}"
 }
@@ -248,17 +253,18 @@ main() {
     case "${action}" in
         mappings) paste -sd ',' <<< "${mounts}" ;;
         container) printf '%s@%s\n' "$(container_user "${id}")" "${id}" ;;
-        refresh) probe_environment "$(workspace_folder_of "${id}")" "${CACHE_DIR}/${id}.env" ;;
+        refresh) probe_environment "${id}" "${mounts}" ;;
         provision) provision "${id}" "${mounts}" "${dir}" ;;
         run)
             # Assigned first: a failure inside a substitution on the exec
             # line itself would not stop the exec.
-            local workdir env_file
+            local workdir env_file tty=()
             workdir="$(container_path "${mounts}" "${dir}")" \
                 || die "${dir} is not mounted into the container"
-            env_file="$(environment_file "${id}")"
-            exec docker exec -i -u "$(container_user "${id}")" -w "${workdir}" \
-                --env-file "${env_file}" "${id}" "$@"
+            env_file="$(environment_file "${id}" "${mounts}")"
+            [[ -t 0 ]] && tty=(-t)
+            exec docker exec -i "${tty[@]}" -u "$(container_user "${id}")" \
+                -w "${workdir}" --env-file "${env_file}" "${id}" "$@"
             ;;
     esac
 }
