@@ -14,11 +14,9 @@
 
   (defun my/prevent-in-home-dir-advice (fn &rest args)
     "Prevent running the advised function in the home directory."
-    (let* ((current-dir (file-truename default-directory))
-           (home-dir (file-truename (expand-file-name "~/"))))
-      (if (equal current-dir home-dir)
-          (message "%s was prevented from running in the home directory." fn)
-        (apply fn args))))
+    (if (file-equal-p default-directory "~/")
+        (message "%s was prevented from running in the home directory." fn)
+      (apply fn args)))
 
   (defun my/silence-advice (fn &rest args)
     "Silence the advised function's execution."
@@ -41,14 +39,11 @@
   (defun my/read-1password-secret (path)
     "Read the value of a secret from 1Password using PATH.
 PATH should be in the format `op://Vault/Item/Field'."
-    (let ((cached (gethash path my/1password-secret-cache)))
-      (if cached
-          cached
-        (let ((secret (string-trim (shell-command-to-string (format "op read --account my.1password.eu \"op://Private/%s/credential\" --no-newline" path)))))
-          (if (string-match-p "^\\[ERROR\\]" secret)
-              (user-error "1Password error: %s" secret)
-            (puthash path secret my/1password-secret-cache)
-            secret)))))
+    (with-memoization (gethash path my/1password-secret-cache)
+      (let ((secret (string-trim (shell-command-to-string (format "op read --account my.1password.eu \"op://Private/%s/credential\" --no-newline" path)))))
+        (if (string-match-p "^\\[ERROR\\]" secret)
+            (user-error "1Password error: %s" secret)
+          secret))))
 
   ;; Reindent by default instead of collapsing into one-line
   (defun my/reindent-or-fill-paragraph (&optional justify)
@@ -121,23 +116,19 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
     (and (bound-and-true-p buffer-face-mode)
          (equal buffer-face-mode-face 'variable-pitch)))
 
-  (defun my/set-line-spacing-advice (&rest _)
-    "Set `line-spacing' after the advised function is executed."
-    (if (my/variable-pitch-p)
-        (when (boundp 'variable-pitch-line-spacing)
-          (setq-local line-spacing variable-pitch-line-spacing))
-      (when (boundp 'fixed-pitch-line-spacing)
-        (setq-local line-spacing fixed-pitch-line-spacing))))
+  (defun my/set-line-spacing ()
+    "Set `line-spacing' to suit the buffer's fixed or proportional font."
+    (setq-local line-spacing (if (my/variable-pitch-p)
+                                 variable-pitch-line-spacing
+                               fixed-pitch-line-spacing)))
 
-  (advice-add 'variable-pitch-mode :after #'my/set-line-spacing-advice)
+  (add-hook 'buffer-face-mode-hook #'my/set-line-spacing)
 
   (defun my/fixed-pitch-mode ()
     (variable-pitch-mode -1))
 
-  (add-hook 'Custom-mode-hook #'variable-pitch-mode)
-  (add-hook 'Info-mode-hook #'variable-pitch-mode)
-  (add-hook 'org-mode-hook #'variable-pitch-mode)
-  (add-hook 'markdown-ts-view-mode-hook #'variable-pitch-mode)
+  (dolist (hook '(Custom-mode-hook Info-mode-hook org-mode-hook markdown-ts-view-mode-hook))
+    (add-hook hook #'variable-pitch-mode))
   ;; (add-hook 'text-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
 
@@ -174,9 +165,15 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   ;; Suppress blank tooltips
   (defun my/suppress-blank-tooltips (str &rest _)
     "Suppress tooltips with nil, empty, or all-whitespace STR."
-    (or (null str) (string-blank-p (string-trim str))))
+    (or (null str) (string-blank-p str)))
 
   (advice-add #'x-show-tip :before-until #'my/suppress-blank-tooltips)
+
+  (defun my/append-wrap-marker (beg end)
+    "Append `wrap-prefix' to the wrap-prefix string property from BEG to END."
+    (let ((wrap-prop (get-text-property beg 'wrap-prefix)))
+      (when (stringp wrap-prop)
+        (put-text-property beg end 'wrap-prefix (concat wrap-prop wrap-prefix)))))
 
   ;; Startup time
   (defun my/display-startup-stats ()
@@ -218,7 +215,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (completion-ignore-case t)
   (global-completion-preview-mode t)
   (sentence-end-double-space nil)
-  (scroll-margin 0)
   (hscroll-margin 0)
   (scroll-conservatively 101)
   (hscroll-step 1)
@@ -226,14 +222,12 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (text-scale-mode-step 1.1)
   (global-text-scale-adjust-resizes-frames t)
   (line-spacing fixed-pitch-line-spacing)
-  (truncate-lines nil)
   (wrap-prefix (propertize "…" 'face 'special-glyphs))
   (cursor-in-non-selected-windows nil)
   (left-margin-width 0)
   (right-margin-width 0)
   (indent-tabs-mode nil)
   (tab-always-indent 'complete)
-  (treemacs-no-png-images t)
   (delete-by-moving-to-trash t)
 
   :init
@@ -282,17 +276,18 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :no-require t
   :defer 1
   :custom
-  (history-length 100)
   (savehist-autosave-interval 30)
-  (savehist-save-minibuffer-history t)
   (history-delete-duplicates t)
   (savehist-additional-variables
    '(kill-ring
      search-ring
      regexp-search-ring))
+  :preface
+  (defun my/savehist-enable (&rest _)
+    (unless savehist-mode (savehist-mode 1)))
   :init
-  (advice-add 'completing-read :before (lambda (&rest _) (unless savehist-mode (savehist-mode 1))))
-  (advice-add 'previous-history-element :before (lambda (&rest _) (unless savehist-mode (savehist-mode 1))))
+  (advice-add 'completing-read :before #'my/savehist-enable)
+  (advice-add 'previous-history-element :before #'my/savehist-enable)
   :config (savehist-mode 1))
 
 (use-package recentf
@@ -310,7 +305,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
 (use-package comint
   :ensure nil
   :no-require t
-  :custom (comint-buffer-maximum-size (* 1 1024))
   :config
   ;; (add-to-list 'completion-at-point-functions #'comint-dynamic-complete-filename)
   (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))
@@ -348,8 +342,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :config
   ;; Prevent file-loop and query-replace crashes by filtering out directories
   (advice-add 'project-files :filter-return
-              (lambda (files)
-                (seq-filter (lambda (f) (not (file-directory-p f))) files)))
+              (lambda (files) (seq-remove #'file-directory-p files)))
   (advice-add 'project-query-replace-regexp :around #'my/project-query-replace-ignore-binaries)
   (advice-add 'project--git-submodules :around #'my/project-silence-missing-gitmodules))
 
@@ -382,16 +375,12 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :no-require t
   :custom
   (uniquify-buffer-name-style 'forward)
-  (uniquify-separator "/")
-  (uniquify-after-kill-buffer-p t)
   (uniquify-ignore-buffers-re "^\\*"))
 
 (use-package repeat
   :ensure nil
   :hook (after-init . repeat-mode)
-  :custom
-  (repeat-too-dangerous '(kill-this-buffer))
-  (repeat-exit-timeout 5))
+  :custom (repeat-exit-timeout 5))
 
 (use-package two-column
   :ensure nil
@@ -530,7 +519,16 @@ the window."
      (type magenta-cooler)
      (fnname blue-faint)
      (variable cyan)
-     (bg-popup bg-main)))
+     (bg-popup bg-main)
+     (rainbow-0 fg-dim)
+     (rainbow-1 magenta-faint)
+     (rainbow-2 cyan-faint)
+     (rainbow-3 red-faint)
+     (rainbow-4 yellow-faint)
+     (rainbow-5 indigo)
+     (rainbow-6 green-faint)
+     (rainbow-7 blue-faint)
+     (rainbow-8 rust)))
   (modus-vivendi-palette-overrides
    '((bg-main "#1e1e1e")
      (bg-dim "#292929")
@@ -572,7 +570,6 @@ the window."
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
   (tab-bar-separator "")
-  (tab-bar-auto-width t)
   (tab-bar-auto-width-max nil)
   (tab-bar-truncate t)
   (tab-bar-format
@@ -603,7 +600,6 @@ the window."
       (set-face-attribute 'stripes nil
                           :extend t ; fill candidate lines to the full width
                           :background bg)))
-  (add-hook 'stripes-mode-hook #'my/customize-stripes)
   :config
   (my/customize-stripes)  ; set the face now, not only on theme reload
   (add-hook 'after-load-theme-hook #'my/customize-stripes))
@@ -632,7 +628,7 @@ the window."
   :custom
   (tramp-verbose 2)
   (tramp-use-connection-share nil)  ; Control* options live in ~/.ssh/config
-  (vc-handled-backends '(Git))  ; Limit VC to Git only
+  (vc-handled-backends '(Git))
   :config
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
   (add-to-list 'tramp-remote-path "/snap/bin")
@@ -666,7 +662,6 @@ the window."
   (dired-omit-verbose nil)
   (dired-dwim-target 'dired-dwim-target-next)
   (dired-hide-details-hide-symlink-targets nil)
-  (dired-auto-revert-buffer t)
   (dired-kill-when-opening-new-dired-buffer t)
   (dired-clean-confirm-killing-deleted-buffers nil)
   (dired-vc-rename-file t)
@@ -705,6 +700,10 @@ the window."
   :ensure nil
   :no-require t
   :preface
+  (defun my/eshell-mode-hook ()
+    (setq-local pcomplete-termination-string ""))
+  (add-hook 'eshell-mode-hook #'my/eshell-mode-hook)
+  :config
   (cond
    ((executable-find "prmt")
     (defun my/eshell-custom-prompt ()
@@ -720,10 +719,7 @@ the window."
   (when (fboundp 'my/eshell-custom-prompt)
     (setq eshell-prompt-function #'my/eshell-custom-prompt
           eshell-highlight-prompt nil
-          eshell-prompt-regexp "^[^#$\n]* [#>❯(?:graph)] "))
-  (defun my/eshell-mode-hook ()
-    (setq-local pcomplete-termination-string ""))
-  (add-hook 'eshell-mode-hook #'my/eshell-mode-hook))
+          eshell-prompt-regexp "^[^#$\n]* [#>❯(?:graph)] ")))
 
 (use-package evil
   :demand t
@@ -751,8 +747,7 @@ candidate instead of running the command."
             (apply orig-fun args)
           (error (funcall select-on-line))))))
   :init
-  (setq evil-want-integration t
-        evil-want-keybinding nil
+  (setq evil-want-keybinding nil
         evil-disable-insert-state-bindings t
         ;; evil-want-empty-ex-last-command nil
         evil-want-C-u-scroll t
@@ -770,28 +765,28 @@ candidate instead of running the command."
   (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
   (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
   (global-set-key (kbd "M-v") #'yank)
-  (evil-global-set-key 'insert (kbd "C-v") #'ignore)
-  (evil-global-set-key 'normal (kbd "C-i") #'evil-jump-forward)
-  (evil-global-set-key 'motion (kbd "j") #'evil-next-visual-line)
-  (evil-global-set-key 'motion (kbd "k") #'evil-previous-visual-line)
-  (evil-global-set-key 'motion (kbd "<down>") #'evil-next-visual-line)
-  (evil-global-set-key 'motion (kbd "<up>") #'evil-previous-visual-line)
-  (evil-global-set-key 'normal (kbd "<tab>") #'kirigami-toggle-fold)
-  (evil-global-set-key 'normal (kbd "za") #'kirigami-toggle-fold)
-  (evil-global-set-key 'normal (kbd "zo") #'kirigami-open-fold)
-  (evil-global-set-key 'normal (kbd "zO") #'kirigami-open-fold-rec)
-  (evil-global-set-key 'normal (kbd "zc") #'kirigami-close-fold)
-  (evil-global-set-key 'normal (kbd "zm") #'my/fold-level-decrease)
-  (evil-global-set-key 'normal (kbd "zr") #'my/fold-level-increase)
-  (evil-global-set-key 'normal (kbd "zM") #'my/fold-level-close-all)
-  (evil-global-set-key 'normal (kbd "zR") #'my/fold-level-open-all)
-  (evil-global-set-key 'visual (kbd "p") #'evil-paste-before)
-  (evil-global-set-key 'visual (kbd "P") #'evil-visual-paste)
-  (define-key evil-command-line-map (kbd "C-a") nil)
-  (define-key evil-command-line-map (kbd "C-b") nil)
-  (define-key evil-command-line-map (kbd "C-d") nil)
-  (define-key evil-command-line-map (kbd "C-f") nil)
-  (define-key evil-command-line-map (kbd "C-l") nil))
+  (evil-define-key* 'insert 'global (kbd "C-v") #'ignore)
+  (evil-define-key* 'motion 'global
+    "j" #'evil-next-visual-line
+    "k" #'evil-previous-visual-line
+    (kbd "<down>") #'evil-next-visual-line
+    (kbd "<up>") #'evil-previous-visual-line)
+  (evil-define-key* 'normal 'global
+    (kbd "C-i") #'evil-jump-forward
+    (kbd "<tab>") #'kirigami-toggle-fold
+    "za" #'kirigami-toggle-fold
+    "zo" #'kirigami-open-fold
+    "zO" #'kirigami-open-fold-rec
+    "zc" #'kirigami-close-fold
+    "zm" #'my/fold-level-decrease
+    "zr" #'my/fold-level-increase
+    "zM" #'my/fold-level-close-all
+    "zR" #'my/fold-level-open-all)
+  (evil-define-key* 'visual 'global
+    "p" #'evil-paste-before
+    "P" #'evil-visual-paste)
+  (dolist (key '("C-a" "C-b" "C-d" "C-f" "C-l"))
+    (keymap-unset evil-command-line-map key)))
 
 (use-package evil-collection
   :after evil
@@ -846,12 +841,10 @@ STATE defaults to `normal'.")
     (pcase-let ((`(,prefix-width ,width ,lines) formatted))
       (list prefix-width (+ width 1) lines)))
   :custom
-  (corfu-auto t)  ; auto-completion
+  (corfu-auto t)
   (corfu-quit-no-match t)
   (corfu-auto-prefix 2)
-  (corfu-auto-delay 0.2)
   (corfu-popupinfo-delay '(0.5 . 0.2))
-  (corfu-preview-current 'insert)  ; insert previewed candidate
   (corfu-on-exact-match nil)  ; Don't auto expand tempel snippets
   (corfu-cycle t)
   (global-corfu-minibuffer 'my/corfu-minibuffer-filter)
@@ -932,9 +925,8 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   :bind (:map vertico-map ("TAB" . minibuffer-complete))
   :custom
   (vertico-scroll-margin 1)
-  (vertico-count 10)  ; Limit to a fixed size
-  (vertico-cycle t)  ; Enable cycling for `vertico-next/previous'
-  (vertico-resize 'grow-only)  ; Grow and shrink the Vertico minibuffer
+  (vertico-cycle t)
+  (vertico-resize 'grow-only)
   :config
   (vertico-mode)
   (vertico-mouse-mode 1))
@@ -1007,7 +999,7 @@ the pixel scrolling of any other window under the mouse."
   (completion-styles '(orderless basic))
   (completion-category-overrides
    '((file (styles (partial-completion ((completion-pcm-leading-wildcard t)))))))
-  (completion-category-defaults nil)  ; Disable defaults, use our settings
+  (completion-category-defaults nil)
   (read-file-name-completion-ignore-case t))
 
 (use-package consult
@@ -1058,7 +1050,6 @@ the pixel scrolling of any other window under the mouse."
   ;; register formatting, adds thin separator lines, register sorting and hides
   ;; the window mode line.
   (setq register-preview-delay 0.5)
-  ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
   :config
@@ -1084,8 +1075,8 @@ the pixel scrolling of any other window under the mouse."
    :map help-map
    ("B" . embark-bindings)  ; alternative for `describe-bindings'
    :map minibuffer-local-map
-   ("C-." . embark-act)  ; begin the embark process
-   ("C-<return>" . embark-dwim))  ; run the default action
+   ("C-." . embark-act)
+   ("C-<return>" . embark-dwim))
   :custom (embark-quit-after-action nil))
 
 (use-package embark-consult
@@ -1104,7 +1095,6 @@ the pixel scrolling of any other window under the mouse."
 (use-package which-key
   ;; :ensure nil
   :defer 1
-  :custom (which-key-idle-delay 1)
   :config (which-key-mode))
 
 (use-package eldoc-box
@@ -1222,13 +1212,12 @@ commit message.")
   (defun my/git-commit-load-on-demand ()
     "Load `git-commit' when a commit message file is visited."
     (when (and buffer-file-name
-               (not (featurep 'git-commit))
                (string-match-p my/git-commit-filename-regexp buffer-file-name))
-      (remove-hook 'find-file-hook #'my/git-commit-load-on-demand)
       (require 'git-commit)
       (unless (bound-and-true-p git-commit-mode)
         (git-commit-setup-check-buffer))))
-  (add-hook 'find-file-hook #'my/git-commit-load-on-demand))
+  (add-hook 'find-file-hook #'my/git-commit-load-on-demand)
+  :config (remove-hook 'find-file-hook #'my/git-commit-load-on-demand))
 
 (use-package my-git-commit
   :ensure nil
@@ -1299,9 +1288,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (use-package buffer-terminator
   :custom
-  (buffer-terminator-verbose nil)
-  (buffer-terminator-inactivity-timeout (* 30 60))  ; 30 minutes
-  (buffer-terminator-interval (* 10 60))  ; 10 minutes
+  (buffer-terminator-inactivity-timeout (* 30 60))
+  (buffer-terminator-interval (* 10 60))
   :init (buffer-terminator-mode 1)
   :config (push '(keep-buffer-major-modes . dired-mode) buffer-terminator-rules-alist))
 
@@ -1323,9 +1311,9 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (pdf-view-fit-width-to-window)
     (tooltip-mode -1)
     (my/maybe-toggle-pdf-midnight-view)
-    (advice-add 'pdf-util-tooltip-arrow :override 'ignore)
     (add-hook 'after-load-theme-hook #'my/maybe-toggle-pdf-midnight-view nil t))
   (add-hook 'pdf-view-mode-hook #'my/pdf-view-mode-hook)
+  (advice-add 'pdf-util-tooltip-arrow :override #'ignore)
   :config
   (pdf-loader-install)
   (add-to-list 'revert-without-query ".pdf"))
@@ -1347,7 +1335,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (use-package markdown-ts-mode
   :ensure nil
   :no-require t
-  :after emacs
   :mode ("\\.md\\'" "\\.markdown\\'")
   :custom
   ;; (markdown-ts-appear-trigger 'evil-insert)
@@ -1404,10 +1391,7 @@ reaches into the preview's `display' property elides the whole preview."
   :preface
   (defun my/visual-wrap-append-marker ()
     "Append `wrap-prefix' to the wrap-prefix property of the line at point."
-    (let ((wrap-prop (get-text-property (point) 'wrap-prefix)))
-      (when (stringp wrap-prop)
-        (put-text-property (point) (pos-eol) 'wrap-prefix
-                           (concat wrap-prop wrap-prefix)))))
+    (my/append-wrap-marker (point) (pos-eol)))
   :config
   ;; NOTE: `visual-wrap--apply-to-line' is private; revisit on Emacs updates.
   (advice-add 'visual-wrap--apply-to-line :after #'my/visual-wrap-append-marker))
@@ -1483,25 +1467,7 @@ reaches into the preview's `display' property elides the whole preview."
 (use-package rainbow-mode)
 
 (use-package rainbow-delimiters
-  :hook (prog-mode minibuffer-setup)
-  :preface
-  (defun my/customize-rainbow-delimiters ()
-    (pcase-dolist (`(,face ,color)
-                   '((rainbow-delimiters-depth-1-face fg-dim)
-                     (rainbow-delimiters-depth-2-face magenta-faint)
-                     (rainbow-delimiters-depth-3-face cyan-faint)
-                     (rainbow-delimiters-depth-4-face red-faint)
-                     (rainbow-delimiters-depth-5-face yellow-faint)
-                     (rainbow-delimiters-depth-6-face indigo)
-                     (rainbow-delimiters-depth-7-face green-faint)
-                     (rainbow-delimiters-depth-8-face blue-faint)
-                     (rainbow-delimiters-depth-9-face rust)))
-      (when-let* ((fg (my/theme-color color)))
-        (set-face-foreground face fg))))
-  (defun my/rainbow-delimiters-hook ()
-    (my/customize-rainbow-delimiters)
-    (add-hook 'after-load-theme-hook #'my/customize-rainbow-delimiters nil t))
-  (add-hook 'rainbow-delimiters-mode-hook #'my/rainbow-delimiters-hook))
+  :hook (prog-mode minibuffer-setup))
 
 (use-package indent-bars
   :preface
@@ -1523,8 +1489,7 @@ reaches into the preview's `display' property elides the whole preview."
   (indent-bars-color '(highlight :face default :blend 0.2))
   (indent-bars-zigzag nil)
   (indent-bars-color-by-depth nil)
-  (indent-bars-highlight-current-depth nil)
-  (indent-bars-display-on-blank-lines nil))
+  (indent-bars-highlight-current-depth nil))
 
 (use-package simple
   :ensure nil
@@ -1574,10 +1539,9 @@ reaches into the preview's `display' property elides the whole preview."
                               :inherit 'flymake-end-of-line-diagnostics-face
                               :foreground fg
                               :background bg)))))
-  (defun my/flymake-hook ()
-    (my/customize-flymake)
-    (add-hook 'after-load-theme-hook #'my/customize-flymake nil t))
-  (add-hook 'flymake-mode-hook #'my/flymake-hook))
+  :config
+  (my/customize-flymake)  ; set the faces now, not only on theme reload
+  (add-hook 'after-load-theme-hook #'my/customize-flymake))
 
 (use-package flyspell
   :ensure nil
@@ -1717,22 +1681,9 @@ kill Aspell first so that it cannot save the word back."
 (use-package apheleia
   :defer 1
   :preface
-  (add-hook 'python-base-mode-hook
-            (lambda () (setq-local apheleia-formatter '(ruff-check ruff))))
-  (add-hook 'sh-base-mode-hook
-            (lambda () (setq-local apheleia-formatter 'shfmt)))
-  (add-hook 'cmake-ts-mode-hook
-            (lambda () (setq-local apheleia-formatter 'cmake-fmt)))
-  (add-hook 'json-ts-mode-hook
-            (lambda () (setq-local apheleia-formatter 'json-fmt)))
-  (add-hook 'c-ts-base-mode-hook
-            (lambda () (setq-local apheleia-formatter 'clang-format)))
-  (add-hook 'LaTeX-mode-hook
-            (lambda () (setq-local apheleia-formatter 'latexindent)))
   (defun my/apheleia-format-after-save (&rest _)
     (apheleia-format-after-save))
   (advice-add 'save-buffer :after #'my/apheleia-format-after-save)
-  (advice-add 'evil-write :after #'my/apheleia-format-after-save)
   (defun my/apheleia-busy-p ()
     (process-live-p apheleia--current-process))
   (defun my/apheleia-format-or (fallback &rest args)
@@ -1776,14 +1727,24 @@ inside a comment."
   (setf (alist-get 'json-fmt apheleia-formatters)
         '("format-json" (apheleia-formatters-indent '("--indent" "0") "--indent")))
   (setf (alist-get 'latexindent apheleia-formatters)
-        '("latexindent" "--logfile=/dev/null" "-m" "-rv")))
+        '("latexindent" "--logfile=/dev/null" "-m" "-rv"))
+  ;; Concrete modes, since apheleia prefers its more specific defaults, e.g.
+  ;; `python-ts-mode' to black, over an entry for a parent mode.
+  (pcase-dolist (`(,mode . ,formatter)
+                 '((python-mode . (ruff-check ruff))
+                   (python-ts-mode . (ruff-check ruff))
+                   (sh-mode . shfmt)
+                   (bash-ts-mode . shfmt)
+                   (cmake-ts-mode . cmake-fmt)
+                   (json-ts-mode . json-fmt)))
+    (setf (alist-get mode apheleia-mode-alist) formatter)))
 
 (use-package prog-mode
   :ensure nil
   :no-require t
+  :hook (after-init . which-function-mode)
   :preface
   (defun my/prog-mode-hook ()
-    (which-function-mode 1)
     (setq show-trailing-whitespace t)
     ;; (modify-syntax-entry ?- "w")
     (modify-syntax-entry ?_ "w"))
@@ -1814,10 +1775,7 @@ inside a comment."
   :ensure nil
   :no-require t
   :after treesit
-  :custom (python-check-command "ruff check --output-format=concise")
-  :init
-  (add-hook 'inferior-python-mode-hook
-            (lambda () (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))))
+  :custom (python-check-command "ruff check --output-format=concise"))
 
 (use-package flymake-ruff
   :preface
@@ -1835,8 +1793,8 @@ inside a comment."
   :preface
   (defun my/flymake-mypy-enable ()
     "Enable the mypy Flymake backend when mypy is available."
-    (when (executable-find "mypy")
-      (setq-local flymake-mypy-executable (executable-find "mypy"))
+    (when-let* ((mypy (executable-find "mypy")))
+      (setq-local flymake-mypy-executable mypy)
       (flymake-mypy-enable)))
   :hook (python-base-mode . my/flymake-mypy-enable))
 
@@ -2002,7 +1960,6 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
 
 (use-package auctex
   :ensure nil
-  :after emacs
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
@@ -2021,15 +1978,17 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
     (LaTeX-math-mode 1)
     (turn-on-reftex)
     (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
-    (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t)
-    (advice-add 'preview-document :before (lambda (&rest _) (TeX-PDF-mode -1)))
-    (advice-add 'preview-region :before (lambda (&rest _) (TeX-PDF-mode -1)))
-    (advice-add 'TeX-command :before (lambda (&rest _) (TeX-PDF-mode 1))))
+    (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t))
   (add-hook 'LaTeX-mode-hook #'my/LaTeX-mode-hook)
+  (defun my/TeX-PDF-mode-off (&rest _) (TeX-PDF-mode -1))
+  (defun my/TeX-PDF-mode-on (&rest _) (TeX-PDF-mode 1))
+  (advice-add 'preview-document :before #'my/TeX-PDF-mode-off)
+  (advice-add 'preview-region :before #'my/TeX-PDF-mode-off)
+  (advice-add 'TeX-command :before #'my/TeX-PDF-mode-on)
   (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
 
 (use-package preview-dvisvgm
-  :after (emacs preview)
+  :after preview
   :custom
   (preview-image-type 'dvisvgm))
 
@@ -2111,7 +2070,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
                  (and (= (car ver) 3) (cadr ver)))))
         -1))
   ;; A fresh install activates the package, so the defvar above must precede this.
-  (package-vc-install-selected-packages)
+  (unless (assq 'org package-alist)
+    (package-vc-install-selected-packages))
   ;; The fork calls itself 9.8pre, older than the built-in Org, so
   ;; `package-activate-all' passes it over.
   (package-activate-1 (cadr (assq 'org package-alist)))
@@ -2164,10 +2124,7 @@ Leaves the line-prefix property `org-indent' also sets untouched."
       ;; The original function calculates and sets both line-prefix and wrap-prefix,
       ;; and then moves point to the next line via (forward-line).
       (funcall orig-fn level indentation heading)
-      ;; We intercept the wrap-prefix it just set on the line, and append our marker.
-      (let ((wrap-prop (get-text-property beg 'wrap-prefix)))
-        (when (stringp wrap-prop)
-          (put-text-property beg end 'wrap-prefix (concat wrap-prop wrap-prefix))))))
+      (my/append-wrap-marker beg end)))
   :config
   (advice-add 'org-indent-set-line-properties :around #'my/org-indent-set-line-properties-advice))
 

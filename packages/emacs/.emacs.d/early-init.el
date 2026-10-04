@@ -22,7 +22,6 @@
 
 ;; Tighter security
 (setq gnutls-verify-error t)
-(setq tls-checktrust t)
 (setq gnutls-min-prime-bits 3072)
 
 ;; Make things a little quieter
@@ -57,26 +56,17 @@
         (pixel-height 1600)
         (scale 2))
     (add-to-list 'display-mm-dimensions-alist `(t . (,mm-width . ,mm-height)))
-
-    ;; x-display-pixel-width
-    ;; x-display-pixel-height
-    ;; ns-display-monitor-attributes-list
-    ;; frame-geom-value-cons
-
-    (eval-after-load "frame"
-      `(dolist (fn-override
-                `((display-pixel-width  . (lambda (&optional _display) ,pixel-width))
-                  (display-pixel-height . (lambda (&optional _display) ,pixel-height))
-                  (display-monitor-attributes-list
-                   . (lambda  (&optional display)
-                       `(((geometry . (0 0 ,,pixel-width ,,pixel-height))
-                          (workarea . (0 0 ,,pixel-width ,,pixel-height))
-                          (mm-size . (,,mm-width ,,mm-height))
-                          (frames . ,(frames-on-display-list display))
-                          (scale-factor . ,,scale)
-                          (name . "Built-in Retina Display")
-                          (source . "User")))))))
-         (advice-add (car fn-override) :override (cdr fn-override))))))
+    (advice-add 'display-pixel-width :override (lambda (&optional _display) pixel-width))
+    (advice-add 'display-pixel-height :override (lambda (&optional _display) pixel-height))
+    (advice-add 'display-monitor-attributes-list :override
+                (lambda (&optional display)
+                  `(((geometry . (0 0 ,pixel-width ,pixel-height))
+                     (workarea . (0 0 ,pixel-width ,pixel-height))
+                     (mm-size . (,mm-width ,mm-height))
+                     (frames . ,(frames-on-display-list display))
+                     (scale-factor . ,scale)
+                     (name . "Built-in Retina Display")
+                     (source . "User")))))))
 
 ;; UI Tweaks
 (unless (and (eq system-type 'darwin)
