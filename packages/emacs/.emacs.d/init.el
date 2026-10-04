@@ -1081,7 +1081,21 @@ the pixel scrolling of any other window under the mouse."
    :map vertico-map
    ([remap dired] . consult-dir)
    ("C-x j" . consult-dir-jump-file))
-  :custom (consult-dir-default-command #'consult-dir-dired))
+  :custom
+  (consult-dir-default-command #'consult-dir-dired)
+  (consult-dir-project-list-function nil)
+  (consult-dir-sources '(my/consult-dir-source-project-root consult-dir--source-recentf))
+  :config
+  (defvar my/consult-dir-source-project-root
+    `( :name "This project"
+       :narrow ?p
+       :category file
+       :face consult-file
+       :history file-name-history
+       :items ,(lambda ()
+                 (when-let* ((root (consult--project-root)))
+                   (list (abbreviate-file-name root)))))
+    "Current project root source for `consult-dir'."))
 
 (use-package embark
   :bind
