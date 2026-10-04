@@ -16,37 +16,10 @@
 
 (require 'face-remap)
 
-(defun my/update-plist-property (plist property fn)
-  "Update the PLIST's PROPERTY's value using FN."
-  (let* ((current-value (plist-get plist property))
-         (new-value (funcall fn current-value)))
-    (plist-put plist property new-value)))
-
-(defun my/update-overlay-property-cdr (overlay property fn)
-  "Update the OVERLAY's PROPERTY's value's cdr using FN."
-  (let* ((current-value (overlay-get overlay property))
-         (current-car (car current-value))
-         (current-cdr (cdr current-value))
-         (new-cdr (funcall fn current-cdr))
-         (new-value (cons current-car new-cdr)))
-    (overlay-put overlay property new-value)))
-
-(defun my/text-scale-overlays (category-type category-name scale)
-  "Display the images of overlays matching CATEGORY-TYPE at SCALE.
-An overlay matches when its CATEGORY-TYPE property is CATEGORY-NAME."
-  (dolist (overlay (overlays-in (point-min) (point-max)))
-    (let ((overlay-category (overlay-get overlay category-type)))
-      (when (and overlay-category
-                 (eq overlay-category category-name))
-        (let ((scale-fn (lambda (_) scale)))
-          (my/update-overlay-property-cdr
-           overlay
-           'display
-           (lambda (value-cdr-plist)
-             (my/update-plist-property
-              value-cdr-plist
-              :scale
-              scale-fn))))))))
+(defun my/latex-preview-overlays ()
+  "Return the LaTeX preview overlays in the current buffer."
+  (seq-filter (lambda (overlay) (eq (overlay-get overlay 'category) 'preview-overlay))
+              (overlays-in (point-min) (point-max))))
 
 (defun my/latex-preview-scale ()
   "Return the scale LaTeX preview images should be displayed at.
@@ -63,7 +36,10 @@ Combines the buffer's `text-scale-mode' factor with the ratio by which
 (defun my/text-scale-adjust-latex-previews (&rest _)
   "Adjust the size of latex fragments when changing the buffer's text scale."
   (let ((scale (my/latex-preview-scale)))
-    (my/text-scale-overlays 'category 'preview-overlay scale)))
+    (dolist (overlay (my/latex-preview-overlays))
+      (when-let* ((image (overlay-get overlay 'display)))
+        (setf (image-property image :scale) scale)
+        (overlay-put overlay 'display image)))))
 
 ;;;###autoload
 (defun my/global-text-scale-adjust-latex-previews (&rest _)
@@ -75,9 +51,7 @@ Combines the buffer's `text-scale-mode' factor with the ratio by which
 ;;;###autoload
 (defun my/delete-latex-preview-overlays (&rest _)
   "Delete only LaTeX preview overlays in the current buffer."
-  (dolist (overlay (overlays-in (point-min) (point-max)))
-    (when (eq (overlay-get overlay 'category) 'preview-overlay)
-      (delete-overlay overlay))))
+  (mapc #'delete-overlay (my/latex-preview-overlays)))
 
 ;; `global-text-scale-adjust' resizes the `default' face rather than adding a
 ;; buffer-local remapping, so it runs no hook to attach this to.
