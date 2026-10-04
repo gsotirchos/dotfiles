@@ -11,6 +11,9 @@
 ;;
 ;; Reuses the `stripes' face, so its color follows whatever `stripes-mode' is
 ;; configured with elsewhere (see the `stripes' block in init.el).
+;;
+;; Also keeps `stripes-mode' from hiding the mark background of Dired file
+;; names: overlay faces override text-property faces regardless of priority.
 
 ;;; Code:
 
@@ -19,7 +22,9 @@
 
 (defvar stripes-overlay-priority)
 (defvar vertico--index)
+(defvar dired-re-mark)
 (declare-function corfu--popup-show "corfu")
+(declare-function dired-move-to-filename "dired")
 (declare-function vertico--format-candidate "vertico")
 
 ;;;; Corfu candidate popup
@@ -63,6 +68,21 @@ and START are its arguments."
       (add-face-text-property 0 (length str) 'stripes 'append str))
     str))
 
+;;;; Dired marked files
+
+;;;###autoload
+(defun my/stripes-dired-unstripe-marked (&rest _)
+  "Cut the stripes out of marked file names in the current Dired buffer."
+  (when (derived-mode-p 'dired-mode)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward dired-re-mark nil t)
+        (when-let* ((beg (dired-move-to-filename)))
+          (remove-overlays beg (line-end-position) 'face 'stripes))))))
+
+;;;###autoload
+(with-eval-after-load 'stripes
+  (advice-add 'stripes-create :after #'my/stripes-dired-unstripe-marked))
 ;;;###autoload
 (with-eval-after-load 'corfu
   (advice-add 'corfu--popup-show :after #'my/stripes-corfu-popup))
