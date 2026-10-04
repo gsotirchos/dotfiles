@@ -58,9 +58,10 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
 ;;; Keymaps
 ;;; ----------------------------------------------------------------------------
 
-(defvar-keymap my/file-commands-map
+(defvar-keymap my/recent-commands-map
   :doc "My file commands map."
-  "r" '("recent files" . recentf))
+  "f" '("recent files" . recentf)
+  "d" '("recent directories" . consult-dir))
 
 (defvar-keymap my/desktop-commands-map
   :doc "My desktop commands map."
@@ -73,7 +74,7 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
 
 (defvar-keymap my/personal-map
   :doc "My prefix map."
-  "f" `("prefix files" . ,my/file-commands-map)
+  "r" `("prefix recent" . ,my/recent-commands-map)
   "d" `("prefix desktop" . ,my/desktop-commands-map)
   "t" `("prefix toggle" . ,my/toggles-map)
   "m" 'memory-report

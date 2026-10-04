@@ -1622,7 +1622,6 @@ kill Aspell first so that it cannot save the word back."
   :ensure nil
   :no-require t
   :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode nxml-mode) . my/eglot-ensure-file-buffer)
-  :bind (:map my/personal-map ("rn" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
   (eglot-extend-to-xref nil)
@@ -1677,6 +1676,7 @@ kill Aspell first so that it cannot save the word back."
   (advice-add 'eglot-register-capability :around #'my/eglot-tolerate-watch-limit)
   :config
   (evil-define-key 'normal eglot-mode-map
+    "er" #'eglot-rename
     "gd" #'eglot-find-declaration
     "gD" #'eglot-find-typeDefinition
     "gi" #'eglot-find-implementation)
