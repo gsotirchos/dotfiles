@@ -1346,6 +1346,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   ;; (markdown-ts-appear-label-caps '("<" . ">"))
   (markdown-ts-appear-render-callouts t)
   (markdown-ts-appear-block-quote-marker "┃")
+  (markdown-ts-unordered-list-marker '(("• " . "- ") ("– " . "- ") ("∙ " . "- ")))
   :preface
   (defvar my/markdown-list-indent-width 2)
   (defun my/markdown-ts-mode-hook ()
