@@ -17,3 +17,5 @@
 * **Writing my Claude plugins/skills:** Each is its own public GitHub repo `gsotirchos/<name>`, with one name for the repo, plugin, skill directory and SKILL.md `name`: lowercase kebab-case, subject first (e.g. `emacs-query`), never prefixed `claude-`/`anthropic-` (reserved by `claude plugin validate`). Register it with one entry in the `gsotirchos` marketplace `plugins` list in `~/.dotfiles/packages/claude/.claude/settings.json`, plus `"<name>@gsotirchos": true` under `enabledPlugins`; that installs it everywhere, and `etc/setup_claude_plugins.sh` clones it to `~/.local/src/claude-plugins/<name>` for development. Leave `version` out of `plugin.json` so updates follow commits.
 
 * **Installing python packages:** Never install python packages directly on the operating system level. Always prefer using `pipx` or `conda` or `venv` or similar alternatives instead.
+
+* **Custom aliases/overrides:** Several of the shell built-ins or GNU Core Utilities on this setup have been overridden or aliased to slightly alter their functionality. Whenever you use things like `rm` or `ls` in your script *always* call them using `env` (e.g. `env rm`) or rely on another tool.
