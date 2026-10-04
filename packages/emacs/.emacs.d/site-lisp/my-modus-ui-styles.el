@@ -17,6 +17,48 @@
 Can be `flat', `3d', or `minimal'.")
 
 ;;;###autoload
+(defconst my/modus-themes/ui-face-parents
+  '((mode-line-active                . mode-line)
+    (mode-line-inactive              . mode-line)
+    (header-line-inactive            . header-line)
+    (header-line-highlight           . mode-line-highlight)
+    (tab-bar-tab                     . tab-bar)
+    (tab-bar-tab-inactive            . tab-bar-tab)
+    (tab-bar-tab-group-current       . tab-bar-tab)
+    (tab-bar-tab-group-inactive      . tab-bar-tab-inactive)
+    (tab-bar-tab-ungrouped           . tab-bar-tab-inactive)
+    (tab-line                        . tab-bar)
+    (tab-line-active                 . tab-line)
+    (tab-line-inactive               . tab-line)
+    (tab-line-tab                    . tab-bar-tab)
+    (tab-line-tab-current            . tab-bar-tab)
+    (tab-line-tab-inactive           . tab-bar-tab-inactive)
+    (tab-line-tab-inactive-alternate . tab-bar-tab-inactive)
+    (tab-line-tab-group              . tab-bar-tab-group-inactive)
+    (tab-line-highlight              . tab-bar-tab-highlight))
+  "UI faces and the face each is drawn like.
+Modus themes replace the inheritance that Emacs' own specs define
+between these faces.")
+
+;;;###autoload
+(defun my/modus-themes/inherit-ui-faces ()
+  "Draw each face in `my/modus-themes/ui-face-parents' like its parent.
+Each face keeps only its own foreground.  Also let `tab-line-tab-special'
+mark its tab by slant alone, so the tab stays bold."
+  (pcase-dolist (`(,face . ,parent) my/modus-themes/ui-face-parents)
+    (when (facep face)
+      (set-face-attribute face nil
+                          :inherit parent
+                          :box 'unspecified
+                          :background 'unspecified
+                          :overline 'unspecified
+                          :underline 'unspecified
+                          :height 'unspecified
+                          :weight 'unspecified)))
+  (when (facep 'tab-line-tab-special)
+    (set-face-attribute 'tab-line-tab-special nil :weight 'unspecified)))
+
+;;;###autoload
 (defun my/modus-themes/set-ui-style (&optional style)
   "Activate style theme (mode-line, buttons, etc.).
 STYLE can be `flat', `3d', or `minimal'.
@@ -55,70 +97,52 @@ If STYLE is \\='cycle, cycle the current style."
     ;; 7. fg-inactive
     ;; 8. fg-active
     ;;;;;
-    (dolist (face '(tab-bar tab-bar-tab tab-bar-tab-inactive))
-      (set-face-bold face t))
-    (if (eq my/modus-themes/ui-style 'minimal)
-        (progn
-          (pcase-dolist
-              (`(,face ,box ,fg ,ol ,ul)
-               `((vertical-border      nil       ,fg-vertical-border  nil          nil)
-                 (window-divider       nil       ,fg-vertical-border  nil          nil)
-                 (mode-line            nil               unspecified  ,bg-inactive nil)
-                 (mode-line-active     nil               ,fg-active   ,bg-inactive nil)
-                 (mode-line-inactive   nil               ,fg-inactive ,bg-dim      nil)
-                 (tab-bar              ,box-minimal      unspecified  nil          ,underline-minimal)
-                 (tab-bar-tab          ,box-minimal      ,fg-active   nil          ,underline-minimal)
-                 (tab-bar-tab-inactive ,box-minimal      ,fg-inactive nil          ,underline-minimal)
-                 (header-line          ,box-minimal-thin unspecified  nil          ,underline-minimal-thin)
-                 (header-line-inactive ,box-minimal-thin ,fg-inactive nil          ,underline-minimal-thin)))
-            (set-face-attribute face nil
-                                :box box
-                                :foreground fg
-                                :background 'unspecified
-                                :overline ol
-                                :underline ul))
-          (pcase-dolist
-              (`(,face ,box ,ol ,ul)
-               `((mode-line-highlight   nil                         ,bg-inactive nil)
-                 (tab-bar-tab-highlight ,box-minimal-highlight      nil          ,underline-minimal)
-                 (header-line-highlight ,box-minimal-highlight-thin nil          ,underline-minimal-thin)))
-            (set-face-attribute face nil
-                                :box box
-                                :overline ol
-                                :underline ul))
-          (set-face-attribute 'modus-themes-button nil
-                              :overline nil
-                              :underline nil))
-      (let* ((width (if is-3d 2 1))
-             (button-style (when is-3d '(:style released-button)))
-             (box-active
-              `(:line-width ,width
-                :color ,(my/theme-color (if is-3d 'bg-mode-line-active 'border-mode-line-active))
-                ,@button-style))
-             (box-inactive
-              `(:line-width ,width
-                :color ,(my/theme-color (if is-3d 'bg-mode-line-inactive 'border-mode-line-inactive))
-                ,@button-style)))
-        (pcase-dolist
-            (`(,face ,box ,bg)
-             `((tab-bar              nil           ,bg-main)
-               (mode-line            ,box-active   ,bg-active)
-               (mode-line-active     ,box-active   ,bg-active)
-               (tab-bar-tab          ,box-active   ,bg-active)
-               (modus-themes-button  ,box-active   ,bg-active)
-               (header-line          ,box-inactive ,bg-inactive)
-               (mode-line-inactive   ,box-inactive ,bg-inactive)
-               (tab-bar-tab-inactive ,box-inactive ,bg-inactive)))
-          (set-face-attribute face nil
-                              :box box
-                              :overline 'unspecified
-                              :underline 'unspecified
-                              :background bg))
-        (dolist (face '(mode-line-highlight tab-bar-tab-highlight header-line-highlight))
-          (set-face-attribute face nil
-                              :box box-active
-                              :overline nil
-                              :underline nil))))
+    (my/modus-themes/inherit-ui-faces)
+    (set-face-bold 'tab-bar t)
+    (pcase-dolist
+        (`(,face . ,attributes)
+         (if (eq my/modus-themes/ui-style 'minimal)
+             `((vertical-border       :foreground ,fg-vertical-border)
+               (window-divider        :foreground ,fg-vertical-border)
+               (mode-line             :box nil :foreground unspecified :background unspecified
+                                      :overline ,bg-inactive :underline nil)
+               (mode-line-active      :foreground ,fg-active)
+               (mode-line-inactive    :foreground ,fg-inactive :overline ,bg-dim)
+               (mode-line-highlight   :box nil :overline ,bg-inactive :underline nil)
+               (tab-bar               :box ,box-minimal :foreground unspecified :background unspecified
+                                      :overline nil :underline ,underline-minimal)
+               (tab-bar-tab           :foreground ,fg-active)
+               (tab-bar-tab-inactive  :foreground ,fg-inactive)
+               (tab-bar-tab-highlight :box ,box-minimal-highlight :overline nil :underline ,underline-minimal)
+               (header-line           :box ,box-minimal-thin :foreground unspecified :background unspecified
+                                      :overline nil :underline ,underline-minimal-thin)
+               (header-line-inactive  :foreground ,fg-inactive)
+               (header-line-highlight :box ,box-minimal-highlight-thin :overline nil
+                                      :underline ,underline-minimal-thin)
+               (modus-themes-button   :overline nil :underline nil))
+           (let* ((width (if is-3d 2 1))
+                  (button-style (when is-3d '(:style released-button)))
+                  (box-active
+                   `(:line-width ,width
+                                 :color ,(my/theme-color (if is-3d 'bg-mode-line-active 'border-mode-line-active))
+                                 ,@button-style))
+                  (box-inactive
+                   `(:line-width ,width
+                                 :color ,(my/theme-color (if is-3d 'bg-mode-line-inactive 'border-mode-line-inactive))
+                                 ,@button-style)))
+             `((tab-bar               :box nil :background ,bg-main :overline unspecified :underline unspecified)
+               (mode-line             :box ,box-active :background ,bg-active
+                                      :overline unspecified :underline unspecified)
+               (mode-line-inactive    :box ,box-inactive :background ,bg-inactive)
+               (mode-line-highlight   :box ,box-active :overline nil :underline nil)
+               (tab-bar-tab           :box ,box-active :background ,bg-active)
+               (tab-bar-tab-inactive  :box ,box-inactive :background ,bg-inactive)
+               (tab-bar-tab-highlight :box ,box-active :overline nil :underline nil)
+               (header-line           :box ,box-inactive :background ,bg-inactive
+                                      :overline unspecified :underline unspecified)
+               (modus-themes-button   :box ,box-active :background ,bg-active
+                                      :overline unspecified :underline unspecified)))))
+      (apply #'set-face-attribute face nil attributes))
     (my/customize-buttons-faces)))
 
 ;;;###autoload
@@ -162,6 +186,8 @@ If STYLE is \\='cycle, cycle the current style."
 (add-hook 'after-load-theme-hook #'my/modus-themes/set-ui-style)
 ;;;###autoload
 (add-hook 'Custom-mode-hook #'my/customize-buttons-faces)
+;;;###autoload
+(with-eval-after-load 'tab-line (my/modus-themes/inherit-ui-faces))
 
 (provide 'my-modus-ui-styles)
 
