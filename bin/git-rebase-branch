@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Rebase <branch> (default: the current one) onto <upstream> without
+# switching branches. A branch checked out in some worktree is rebased
+# there; any other is replayed in memory with `git replay`, falling back to
+# a temporary worktree to resolve conflicts.
+if [[ $# -lt 1 || $# -gt 2 ]]; then
+    echo "Usage: git $(basename "$0" | sed 's/^git-//') <upstream> [<branch>]" >&2
+    exit 1
+fi
+
+upstream="$1"
+branch="${2:-$(git branch --show-current)}"
+
+worktree_of_branch() {
+    git worktree list --porcelain | awk -v ref="branch refs/heads/$1" '
+        /^worktree / { worktree = substr($0, 10) }
+        $0 == ref { print worktree }'
+}
+
+worktree="$(worktree_of_branch "${branch}")"
+if [[ -n "${worktree}" ]]; then
+    exec git -C "${worktree}" rebase "${upstream}"
+fi
+
+if git replay --linearize --onto "${upstream}" "${upstream}..${branch}" 2>/dev/null; then
+    exit 0
+fi
+
+worktree="$(mktemp -d)/${branch//\//-}"
+git worktree add --quiet "${worktree}" "${branch}"
+if git -C "${worktree}" rebase "${upstream}"; then
+    git worktree remove "${worktree}"
+else
+    echo "Resolve the conflicts in ${worktree}, then remove it with" \
+        "\`git worktree remove ${worktree}\`" >&2
+    exit 1
+fi
