@@ -295,10 +295,16 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :ensure nil
   :no-require t
   :defer 1
-  :custom (recentf-auto-cleanup 'never)
+  :custom
+  (recentf-auto-cleanup 'never)
+  (recentf-max-saved-items 100)
+  :preface
+  (defun my/recentf-track-dired ()
+    (recentf-add-file default-directory))
   :config
   (advice-add 'recentf-load-list :around #'my/silence-advice)
   (recentf-mode 1)
+  (add-hook 'dired-mode-hook #'my/recentf-track-dired)
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-var-directory))
   (add-to-list 'recentf-exclude (recentf-expand-file-name no-littering-etc-directory)))
 
@@ -1068,6 +1074,14 @@ the pixel scrolling of any other window under the mouse."
   (add-to-list 'consult-preview-allowed-hooks #'my/csv-mode-hook)
   (add-to-list 'consult-preview-allowed-hooks #'my/pdf-view-mode-hook)
   (add-to-list 'consult-preview-allowed-hooks #'my/org-mode-hook))
+
+(use-package consult-dir
+  :bind
+  (([remap dired] . consult-dir)
+   :map vertico-map
+   ([remap dired] . consult-dir)
+   ("C-x j" . consult-dir-jump-file))
+  :custom (consult-dir-default-command #'consult-dir-dired))
 
 (use-package embark
   :bind
