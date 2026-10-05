@@ -780,14 +780,17 @@ candidate instead of running the command."
   (evil-define-key* 'normal 'global
     (kbd "C-i") #'evil-jump-forward
     (kbd "<tab>") #'kirigami-toggle-fold
-    "za" #'kirigami-toggle-fold
     "zo" #'kirigami-open-fold
     "zO" #'kirigami-open-fold-rec
     "zc" #'kirigami-close-fold
-    "zm" #'my/fold-level-decrease
+    "zC" #'my/fold-level-close-recursive
+    "za" #'kirigami-toggle-fold
+    "zA" #'my/fold-level-toggle-recursive
     "zr" #'my/fold-level-increase
+    "zR" #'my/fold-level-open-all
+    "zm" #'my/fold-level-decrease
     "zM" #'my/fold-level-close-all
-    "zR" #'my/fold-level-open-all)
+    "zv" #'my/fold-level-reveal-line)
   (evil-define-key* 'visual 'global
     "p" #'evil-paste-before
     "P" #'evil-visual-paste)
@@ -1476,7 +1479,10 @@ reaches into the preview's `display' property elides the whole preview."
   :commands (my/fold-level-decrease
              my/fold-level-increase
              my/fold-level-close-all
-             my/fold-level-open-all))
+             my/fold-level-open-all
+             my/fold-level-toggle-recursive
+             my/fold-level-close-recursive
+             my/fold-level-reveal-line))
 
 (use-package my-fold-ellipsis
   :ensure nil

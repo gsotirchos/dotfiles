@@ -12,6 +12,12 @@
 ;; This module supplies the missing piece: a buffer-local counter over those two
 ;; backends, plus the four commands that step it.
 ;;
+;; Neither do those front ends act on the folds containing a line, as Vim's `zA',
+;; `zC' and `zv' do, so the module provides those too.  With `hs-allow-nesting'
+;; every hideshow block keeps an overlay of its own, one per Vim fold; an outline
+;; subtree is hidden as one region instead, so closing its outermost heading is
+;; all that closing the folds along a line amounts to there.
+;;
 ;; The hideshow pass measures nesting with `hs-block-start-regexp' and the paren
 ;; depth at each match, which suits sexp languages such as Emacs Lisp.  Emacs 31.1
 ;; leaves that regexp nil in tree-sitter modes, which find their blocks through the
@@ -32,12 +38,18 @@
 (require 'outline)
 
 (defvar hs-minor-mode)
+(defvar hs-allow-nesting)
 (defvar hs-block-start-regexp)
 (defvar hs-block-start-mdata-select)
 (declare-function hs-hide-block-at-point "hideshow" (&optional end comment-reg))
+(declare-function hs-hide-block "hideshow" ())
 (declare-function hs-show-all "hideshow" ())
+(declare-function hs-discard-overlays "hideshow" (beg end))
 (declare-function kirigami-open-folds "kirigami" ())
 (declare-function kirigami-close-folds "kirigami" ())
+(declare-function kirigami-open-fold "kirigami" ())
+(declare-function kirigami-close-fold "kirigami" ())
+(declare-function kirigami-toggle-fold "kirigami" ())
 
 (defvar-local my/fold-level nil
   "Number of nesting levels left visible, the analogue of Vim's `foldlevel'.
@@ -120,23 +132,27 @@ adds no levels that fold nothing."
               (setq deepest level))))))
     (1+ deepest)))
 
+(defun my/fold-level--hideshow-hide-blocks (blocks)
+  "Fold each of BLOCKS, a list of (DEPTH . START) pairs, an overlay apiece.
+Relies on `hs-allow-nesting', without which hideshow discards the overlays
+of the blocks nested inside a folded one."
+  (save-excursion
+    ;; Deepest first: `hs-hide-block-at-point' deletes whichever overlay
+    ;; covers the header of the block it folds, which for an outer block
+    ;; would be the overlay of a child folded earlier.
+    (dolist (block (sort blocks (lambda (a b) (> (car a) (car b)))))
+      (goto-char (cdr block))
+      (hs-hide-block-at-point))))
+
 (defun my/fold-level--hideshow-hide (level)
   "Fold every hideshow block nested LEVEL levels deep or deeper.
 `hs-hide-level' gives an overlay of its own only to the blocks at the depth
 it is asked for, so opening one of them uncovers its whole subtree.  Folding
 every level instead leaves each nested block an overlay of its own, which is
-what makes opening a block uncover just the next level, as in Vim.  Relies on
-`hs-allow-nesting', without which hideshow discards the nested overlays."
-  (save-excursion
-    ;; Deepest first: `hs-hide-block-at-point' deletes whichever overlay
-    ;; covers the header of the block it folds, which for an outer block
-    ;; would be the overlay of a child folded earlier.
-    (dolist (block (sort (seq-filter (lambda (block) (>= (car block) level))
-                                     (my/fold-level--hideshow-blocks))
-                         (lambda (a b) (> (car a) (car b)))))
-      (goto-char (cdr block))
-      (hs-hide-block-at-point))))
-
+what makes opening a block uncover just the next level, as in Vim."
+  (my/fold-level--hideshow-hide-blocks
+   (seq-filter (lambda (block) (>= (car block) level))
+               (my/fold-level--hideshow-blocks))))
 
 (defun my/fold-level--max-level ()
   "Return the lowest level at which the buffer is fully unfolded.
@@ -174,11 +190,11 @@ The result is cached until the buffer text changes."
     (goto-char (previous-single-char-property-change (point) 'invisible))
     (forward-line 0)))
 
-(defun my/fold-level--fallback (action)
-  "Fold the buffer with `kirigami'.  ACTION is either `open' or `close'."
+(defun my/fold-level--fallback (command)
+  "Call the `kirigami' COMMAND in a buffer that has no backend of ours."
   (unless (require 'kirigami nil t)
     (user-error "No folding backend is active in this buffer"))
-  (if (eq action 'open) (kirigami-open-folds) (kirigami-close-folds)))
+  (funcall command))
 
 (defun my/fold-level--set (level)
   "Set the fold level to LEVEL, clamped to the buffer's range, and report it."
@@ -208,7 +224,7 @@ With a numeric prefix COUNT, fold COUNT levels more."
   (interactive "p")
   (if (my/fold-level--steppable-p)
       (my/fold-level--set (- (my/fold-level--current) (or count 1)))
-    (my/fold-level--fallback 'close)))
+    (my/fold-level--fallback #'kirigami-close-folds)))
 
 ;;;###autoload
 (defun my/fold-level-increase (&optional count)
@@ -217,7 +233,7 @@ With a numeric prefix COUNT, unfold COUNT levels more."
   (interactive "p")
   (if (my/fold-level--steppable-p)
       (my/fold-level--set (+ (my/fold-level--current) (or count 1)))
-    (my/fold-level--fallback 'open)))
+    (my/fold-level--fallback #'kirigami-open-folds)))
 
 ;;;###autoload
 (defun my/fold-level-close-all ()
@@ -225,7 +241,7 @@ With a numeric prefix COUNT, unfold COUNT levels more."
   (interactive)
   (if (my/fold-level--steppable-p)
       (my/fold-level--set 1)
-    (my/fold-level--fallback 'close)))
+    (my/fold-level--fallback #'kirigami-close-folds)))
 
 ;;;###autoload
 (defun my/fold-level-open-all ()
@@ -233,7 +249,113 @@ With a numeric prefix COUNT, unfold COUNT levels more."
   (interactive)
   (if (my/fold-level--steppable-p)
       (my/fold-level--set (my/fold-level--max-level))
-    (my/fold-level--fallback 'open)))
+    (my/fold-level--fallback #'kirigami-open-folds)))
+
+;;;; Folds at point
+
+(defun my/fold-level--hideshow-close (beg end)
+  "Fold every hideshow block containing a line between BEG and END."
+  (if (stringp hs-block-start-regexp)
+      (my/fold-level--hideshow-hide-blocks
+       (seq-filter (pcase-lambda (`(,_ . ,start))
+                     (and (<= start end)
+                          (when-let* ((block-end
+                                       (ignore-errors (scan-lists start 1 0))))
+                            (>= block-end beg))))
+                   (my/fold-level--hideshow-blocks)))
+    ;; Without the regexp `my/fold-level--hideshow-blocks' finds no block.
+    (save-excursion (goto-char beg) (hs-hide-block))))
+
+(defun my/fold-level--hideshow-line-overlays ()
+  "Return the hideshow overlays hiding the current line or its end."
+  (seq-filter (lambda (overlay) (overlay-get overlay 'hs))
+              (seq-union (overlays-at (point)) (overlays-at (pos-eol)))))
+
+(defun my/fold-level--hideshow-open-recursive ()
+  "Unfold the outermost hideshow block hiding the line and all blocks in it."
+  (when-let* ((outermost (car (sort (my/fold-level--hideshow-line-overlays)
+                                    :key #'overlay-start))))
+    ;; Without nesting `hs-discard-overlays' discards the nested overlays too.
+    (let (hs-allow-nesting)
+      (hs-discard-overlays (overlay-start outermost) (overlay-end outermost)))))
+
+(defun my/fold-level--hideshow-reveal ()
+  "Unfold just the hideshow blocks hiding the current line."
+  (mapc #'delete-overlay (my/fold-level--hideshow-line-overlays)))
+
+(defun my/fold-level--outline-up-heading ()
+  "Move to the parent of the heading at point, returning nil if it has none."
+  (let ((from (point)))
+    (ignore-errors (outline-up-heading 1 t))
+    (< (point) from)))
+
+(defun my/fold-level--outline-close (beg end)
+  "Fold every top-level outline subtree containing a line between BEG and END."
+  (save-excursion
+    (goto-char beg)
+    (condition-case nil
+        (outline-back-to-heading t)
+      (outline-before-first-heading (outline-next-heading)))
+    (while (my/fold-level--outline-up-heading))
+    (while (and (<= (point) end) (outline-on-heading-p t))
+      (outline-hide-subtree)
+      (outline-end-of-subtree)
+      (outline-next-heading))))
+
+(defun my/fold-level--outline-reveal ()
+  "Unfold just the outline headings hiding the current line."
+  (save-excursion
+    (outline-back-to-heading t)
+    (when (invisible-p (pos-eol))
+      (outline-show-entry)
+      (outline-show-children))
+    (while (my/fold-level--outline-up-heading)
+      (outline-show-children))))
+
+(defun my/fold-level--open-recursive ()
+  "Open the outermost fold hiding the current line and every fold in it."
+  (pcase (my/fold-level--backend)
+    ('outline (save-excursion (outline-back-to-heading t)
+                              (outline-show-subtree)))
+    ('hideshow (my/fold-level--hideshow-open-recursive))))
+
+;;;###autoload
+(defun my/fold-level-close-recursive (beg end)
+  "Close every fold containing a line between BEG and END, like Vim's `zC'.
+Interactively those are the lines of the active region, or else the current
+line.  Folds that contain none of them are left as they are."
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (1- (region-end)))
+                 (list (point) (point))))
+  (let ((beg (save-excursion (goto-char beg) (pos-bol)))
+        (end (save-excursion (goto-char end) (pos-eol))))
+    (pcase (my/fold-level--backend)
+      ('outline (my/fold-level--outline-close beg end))
+      ('hideshow (my/fold-level--hideshow-close beg end))
+      (_ (my/fold-level--fallback #'kirigami-close-fold))))
+  ;; Ends evil's Visual state as well.
+  (deactivate-mark)
+  (my/fold-level--reveal-point))
+
+;;;###autoload
+(defun my/fold-level-toggle-recursive ()
+  "Open or close the folds containing the current line, like Vim's `zA'.
+On a folded line open the outermost fold hiding it and every fold nested in
+it, otherwise close every fold containing the line."
+  (interactive)
+  (cond ((not (my/fold-level--backend))
+         (my/fold-level--fallback #'kirigami-toggle-fold))
+        ((invisible-p (pos-eol)) (my/fold-level--open-recursive))
+        (t (my/fold-level-close-recursive (point) (point)))))
+
+;;;###autoload
+(defun my/fold-level-reveal-line ()
+  "Open just enough folds to show the current line, like Vim's `zv'."
+  (interactive)
+  (pcase (my/fold-level--backend)
+    ('outline (my/fold-level--outline-reveal))
+    ('hideshow (my/fold-level--hideshow-reveal))
+    (_ (my/fold-level--fallback #'kirigami-open-fold))))
 
 (provide 'my-fold-level)
 
