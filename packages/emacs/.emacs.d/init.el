@@ -2168,6 +2168,19 @@ Leaves the line-prefix property `org-indent' also sets untouched."
 (use-package ob-mermaid
   :after org
   :demand t
+  :preface
+  (defun my/ob-mermaid-install-browser ()
+    "Install the chrome-headless-shell build pinned by mmdc's own Puppeteer.
+Rerun after upgrading mermaid-cli, whose Puppeteer pins a new build."
+    (interactive)
+    (let* ((puppeteer-bin "node_modules/.bin/puppeteer")
+           (mmdc (file-truename (or ob-mermaid-cli-path
+                                    (executable-find "mmdc")
+                                    (user-error "Mmdc not found"))))
+           (modules-root (or (locate-dominating-file mmdc puppeteer-bin)
+                             (user-error "No %s above %s" puppeteer-bin mmdc))))
+      (compile (concat (shell-quote-argument (expand-file-name puppeteer-bin modules-root))
+                       " browsers install chrome-headless-shell"))))
   :config (setf (alist-get :output-dir org-babel-default-header-args:mermaid) "mermaid"))
 
 (use-package newsticker
