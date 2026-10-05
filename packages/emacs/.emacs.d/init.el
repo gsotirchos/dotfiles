@@ -218,7 +218,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (hscroll-margin 0)
   (scroll-conservatively 101)
   (hscroll-step 1)
-  ;; (underline-minimum-offset 2)
+  (underline-minimum-offset 3)
   (text-scale-mode-step 1.1)
   (global-text-scale-adjust-resizes-frames t)
   (line-spacing fixed-pitch-line-spacing)
@@ -655,10 +655,10 @@ the window."
   :bind
   (nil
    :map dired-mode-map
+   ("SPC" . dired-view-file)
    ("M-<up>" . dired-up-directory)
    ("M-<down>" . dired-find-file)
-   ("SPC" . dired-display-file)
-   ([remap dired-view-file] . my/dired-find-file-other-frame))
+   ("M-<return>" . my/dired-find-file-other-frame))
   :custom
   (dired-listing-switches "-alF")
   (dired-omit-files "^\\.[^.].*")
@@ -803,6 +803,7 @@ candidate instead of running the command."
   :preface
   (defvar my/evil-collection-passthrough-keys
     '((dired-mode-map "SPC")
+      (dired-mode-map "M-<return>")
       (magit-section-mode-map "C-<tab>"))
     "(MAP KEY [STATE]) keys Evil Collection defers to MAP's own binding.
 STATE defaults to `normal'.")
@@ -1079,11 +1080,7 @@ the pixel scrolling of any other window under the mouse."
   (add-to-list 'consult-preview-allowed-hooks #'my/org-mode-hook))
 
 (use-package consult-dir
-  :bind
-  (([remap dired] . consult-dir)
-   :map vertico-map
-   ([remap dired] . consult-dir)
-   ("C-x j" . consult-dir-jump-file))
+  :bind (:map vertico-map ("C-x C-j" . consult-dir-jump-file))
   :custom
   (consult-dir-default-command #'consult-dir-dired)
   (consult-dir-project-list-function nil)
