@@ -39,6 +39,7 @@ keybind = super+6=unbind
 keybind = super+7=unbind
 keybind = super+8=unbind
 keybind = super+9=unbind
+keybind = f2=prompt_tab_title
 
 # OS-specific overrides. Placed last so per-OS values override anything above.
 config-file = ?os.conf
