@@ -1371,7 +1371,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   ;; (markdown-ts-appear-trigger 'evil-insert)
   (markdown-ts-inline-images t)
   (markdown-ts-image-max-width (round (* my/scale-factor 250)))
-  (markdown-ts-appear-enable-math-preview t)
+  (markdown-ts-appear-enable-math-preview (and (executable-find "node") t))
   (markdown-ts-appear-image-icon "▧")
   ;; (markdown-ts-appear-link-icon "↗")
   ;; (markdown-ts-appear-label-caps '("<" . ">"))
