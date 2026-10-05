@@ -65,6 +65,7 @@ sudo apt install -y \
     pipx \
     python3-pip \
     python3-bashate \
+    nodejs \
     libfile-homedir-perl \
     light \
     gnome-tweaks \
