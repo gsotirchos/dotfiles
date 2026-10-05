@@ -112,7 +112,7 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
   "C-z" #'ignore
   "A-<escape>" #'ns-next-frame
   "A-S-<escape>" #'ns-prev-frame
-  "C-M-e" #'ns-do-show-character-palette
+  "C-M-e" #'ns-do-show-character-palette  ; TODO: use `emoji-insert' on Linux
   "C-M-f" #'toggle-frame-fullscreen
   "M-u" #'universal-argument
   "M-c" #'kill-ring-save
