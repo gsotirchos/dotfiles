@@ -36,6 +36,7 @@ keymap:
       Super-Delete: Ctrl-k          # kill line
       Alt-Backspace: Ctrl-Backspace # delete word
       Alt-Delete: Ctrl-Delete       # kill word
+      Super-Ctrl-e: Ctrl-Dot        # GTK emoji chooser
 
   - name: macOS shortcuts in Firefox
     application:

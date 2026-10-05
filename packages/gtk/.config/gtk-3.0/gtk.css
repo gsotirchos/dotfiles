@@ -1,0 +1,8 @@
+/* Adds Super+Ctrl+E to GTK 3's built-in Ctrl+. / Ctrl+; emoji chooser */
+@binding-set emoji-chooser {
+  bind "<Super><Control>e" { "insert-emoji" () };
+}
+
+entry, textview {
+  -gtk-key-bindings: emoji-chooser;
+}
