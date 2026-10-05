@@ -39,7 +39,7 @@ mkdir -p \
     ~/.claude \
     ~/Zotero
 if [[ "${os}" == "linux" ]]; then
-    mkdir -p ~/.local/share/fonts
+    mkdir -p ~/.local/share/fonts ~/.config/gtk-3.0
 fi
 touch ~/.hushlogin
 
@@ -85,7 +85,7 @@ echo -e "${bright_style}- Cloning Claude plugins${normal_style}"
 
 # OS-specific
 if [[ "${os}" == "linux" ]]; then
-    stow -vd "${dotfiles}/packages" -t "${HOME}" -R fontconfig
+    stow -vd "${dotfiles}/packages" -t "${HOME}" -R fontconfig gtk
 
     dmi_product=$(cat /sys/devices/virtual/dmi/id/product_name 2> /dev/null)
     if [[ "${dmi_product}" == "iMac14,1" ]]; then
