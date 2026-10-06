@@ -1171,7 +1171,21 @@ Remote files are skipped (`diff-hl-flydiff-update' already ignores them)."
                           :slant 'normal
                           :weight 'normal
                           :height 0.92)))
+  ;; TODO: Report upstream (https://github.com/dgutov/diff-hl/issues) that
+  ;; `diff-hl-make-temp-file-name' should use `sha1' instead of `t', then
+  ;; drop this override once fixed.
+  (defun my/diff-hl-make-temp-file-name (file rev &optional manual)
+    "Like `diff-hl-make-temp-file-name', but name the file by a hash of FILE.
+The upstream path-based name exceeds NAME_MAX for deeply nested files."
+    (let ((auto-save-file-name-transforms
+           `((".*" ,temporary-file-directory sha1)))
+          (buffer-file-name file))
+      (concat (make-auto-save-file-name)
+              ".~" (subst-char-in-string ?/ ?_ rev)
+              (unless manual ".") "~")))
   :config
+  (advice-add 'diff-hl-make-temp-file-name :override
+              #'my/diff-hl-make-temp-file-name)
   (my/diff-hl-faces)
   (add-hook 'after-load-theme-hook #'my/diff-hl-faces)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
