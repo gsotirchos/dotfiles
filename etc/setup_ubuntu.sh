@@ -49,6 +49,7 @@ sudo apt install -y \
     gdb \
     vcstool \
     git-lfs \
+    pre-commit \
     doxygen \
     cppcheck \
     htop \
