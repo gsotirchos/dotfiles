@@ -1753,7 +1753,7 @@ inside a comment."
   (setf (alist-get 'ruff apheleia-formatters)
         '("ruff" "format" "--silent" "--stdin-filename" filepath "-"))
   (setf (alist-get 'ruff-check apheleia-formatters)
-        '("ruff" "check" "--fix" "--silent" "--stdin-filename" filepath "-"))
+        '("ruff" "check" "-n" "--fix" "--fix-only" "--stdin-filename" filepath "-"))
   (setf (alist-get 'shfmt apheleia-formatters)
         '("shfmt" "-ln" "bash"
           (apheleia-formatters-indent '("-i" "0") "-i" 'standard-indent)
