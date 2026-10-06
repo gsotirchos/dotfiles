@@ -8,6 +8,7 @@
 (declare-function ns-do-show-character-palette "term/ns-win" ())
 (declare-function ns-next-frame "term/ns-win" ())
 (declare-function ns-prev-frame "term/ns-win" ())
+(declare-function project-root "project" (project))
 
 (defgroup my/keybindings nil
   "My personal keybindings."
@@ -54,6 +55,15 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
   (interactive)
   (switch-to-buffer-other-frame "*scratch*"))
 
+(defun my/copy-file-relative-path ()
+  "Copy the visited file's path, relative to its project root if any."
+  (interactive)
+  (let* ((file (or buffer-file-name (user-error "Buffer is not visiting a file")))
+         (project (project-current))
+         (path (if project (file-relative-name file (project-root project)) file)))
+    (kill-new path)
+    (message "Copied: %s" path)))
+
 ;;; ----------------------------------------------------------------------------
 ;;; Keymaps
 ;;; ----------------------------------------------------------------------------
@@ -78,6 +88,7 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
   "d" `("prefix desktop" . ,my/desktop-commands-map)
   "t" `("prefix toggle" . ,my/toggles-map)
   "m" 'memory-report
+  "y" 'my/copy-file-relative-path
   "C-d" 'help-follow-symbol)
 
 (defvar-keymap my-keybindings-mode-map
