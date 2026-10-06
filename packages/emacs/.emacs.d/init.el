@@ -450,7 +450,7 @@ the window."
   :hook (after-init . my/mode-line-setup)
   :custom
   (mode-line-modes-delimiters nil)
-  (mode-line-collapse-minor-modes '(not flymake-mode)))
+  (mode-line-collapse-minor-modes '(not flymake-mode view-mode)))
 
 (use-package my-theme-switcher
   :ensure nil
