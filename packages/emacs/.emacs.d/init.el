@@ -821,6 +821,15 @@ STATE defaults to `normal'.")
 
 (use-package evil-surround
   :demand t
+  :preface
+  (defun my/evil-surround-add-math-pairs ()
+    "Let `m' and `M' surround text with inline and display math."
+    (setq-local evil-surround-pairs-alist
+                (append (if (derived-mode-p 'markdown-ts-mode)
+                            '((?m "$" . "$") (?M "$$" . "$$"))
+                          '((?m "\\(" . "\\)") (?M "\\[" . "\\]")))
+                        evil-surround-pairs-alist)))
+  :hook ((org-mode markdown-ts-mode LaTeX-mode) . my/evil-surround-add-math-pairs)
   :config (global-evil-surround-mode 1))
 
 (use-package corfu
@@ -2018,6 +2027,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (TeX-view-program-selection '((output-pdf "PDF Tools")))
   (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
   (TeX-source-correlate-start-server t)
+  (TeX-electric-math '("\\(" . "\\)"))
+  (LaTeX-electric-left-right-brace t)  ; also pairs \( \[ \{ and \left( \right)
   (preview-auto-cache-preamble t)
   (preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
   (preview-preserve-counters t)
@@ -2041,6 +2052,13 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :after preview
   :custom
   (preview-image-type 'dvisvgm))
+
+(use-package cdlatex
+  :hook ((org-mode . org-cdlatex-mode)
+         (markdown-ts-mode . cdlatex-mode))
+  :custom
+  (cdlatex-takeover-parenthesis nil)  ; leave ( [ { to electric-pair
+  (cdlatex-sub-super-scripts-outside-math-mode nil))  ; keep _ for Markdown emphasis
 
 
 ;; Org
@@ -2099,9 +2117,17 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   ;; Load only a few link modules and skip the slow ones (Gnus, EWW, DocView, ...).
   (org-modules '(ol-doi ol-info))  ; ol-bibtex
   :preface
+  (defun my/org-close-math-delimiter ()
+    "Turn electric-pair's \\(|) and \\[|] into \\(|\\) and \\[|\\]."
+    (when (and (memq last-command-event '(?\( ?\[))
+               (eq (char-before (1- (point))) ?\\)
+               (eq (following-char) (matching-paren last-command-event)))
+      (save-excursion (insert ?\\))))
   (defun my/org-mode-hook ()
     (my/set-local-indent-width org-src-content-indentation)
-    (setq-local tab-width 8))
+    (setq-local tab-width 8)
+    ;; Run after `electric-pair-post-self-insert-function', at depth 50.
+    (add-hook 'post-self-insert-hook #'my/org-close-math-delimiter 60 t))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   :init
   (when (eq system-type 'darwin)
