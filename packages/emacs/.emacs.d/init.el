@@ -1390,6 +1390,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :ensure nil
   :no-require t
   :mode ("\\.md\\'" "\\.markdown\\'")
+  :init (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
   :custom
   ;; (markdown-ts-appear-trigger 'evil-insert)
   (markdown-ts-inline-images t)
@@ -1930,12 +1931,29 @@ inside a comment."
   :ensure nil
   :no-require t
   :mode ("\\.json\\'" "\\.jsonc\\'")
+  :init (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
   :custom (json-ts-mode-indent-offset 2)
   :preface
   (defun my/json-mode-hook ()
     (flyspell-mode -1)
     (my/set-local-indent-width json-ts-mode-indent-offset))
   (add-hook 'json-ts-mode-hook #'my/json-mode-hook))
+
+
+;; JavaScript
+
+(use-package js
+  :ensure nil
+  :no-require t
+  :init (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode)))
+
+
+;; HTML
+
+(use-package mhtml-ts-mode
+  :ensure nil
+  :no-require t
+  :init (add-to-list 'major-mode-remap-alist '(html-mode . mhtml-ts-mode)))
 
 
 ;; CMake
@@ -2157,6 +2175,13 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
                    '("-[:space:]('\"{[" "][:space:].,:!?;'\")}\\[-" "[:space:]" "." 1))
   (face-spec-set 'org-latex-and-related '((t (:foreground unspecified)))
                  'face-override-spec))
+
+(use-package org-src
+  :ensure nil
+  :defer t
+  :config
+  (dolist (lang-mode '(("md" . markdown) ("vim" . vimscript-ts) ("vimscript" . vimscript-ts)))
+    (add-to-list 'org-src-lang-modes lang-mode)))
 
 (use-package my-org-latex-preview
   :ensure nil
