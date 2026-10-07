@@ -9,6 +9,7 @@
 (declare-function ns-next-frame "term/ns-win" ())
 (declare-function ns-prev-frame "term/ns-win" ())
 (declare-function project-root "project" (project))
+(declare-function magit-copy-section-value "magit-extras" (arg))
 
 (defgroup my/keybindings nil
   "My personal keybindings."
@@ -64,6 +65,13 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
     (kill-new path)
     (message "Copied: %s" path)))
 
+(defun my/copy-dwim ()
+  "Copy the Magit section value at point, or the visited file's path."
+  (interactive)
+  (call-interactively (if (derived-mode-p 'magit-mode)
+                          #'magit-copy-section-value
+                        #'my/copy-file-relative-path)))
+
 ;;; ----------------------------------------------------------------------------
 ;;; Keymaps
 ;;; ----------------------------------------------------------------------------
@@ -88,7 +96,7 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
   "d" `("prefix desktop" . ,my/desktop-commands-map)
   "t" `("prefix toggle" . ,my/toggles-map)
   "m" 'memory-report
-  "y" 'my/copy-file-relative-path
+  "y" 'my/copy-dwim
   "C-d" 'help-follow-symbol)
 
 (defvar-keymap my-keybindings-mode-map
