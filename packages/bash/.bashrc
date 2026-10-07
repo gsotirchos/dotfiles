@@ -56,7 +56,9 @@ fi
 # npm
 if [[ -d "${HOME}/.nvm" ]]; then
     export NVM_DIR="${HOME}/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    # --no-use: node comes from ~/.nvm/current/bin (extra_paths), as
+    # activating the default version costs ~0.5 s per shell
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 

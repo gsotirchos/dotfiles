@@ -204,20 +204,6 @@ if [[ -f ~/.conda/conda_init.sh ]]; then
     unset conda_mamba
 fi
 
-# lazy NPM
-if [[ -d "${HOME}/.nvm" ]]; then
-    npm() {
-        unset "${FUNCNAME[0]}"
-        nvm use --lts
-        "${FUNCNAME[0]}" "$@"
-    }
-    devcontainer() {
-        unset "${FUNCNAME[0]}"
-        nvm use --lts
-        "${FUNCNAME[0]}" "$@"
-    }
-fi
-
 # Catkin (ROS 1)
 if command -v "catkin" &> /dev/null; then
     cdws() {

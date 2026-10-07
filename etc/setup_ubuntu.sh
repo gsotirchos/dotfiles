@@ -216,6 +216,32 @@ if prompt_yn "Install Python linters and tools (uv, pylint, lsp, proselint, vint
     pyright --version > /dev/null
 fi
 
+# --- node (nvm) + global npm tools ---------------------------------
+if prompt_yn "Install nvm, Node LTS and npm tools (markdownlint-cli, devcontainer)?"; then
+    export NVM_DIR="${HOME}/.nvm"
+    if [[ -s "${NVM_DIR}/nvm.sh" ]]; then
+        header "nvm already installed — skipping."
+    else
+        header "Installing nvm"
+        nvm_tag="$(curl -fsSL https://api.github.com/repos/nvm-sh/nvm/releases/latest \
+            | jq -r .tag_name)"
+        # PROFILE=/dev/null: the stowed .bashrc already loads nvm
+        curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/${nvm_tag}/install.sh" \
+            | PROFILE=/dev/null bash
+    fi
+
+    header "Installing Node LTS, markdownlint-cli and the Dev Containers CLI"
+    set +eu  # nvm.sh is not `set -eu`-safe
+    source "${NVM_DIR}/nvm.sh"
+    nvm install --lts
+    set -eu
+    # extra_paths/common/PATH puts current/bin on $PATH, sparing every shell
+    # the ~0.5 s of `nvm use`
+    ln -sfn "${NVM_DIR}/versions/node/$(nvm current)" "${NVM_DIR}/current"
+    # nvm does not carry global packages over to a new LTS; re-run to reinstall
+    npm install -g markdownlint-cli @devcontainers/cli
+fi
+
 # --- ghostty terminal -----------------------------------------------
 if command -v ghostty &> /dev/null; then
     header "Ghostty already installed — skipping."

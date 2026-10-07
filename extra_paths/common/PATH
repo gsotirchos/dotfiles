@@ -4,6 +4,7 @@ ${HOME}/.dotfiles/bin
 ${HOME}/.dotfiles/bin/${OS}
 ${HOME}/.pixi/bin/
 ${HOME}/.npm-global/bin
+${HOME}/.nvm/current/bin
 ${HOME}/.opencode/bin
 ${HOME}/.texlive/current/bin/*
 #${HOME}/.ghcup/bin
