@@ -2075,8 +2075,14 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (preview-image-type 'dvisvgm))
 
 (use-package cdlatex
-  :hook ((org-mode . org-cdlatex-mode)
-         (markdown-ts-mode . cdlatex-mode))
+  :hook
+  ((org-mode . org-cdlatex-mode)
+   (markdown-ts-mode . cdlatex-mode))
+  :bind
+  (nil
+   :map cdlatex-mode-map
+   ("`" . nil)
+   ("C-`" . cdlatex-math-symbol))
   :custom
   (cdlatex-takeover-parenthesis nil)  ; leave ( [ { to electric-pair
   (cdlatex-sub-super-scripts-outside-math-mode nil))  ; keep _ for Markdown emphasis
@@ -2087,7 +2093,13 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
 (use-package org
   :ensure nil
   :no-require t
-  :bind (:map org-mode-map ("M-<return>" . org-meta-return))
+  :bind
+  (nil
+   :map org-mode-map
+   ("M-<return>" . org-meta-return)
+   :map org-cdlatex-mode-map
+   ("`" . nil)
+   ("C-`" . cdlatex-math-symbol))
   :hook ((org-mode . org-latex-preview-mode)
          (org-babel-after-execute . org-link-preview-refresh))
   :custom
