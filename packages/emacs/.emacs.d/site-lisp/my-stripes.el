@@ -71,7 +71,7 @@ and START are its arguments."
 ;;;; Dired marked files
 
 ;;;###autoload
-(defun my/stripes-dired-unstripe-marked (&rest _)
+(defun patch/stripes-dired-unstripe-marked (&rest _)
   "Cut the stripes out of marked file names in the current Dired buffer."
   (when (derived-mode-p 'dired-mode)
     (save-excursion
@@ -82,7 +82,7 @@ and START are its arguments."
 
 ;;;###autoload
 (with-eval-after-load 'stripes
-  (advice-add 'stripes-create :after #'my/stripes-dired-unstripe-marked))
+  (advice-add 'stripes-create :after #'patch/stripes-dired-unstripe-marked))
 ;;;###autoload
 (with-eval-after-load 'corfu
   (advice-add 'corfu--popup-show :after #'my/stripes-corfu-popup))

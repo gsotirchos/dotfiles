@@ -162,13 +162,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
         (put-text-property (point-min) (minibuffer-prompt-end) 'wrap-prefix " ")))
     (add-hook 'minibuffer-setup-hook #'my/pad-minibuffer-prompt))
 
-  ;; Suppress blank tooltips
-  (defun my/suppress-blank-tooltips (str &rest _)
-    "Suppress tooltips with nil, empty, or all-whitespace STR."
-    (or (null str) (string-blank-p str)))
-
-  (advice-add #'x-show-tip :before-until #'my/suppress-blank-tooltips)
-
   (defun my/append-wrap-marker (beg end)
     "Append `wrap-prefix' to the wrap-prefix string property from BEG to END."
     (let ((wrap-prop (get-text-property beg 'wrap-prefix)))
@@ -341,7 +334,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
            (append '("*.png" "*.pdf" "*.jpg" "*.jpeg" "*.gif" "*.zip" "*.gz" "*.tar" "*.mp4")
                    project-vc-ignores)))
       (apply orig-fun args)))
-  (defun my/project-silence-missing-gitmodules (orig-fun &rest args)
+  (defun patch/project-silence-missing-gitmodules (orig-fun &rest args)
     "Call ORIG-FUN with ARGS, muting Tramp's echo of a missing `.gitmodules'."
     (let ((tramp-verbose 0))
       (apply orig-fun args)))
@@ -350,7 +343,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (advice-add 'project-files :filter-return
               (lambda (files) (seq-remove #'file-directory-p files)))
   (advice-add 'project-query-replace-regexp :around #'my/project-query-replace-ignore-binaries)
-  (advice-add 'project--git-submodules :around #'my/project-silence-missing-gitmodules))
+  (advice-add 'project--git-submodules :around #'patch/project-silence-missing-gitmodules))
 
 (use-package xref
   :ensure nil
@@ -394,9 +387,9 @@ Scrolling on would only open empty space below it, which
   :ensure nil
   :no-require t
   :preface
-  (defconst my/gtk-scroll-bar-range 9999999
+  (defconst patch/gtk-scroll-bar-range 9999999
     "XG_SB_RANGE from src/gtkutil.h: the fixed value range of a GTK scroll bar.")
-  (defun my/scroll-bar-drag-against-range (args)
+  (defun patch/scroll-bar-drag-against-range (args)
     "Scale the thumb position in the drag event of ARGS against the full range.
 With `scroll-bar-adjust-thumb-portion' nil the thumb is placed at
 window-start / buffer-size of the bar's range, but a drag reports
@@ -408,14 +401,14 @@ the reported position maps to the end of the buffer at the top of
 the window."
     (let ((portion-whole (nth 2 (event-start (car args)))))
       (when (numberp (cdr portion-whole))
-        (setcdr portion-whole my/gtk-scroll-bar-range)))
+        (setcdr portion-whole patch/gtk-scroll-bar-range)))
     args)
   :custom
   (scroll-bar-mode (if (eq system-type 'darwin) nil 'right))
   (scroll-bar-adjust-thumb-portion nil)
   :init
   (when (featurep 'gtk)
-    (advice-add 'scroll-bar-drag-1 :filter-args #'my/scroll-bar-drag-against-range)))
+    (advice-add 'scroll-bar-drag-1 :filter-args #'patch/scroll-bar-drag-against-range)))
 
 (use-package window-divider
   :ensure nil
@@ -541,12 +534,12 @@ the window."
   :ensure nil
   :no-require t
   :preface
-  (defun my/make-surviving-frame-key (frame)
+  (defun patch/make-surviving-frame-key (frame)
     "Make the frame that outlives FRAME the macOS key window."
     (when (and (eq system-type 'darwin) (eq frame (selected-frame)))
       (when-let* ((survivor (get-mru-frame 'visible nil frame)))
         (x-focus-frame survivor))))
-  :init (add-hook 'delete-frame-functions #'my/make-surviving-frame-key))
+  :init (add-hook 'delete-frame-functions #'patch/make-surviving-frame-key))
 
 (use-package tab-bar
   :ensure nil
@@ -568,7 +561,7 @@ the window."
   (tab-bar-mode 1)
   (add-hook 'desktop-after-read-hook #'tab-bar-mode))
 
-(use-package my-tab-bar-fill
+(use-package patch-tab-bar-fill
   :ensure nil
   :load-path "site-lisp/"
   :hook after-init)
@@ -711,7 +704,7 @@ the window."
 (use-package evil
   :demand t
   :preface
-  (defun my/evil-ex-setup-completion ()
+  (defun patch/evil-ex-setup-completion ()
     "Complete Ex syntax only, and only on demand.
 `evil-ex-setup' adds its own Capf buffer-locally, which leaves the `t'
 standing for the global ones behind it: `cape-file' then reads a
@@ -721,7 +714,7 @@ candidate instead of running the command."
     (setq-local completion-at-point-functions
                 (remq t completion-at-point-functions)
                 corfu-auto nil))
-  (defun my/evil-select-quote-on-line (orig-fun &rest args)
+  (defun patch/evil-select-quote-on-line (orig-fun &rest args)
     "Call ORIG-FUN with ARGS, pairing quotes on the current line as Vim does."
     (let ((select-on-line
            (lambda ()
@@ -744,8 +737,8 @@ candidate instead of running the command."
         evil-undo-system 'undo-redo
         evil-mode-line-format nil)
   :config
-  (advice-add 'evil-select-quote :around #'my/evil-select-quote-on-line)
-  (advice-add 'evil-ex-setup :after #'my/evil-ex-setup-completion)
+  (advice-add 'evil-select-quote :around #'patch/evil-select-quote-on-line)
+  (advice-add 'evil-ex-setup :after #'patch/evil-ex-setup-completion)
   (evil-mode 1)
   (global-set-key [remap kill-ring-save] #'evil-yank)
   (global-set-key [remap my/quit-dwim] #'evil-quit)
@@ -837,7 +830,7 @@ STATE defaults to `normal'.")
              (eq (current-local-map) (bound-and-true-p read-passwd-map)))))
   (defun my/customize-corfu-annotations ()
     (set-face-attribute 'corfu-annotations nil :slant 'normal))
-  (defun my/corfu-widen-popup (formatted)
+  (defun patch/corfu-widen-popup (formatted)
     (pcase-let ((`(,prefix-width ,width ,lines) formatted))
       (list prefix-width (+ width 1) lines)))
   :custom
@@ -851,7 +844,7 @@ STATE defaults to `normal'.")
   :config
   (my/customize-corfu-annotations)  ; set the face now, not only on theme reload
   (add-hook 'after-load-theme-hook #'my/customize-corfu-annotations)
-  (advice-add 'corfu--format-candidates :filter-return #'my/corfu-widen-popup)
+  (advice-add 'corfu--format-candidates :filter-return #'patch/corfu-widen-popup)
   (global-corfu-mode)
   (corfu-popupinfo-mode)
   (corfu-history-mode))
@@ -937,12 +930,12 @@ Idempotent, since the hooks below can fire repeatedly in one buffer."
   :bind
   (nil
    :map vertico-mouse-map
-   ("<wheel-up>" . my/vertico-mouse-wheel)
-   ("<wheel-down>" . my/vertico-mouse-wheel))
+   ("<wheel-up>" . patch/vertico-mouse-wheel)
+   ("<wheel-down>" . patch/vertico-mouse-wheel))
   :preface
-  (defvar my/vertico-wheel-pixels 0
+  (defvar patch/vertico-wheel-pixels 0
     "Wheel travel in pixels not yet turned into a candidate step.")
-  (defun my/vertico-mouse-wheel (event)
+  (defun patch/vertico-mouse-wheel (event)
     "Step the Vertico selection one candidate per line of EVENT's travel.
 Replaces the buffer-local `mwheel-coalesce-scroll-events' that
 `vertico-mouse-mode' sets for the same purpose: the NS port reads it
@@ -952,17 +945,17 @@ the pixel scrolling of any other window under the mouse."
     (let* ((line-height (default-line-height))
            (pixels (abs (or (cdr (nth 4 event)) line-height)))
            (travel (if (eq (event-basic-type event) 'wheel-up) (- pixels) pixels)))
-      (when (< (* travel my/vertico-wheel-pixels) 0)
-        (setq my/vertico-wheel-pixels 0))
-      (cl-incf my/vertico-wheel-pixels travel)
-      (let ((candidates (truncate my/vertico-wheel-pixels line-height)))
-        (cl-decf my/vertico-wheel-pixels (* candidates line-height))
+      (when (< (* travel patch/vertico-wheel-pixels) 0)
+        (setq patch/vertico-wheel-pixels 0))
+      (cl-incf patch/vertico-wheel-pixels travel)
+      (let ((candidates (truncate patch/vertico-wheel-pixels line-height)))
+        (cl-decf patch/vertico-wheel-pixels (* candidates line-height))
         (unless (zerop candidates)
           (vertico-next candidates)))))
-  (defun my/vertico-mouse-uncoalesce (&rest _)
+  (defun patch/vertico-mouse-uncoalesce (&rest _)
     "Undo the coalescing that `vertico-mouse-mode' sets in the minibuffer."
     (kill-local-variable 'mwheel-coalesce-scroll-events))
-  :config (advice-add 'vertico--setup :after #'my/vertico-mouse-uncoalesce))
+  :config (advice-add 'vertico--setup :after #'patch/vertico-mouse-uncoalesce))
 
 (use-package vertico-directory
   :after vertico
@@ -1122,14 +1115,14 @@ the pixel scrolling of any other window under the mouse."
   :hook (prog-mode . eldoc-box-hover-at-point-mode)
   :defines pgtk-wait-for-event-timeout
   :preface
-  (defun my/eldoc-box-recreate-hidden-frame (get-frame &rest args)
+  (defun patch/eldoc-box-recreate-hidden-frame (get-frame &rest args)
     (when (and (frame-live-p eldoc-box--frame)
                (not (frame-visible-p eldoc-box--frame)))
       (let ((delete-frame-functions nil))
         (delete-frame eldoc-box--frame)))
     (let ((pgtk-wait-for-event-timeout nil))
       (apply get-frame args)))
-  :config (advice-add 'eldoc-box--get-frame :around #'my/eldoc-box-recreate-hidden-frame))
+  :config (advice-add 'eldoc-box--get-frame :around #'patch/eldoc-box-recreate-hidden-frame))
 
 (use-package diff-hl
   :custom
@@ -1164,7 +1157,7 @@ Remote files are skipped (`diff-hl-flydiff-update' already ignores them)."
   ;; TODO: Report upstream (https://github.com/dgutov/diff-hl/issues) that
   ;; `diff-hl-make-temp-file-name' should use `sha1' instead of `t', then
   ;; drop this override once fixed.
-  (defun my/diff-hl-make-temp-file-name (file rev &optional manual)
+  (defun patch/diff-hl-make-temp-file-name (file rev &optional manual)
     "Like `diff-hl-make-temp-file-name', but name the file by a hash of FILE.
 The upstream path-based name exceeds NAME_MAX for deeply nested files."
     (let ((auto-save-file-name-transforms
@@ -1175,7 +1168,7 @@ The upstream path-based name exceeds NAME_MAX for deeply nested files."
               (unless manual ".") "~")))
   :config
   (advice-add 'diff-hl-make-temp-file-name :override
-              #'my/diff-hl-make-temp-file-name)
+              #'patch/diff-hl-make-temp-file-name)
   (my/diff-hl-faces)
   (add-hook 'after-load-theme-hook #'my/diff-hl-faces)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
@@ -1342,7 +1335,6 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (my/maybe-toggle-pdf-midnight-view)
     (add-hook 'after-load-theme-hook #'my/maybe-toggle-pdf-midnight-view nil t))
   (add-hook 'pdf-view-mode-hook #'my/pdf-view-mode-hook)
-  (advice-add 'pdf-util-tooltip-arrow :override #'ignore)
   :config
   (pdf-loader-install)
   (add-to-list 'revert-without-query ".pdf"))
@@ -1400,7 +1392,7 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   :hook (markdown-ts-mode . markdown-ts-appear-mode)
   :defines markdown-ts-hide-markup
   :preface
-  (defun my/markdown-ts-math-show-delimiters (fontify node &rest arguments)
+  (defun patch/markdown-ts-math-show-delimiters (fontify node &rest arguments)
     "Keep NODE's math delimiters visible so its preview can cover them.
 An `invisible' run that starts in hidden markup ahead of the fragment and
 reaches into the preview's `display' property elides the whole preview."
@@ -1410,7 +1402,7 @@ reaches into the preview's `display' property elides the whole preview."
       (apply fontify node arguments)))
   ;; NOTE: `markdown-ts--fontify-latex-block' is private; revisit on updates.
   :config (advice-add 'markdown-ts--fontify-latex-block :around
-                      #'my/markdown-ts-math-show-delimiters))
+                      #'patch/markdown-ts-math-show-delimiters))
 
 (use-package mathjax)
 
@@ -1453,7 +1445,7 @@ reaches into the preview's `display' property elides the whole preview."
   :no-require t
   :custom (outline-blank-line t)
   :preface
-  (defun my/outline-toggle-children-advice (_orig-fun &rest _args)
+  (defun patch/outline-toggle-children-advice (_orig-fun &rest _args)
     "Fix `outline-toggle-children` for multi-line headings."
     (save-excursion
       (outline-back-to-heading)
@@ -1462,7 +1454,7 @@ reaches into the preview's `display' property elides the whole preview."
             (outline-hide-subtree)
           (outline-show-children)
           (outline-show-entry)))))
-  (advice-add 'outline-toggle-children :around #'my/outline-toggle-children-advice))
+  (advice-add 'outline-toggle-children :around #'patch/outline-toggle-children-advice))
 
 (use-package outline-indent
   :hook ((conf-mode yaml-ts-mode nxml-mode python-base-mode sh-base-mode
@@ -1686,7 +1678,7 @@ kill Aspell first so that it cannot save the word back."
                    (integer-or-marker-p (car res))
                    (<= (point) (car res)))
         res)))
-  (defun my/eglot-tolerate-watch-limit (fn &rest args)
+  (defun patch/eglot-tolerate-watch-limit (fn &rest args)
     "Degrade to fewer file watches instead of failing the server's request."
     (condition-case err (apply fn args)
       (jsonrpc-error (eglot--warn "Capability registration degraded: %S" err))))
@@ -1713,7 +1705,7 @@ kill Aspell first so that it cannot save the word back."
   (setq-default eglot-workspace-configuration #'my/eglot-workspace-configuration)
   (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
   (advice-add 'eglot-completion-at-point :around #'my/eglot-require-completion-prefix)
-  (advice-add 'eglot-register-capability :around #'my/eglot-tolerate-watch-limit)
+  (advice-add 'eglot-register-capability :around #'patch/eglot-tolerate-watch-limit)
   :config
   (evil-define-key 'normal eglot-mode-map
     "er" #'eglot-rename
@@ -2015,7 +2007,7 @@ the workspace, where no source folder shadows an installed package."
     (setq-local eglot-code-action-indications nil)
     (setq-local nxml-attribute-indent nxml-child-indent)
     (my/set-local-indent-width nxml-child-indent))
-  (defun my/nxml-close-tag-indent (orig pos)
+  (defun patch/nxml-close-tag-indent (orig pos)
     "Indent a lone tag-closer (`>' or `/>') to the start-tag's column.
 ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
     (if (save-excursion (goto-char pos) (looking-at-p "/?>[ \t]*$"))
@@ -2023,7 +2015,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
       (funcall orig pos)))
   :config
   (add-hook 'nxml-mode-hook #'my/nxml-mode-hook)
-  (advice-add 'nxml-compute-indent-in-start-tag :around #'my/nxml-close-tag-indent))
+  (advice-add 'nxml-compute-indent-in-start-tag :around #'patch/nxml-close-tag-indent))
 
 
 ;; ROS
