@@ -129,7 +129,7 @@ With a prefix ARG, open the most recent journal file dated before today."
 ;; entity, keyword, drawer and property handlers still slice the stub:
 ;; https://list.orgmode.org/DB9PR06MB7753E0E548B2FB6614285847C61B9@DB9PR06MB7753.eurprd06.prod.outlook.com
 ;;;###autoload
-(defun my/org-parse-arguments-to-point (fn)
+(defun patch/org-parse-arguments-to-point (fn)
   "Call FN with the buffer narrowed to the text before point.
 The function `org-parse-arguments' splits the whole line, so the variable
 `pcomplete-stub' ends up holding its last token instead of the one being
@@ -173,7 +173,7 @@ completed."
 
 (advice-add 'org-archive-subtree :before #'my/org-create-archive-dir)
 (advice-add 'org-fill-paragraph :around #'my/unlimited-fill-column-advice)
-(advice-add 'org-parse-arguments :around #'my/org-parse-arguments-to-point)
+(advice-add 'org-parse-arguments :around #'patch/org-parse-arguments-to-point)
 
 (my/customize-org-faces)
 (add-hook 'after-load-theme-hook #'my/customize-org-faces)
