@@ -1335,7 +1335,20 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (my/maybe-toggle-pdf-midnight-view)
     (add-hook 'after-load-theme-hook #'my/maybe-toggle-pdf-midnight-view nil t))
   (add-hook 'pdf-view-mode-hook #'my/pdf-view-mode-hook)
+  ;; TODO: Drop once https://github.com/vedang/pdf-tools/pull/338 (fixing
+  ;; https://github.com/vedang/pdf-tools/issues/340) is released.
+  (defun patch/pdf-view-new-window-in-its-window (new-window-function winprops)
+    "Call NEW-WINDOW-FUNCTION on WINPROPS with their window selected.
+It stores the overlay it makes for that window into the selected
+window's WINPROPS instead, so after `split-window-right' each of the
+two windows draws the pages the other one scrolls to."
+    (if (window-live-p (car winprops))
+        (with-selected-window (car winprops)
+          (funcall new-window-function winprops))
+      (funcall new-window-function winprops)))
   :config
+  (advice-add 'pdf-view-new-window-function :around
+              #'patch/pdf-view-new-window-in-its-window)
   (pdf-loader-install)
   (add-to-list 'revert-without-query ".pdf"))
 

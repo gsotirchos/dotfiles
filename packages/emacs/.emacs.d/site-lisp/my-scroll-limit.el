@@ -68,6 +68,12 @@ Return nil when the end of the buffer is off screen."
   (let ((below-window (nth 3 (pos-visible-in-window-p (point) window t))))
     (and below-window (> below-window 0))))
 
+(defun my/scroll-limit-cursor-line-fits-p (window)
+  "Return non-nil when the cursor's line is no taller than WINDOW's body.
+A taller line, such as a PDF page displayed as a single image, is paged
+through by vscroll, which bringing its bottom into view would undo."
+  (<= (line-pixel-height) (window-body-height window t)))
+
 (defun my/scroll-limit-update (&rest _)
   "Keep the end of every window's buffer at the bottom of the window."
   ;; Redisplay waits for pending input to be consumed, so this can too:
@@ -96,7 +102,8 @@ Return nil when the end of the buffer is off screen."
               ;; scrolls back on the next command: a jitter per keypress.
               ((and empty-space
                     (< empty-space 0)
-                    (my/scroll-limit-cursor-cut-off-p window))
+                    (my/scroll-limit-cursor-cut-off-p window)
+                    (my/scroll-limit-cursor-line-fits-p window))
                (my/scroll-limit-scroll-forward window (- empty-space))))))))
      nil 'visible)))
 
