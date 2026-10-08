@@ -357,25 +357,6 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :no-require t
   :custom (xref-search-program 'ripgrep))
 
-(use-package isearch
-  :ensure nil
-  :no-require t
-  :preface
-  (defun my/isearch-filter-opened-overlays (&rest _)
-    "Remove deleted overlays from `isearch-opened-overlays'."
-    (setq isearch-opened-overlays
-          (seq-filter #'overlay-buffer isearch-opened-overlays)))
-  (defun my/isearch-open-necessary-overlays-advice (orig-fun ov &rest args)
-    "Only call ORIG-FUN if OV is a valid, live overlay."
-    (when (overlay-buffer ov)
-      (apply orig-fun ov args)))
-  :config
-  ;; Prevent query-replace and isearch clean-up errors when overlays
-  ;; are deleted or buffer is killed.
-  (advice-add 'isearch-clean-overlays :before #'my/isearch-filter-opened-overlays)
-  (advice-add 'isearch-close-unnecessary-overlays :before #'my/isearch-filter-opened-overlays)
-  (advice-add 'isearch-open-necessary-overlays :around #'my/isearch-open-necessary-overlays-advice))
-
 (use-package uniquify
   :ensure nil
   :no-require t
@@ -1308,16 +1289,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
   (add-to-list 'project-switch-commands '(ghostel-project-list-buffers "Ghostel buffers") t)
   (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
 
-;; Vendored from https://github.com/dakra/ghostel (GPL-3.0-or-later):
-;; extensions/consult-ghostel/consult-ghostel.el at commit 2bea18f, the same
-;; commit the installed MELPA `ghostel' is built from on 2026-09-06.
-;; TODO: drop the vendored copy once consult-ghostel ships in an archive;
-;; as of 2026-09-06 only ghostel and evil-ghostel have MELPA recipes.
+;; Not the README's `:after (ghostel consult)': that also defers `:bind', so
+;; the first `ghostel' call would bypass the remap below.
 (use-package consult-ghostel
-  :ensure nil
-  :load-path "site-lisp/"
-  ;; :after (ghostel consult)
-  ;; :demand t
+  :hook (ghostel-mode . consult-ghostel-mode)
   :bind
   (([remap ghostel] . consult-ghostel)
    :map project-prefix-map
@@ -2022,10 +1997,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
 
 ;; ROS
 
-(use-package my-ros-msg-mode
-  :ensure nil
-  :load-path "site-lisp/"
-  :mode ("\\.\\(?:msg\\|srv\\)\\'" . my-ros-msg-mode))
+(use-package ros-face)
 
 
 ;; LaTeX

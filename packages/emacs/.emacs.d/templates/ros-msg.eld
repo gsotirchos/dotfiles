@@ -1,4 +1,4 @@
-my-ros-msg-mode
+ros-face-msg-mode
 
 (header "std_msgs/Header header" q)
 (constant (p "int32" type) " " (p "CONSTANT_NAME") "=" (p "0") q)
