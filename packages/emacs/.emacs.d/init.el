@@ -1466,20 +1466,7 @@ the line following an item onto it."
   :vc (markdown-ts-appear
        :url "https://github.com/Thysrael/markdown-ts-appear"
        :rev :newest)
-  :hook (markdown-ts-mode . markdown-ts-appear-mode)
-  :defines markdown-ts-hide-markup
-  :preface
-  (defun patch/markdown-ts-math-show-delimiters (fontify node &rest arguments)
-    "Keep NODE's math delimiters visible so its preview can cover them.
-An `invisible' run that starts in hidden markup ahead of the fragment and
-reaches into the preview's `display' property elides the whole preview."
-    (let ((markdown-ts-hide-markup
-           (and markdown-ts-hide-markup
-                (not (markdown-ts-appear--math-active-p)))))
-      (apply fontify node arguments)))
-  ;; NOTE: `markdown-ts--fontify-latex-block' is private; revisit on updates.
-  :config (advice-add 'markdown-ts--fontify-latex-block :around
-                      #'patch/markdown-ts-math-show-delimiters))
+  :hook (markdown-ts-mode . markdown-ts-appear-mode))
 
 (use-package mathjax)
 
