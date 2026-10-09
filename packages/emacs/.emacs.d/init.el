@@ -1387,6 +1387,7 @@ two windows draws the pages the other one scrolls to."
   (defvar my/markdown-list-indent-width 2)
   (defun my/markdown-ts-mode-hook ()
     (my/set-local-indent-width my/markdown-list-indent-width)
+    (setq-local fill-column 72)
     ;; Drop `#' and `*': `visual-wrap-prefix-mode' reserves a `min-width' for
     ;; whatever matches here, padding markup `markdown-ts-hide-markup' hid.
     (setq-local adaptive-fill-regexp "[-–!|%;>·•‣⁃◦ \t]*")
@@ -1396,7 +1397,70 @@ two windows draws the pages the other one scrolls to."
                 paragraph-separate (concat paragraph-separate "\\|[ \t]*#+ ")))
   (add-hook 'markdown-ts-mode-hook #'my/markdown-ts-mode-hook)
   (add-hook 'markdown-ts-view-mode-hook #'my/markdown-ts-mode-hook)
-  :config (face-spec-set 'markdown-ts-latex '((t (:foreground unspecified))) 'face-override-spec))
+  (defun patch/markdown-ts--list-item-paragraph (pos)
+    "Return the paragraph node of a list item containing POS, or nil.
+Items inside block quotes are left to `markdown-ts-mode'."
+    (and-let* ((item (treesit-parent-until (treesit-node-at pos 'markdown)
+                                           "\\`list_item\\'"))
+               ;; `treesit-node-at' may return a node merely ending at POS.
+               ((< pos (treesit-node-end item)))
+               ;; Filling there needs the `> ' prefixes of the quote.
+               ((not (treesit-parent-until item "\\`block_quote\\'")))
+               (block (seq-find
+                       (lambda (child)
+                         (and (> (treesit-node-end child) pos)
+                              (not (string-match-p
+                                    "marker\\|block_continuation"
+                                    (treesit-node-type child)))))
+                       (treesit-node-children item t)))
+               ((equal (treesit-node-type block) "paragraph")))
+      block))
+  (defun patch/markdown-ts--list-item-paragraph-boundary (direction)
+    "Return the list item paragraph boundary in DIRECTION from point, or nil.
+That is the line after the paragraph if DIRECTION is positive, else the
+paragraph's first line.  Blank space in DIRECTION is skipped to reach the
+paragraph, whose node also spans the indentation or blank lines before
+whatever follows it."
+    (let ((forward (> direction 0)))
+      (and-let* ((origin (point))
+                 (pos (save-excursion
+                        (if forward
+                            (progn (skip-chars-forward " \t\n") (point))
+                          (skip-chars-backward " \t\n")
+                          (max (point-min) (1- (point))))))
+                 (paragraph (patch/markdown-ts--list-item-paragraph pos))
+                 (boundary (save-excursion
+                             (if forward
+                                 (progn (goto-char (treesit-node-end paragraph))
+                                        (skip-chars-backward " \t\n" origin)
+                                        (line-beginning-position 2))
+                               (goto-char (treesit-node-start paragraph))
+                               (line-beginning-position))))
+                 ((if forward (> boundary origin) (< boundary origin))))
+        boundary)))
+  (defun patch/markdown-ts-fill-forward-by-item-paragraph (forward-paragraph arg)
+    "Call FORWARD-PARAGRAPH with ARG, moving by paragraph within list items.
+Moving over whole list item nodes skipped nested items and paragraphs
+after an item's first, so `fill-region' left those unfilled, and joined
+the line following an item onto it."
+    (let ((direction (if (< arg 0) -1 1)))
+      (cl-loop repeat (abs arg)
+               for origin = (point)
+               for boundary = (patch/markdown-ts--list-item-paragraph-boundary
+                               direction)
+               sum (if boundary
+                       (progn (goto-char boundary) 0)
+                     (let ((remaining (funcall forward-paragraph direction)))
+                       ;; It may claim a move it did not make (bug#81712).
+                       (if (or (< direction 0) (> (point) origin))
+                           remaining
+                         (forward-paragraph direction)))))))
+  :config
+  (face-spec-set 'markdown-ts-latex '((t (:foreground unspecified))) 'face-override-spec)
+  ;; TODO(2026-10-09): log this patch
+  ;; TODO: Report upstream; `markdown-ts--fill-forward-paragraph' is private.
+  (advice-add 'markdown-ts--fill-forward-paragraph :around
+              #'patch/markdown-ts-fill-forward-by-item-paragraph))
 
 (use-package markdown-ts-appear
   :vc (markdown-ts-appear
