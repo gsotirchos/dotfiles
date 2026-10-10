@@ -1373,16 +1373,8 @@ two windows draws the pages the other one scrolls to."
   :mode ("\\.md\\'" "\\.markdown\\'")
   :init (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
   :custom
-  ;; (markdown-ts-appear-trigger 'evil-insert)
   (markdown-ts-inline-images t)
   (markdown-ts-image-max-width (round (* my/scale-factor 250)))
-  (markdown-ts-appear-enable-math-preview (and (executable-find "node") t))
-  (markdown-ts-appear-image-icon "▧")
-  (markdown-ts-appear-link-icon "↗")
-  ;; (markdown-ts-appear-label-caps '("<" . ">"))
-  (markdown-ts-appear-code-fence-style 'raw)
-  (markdown-ts-appear-render-callouts t)
-  (markdown-ts-appear-block-quote-marker "┃")
   (markdown-ts-unordered-list-marker '(("• " . "- ") ("⚬ " . "- ") ("∙ " . "- ")))
   :preface
   (defvar my/markdown-list-indent-width 2)
@@ -1458,7 +1450,6 @@ the line following an item onto it."
                          (forward-paragraph direction)))))))
   :config
   (face-spec-set 'markdown-ts-latex '((t (:foreground unspecified))) 'face-override-spec)
-  ;; TODO(2026-10-09): log this patch
   ;; TODO: Report upstream; `markdown-ts--fill-forward-paragraph' is private.
   (advice-add 'markdown-ts--fill-forward-paragraph :around
               #'patch/markdown-ts-fill-forward-by-item-paragraph))
@@ -1467,7 +1458,13 @@ the line following an item onto it."
   :vc (markdown-ts-appear
        :url "https://github.com/Thysrael/markdown-ts-appear"
        :rev :newest)
-  :hook (markdown-ts-mode . markdown-ts-appear-mode))
+  :hook (markdown-ts-mode . markdown-ts-appear-mode)
+  :custom
+  (markdown-ts-appear-enable-math-preview (and (executable-find "node") t))
+  (markdown-ts-appear-image-icon "▧")
+  (markdown-ts-appear-link-icon "↗")
+  (markdown-ts-appear-code-fence-style 'raw)
+  (markdown-ts-appear-block-quote-marker "┃"))
 
 (use-package mathjax)
 
