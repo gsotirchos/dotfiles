@@ -426,6 +426,18 @@ the window."
   (mode-line-modes-delimiters nil)
   (mode-line-collapse-minor-modes '(not flymake-mode view-mode)))
 
+(use-package time
+  :ensure nil
+  :hook (after-init . display-time-mode)
+  :custom
+  (display-time-24hr-format t)
+  (display-time-default-load-average nil)
+  :preface
+  ;; Shown only in fullscreen frames, by `my/mode-line-fullscreen-time'
+  (defun my/display-time-mode-hook ()
+    (setq global-mode-string (delq 'display-time-string global-mode-string)))
+  (add-hook 'display-time-mode-hook #'my/display-time-mode-hook))
+
 (use-package my-theme-switcher
   :ensure nil
   :load-path "site-lisp/"
