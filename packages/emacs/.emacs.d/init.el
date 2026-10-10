@@ -8,6 +8,7 @@
   (defconst fixed-pitch-line-spacing 4)
   (defconst variable-pitch-line-spacing 4)
   (defconst dotfiles-dir (or (getenv "MACOS_DOTFILES") "~/.dotfiles"))
+  (defconst math-commands-file (expand-file-name "etc/math_commands.tex" dotfiles-dir))
 
   (defvar my/scale-factor 1.75
     "Global scale factor for images and LaTeX overlays.")
@@ -1466,7 +1467,44 @@ the line following an item onto it."
   (markdown-ts-appear-code-fence-style 'raw)
   (markdown-ts-appear-block-quote-marker "┃"))
 
-(use-package mathjax)
+(use-package mathjax
+  :config
+  (defun my/tex-definitions (file)
+    "Return the top-level macro definitions in TeX FILE."
+    (let ((case-fold-search nil)
+          (depth 0)
+          definition-lines
+          definitions)
+      (dolist (line (with-temp-buffer
+                      (insert-file-contents file)
+                      (split-string (buffer-string) "\n")))
+        (when (or definition-lines
+                  (and (zerop depth)
+                       (string-match-p
+                        "\\`\\\\\\(?:def\\|let\\|\\(?:re\\)?newcommand\\|providecommand\\|DeclareMathOperator\\)\\b"
+                        line)))
+          (push line definition-lines))
+        (let ((braces (replace-regexp-in-string "\\\\[{}%]\\|%.*\\|[^{}]" "" line)))
+          (cl-incf depth (- (cl-count ?{ braces) (cl-count ?} braces))))
+        (when (and definition-lines (zerop depth))
+          (push (string-join (nreverse definition-lines) "\n") definitions)
+          (setq definition-lines nil)))
+      (string-join (nreverse definitions) "\n")))
+  (defconst my/mathjax-preamble
+    (concat
+     ;; Of the \usepackage line, MathJax autoloads all but mathtools and lacks
+     ;; bm, bbm and mleftright.  Its \newcommand redefines silently, so it
+     ;; differs from \providecommand only for macros MathJax already has.
+     "\\require{mathtools}\\let\\providecommand\\newcommand\n"
+     (my/tex-definitions math-commands-file))
+    "The macro definitions of `math-commands-file', for MathJax.")
+  (defun my/mathjax-prepend-preamble (args)
+    "Prepend `my/mathjax-preamble' to the TeX math in `mathjax-render' ARGS."
+    (pcase-let ((`(,callback ,math . ,keys) args))
+      (if (and (stringp math) (memq (plist-get keys :format) '(nil tex)))
+          `(,callback ,(concat my/mathjax-preamble math) ,@keys)
+        args)))
+  (advice-add 'mathjax-render :filter-args #'my/mathjax-prepend-preamble))
 
 ;; Programming
 
@@ -2194,7 +2232,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-confirm-babel-evaluate nil)
   (org-latex-packages-alist
    (list (with-temp-buffer
-           (insert-file-contents (expand-file-name "etc/math_commands.tex" dotfiles-dir))
+           (insert-file-contents math-commands-file)
            (buffer-string))
          '("" "tikz" t)  ; The trailing t also loads TikZ for fragment previews, not just export.
          "\\usetikzlibrary{calc}"))

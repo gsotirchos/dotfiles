@@ -3,36 +3,43 @@
 % substack with alignment
 \makeatletter
 \newcommand{\subalign}[1]{%
-  \vcenter{%
-    \Let@ \restore@math@cr \default@tag
-    \baselineskip\fontdimen10 \scriptfont\tw@
-    \advance\baselineskip\fontdimen12 \scriptfont\tw@
-    \lineskip\thr@@\fontdimen8 \scriptfont\thr@@
-    \lineskiplimit\lineskip
-    \ialign{\hfil$\m@th\scriptstyle##$&$\m@th\scriptstyle{}##$\hfil\crcr
-      #1\crcr
-    }%
-  }%
+\vcenter{%
+\Let@ \restore@math@cr \default@tag
+\baselineskip\fontdimen10 \scriptfont\tw@
+\advance\baselineskip\fontdimen12 \scriptfont\tw@
+\lineskip\thr@@\fontdimen8 \scriptfont\thr@@
+\lineskiplimit\lineskip
+\ialign{\hfil$\m@th\scriptstyle##$&$\m@th\scriptstyle{}##$\hfil\crcr
+#1\crcr
+}%
+}%
 }
 \makeatother
 
 % for highlighting math
 \newcommand{\mathhl}[2][yellow!35]{\mathpalette{\highlightwithstyle[#1]}{#2}}
 \newcommand{\highlightwithstyle}[3][red!50]{
-  \begingroup                         %% <- limit scope of \box0 and \fboxsep assignment
-    \sbox0{$\mathsurround 0pt #2#3$}% %% <- typeset content in box 0
-    \setlength{\fboxsep}{.5pt}        %% <- set (smaller) framebox margins
-    \sbox2{\hspace{-.5pt}%            %% <- create box 2, undo margin
-      \colorbox{#1}{\usebox0}%        %% <- print the contents of box 0 in a \colorbox
-    }%
-    \dp2=\dp0 \ht2=\ht0 \wd2=\wd0     %% <- set dimensions of box 2 to match box 0
-    \box2                             %% <- print box 2
-  \endgroup                           %% <- revert old definitions of the boxes and \fboxsep
+\begingroup                         %% <- limit scope of \box0 and \fboxsep assignment
+\sbox0{$\mathsurround 0pt #2#3$}% %% <- typeset content in box 0
+\setlength{\fboxsep}{.5pt}        %% <- set (smaller) framebox margins
+\sbox2{\hspace{-.5pt}%            %% <- create box 2, undo margin
+\colorbox{#1}{\usebox0}%        %% <- print the contents of box 0 in a \colorbox
+}%
+\dp2=\dp0 \ht2=\ht0 \wd2=\wd0     %% <- set dimensions of box 2 to match box 0
+\box2                             %% <- print box 2
+\endgroup                           %% <- revert old definitions of the boxes and \fboxsep
 }
 
 % MathJax and KaTeX define these, LaTeX does not
 \providecommand{\gt}{>}
 \providecommand{\lt}{<}
+
+% Weaker fall-backs for  MathJax
+\providecommand{\bm}{\boldsymbol}
+% https://ctan.org/pkg/mleftright spacing
+% lacking \bgroup, MathJax sets superscripts after \mright lower
+\providecommand{\mleft}{\mathopen{}\left}
+\providecommand{\mright}[1]{\right#1\mathclose{}}
 
 \def\ceil#1{\lceil #1 \rceil}
 \def\floor#1{\lfloor #1 \rfloor}
