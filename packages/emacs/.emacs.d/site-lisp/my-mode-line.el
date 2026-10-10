@@ -10,8 +10,15 @@
 
 
 (defvar my/mode-line-spacer
-  '(:propertize (" ") display (min-width (1.0))))
+  '(:propertize ("  ") display (min-width (1.0))))
 (put 'my/mode-line-spacer 'risky-local-variable t)
+
+(defvar display-time-string)
+
+(defvar my/mode-line-fullscreen-time
+  '(:eval (when (memq (frame-parameter nil 'fullscreen) '(fullboth fullscreen))
+            '("" my/mode-line-spacer display-time-string))))
+(put 'my/mode-line-fullscreen-time 'risky-local-variable t)
 
 (defvar my/mode-line-format
   '("%e"
@@ -32,8 +39,8 @@
     ;; condition of a nested (SYMBOL THEN) construct.
     (vc-mode ("" vc-mode my/mode-line-spacer))
     mode-line-modes
-    my/mode-line-spacer
     mode-line-misc-info
+    my/mode-line-fullscreen-time
     mode-line-end-spaces))
 
 ;;;###autoload
