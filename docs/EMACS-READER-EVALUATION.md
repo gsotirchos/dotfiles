@@ -78,7 +78,7 @@ Prerequisites (present on 2026-10-04): Homebrew `mupdf` ≥ 1.26, `gcc`,
    ```
 
    If it reaches MELPA/ELPA, drop `:vc` and follow the README instead.
-2. Add `reader` to `package-vc-allow-build-commands` (set in the `org` block).
+2. Set `package-vc-allow-build-commands` to `'(reader)` in the `emacs` block.
    Otherwise package-vc skips `:make "all"` and the module is never built.
 3. Replace `my/pdf-view-mode-hook` with `my/reader-mode-hook` in
    `consult-preview-allowed-hooks`.
