@@ -740,6 +740,14 @@ candidate instead of running the command."
         (condition-case nil
             (apply orig-fun args)
           (error (funcall select-on-line))))))
+  (defun patch/evil-line-expand-keep-vscroll (orig-fun &rest args)
+    "Call ORIG-FUN with ARGS, keeping the window's vscroll.
+It finds the line end with `line-move', which clears the vscroll, and
+Visual Line state expands its selection after every command: each pixel
+scroll was undone, so the window only moved when it crossed a line."
+    (let ((vscroll (window-vscroll nil t)))
+      (prog1 (apply orig-fun args)
+        (set-window-vscroll nil vscroll t t))))
   :init
   (setq evil-want-keybinding nil
         evil-disable-insert-state-bindings t
@@ -753,6 +761,11 @@ candidate instead of running the command."
   :config
   (advice-add 'evil-select-quote :around #'patch/evil-select-quote-on-line)
   (advice-add 'evil-ex-setup :after #'patch/evil-ex-setup-completion)
+  (advice-add 'evil-line-expand :around #'patch/evil-line-expand-keep-vscroll)
+  ;; Visual Line state otherwise restores point after each wheel scroll,
+  ;; which pins the window to it.
+  (dolist (command '(pixel-scroll-precision mwheel-scroll))
+    (evil-set-command-property command :keep-visual t))
   (evil-mode 1)
   (global-set-key [remap kill-ring-save] #'evil-yank)
   (global-set-key [remap my/quit-dwim] #'evil-quit)
