@@ -78,7 +78,8 @@ and START are its arguments."
       (goto-char (point-min))
       (while (re-search-forward dired-re-mark nil t)
         (when-let* ((beg (dired-move-to-filename)))
-          (remove-overlays beg (line-end-position) 'face 'stripes))))))
+          (remove-overlays beg (line-end-position) 'face 'stripes))
+        (forward-line 1)))))
 
 ;;;###autoload
 (with-eval-after-load 'stripes
