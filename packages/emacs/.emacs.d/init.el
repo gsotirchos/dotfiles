@@ -1641,7 +1641,18 @@ the line following an item onto it."
     (unless (or (derived-mode-p 'emacs-lisp-mode 'lisp-data-mode)
                 (string-prefix-p " " (buffer-name)))
       (indent-bars-mode 1)))
-  :hook ((prog-mode yaml-ts-mode) . my/indent-bars-maybe-enable)
+  (defun patch/indent-bars-fill-whitespace-prefix ()
+    "Let `adaptive-fill-first-line-regexp' also accept whitespace-only prefixes.
+Modes that replace it, such as those of cc-mode and c-ts-common, make
+`visual-wrap-prefix-mode' merge a `min-width' spec into the bars'
+display property, which `add-display-text-property' corrupts on
+refontification (see docs/INDENT-BARS-VISUAL-WRAP.md)."
+    (let ((regexp adaptive-fill-first-line-regexp))
+      (unless (and regexp (string-match-p regexp " "))
+        (setq-local adaptive-fill-first-line-regexp
+                    (concat "\\`[ \t]*\\'" (and regexp (concat "\\|" regexp)))))))
+  :hook (((prog-mode yaml-ts-mode) . my/indent-bars-maybe-enable)
+         (indent-bars-mode . patch/indent-bars-fill-whitespace-prefix))
   :custom
   (indent-bars-display-on-blank-lines nil)
   ;; (indent-bars-no-descend-lists t)  ; no extra bars in contd. func. args
