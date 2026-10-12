@@ -17,7 +17,7 @@
 
 (defvar my/mode-line-fullscreen-time
   '(:eval (when (memq (frame-parameter nil 'fullscreen) '(fullboth fullscreen))
-            '("" my/mode-line-spacer display-time-string))))
+            '("" display-time-string))))
 (put 'my/mode-line-fullscreen-time 'risky-local-variable t)
 
 (defvar my/mode-line-format
