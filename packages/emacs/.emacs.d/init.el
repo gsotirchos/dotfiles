@@ -1773,6 +1773,7 @@ kill Aspell first so that it cannot save the word back."
   :ensure nil
   :no-require t
   :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode nxml-mode) . my/eglot-ensure-file-buffer)
+  :bind (:map my/personal-map ("er" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
   ;; A header reached by `M-.' from a TU stays with that TU's server, rather
@@ -1833,7 +1834,6 @@ kill Aspell first so that it cannot save the word back."
   (advice-add 'eglot-register-capability :around #'patch/eglot-tolerate-watch-limit)
   :config
   (evil-define-key 'normal eglot-mode-map
-    "er" #'eglot-rename
     "gd" #'eglot-find-declaration
     "gD" #'eglot-find-typeDefinition
     "gi" #'eglot-find-implementation)
@@ -1930,7 +1930,7 @@ inside a comment."
   :after my-keybindings
   :ensure nil
   :no-require t
-  :bind (:map my/personal-map ("(" . 'check-parens))
+  :bind (:map my/personal-map ("(" . check-parens))
   :preface (add-hook 'emacs-lisp-mode-hook (lambda () (my/set-local-indent-width lisp-body-indent))))
 
 
