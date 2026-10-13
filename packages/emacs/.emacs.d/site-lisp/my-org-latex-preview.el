@@ -31,7 +31,7 @@
 (defvar org-latex-preview-preamble)
 
 (defconst my/org-latex-preview--preamble-marker
-  "% fragment rewriting: natural-width displays v3"
+  "% fragment rewriting: natural-width displays v4"
   "Preamble comment standing in for the fragment rewriting done here.
 `org-latex-preview--hash' covers the preamble and the raw fragment, so
 bumping the version is what expires previews cached before a change to
@@ -61,13 +61,16 @@ See `my/org-latex-preview-natural-width-environments'."
 
 (defun my/org-latex-preview-display-math-as-inline (string)
   "Return STRING's \\[...\\] or $$...$$ maths as inline display-style maths.
-Return nil when STRING is any other fragment."
+Return nil when STRING is any other fragment.  Line breaks after binary
+operators and relations are forbidden, as in display maths, so a formula
+wider than `:page-width' stays on one line."
   (when (string-match
          (concat "\\`[ \t\n]*\\(?:\\\\\\[\\|\\$\\$\\)"
                  "\\(\\(?:.\\|\n\\)*?\\)"
                  "\\(?:\\\\\\]\\|\\$\\$\\)[ \t\n]*\\'")
          string)
-    (format "$\\displaystyle %s$" (match-string 1 string))))
+    (format "$\\displaystyle\\binoppenalty=10000 \\relpenalty=10000 %s$"
+            (match-string 1 string))))
 
 (defun my/org-latex-preview-block-overlay-p (overlay)
   "Return non-nil when OVERLAY covers a display fragment."
