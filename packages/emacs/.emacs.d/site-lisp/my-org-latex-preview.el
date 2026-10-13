@@ -8,9 +8,10 @@
 ;; - A display fragment arrives padded out to `:page-width', because Org ends it
 ;;   with a blank line and because maths is centred on the line it occupies.  The
 ;;   fragment is rewritten to bring the box back to the ink, as described in
-;;   `my/org-latex-preview-natural-width-advice'.  Inline fragments keep the full
-;;   width, which is what stops them from wrapping mid-formula, so this cannot be
-;;   done from the preamble.
+;;   `my/org-latex-preview-natural-width-advice'.  Otherwise a narrow window
+;;   would clip the image's right side while showing its blank left padding.
+;;   Inline fragments keep the full width, which is what stops them from
+;;   wrapping mid-formula, so this cannot be done from the preamble.
 ;;
 ;; - That image is then placed at the left margin, where display maths belongs in
 ;;   the middle of the window.  A `line-prefix' aligns it to the window centre,
@@ -30,7 +31,7 @@
 (defvar org-latex-preview-preamble)
 
 (defconst my/org-latex-preview--preamble-marker
-  "% fragment rewriting: natural-width displays v2"
+  "% fragment rewriting: natural-width displays v3"
   "Preamble comment standing in for the fragment rewriting done here.
 `org-latex-preview--hash' covers the preamble and the raw fragment, so
 bumping the version is what expires previews cached before a change to
@@ -58,6 +59,16 @@ See `my/org-latex-preview-natural-width-environments'."
            "\\*?}")
    string))
 
+(defun my/org-latex-preview-display-math-as-inline (string)
+  "Return STRING's \\[...\\] or $$...$$ maths as inline display-style maths.
+Return nil when STRING is any other fragment."
+  (when (string-match
+         (concat "\\`[ \t\n]*\\(?:\\\\\\[\\|\\$\\$\\)"
+                 "\\(\\(?:.\\|\n\\)*?\\)"
+                 "\\(?:\\\\\\]\\|\\$\\$\\)[ \t\n]*\\'")
+         string)
+    (format "$\\displaystyle %s$" (match-string 1 string))))
+
 (defun my/org-latex-preview-block-overlay-p (overlay)
   "Return non-nil when OVERLAY covers a display fragment."
   (my/org-latex-preview-display-fragment-p
@@ -77,16 +88,19 @@ newlines ends the fragment in horizontal mode instead, where preview.sty
 repacks that line into a box holding just its contents.
 
 That is all a self-boxing fragment needs, a tikzpicture included, but not
-maths, which TeX centres in a box of width \\hsize.  Only the environments
-in `my/org-latex-preview-natural-width-environments' escape that box, and
-only with \\hsize zeroed; the rest keep the width they centre in."
+maths, which TeX centres in a box of width \\hsize.  \\[...\\] and $$...$$
+escape that box as inline \\displaystyle maths, which typesets the same.
+The environments in `my/org-latex-preview-natural-width-environments'
+escape it with \\hsize zeroed; the rest keep the width they centre in."
   (pcase-let ((`(,processing-type ,value ,appearance-options) args))
     (list processing-type
-          (if (my/org-latex-preview-display-fragment-p value)
-              (concat (and (my/org-latex-preview-natural-width-environment-p value)
-                           "\\setlength{\\hsize}{0pt}\\setlength{\\linewidth}{0pt}%\n")
-                      (string-trim-right value))
-            value)
+          (cond
+           ((my/org-latex-preview-display-math-as-inline value))
+           ((my/org-latex-preview-display-fragment-p value)
+            (concat (and (my/org-latex-preview-natural-width-environment-p value)
+                         "\\setlength{\\hsize}{0pt}\\setlength{\\linewidth}{0pt}%\n")
+                    (string-trim-right value)))
+           (t value))
           appearance-options)))
 
 (defun my/org-latex-preview-color-every-fragment-advice (args)
