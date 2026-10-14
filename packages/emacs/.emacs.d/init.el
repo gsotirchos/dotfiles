@@ -606,13 +606,13 @@ the window."
   :ensure nil
   :no-require t
   :preface
-  (advice-add 'save-buffer :around #'my/silence-advice)
   (defun my/revert-buffer-quick-preserve (&optional auto-save)
     "Like `revert-buffer-quick', but preserves modes (accepts AUTO-SAVE)."
     (interactive "P")
     (revert-buffer auto-save (not (buffer-modified-p)) t))
   :bind (([remap revert-buffer-quick] . #'my/revert-buffer-quick-preserve))
-  :custom (enable-remote-dir-locals t))
+  :custom (enable-remote-dir-locals t)
+  :init (advice-add 'save-buffer :around #'my/silence-advice))
 
 (use-package tramp
   :ensure nil
@@ -1061,14 +1061,13 @@ the pixel scrolling of any other window under the mouse."
    "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /\
    --smart-case --no-heading --with-filename --line-number --search-zip --hidden\
    --glob=!.git --glob=!.venv --glob=!.conda --glob=!.pixi --glob=!pack")
-  :preface
-  (advice-add 'consult-recent-file :before (lambda (&rest _) (recentf-mode 1)))
-  (advice-add 'register-preview :override #'consult-register-window)
   :init
+  (advice-add 'consult-recent-file :before (lambda (&rest _) (recentf-mode 1)))
   ;; Tweak the register preview for `consult-register-load',
   ;; `consult-register-store' and the built-in commands.  This improves the
   ;; register formatting, adds thin separator lines, register sorting and hides
   ;; the window mode line.
+  (advice-add 'register-preview :override #'consult-register-window)
   (setq register-preview-delay 0.5)
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
@@ -1579,6 +1578,7 @@ the line following an item onto it."
             (outline-hide-subtree)
           (outline-show-children)
           (outline-show-entry)))))
+  :config
   (advice-add 'outline-toggle-children :around #'patch/outline-toggle-children-advice))
 
 (use-package outline-indent
@@ -1853,10 +1853,10 @@ kill Aspell first so that it cannot save the word back."
   ;; `eglot-max-file-watches' shared by all of them.
   (setq eglot-watch-files-outside-project-root nil)
   (setq-default eglot-workspace-configuration #'my/eglot-workspace-configuration)
+  :config
   (advice-add 'eglot--connect :around #'my/prevent-in-home-dir-advice)
   (advice-add 'eglot-completion-at-point :around #'my/eglot-require-completion-prefix)
   (advice-add 'eglot-register-capability :around #'patch/eglot-tolerate-watch-limit)
-  :config
   (evil-define-key 'normal eglot-mode-map
     "gd" #'eglot-find-declaration
     "gD" #'eglot-find-typeDefinition
@@ -1880,7 +1880,6 @@ kill Aspell first so that it cannot save the word back."
   :preface
   (defun my/apheleia-format-after-save (&rest _)
     (apheleia-format-after-save))
-  (advice-add 'save-buffer :after #'my/apheleia-format-after-save)
   (defun my/apheleia-busy-p ()
     (process-live-p apheleia--current-process))
   (defun my/apheleia-format-or (fallback &rest args)
@@ -1909,6 +1908,7 @@ inside a comment."
   :bind (([remap fill-paragraph] . my/apheleia-format-or-fill-paragraph)
          ([remap prog-fill-reindent-defun] . my/apheleia-format-or-prog-fill))
   :custom (apheleia-skip-functions '(evil-insert-state-p my/apheleia-busy-p))
+  :init (advice-add 'save-buffer :after #'my/apheleia-format-after-save)
   :config
   (apheleia-global-mode 1)
   (setf (alist-get 'ruff apheleia-formatters)
@@ -2206,6 +2206,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (add-hook 'LaTeX-mode-hook #'my/LaTeX-mode-hook)
   (defun my/TeX-PDF-mode-off (&rest _) (TeX-PDF-mode -1))
   (defun my/TeX-PDF-mode-on (&rest _) (TeX-PDF-mode 1))
+  :init
   (advice-add 'preview-document :before #'my/TeX-PDF-mode-off)
   (advice-add 'preview-region :before #'my/TeX-PDF-mode-off)
   (advice-add 'TeX-command :before #'my/TeX-PDF-mode-on)
