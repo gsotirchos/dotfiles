@@ -903,6 +903,22 @@ STATE defaults to `normal'.")
     "Return the buffer's completion sources, without the Tempel ones."
     (seq-difference completion-at-point-functions
                     (list #'my/tempel-capf #'tempel-complete)))
+  (defun my/tempel-default-sort (capf)
+    "Call CAPF, sorting with `corfu-sort-function' if it sets no order.
+`cape-wrap-super' reads each source's order from its table metadata and keeps
+them unsorted otherwise, bypassing Corfu's length and history sorting."
+    (pcase (funcall capf)
+      (`(,beg ,end ,table . ,plist)
+       `( ,beg ,end
+          ,(lambda (str pred action)
+             (if (eq action 'metadata)
+                 (let ((metadata (cdr (completion-metadata str table pred))))
+                   `(metadata
+                     ,@(unless (alist-get 'display-sort-function metadata)
+                         `((display-sort-function . ,corfu-sort-function)))
+                     ,@metadata))
+               (complete-with-action action table str pred)))
+          ,@plist))))
   (defun my/tempel-capf ()
     "Complete template names alongside the buffer's other sources.
 Corfu only displays the candidates of the first Capf that matches, so
@@ -915,7 +931,10 @@ merely preceding them, which would hide them behind the templates."
                       (append (remq t capfs)
                               (default-value 'completion-at-point-functions))
                     capfs)))
-      (apply #'cape-wrap-super (append capfs '(:with tempel-complete)))))
+      (apply #'cape-wrap-super
+             (append (mapcar (lambda (capf) (lambda () (my/tempel-default-sort capf)))
+                             capfs)
+                     '(:with tempel-complete)))))
   (defun my/tempel-setup-capf ()
     "Surround the buffer's completion sources with the Tempel ones.
 `my/tempel-capf' merges the templates into the sources that match, while
