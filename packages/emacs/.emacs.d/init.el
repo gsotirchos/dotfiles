@@ -1808,6 +1808,13 @@ kill Aspell first so that it cannot save the word back."
     (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
     (when flymake-mode (flymake-start)))
   (add-hook 'eglot-managed-mode-hook #'my/eglot-mode-hook)
+  (defun my/eglot-keep-c-library-fontification ()
+    "Stop clangd's semantic tokens recolouring namespaces and/or library symbols."
+    (when (derived-mode-p 'c-ts-base-mode)
+      (setq-local
+       ;; eglot-semantic-token-types (remove "namespace" eglot-semantic-token-types)
+       eglot-semantic-token-modifiers (remove "defaultLibrary" eglot-semantic-token-modifiers))))
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-keep-c-library-fontification)
   (defun my/eglot-require-completion-prefix (fn &rest args)
     "Suppress the advised Capf's result when nothing precedes point."
     (let ((res (apply fn args)))
