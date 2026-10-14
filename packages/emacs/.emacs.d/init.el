@@ -1626,6 +1626,12 @@ the line following an item onto it."
     "Inhibit pairing CHAR directly before a word; else use the default."
     (or (eq (char-syntax (following-char)) ?w)
         (electric-pair-default-inhibit char)))
+  (defun my/electric-pair-skip-math-closer ()
+    "Turn \\(...\\)|\\) and \\[...\\]|\\] into \\(...\\)| and \\[...\\]|."
+    (when (and (memq last-command-event '(?\) ?\]))
+               (eq (char-before (1- (point))) ?\\)
+               (looking-at-p (regexp-quote (string ?\\ last-command-event))))
+      (delete-char 2)))
   :custom
   (electric-pair-skip-whitespace nil)
   (electric-pair-inhibit-predicate #'my/electric-pair-inhibit))
@@ -2195,7 +2201,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
     (LaTeX-math-mode 1)
     (turn-on-reftex)
     (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
-    (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t))
+    (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t)
+    (add-hook 'post-self-insert-hook #'my/electric-pair-skip-math-closer nil t))
   (add-hook 'LaTeX-mode-hook #'my/LaTeX-mode-hook)
   (defun my/TeX-PDF-mode-off (&rest _) (TeX-PDF-mode -1))
   (defun my/TeX-PDF-mode-on (&rest _) (TeX-PDF-mode 1))
@@ -2218,9 +2225,19 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
    :map cdlatex-mode-map
    ("`" . nil)
    ("C-`" . cdlatex-math-symbol))
+  :preface
+  (defun my/cdlatex-dollar-skip-closer (cdlatex-dollar &optional arg)
+    "Move over the closing dollars that `cdlatex-dollar' would duplicate."
+    (let ((closer (and (not (region-active-p)) (cdlatex--texmathp)
+                       (car texmathp-why))))
+      (if (and (stringp closer) (looking-at-p (regexp-quote closer)))
+          (forward-char (length closer))
+        (funcall cdlatex-dollar arg))))
   :custom
   (cdlatex-takeover-parenthesis nil)  ; leave ( [ { to electric-pair
-  (cdlatex-sub-super-scripts-outside-math-mode nil))  ; keep _ for Markdown emphasis
+  (cdlatex-sub-super-scripts-outside-math-mode nil)  ; keep _ for Markdown emphasis
+  :config
+  (advice-add 'cdlatex-dollar :around #'my/cdlatex-dollar-skip-closer))
 
 
 ;; Org
@@ -2295,7 +2312,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
     (my/set-local-indent-width org-src-content-indentation)
     (setq-local tab-width 8)
     ;; Run after `electric-pair-post-self-insert-function', at depth 50.
-    (add-hook 'post-self-insert-hook #'my/org-close-math-delimiter 60 t))
+    (add-hook 'post-self-insert-hook #'my/org-close-math-delimiter 60 t)
+    (add-hook 'post-self-insert-hook #'my/electric-pair-skip-math-closer nil t))
   (add-hook 'org-mode-hook #'my/org-mode-hook)
   :init
   (when (eq system-type 'darwin)
