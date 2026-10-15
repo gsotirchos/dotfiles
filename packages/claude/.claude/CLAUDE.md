@@ -18,9 +18,11 @@
 * **Dependencies:** Be specific with the dependencies you add in `package.xml` files. Not everything is always just `<depend>...</depend>`; try to mark things as `build_depend`, `exec_depend`, `build_export_depend` as much as possible.
 * **Do not bump versions:** Never bump versions in manifests or in CHANGELOGs, and only append entries in Forthcoming for the latter.
 * **Only use XML launch files:** Never use Python launch files.
+* **Read ROS parameters lazily:** prefer to read the ROS parameters right before use, so that the user can override them at runtime without having to restart the node.
 
 * **Installing python packages:** Never install python packages directly on the operating system level. Always prefer using `pipx` or `conda` or `venv` or similar alternatives instead.
 
 * **Custom aliases/overrides:** Several of the shell built-ins or GNU Core Utilities on this setup have been overridden or aliased to slightly alter their functionality. Whenever you use things like `rm` or `ls` in your script *always* call them using `env` (e.g. `env rm`) or rely on another tool.
+* **Killing processes:** Never `pkill -f`/`pgrep -f` a literal pattern from inside a `bash -c '...'` (or `docker exec ... bash -c`) script: the script text is that shell's command line, so it matches and kills itself. Record the PIDs of what you start (or use `timeout`) and `kill <pid>`; never kill by name in shared containers, as it also hits my own processes.
 
 * **Writing my Claude plugins/skills:** Each is its own public GitHub repo `gsotirchos/<name>`, with one name for the repo, plugin, skill directory and SKILL.md `name`: lowercase kebab-case, subject first (e.g. `emacs-query`), never prefixed `claude-`/`anthropic-` (reserved by `claude plugin validate`). Register it with one entry in the `gsotirchos` marketplace `plugins` list in `~/.dotfiles/packages/claude/.claude/settings.json`, plus `"<name>@gsotirchos": true` under `enabledPlugins`; that installs it everywhere, and `etc/setup_claude_plugins.sh` clones it to `~/.local/src/claude-plugins/<name>` for development. Leave `version` out of `plugin.json` so updates follow commits.
