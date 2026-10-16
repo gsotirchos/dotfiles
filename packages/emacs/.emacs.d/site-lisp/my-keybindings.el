@@ -88,7 +88,8 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
 
 (defvar-keymap my/toggles-map
   :doc "My toggle commands map."
-  "w" 'whitespace-mode)
+  "w" 'whitespace-mode
+  "n" 'global-display-line-numbers-mode)
 
 (defvar-keymap my/personal-map
   :doc "My prefix map."
