@@ -25,6 +25,7 @@
 
 ;;; Code:
 
+(declare-function my/buffer-display-table "init" ())
 (declare-function my/theme-color "init" (name))
 (declare-function my/variable-pitch-p "init" ())
 
@@ -75,16 +76,15 @@ folding through the display table, which boxes each glyph separately.")
    (my/fold-ellipsis-glyphs my/fold-ellipsis-fixed-pitch)))
 
 (defun my/fold-ellipsis-set-display-table ()
-  "Give a proportional buffer its own ellipsis, and every other one none.
-The table is a copy of `standard-display-table' because a buffer-local one
-takes over from it whole, wrap and truncation glyphs included."
-  (setq buffer-display-table
-        (when (my/variable-pitch-p)
-          (let ((table (copy-sequence standard-display-table)))
-            (set-display-table-slot
-             table 'selective-display
-             (my/fold-ellipsis-glyphs my/fold-ellipsis-proportional))
-            table))))
+  "Give a proportional buffer its own ellipsis, and every other one the standard.
+Only the `selective-display' slot is edited, in place, so the other entries
+of a buffer-local table stay as their owners left them."
+  (when (or buffer-display-table (my/variable-pitch-p))
+    (set-display-table-slot
+     (my/buffer-display-table) 'selective-display
+     (if (my/variable-pitch-p)
+         (my/fold-ellipsis-glyphs my/fold-ellipsis-proportional)
+       (display-table-slot standard-display-table 'selective-display)))))
 
 (defun my/fold-ellipsis-string ()
   "Return the marker standing in for folded text, avoiding a mis-painted `:box'."
@@ -135,8 +135,10 @@ ellipsis from, and the `display' property of the fold overlays made by
     (setq hs-set-up-overlay my/fold-ellipsis-saved-hs-set-up-overlay)
     (dolist (buf (buffer-list))
       (with-current-buffer buf
-        (when (my/variable-pitch-p)
-          (setq buffer-display-table nil))))))
+        (when buffer-display-table
+          (set-display-table-slot
+           buffer-display-table 'selective-display
+           (display-table-slot standard-display-table 'selective-display)))))))
 
 (provide 'my-fold-ellipsis)
 
