@@ -163,11 +163,11 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
         (put-text-property (point-min) (minibuffer-prompt-end) 'wrap-prefix " ")))
     (add-hook 'minibuffer-setup-hook #'my/pad-minibuffer-prompt))
 
-  (defun my/append-wrap-marker (beg end)
-    "Append `wrap-prefix' to the wrap-prefix string property from BEG to END."
-    (let ((wrap-prop (get-text-property beg 'wrap-prefix)))
-      (when (stringp wrap-prop)
-        (put-text-property beg end 'wrap-prefix (concat wrap-prop wrap-prefix)))))
+  (defun my/buffer-display-table ()
+    "Return the buffer's display table, copying the standard one if it has none.
+Callers edit their own entries of it in place, so modes sharing it compose."
+    (or buffer-display-table
+        (setq buffer-display-table (copy-sequence standard-display-table))))
 
   ;; Startup time
   (defun my/display-startup-stats ()
@@ -216,7 +216,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (text-scale-mode-step 1.1)
   (global-text-scale-adjust-resizes-frames t)
   (line-spacing fixed-pitch-line-spacing)
-  (wrap-prefix (propertize "…" 'face 'special-glyphs))
+  (wrap-prefix nil)
   (left-margin-width 0)
   (right-margin-width 0)
   (indent-tabs-mode nil)
@@ -226,11 +226,11 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   :init
   (context-menu-mode 1)
   (pixel-scroll-precision-mode 1)
-  ;; Display table for wrap prefix
-  (set-display-table-slot standard-display-table 'wrap (string-to-char wrap-prefix))
-  (set-display-table-slot standard-display-table 0 (string-to-char wrap-prefix))
-  ;; Keeps the glyphs set above and applies `special-glyphs' to them.
-  (prettify-special-glyphs-mode 1))
+  ;; Fringes are off, so an empty slot would draw `\' in the text area; wrap
+  ;; marks are opted into per buffer by `my-wrap-marks'.
+  (set-display-table-slot standard-display-table 'wrap (make-glyph-code ?\s))
+  (set-display-table-slot standard-display-table 'truncation
+                          (make-glyph-code ?… 'special-glyphs)))
 
 
 ;; Basic packages
@@ -1568,14 +1568,7 @@ the line following an item onto it."
   :no-require t
   :custom
   (global-visual-wrap-prefix-mode t)
-  (visual-wrap-extra-indent standard-indent)
-  :preface
-  (defun my/visual-wrap-append-marker ()
-    "Append `wrap-prefix' to the wrap-prefix property of the line at point."
-    (my/append-wrap-marker (point) (pos-eol)))
-  :config
-  ;; NOTE: `visual-wrap--apply-to-line' is private; revisit on Emacs updates.
-  (advice-add 'visual-wrap--apply-to-line :after #'my/visual-wrap-append-marker))
+  (visual-wrap-extra-indent standard-indent))
 
 (use-package hideshow
   :ensure nil
@@ -1635,6 +1628,15 @@ the line following an item onto it."
   :ensure nil
   :load-path "site-lisp/"
   :hook after-init)
+
+(use-package my-wrap-marks
+  :ensure nil
+  :load-path "site-lisp/"
+  :commands my-pilcrow-mode
+  :hook (;; TODO: List the prose modes to opt into pilcrows.
+         ;; (() . my-pilcrow-mode)
+         ((prog-mode yaml-ts-mode toml-ts-mode nxml-mode sgml-mode)
+          . my-wrap-ellipsis-mode)))
 
 (use-package electric-pair
   :ensure nil
@@ -2400,22 +2402,6 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
    :map my/toggles-map
    ("m" . my/org-toggle-emphasis-marker-display)
    ("l" . org-toggle-link-display)))
-
-(use-package org-indent
-  :ensure nil
-  :no-require t
-  :preface
-  (defun my/org-indent-set-line-properties-advice (orig-fn level indentation &optional heading)
-    "Append `wrap-prefix' to the current line's wrap-prefix property only.
-Leaves the line-prefix property `org-indent' also sets untouched."
-    (let ((beg (line-beginning-position))
-          (end (line-beginning-position 2)))
-      ;; The original function calculates and sets both line-prefix and wrap-prefix,
-      ;; and then moves point to the next line via (forward-line).
-      (funcall orig-fn level indentation heading)
-      (my/append-wrap-marker beg end)))
-  :config
-  (advice-add 'org-indent-set-line-properties :around #'my/org-indent-set-line-properties-advice))
 
 (use-package org-appear
   :hook org-mode
