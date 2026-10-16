@@ -166,6 +166,24 @@ completed."
             ("WAIT" . ,wait)
             ("FAIL" . ,fail)))))
 
+(defconst my/org-fixed-pitch-keywords
+  '(;; Org headings (e.g., "* ", "** ")
+    ("^\\*+ " 0 'fixed-pitch prepend)
+    ;; Any leading whitespace (aligns descriptions)
+    ("^[ \t]+" 0 'fixed-pitch prepend)
+    ;; Unordered list items (e.g., "- ", "+ ", "* ")
+    ("^[ \t]*[-+*][ \t]+" 0 'fixed-pitch prepend)
+    ;; Ordered list items (e.g., "1. ", "a) ")
+    ("^[ \t]*[a-zA-Z0-9]+[.)][ \t]+" 0 'fixed-pitch prepend))
+  "Font-lock keywords keeping Org's structural blanks in `fixed-pitch'.")
+
+(defun my/org-fixed-pitch-over-whitespace ()
+  "Move `my/org-fixed-pitch-keywords' after those of `whitespace-mode'.
+Its keywords override the face of every blank, which drops `fixed-pitch'."
+  (font-lock-remove-keywords nil my/org-fixed-pitch-keywords)
+  (font-lock-add-keywords nil my/org-fixed-pitch-keywords 'append)
+  (font-lock-flush))
+
 
 ;;; ----------------------------------------------------------------------------
 ;;; Global Setup & Advices (Applied on load)
@@ -180,16 +198,7 @@ completed."
 
 (org-link-set-parameters "message" :follow #'my/org-mac-mail-link-open-link)
 
-(font-lock-add-keywords 'org-mode
-                        '(;; Org headings (e.g., "* ", "** ")
-                          ("^\\*+ " 0 'fixed-pitch prepend)
-                          ;; Any leading whitespace (aligns descriptions)
-                          ("^[ \t]+" 0 'fixed-pitch prepend)
-                          ;; Unordered list items (e.g., "- ", "+ ", "* ")
-                          ("^[ \t]*[-+*][ \t]+" 0 'fixed-pitch prepend)
-                          ;; Ordered list items (e.g., "1. ", "a) ")
-                          ("^[ \t]*[a-zA-Z0-9]+[.)][ \t]+" 0 'fixed-pitch prepend))
-                        'append)
+(font-lock-add-keywords 'org-mode my/org-fixed-pitch-keywords 'append)
 
 
 ;;; Minor Mode & Keymap
@@ -210,8 +219,10 @@ completed."
         (visual-line-mode 1)
         (visual-wrap-prefix-mode -1)
         ;; Re-fontify for the new `org-todo-keyword-faces' and emphasis.
-        (add-hook 'after-load-theme-hook #'font-lock-flush nil t))
-    (remove-hook 'after-load-theme-hook #'font-lock-flush t)))
+        (add-hook 'after-load-theme-hook #'font-lock-flush nil t)
+        (add-hook 'whitespace-mode-hook #'my/org-fixed-pitch-over-whitespace nil t))
+    (remove-hook 'after-load-theme-hook #'font-lock-flush t)
+    (remove-hook 'whitespace-mode-hook #'my/org-fixed-pitch-over-whitespace t)))
 
 (provide 'my-org)
 
