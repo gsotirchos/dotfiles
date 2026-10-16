@@ -155,6 +155,16 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
       (set-face-attribute 'special-glyphs nil :foreground fg)))
   (add-hook 'after-load-theme-hook #'my/customize-special-glyphs)
 
+  (defun my/customize-margin-face ()
+    "Extend the line numbers' background over the margin while they are shown."
+    (when (facep 'margin)  ; new in Emacs 31
+      (set-face-attribute 'margin nil :background
+                          (if (bound-and-true-p global-display-line-numbers-mode)
+                              (face-background 'line-number nil t)
+                            'unspecified))))
+  (add-hook 'after-load-theme-hook #'my/customize-margin-face)
+  (add-hook 'global-display-line-numbers-mode-hook #'my/customize-margin-face)
+
   (when (eq system-type 'darwin)
     (defun my/pad-minibuffer-prompt ()
       "Add a prefix to the minibuffer prompt to prevent rounded corner obstruction."
