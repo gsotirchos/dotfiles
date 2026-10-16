@@ -119,7 +119,11 @@ if command -v "docker" &> /dev/null; then
     }
     alias ds=devcontainer-shell
 fi
-alias magit="emacs  --eval '(magit-status)'" # start emacs with magit
+function magit {
+    (cd "${1:-.}" \
+        && emacs --eval "(progn (require 'magit)
+                                (magit-status (or (magit-toplevel) default-directory)))")
+}
 alias tree="tree \
     -FNC -L 2 \
     --dirsfirst \
