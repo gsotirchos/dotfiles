@@ -377,21 +377,21 @@ Callers edit their own entries of it in place, so modes sharing it compose."
   :no-require t
   :custom (2C-mode-line-format '(:eval (default-value 'mode-line-format))))
 
-(use-package pixel-scroll
-  :ensure nil
-  :no-require t
-  :preface
-  (defun my/pixel-scroll-stop-at-end (&rest _)
-    "Signal `end-of-buffer' once the end of the buffer is on screen.
-Scrolling on would only open empty space below it, which
-`my-scroll-limit-mode' closes again: a flicker per wheel event."
-    ;; `window-end' is cached by the last redisplay and settles the
-    ;; common case for free; `pos-visible-in-window-p' lays the window
-    ;; out anew, but is only reached near the end of the buffer.
-    (when (and (= (window-end) (point-max))
-               (pos-visible-in-window-p (point-max)))
-      (signal 'end-of-buffer nil)))
-  :init (advice-add 'pixel-scroll-precision-scroll-down :before #'my/pixel-scroll-stop-at-end))
+;; (use-package pixel-scroll
+;;   :ensure nil
+;;   :no-require t
+;;   :preface
+;;   (defun my/pixel-scroll-stop-at-end (&rest _)
+;;     "Signal `end-of-buffer' once the end of the buffer is on screen.
+;; Scrolling on would only open empty space below it, which
+;; `my-scroll-limit-mode' closes again: a flicker per wheel event."
+;;     ;; `window-end' is cached by the last redisplay and settles the
+;;     ;; common case for free; `pos-visible-in-window-p' lays the window
+;;     ;; out anew, but is only reached near the end of the buffer.
+;;     (when (and (= (window-end) (point-max))
+;;                (pos-visible-in-window-p (point-max)))
+;;       (signal 'end-of-buffer nil)))
+;;   :init (advice-add 'pixel-scroll-precision-scroll-down :before #'my/pixel-scroll-stop-at-end))
 
 (use-package scroll-bar
   :ensure nil
@@ -464,10 +464,10 @@ the window."
     :load-path "site-lisp/"
     :hook after-init))
 
-(use-package my-scroll-limit
-  :ensure nil
-  :load-path "site-lisp/"
-  :hook after-init)
+;; (use-package my-scroll-limit
+;;   :ensure nil
+;;   :load-path "site-lisp/"
+;;   :hook after-init)
 
 (use-package my-modifier-remap
   :ensure nil
@@ -1518,7 +1518,21 @@ the line following an item onto it."
   (markdown-ts-appear-image-icon "▧")
   (markdown-ts-appear-link-icon "↗")
   (markdown-ts-appear-code-fence-style 'raw)
-  (markdown-ts-appear-block-quote-marker "┃"))
+  (markdown-ts-appear-block-quote-marker "┃")
+  :preface
+  (defun patch/markdown-ts-appear-math-split-invisible-run (preview)
+    "Keep PREVIEW's image from being skipped with the hidden markup before it.
+Redisplay skips a run of invisible text in one step, so when hidden
+markup such as a heading's `# ' adjoins PREVIEW's hidden opening `$',
+it lands past PREVIEW's start and draws no image.  An `invisible'
+value outside `buffer-invisibility-spec' ends the run there."
+    (overlay-put preview 'invisible
+                 (and (overlay-get preview 'display)
+                      'patch/markdown-ts-appear-math)))
+  :config
+  ;; TODO: Report upstream; `markdown-ts-appear-math--display' is private.
+  (advice-add 'markdown-ts-appear-math--display :after
+              #'patch/markdown-ts-appear-math-split-invisible-run))
 
 (use-package mathjax
   :config
