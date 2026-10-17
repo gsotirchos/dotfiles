@@ -41,9 +41,7 @@ should return an integer (usually 0 or 1)."
   '(diff-hl-margin-ensure-visible)
   "Functions with which contributing packages widen the margin themselves.
 These are disabled while `my-margin-mode' is on, which owns the
-width.  `diff-hl-margin-ensure-visible' also applies its width with
-`set-window-buffer', which resets the window's vscroll and so undoes
-`my-scroll-limit-mode' several times a second.")
+width.")
 
 (defun my/margin-diff-hl-width ()
   "Return 1 if diff-hl currently shows any indicators here, else 0."
