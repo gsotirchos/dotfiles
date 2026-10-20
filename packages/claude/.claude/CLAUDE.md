@@ -15,9 +15,9 @@
   - The organization name is the `<organization>` prefix of the local mirror directory `~/Projects/reference-src/<organization>_toolbox`; substitute it wherever `<organization>` appears below.
   - Grep code in that local mirror (same layout as the GitLab namespace), refreshing it first with `gitlab-mirror <organization>/toolbox ~/Projects/reference-src/<organization>_toolbox`. If the mirror is empty, browse `<organization>/toolbox` on `gitlab.tudelft.nl` instead.
   - Discover projects via the API: `glab api "groups/<organization>%2Ftoolbox/projects?include_subgroups=true&per_page=100&search=<term>"`. Group-wide code search via the API is unavailable on this instance, so grep the mirror for code.
-* **Dependencies:** Be specific with the dependencies you add in `package.xml` files. Not everything is always just `<depend>...</depend>`; try to mark things as `build_depend`, `exec_depend`, `build_export_depend` as much as possible.
+* **Dependencies:** Be specific with the dependencies you add in `package.xml` files. Not everything is always just `<depend>...</depend>`; try to mark things as `build_depend`, `exec_depend`, `build_export_depend` as much as possible. For dependencies only used in testing the code (e.g. gtest or *any* testing/visualization/verification scripts), use test_depend.
 * **Do not bump versions:** Never bump versions in manifests or in CHANGELOGs, and only append entries in Forthcoming for the latter.
-* **Only use XML launch files:** Never use Python launch files.
+* **Only use XML launch files:** Never use Python launch files. Use just `.launch` as the suffix and never `.launch.xml`.
 * **Read ROS parameters lazily:** prefer to read the ROS parameters right before use, so that the user can override them at runtime without having to restart the node.
 
 * **Installing python packages:** Never install python packages directly on the operating system level. Always prefer using `pipx` or `conda` or `venv` or similar alternatives instead.
