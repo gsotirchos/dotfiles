@@ -40,7 +40,8 @@ Arguments: $ARGUMENTS
   Do not describe what the reviewer can read in the diff (the contents of new
   docs or diagrams, nested detail, parameter values), and leave out routine
   bookkeeping such as CHANGELOG entries.
-- Testing: exact commands and the expected outcome taken from the tests.
+- Testing: exact commands and the expected outcome taken from the tests,
+  leaving out the checks the repo's CI already runs on the MR.
 - Tick checklist boxes only for what the diff shows; mention borderline ones
   to the user instead of guessing.
 - Fenced code blocks for code and commands; GitLab/GitHub references
