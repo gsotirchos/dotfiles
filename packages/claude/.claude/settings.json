@@ -6,6 +6,7 @@
     "sessionUrl": false
   },
   "permissions": {
+    "defaultMode": "auto",
     "allow": [
       "Bash(emacs-query:*)",
       "Bash(glab api:*)",
