@@ -45,6 +45,9 @@ done
 # pixi completion
 if command -v "pixi" &> /dev/null; then
     eval "$(pixi completion --shell bash)"
+    for file in ~/.pixi/completions/bash/*; do
+        [[ -e "$file" ]] && source "$file"
+    done
 fi
 
 # ros2 completion
