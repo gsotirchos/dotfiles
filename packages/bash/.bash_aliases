@@ -182,6 +182,26 @@ if command -v "vint" &> /dev/null; then
     }
 fi
 
+if command -v "glab" &> /dev/null; then
+    function mrs {
+        # shellcheck disable=SC2016
+        glab todo list --type MergeRequest -F json "$@" --jq '
+            def trunc: if length > 40 then .[:37] + "..." else . end;
+            def action_order: ["review_requested", "review_submitted", "approval_required",
+                "directly_addressed", "mentioned", "assigned", "build_failed", "unmergeable"];
+            (["Project", "Nr.", "Title", "Action", "Created"] | @tsv),
+            (sort_by(.action_name as $action | action_order | index($action) // length)
+                | .[] | [(.project.path_with_namespace | split("/") | last | trunc),
+                    .target.iid,
+                    (.target.title | trunc),
+                    .action_name,
+                    (.created_at | sub("\\.[0-9]+"; "") | sub(":(?<m>[0-9]{2})$"; .m)
+                        | strptime("%Y-%m-%dT%H:%M:%S%z") | mktime
+                        | (now - .) / 3600 | floor | "\(.) hours ago")
+                    ] | @tsv)' | column -t -s $'\t'
+    }
+fi
+
 if ! command -v "open" &> /dev/null; then
     alias open=xdg-open
 fi
