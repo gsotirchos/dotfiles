@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=xauthority-link
+Exec=sh -c "ln -sfn \\"\\$XAUTHORITY\\" \\"\\$XDG_RUNTIME_DIR/Xauthority\\""
+Type=Application
+NoDisplay=true
+X-GNOME-Autostart-Phase=Initialization
