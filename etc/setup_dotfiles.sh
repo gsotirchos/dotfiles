@@ -85,7 +85,7 @@ echo -e "${bright_style}- Cloning Claude plugins${normal_style}"
 
 # OS-specific
 if [[ "${os}" == "linux" ]]; then
-    stow -vd "${dotfiles}/packages" -t "${HOME}" -R fontconfig gtk
+    stow -vd "${dotfiles}/packages" -t "${HOME}" -R fontconfig gtk autostart-linux
 
     dmi_product=$(cat /sys/devices/virtual/dmi/id/product_name 2> /dev/null)
     if [[ "${dmi_product}" == "iMac14,1" ]]; then
