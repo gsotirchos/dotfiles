@@ -35,9 +35,11 @@ Arguments: $ARGUMENTS
   the template's placeholder text, but keep its `[comment]: #` lines.
 - Motivation must make sense to someone outside the project: the problem
   first, then why this solution.
-- Changes: one flat bullet per behavioural change, not per file: the change
-  itself, plus its justification only when that is not obvious. No nested
-  bullets or parameter values; those belong in the diff.
+- Changes: one brief, flat bullet per behavioural change, not per file: what
+  it fixes or improves, plus its justification only when that is not obvious.
+  Do not describe what the reviewer can read in the diff (the contents of new
+  docs or diagrams, nested detail, parameter values), and leave out routine
+  bookkeeping such as CHANGELOG entries.
 - Testing: exact commands and the expected outcome taken from the tests.
 - Tick checklist boxes only for what the diff shows; mention borderline ones
   to the user instead of guessing.
