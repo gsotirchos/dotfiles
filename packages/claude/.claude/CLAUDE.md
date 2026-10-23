@@ -4,6 +4,7 @@
 * **Do not excuse unclear code:** Refactor confusing logic and use descriptive variable/function names instead of writing comments to explain it.
 * **Provide External Context:** Use comments exclusively to capture information that syntax cannot natively convey, such as URLs to adapted sources/standards, issue tracker references for bug fixes, and `TODO` tags for known limitations.
 * **Be as concise as you can with configuration comments:** The comments in YAML/JSON/... configuration files should only briefly describe what each parameter does, how adjusting it affects behavior, and its units.
+* **Write plainly:** In docs, comments, commit messages and MR descriptions, state the specific fact directly with its concrete subject first. Don't build up to it through a generalization or a reveal (e.g. write "The X hub drives its output through Y, so it shows up as Z.", not "Some hubs drive their output through Y. X is one of them.").
 
 * **Git operations:** Never commit or push code without explicit authorization.
 * **Suggest commit messages:** Any time you implement anything we worked on together, at the very end of your answer for that you will provide me with a *concise yet informative commit message (summary: max. 50 chars line length; body: max. 73 chars line length, if any)* describing all *uncommitted changes* as reported at the moment of its composition by `git status` and `git diff` (and inspect untracked files). Base the message solely on that output and never solely on your memory of what was changed during the conversation.
