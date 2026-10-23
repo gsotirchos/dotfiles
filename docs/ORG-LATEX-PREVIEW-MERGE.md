@@ -1,30 +1,24 @@
 # Org LaTeX preview overhaul — cleanup once it merges
 
-> **TODO:** Act on this file when the `Org: org-latex-preview.el on main`
-> Newsticker feed (`M-x newsticker-treeview`) shows its first entry.
+> **TODO:** Act on this file when the `Org: GNU ELPA releases` Newsticker
+> feed (`M-x newsticker-treeview`) shows an entry for Version 10.0.
 
-Org is currently installed from karthink's fork (branch `olp`), which carries
-the asynchronous LaTeX preview system that is slated for Org 10.0. The `org`
-block in `packages/emacs/.emacs.d/init.el` installs it and works around bugs in
-it. This file lists what to undo once the overhaul is part of upstream Org.
+Org is currently installed from upstream Org's `main` branch, which carries the
+asynchronous LaTeX preview system that is slated for Org 10.0. The `org` block
+in `packages/emacs/.emacs.d/init.el` installs it, and
+`site-lisp/my-org-latex-preview.el` works around a bug in it. This file lists
+what to undo once the overhaul is part of a released Org.
 
 ## Tracking
 
-Newsticker (`newsticker` block in `init.el`) follows:
-
-- the mailing-list thread
-  (<https://list.orgmode.org/orgmode/87lek2up0w.fsf@tec.tecosaur.net/>),
-- the `olp` branch commits
-  (<https://github.com/karthink/org-mode/commits/olp>),
-- `lisp/org-latex-preview.el` on Org's `main`, which is empty until the merge.
-
-Issue [karthink/org-mode#1](https://github.com/karthink/org-mode/issues/1) has
-no feed; subscribe to it on GitHub instead.
+Newsticker (`newsticker` block in `init.el`) follows Org's releases on GNU ELPA
+(<https://elpa.gnu.org/packages/org.xml>). The 9.8.x point releases show up
+there too.
 
 ## Milestones
 
-1. **Merged into `main`**: the `main` feed shows a commit. Pointing `package-vc`
-   at upstream Org is possible, but waiting for the release is simpler.
+1. **Merged into `main`** (done, 2026-09-20, merge commit `7f913dfae`):
+   `package-vc` now tracks upstream `main` instead of karthink's `olp` branch.
 2. **Released as Org 10.0**: first on GNU ELPA
    (`M-x package-install-upgrade-built-in RET org`), later bundled with Emacs.
    Most of the cleanup below applies from here.
@@ -37,7 +31,9 @@ The `org-latex-preview-merged` branch already removes everything listed under
 1. `git rebase main org-latex-preview-merged`. Its first commit only brings
    this file up to date, so the rebase drops it if `main` already has that
    change. If `main` changed this file since, resolve the conflict by deleting
-   the file.
+   the file. `init.el` conflicts in the `org` and `newsticker` blocks, which
+   `main` reworked when it switched to upstream `main`; resolve them by keeping
+   the branch's deletions.
 2. Restore any workaround whose bug is still present, using the checks under
    [What goes](#what-goes).
 3. Do the steps [outside the repository](#outside-the-repository), restart
@@ -49,12 +45,6 @@ In `packages/emacs/.emacs.d/init.el`, all in the `org` block unless noted:
 
 - `package-vc-selected-packages`, `package-vc-allow-build-commands` and
   `(package-vc-install-selected-packages)`: once switching to released Org.
-- `(package-activate-1 …)`: at the same time, since Org 10.0 outranks the
-  built-in 9.8.7, so normal activation picks it.
-- The copied `org-latex-preview--dvisvgm3-minor-version` `defvar`: once
-  [karthink/org-mode#1](https://github.com/karthink/org-mode/issues/1) is
-  fixed. To check, delete it and look for “No org-loaddefs.el” in
-  `*Messages*`.
 - `my/org-latex-preview-color-every-fragment-advice` and its `advice-add`:
   once the `:continue-color` bug is fixed. To check, delete them, run
   `M-x org-latex-preview-clear-cache` in `~/Desktop/math.org`, and make sure no
