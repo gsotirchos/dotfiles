@@ -186,7 +186,7 @@ if command -v "glab" &> /dev/null; then
     function mrs {
         # shellcheck disable=SC2016
         glab todo list --type MergeRequest -F json "$@" --jq '
-            def trunc: if length > 40 then .[:37] + "..." else . end;
+            def trunc: if length > 60 then .[:57] + "..." else . end;
             def action_order: ["review_requested", "review_submitted", "approval_required",
                 "directly_addressed", "mentioned", "assigned", "build_failed", "unmergeable"];
             (["Project", "Nr.", "Title", "Action", "Created"] | @tsv),
