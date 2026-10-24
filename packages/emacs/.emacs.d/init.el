@@ -1937,6 +1937,7 @@ inside a comment."
   (apheleia-global-mode 1)
   (setf (alist-get 'ruff apheleia-formatters)
         '("ruff" "format" "--silent" "--stdin-filename" filepath "-"))
+  ;; Also sorts imports where the ruff config sets `extend-select = ["I"]'.
   (setf (alist-get 'ruff-check apheleia-formatters)
         '("ruff" "check" "-n" "--fix" "--fix-only" "--stdin-filename" filepath "-"))
   (setf (alist-get 'shfmt apheleia-formatters)

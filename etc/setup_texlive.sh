@@ -52,6 +52,7 @@ packages=(
     bbm
     bbm-macros
     mathtools
+    pgfplots
     csquotes
     ebgaramond
     courierten
