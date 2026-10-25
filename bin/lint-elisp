@@ -5,7 +5,8 @@ usage() {
     cat >&2 <<'EOF'
 Usage: lint-elisp [--flymake] [path]
 
-Lints Emacs Lisp with the byte-compiler and checkdoc.
+Lints Emacs Lisp with the byte-compiler and checkdoc, then byte-compiles
+again with Flymake's load path to catch warnings only the editor reports.
 
   path        File or directory to lint (default: the emacs package config).
   --flymake   Additionally re-check each file through Flymake inside a daemon
@@ -60,11 +61,30 @@ lint_batch() {
 EOF
     )"
 
-    emacs -Q --batch \
+    local batch_output
+    batch_output="$(emacs -Q --batch \
         --eval "$(elisp_load_path "${root}" "${tmp}")" \
         --eval "(require 'checkdoc)" \
         --eval "${check}" 2>&1 \
-        | grep -v '^Loading\|^Wrote\|/elpa/\|^Warning (emacs): *$' || true
+        | grep -v '^Loading\|^Wrote\|/elpa/\|^Warning (emacs): *$' || true)"
+    [[ -n "${batch_output}" ]] && printf '%s\n' "${batch_output}"
+
+    lint_flymake_load_path "${tmp}" \
+        | grep -vxF -f <(printf '%s\n' "${batch_output}") || true
+}
+
+# Compiles like Flymake, whose subprocess has only the file's own directory on
+# `load-path' (`elisp-flymake-byte-compile-load-path'). Packages that the full
+# load path lets use-package load at compile time declare their variables and
+# functions, hiding warnings that the editor shows. Load errors are dropped:
+# they only reflect the missing packages.
+lint_flymake_load_path() {
+    local tmp="$1" file
+    while IFS= read -r -d '' file; do
+        emacs -Q --batch -L "$(dirname "${file}")" \
+            --eval "(byte-compile-file \"${file}\")" 2>&1 \
+            | grep ': Warning: ' || true
+    done < <(find "${tmp}" -name '*.el' -print0)
 }
 
 lint_flymake() {
