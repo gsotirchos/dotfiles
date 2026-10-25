@@ -1505,23 +1505,8 @@ the line following an item onto it."
   (markdown-ts-appear-link-icon "↗")
   (markdown-ts-appear-code-fence-style 'raw)
   (markdown-ts-appear-block-quote-marker "┃")
+  (markdown-ts-appear-mathjax-macros my/mathjax-preamble)
   :preface
-  (defun patch/markdown-ts-appear-math-split-invisible-run (preview)
-    "Keep PREVIEW's image from being skipped with the hidden markup before it.
-Redisplay skips a run of invisible text in one step, so when hidden
-markup such as a heading's `# ' adjoins PREVIEW's hidden opening `$',
-it lands past PREVIEW's start and draws no image.  An `invisible'
-value outside `buffer-invisibility-spec' ends the run there."
-    (overlay-put preview 'invisible
-                 (and (overlay-get preview 'display)
-                      'patch/markdown-ts-appear-math)))
-  :config
-  ;; TODO: Report upstream; `markdown-ts-appear-math--display' is private.
-  (advice-add 'markdown-ts-appear-math--display :after
-              #'patch/markdown-ts-appear-math-split-invisible-run))
-
-(use-package mathjax
-  :config
   (defun my/tex-definitions (file)
     "Return the top-level macro definitions in TeX FILE."
     (let ((case-fold-search nil)
@@ -1550,14 +1535,9 @@ value outside `buffer-invisibility-spec' ends the run there."
      ;; differs from \providecommand only for macros MathJax already has.
      "\\require{mathtools}\\let\\providecommand\\newcommand\n"
      (my/tex-definitions math-commands-file))
-    "The macro definitions of `math-commands-file', for MathJax.")
-  (defun my/mathjax-prepend-preamble (args)
-    "Prepend `my/mathjax-preamble' to the TeX math in `mathjax-render' ARGS."
-    (pcase-let ((`(,callback ,math . ,keys) args))
-      (if (and (stringp math) (memq (plist-get keys :format) '(nil tex)))
-          `(,callback ,(concat my/mathjax-preamble math) ,@keys)
-        args)))
-  (advice-add 'mathjax-render :filter-args #'my/mathjax-prepend-preamble))
+    "The macro definitions of `math-commands-file', for MathJax."))
+
+(use-package mathjax :defer t)
 
 ;; Programming
 
