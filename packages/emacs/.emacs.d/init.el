@@ -1499,6 +1499,7 @@ the line following an item onto it."
        :url "https://github.com/Thysrael/markdown-ts-appear"
        :rev :newest)
   :hook (markdown-ts-mode . markdown-ts-appear-mode)
+  :defines markdown-ts-hide-markup
   :custom
   (markdown-ts-appear-enable-math-preview (and (executable-find "node") t))
   (markdown-ts-appear-image-icon "▧")
@@ -1535,7 +1536,17 @@ the line following an item onto it."
      ;; differs from \providecommand only for macros MathJax already has.
      "\\require{mathtools}\\let\\providecommand\\newcommand\n"
      (my/tex-definitions math-commands-file))
-    "The macro definitions of `math-commands-file', for MathJax."))
+    "The macro definitions of `math-commands-file', for MathJax.")
+  (defun patch/markdown-ts-appear-mathjax-keep-delimiters (function &rest arguments)
+    "Call FUNCTION with ARGUMENTS, leaving math delimiters to the preview."
+    (let ((markdown-ts-hide-markup
+           (and markdown-ts-hide-markup
+                (not (bound-and-true-p markdown-ts-appear-mathjax-mode)))))
+      (apply function arguments)))
+  :config
+  ;; TODO: Report upstream; `markdown-ts--fontify-latex-block' is private.
+  (advice-add 'markdown-ts--fontify-latex-block :around
+              #'patch/markdown-ts-appear-mathjax-keep-delimiters))
 
 (use-package mathjax :defer t)
 
