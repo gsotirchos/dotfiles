@@ -2269,8 +2269,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :custom
   (cdlatex-takeover-parenthesis nil)  ; leave ( [ { to electric-pair
   (cdlatex-sub-super-scripts-outside-math-mode nil)  ; keep _ for Markdown emphasis
-  :config
-  (advice-add 'cdlatex-dollar :around #'my/cdlatex-dollar-skip-closer))
+  (cdlatex-math-modify-prefix (kbd "C-'"))
+  :config (advice-add 'cdlatex-dollar :around #'my/cdlatex-dollar-skip-closer))
 
 
 ;; Org
@@ -2284,7 +2284,9 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
    ("M-<return>" . org-meta-return)
    :map org-cdlatex-mode-map
    ("`" . nil)
-   ("C-`" . cdlatex-math-symbol))
+   ("C-`" . cdlatex-math-symbol)
+   ("'" . nil)
+   ("C-'" . org-cdlatex-math-modify))
   :hook ((org-mode . org-latex-preview-mode)
          (org-babel-after-execute . org-link-preview-refresh))
   :custom
