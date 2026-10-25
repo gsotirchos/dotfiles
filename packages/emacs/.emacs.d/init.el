@@ -9,6 +9,8 @@
   (defconst variable-pitch-line-spacing 4)
   (defconst dotfiles-dir (or (getenv "MACOS_DOTFILES") "~/.dotfiles"))
   (defconst math-commands-file (expand-file-name "etc/math_commands.tex" dotfiles-dir))
+  (defconst site-lisp-dir
+    (abbreviate-file-name (expand-file-name "packages/emacs/.emacs.d/site-lisp/" dotfiles-dir)))
 
   (defvar my/scale-factor 1.75
     "Global scale factor for images and LaTeX overlays.")
@@ -600,7 +602,9 @@ the window."
     (interactive "P")
     (revert-buffer auto-save (not (buffer-modified-p)) t))
   :bind (([remap revert-buffer-quick] . #'my/revert-buffer-quick-preserve))
-  :custom (enable-remote-dir-locals t)
+  :custom
+  (enable-remote-dir-locals t)
+  (trusted-content (list site-lisp-dir))
   :init (advice-add 'save-buffer :around #'my/silence-advice))
 
 (use-package tramp
@@ -1978,7 +1982,15 @@ inside a comment."
   :ensure nil
   :no-require t
   :bind (:map my/personal-map ("(" . check-parens))
-  :preface (add-hook 'emacs-lisp-mode-hook (lambda () (my/set-local-indent-width lisp-body-indent))))
+  :preface
+  (defun my/flymake-compile-site-lisp-with-packages ()
+    "Let Flymake compile `site-lisp-dir' modules against installed packages.
+They `require' packages that Flymake's default load path lacks, which
+stops their compilation at the first `require'."
+    (when (and buffer-file-name (file-in-directory-p buffer-file-name site-lisp-dir))
+      (setq-local elisp-flymake-byte-compile-load-path (cons "./" load-path))))
+  (add-hook 'emacs-lisp-mode-hook #'my/flymake-compile-site-lisp-with-packages)
+  (add-hook 'emacs-lisp-mode-hook (lambda () (my/set-local-indent-width lisp-body-indent))))
 
 
 ;; Vimscript
