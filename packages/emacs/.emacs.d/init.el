@@ -790,6 +790,7 @@ scroll was undone, so the window only moved when it crossed a line."
 (use-package evil-collection
   :after evil
   :demand t
+  :custom (evil-collection-markdown-ts-appear-states (mapcar #'car evil-state-properties))
   :preface
   (defvar my/evil-collection-passthrough-keys
     '((dired-mode-map "SPC")
