@@ -9,7 +9,9 @@
 (require 'modus-themes nil t)
 
 (defvar my/system-appearance-change-functions)
+(defvar modus-themes-to-toggle)
 (declare-function my/theme-color "init" (name))
+(declare-function modus-themes-load-theme "modus-themes" (theme &optional hook))
 
 ;;;###autoload
 (defvar my/modus-themes/ui-style 'minimal
