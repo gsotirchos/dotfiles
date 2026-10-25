@@ -1424,6 +1424,12 @@ two windows draws the pages the other one scrolls to."
                 paragraph-separate (concat paragraph-separate "\\|[ \t]*#+ ")))
   (add-hook 'markdown-ts-mode-hook #'my/markdown-ts-mode-hook)
   (add-hook 'markdown-ts-view-mode-hook #'my/markdown-ts-mode-hook)
+  (defun my/markdown-ts-flyspell-verify ()
+    "Return nil for words inside `$...$' or `$$...$$' math."
+    (not (memq 'markdown-ts-latex
+               (ensure-list (get-text-property (1- (point)) 'face)))))
+  (dolist (mode '(markdown-ts-mode markdown-ts-view-mode))
+    (put mode 'flyspell-mode-predicate #'my/markdown-ts-flyspell-verify))
   (defun patch/markdown-ts--list-item-paragraph (pos)
     "Return the paragraph node of a list item containing POS, or nil.
 Items inside block quotes are left to `markdown-ts-mode'."
