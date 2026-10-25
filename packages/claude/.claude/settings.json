@@ -6,49 +6,14 @@
     "sessionUrl": false
   },
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Bash(emacs-query:*)",
       "Bash(glab api:*)",
       "Bash(glab repo:*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "opus",
-  "workflowKeywordTriggerEnabled": false,
-  "enabledPlugins": {
-    "clangd-lsp@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "emacs-query@gsotirchos": true
-  },
-  "extraKnownMarketplaces": {
-    "gsotirchos": {
-      "source": {
-        "source": "settings",
-        "name": "gsotirchos",
-        "owner": {
-          "name": "George Sotirchos"
-        },
-        "plugins": [
-          {
-            "name": "emacs-query",
-            "source": {
-              "source": "github",
-              "repo": "gsotirchos/emacs-query"
-            }
-          }
-        ]
-      },
-      "autoUpdate": true
-    }
-  },
-  "spinnerTipsEnabled": false,
-  "promptSuggestionEnabled": false,
-  "theme": "auto",
-  "editorMode": "normal",
-  "preferredNotifChannel": "ghostty",
-  "wheelScrollAccelerationEnabled": false,
-  "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
   "hooks": {
     "PostToolUse": [
       {
@@ -67,5 +32,45 @@
         ]
       }
     ]
+  },
+  "workflowKeywordTriggerEnabled": false,
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "emacs-query@gsotirchos": true
+  },
+  "extraKnownMarketplaces": {
+    "gsotirchos": {
+      "source": {
+        "source": "settings",
+        "name": "gsotirchos",
+        "plugins": [
+          {
+            "name": "emacs-query",
+            "source": {
+              "source": "github",
+              "repo": "gsotirchos/emacs-query"
+            }
+          }
+        ],
+        "owner": {
+          "name": "George Sotirchos"
+        }
+      },
+      "autoUpdate": true
+    }
+  },
+  "spinnerTipsEnabled": false,
+  "promptSuggestionEnabled": false,
+  "theme": "auto",
+  "editorMode": "normal",
+  "preferredNotifChannel": "ghostty",
+  "wheelScrollAccelerationEnabled": false,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "autoCompactWindow": 400000
+    }
   }
 }
