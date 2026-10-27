@@ -1,0 +1,4 @@
+- Dev container (the workspace CLAUDE.md may name its `.devcontainer/`) is up (`docker ps`); inspect it freely (read-only) to verify ROS packages/headers/tools.
+- Never edit the team `.devcontainer/`; personal tooling goes in the workspace repo (scripts/, etc/, colcon_defaults.yaml), ~/.dotfiles, or injected features.
+- ROS_DOMAIN_ID: host 4, workspace may override in `etc/workspace_env.sh`; `docker exec … bash -c` runs on 0. Read it (that file or `/proc/<pid>/environ`) and export; never hardcode.
+- Non-interactive shells skip `.bashrc`: use `bash -lic`. colcon `--cmake-args` replaces the defaults list (repeat `-GNinja`). ccache fails compiles if its dir can't be created. ccache+Ninja setup: copy devcontainer_ws template's `scripts/setup_build_cache`, `etc/workspace_env.sh` block, `colcon_defaults.yaml`; gitignore `.ccache/`.

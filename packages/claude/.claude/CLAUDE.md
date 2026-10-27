@@ -1,29 +1,14 @@
-* **Always adhere to clean code principles** (i.e. KISS, DRY, single responsibility, least surprise, descriptive naming, SLAP, etc).
-
-* **Do not duplicate code:** Omit comments that simply restate what the syntax already conveys. 
-* **Do not excuse unclear code:** Refactor confusing logic and use descriptive variable/function names instead of writing comments to explain it.
-* **Provide External Context:** Use comments exclusively to capture information that syntax cannot natively convey, such as URLs to adapted sources/standards, issue tracker references for bug fixes, and `TODO` tags for known limitations.
-* **Be as concise as you can with configuration comments:** The comments in YAML/JSON/... configuration files should only briefly describe what each parameter does, how adjusting it affects behavior, and its units.
-* **Write plainly:** In docs, comments, commit messages and MR descriptions, state the specific fact directly with its concrete subject first. Don't build up to it through a generalization or a reveal (e.g. write "The X hub drives its output through Y, so it shows up as Z.", not "Some hubs drive their output through Y. X is one of them.").
-
-* **Git operations:** Never commit or push code without explicit authorization.
-* **Suggest commit messages:** Any time you implement anything we worked on together, at the very end of your answer for that you will provide me with a *concise yet informative commit message (summary: max. 50 chars line length; body: max. 73 chars line length, if any)* describing all *uncommitted changes* as reported at the moment of its composition by `git status` and `git diff` (and inspect untracked files). Base the message solely on that output and never solely on your memory of what was changed during the conversation.
-* **Branch size:** Keep each branch at about 400 changed LOC (insertions + deletions) against the branch it sits on (often `main`, but not always), not counting binary, config (e.g. RViz's) files, licence files, and such. When a branch grows past that, continue on a new branch stacked on it, so that each MR stays tractable to review.
-* **Tests size:** Keep the total lines of the tests in each branch roughly 35% of its total changed LOC.
-* **Check before reporting issues:** when identifying an issue in a repo, do not jump into the conclusion it has to be reported before checking that repo's open issues first. Human maintainers and reviewers are very limited.
-
-* **Check the toolbox before building anything substantial:** Before implementing a feature that involves several fundamental pieces (ROS nodes, device drivers, behavior-tree or SMACC clients, RViz plugins, planners, calibration, registration, ...), look for existing implementations in the organization's `toolbox` GitLab group. Always prefer reusing or extending those packages, and report what exists and how it maps onto the task before writing new code.
-  - The organization name is the `<organization>` prefix of the local mirror directory `~/Projects/reference-src/<organization>_toolbox`; substitute it wherever `<organization>` appears below.
-  - Grep code in that local mirror (same layout as the GitLab namespace), refreshing it first with `gitlab-mirror <organization>/toolbox ~/Projects/reference-src/<organization>_toolbox`. If the mirror is empty, browse `<organization>/toolbox` on `gitlab.tudelft.nl` instead.
-  - Discover projects via the API: `glab api "groups/<organization>%2Ftoolbox/projects?include_subgroups=true&per_page=100&search=<term>"`. Group-wide code search via the API is unavailable on this instance, so grep the mirror for code.
-* **Dependencies:** Be specific with the dependencies you add in `package.xml` files. Not everything is always just `<depend>...</depend>`; try to mark things as `build_depend`, `exec_depend`, `build_export_depend` as much as possible. For dependencies only used in testing the code (e.g. gtest or *any* testing/visualization/verification scripts), use test_depend.
-* **Do not bump versions:** Never bump versions in manifests or in CHANGELOGs, and only append entries in Forthcoming for the latter.
-* **Only use XML launch files:** Never use Python launch files. Use just `.launch` as the suffix and never `.launch.xml`.
-* **Read ROS parameters lazily:** prefer to read the ROS parameters right before use, so that the user can override them at runtime without having to restart the node.
-
-* **Installing python packages:** Never install python packages directly on the operating system level. Always prefer using `pipx` or `conda` or `venv` or similar alternatives instead.
-
-* **Custom aliases/overrides:** Several of the shell built-ins or GNU Core Utilities on this setup have been overridden or aliased to slightly alter their functionality. Whenever you use things like `rm` or `ls` in your script *always* call them using `env` (e.g. `env rm`) or rely on another tool.
-* **Killing processes:** Never `pkill -f`/`pgrep -f` a literal pattern from inside a `bash -c '...'` (or `docker exec ... bash -c`) script: the script text is that shell's command line, so it matches and kills itself. Record the PIDs of what you start (or use `timeout`) and `kill <pid>`; never kill by name in shared containers, as it also hits my own processes.
-
-* **Writing my Claude plugins/skills:** Each is its own public GitHub repo `gsotirchos/<name>`, with one name for the repo, plugin, skill directory and SKILL.md `name`: lowercase kebab-case, subject first (e.g. `emacs-query`), never prefixed `claude-`/`anthropic-` (reserved by `claude plugin validate`). Register it with one entry in the `gsotirchos` marketplace `plugins` list in `~/.dotfiles/packages/claude/.claude/settings.json`, plus `"<name>@gsotirchos": true` under `enabledPlugins`; that installs it everywhere, and `etc/setup_claude_plugins.sh` clones it to `~/.local/src/claude-plugins/<name>` for development. Leave `version` out of `plugin.json` so updates follow commits.
+- Clean code: KISS, DRY, SRP, least surprise, descriptive names, SLAP. Comments only for what syntax can't say (source/standard URLs, issue refs, TODO limitations); refactor unclear code instead of commenting it. Config-file comments: what the param does, effect of changing it, units.
+- Reuse the underlying tool's parameter names (e.g. `line_spacing`), no new aliases/anchors unless one value is reused in several places.
+- Prose (docs, comments, commits, MRs): concrete subject first, state the fact directly; no generalization-then-reveal.
+- Smallest mechanism that works, preferring what the repo already uses; no unrequested guards/scaffolding.
+- Justify designs by technical reasons, never "package X does it"; other code is at most an existence proof.
+- Check a repo's open issues before suggesting to report one.
+- After implementing anything, end with a commit message (summary ≤50 chars, body ≤73/line) built from `git status`/`git diff`/untracked files, not from memory.
+- Branch ≤~400 changed LOC vs its base (excl. binaries, config like RViz, licences, a new package's CMakeLists/README); beyond that stack a new branch, by content, unrelated packages unstacked. Tests ≈35% of branch LOC. Each commit builds with its tests. Fixes/renames across a stack: fold into the originating commits; review-requested additions: one commit on the tip of each branch they concern, then `rebase --onto`. Use the branch-stack-rewrite skill for both.
+- After using `glab` for CI/MR state, end with the exact commands so the user can check.
+- Test the top-level unit (e.g. a node through its topics); unit tests only for maths too precise to pin from above. Tests go in the package whose code they check.
+- Python packages: pipx/conda/venv only, never system-wide.
+- Shell utils are aliased: call `env rm`, `env ls`, etc.
+- Never `pkill -f`/`pgrep -f` a literal inside `bash -c`/`docker exec … bash -c` (self-match); track PIDs or use `timeout`; never kill by name in shared containers.
+- Memories: general lessons go to `~/.dotfiles/packages/claude/.claude/CLAUDE.md`, ROS/dev-container ones to `~/.dotfiles/packages/claude/.claude/context/{ros,devcontainer}.md` (injected by the SessionStart hook) (propose first, keep terse); project memory only for workspace-specific facts.
