@@ -1,0 +1,14 @@
+[Unit]
+Description=GitLab API proxy that pseudonymises other users for coding agents
+
+[Service]
+Type=simple
+# glab (in pixi's bin) reads the real token from the keyring on the first
+# request, so the keyring may still be locked when this starts.
+Environment=PATH=%h/.pixi/bin:%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.dotfiles/bin/gitlab-redact-proxy
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target
