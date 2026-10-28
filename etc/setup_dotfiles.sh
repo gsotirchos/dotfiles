@@ -111,6 +111,14 @@ if [[ "${os}" == "linux" ]]; then
         systemctl --user enable --now xremap.service 2> /dev/null || true
     fi
 
+    # gitlab-redact-proxy: the GitLab API as coding agents' glab sees it.
+    if command -v glab &> /dev/null; then
+        echo -e "${bright_style}- Stowing gitlab-redact-proxy service${normal_style}"
+        stow -vd "${dotfiles}/packages" -t "${HOME}" -R gitlab-redact-proxy
+        systemctl --user daemon-reload 2> /dev/null || true
+        systemctl --user enable --now gitlab-redact-proxy.service 2> /dev/null || true
+    fi
+
     if [[ -f "${dotfiles}/config/dconf/user.conf" ]] \
         && { [[ -n "${DISPLAY:-}" ]] || [[ -n "${WAYLAND_DISPLAY:-}" ]]; }; then
         echo -e "${bright_style}- Importing GNOME dconf settings${normal_style}"

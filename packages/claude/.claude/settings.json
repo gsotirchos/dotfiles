@@ -14,7 +14,23 @@
     "defaultMode": "auto"
   },
   "model": "opus",
+  "env": {
+    "GITLAB_TOKEN": "via-redact-proxy",
+    "GITLAB_API_HOST": "127.0.0.1:8383",
+    "GLAB_API_PROTOCOL": "http"
+  },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/guard-gitlab-token.sh"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",

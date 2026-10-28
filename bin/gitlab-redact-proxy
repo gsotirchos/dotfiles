@@ -1,0 +1,306 @@
+#!/usr/bin/env python3
+"""Reverse proxy to a GitLab API that pseudonymises other users' identities.
+
+A glab pointed at it (GITLAB_API_HOST=127.0.0.1:<port>, GLAB_API_PROTOCOL=http,
+any GITLAB_TOKEN) gets responses where every other user's username, name and
+email reads as a stable `user-xxxxxx`, and their avatar/profile URLs are gone.
+The proxy authenticates upstream with the token printed by --token-command.
+
+Known gaps: a name typed in free text is only caught once that person appeared
+as a user object or commit author; `@mentions` are only caught in titles,
+descriptions, comments and commit messages (not in code); local git history is
+not covered.
+
+Usage:
+    gitlab-redact-proxy [--port PORT] [--upstream URL] [--token-command CMD]
+"""
+
+import argparse
+import hashlib
+import hmac
+import json
+import re
+import secrets
+import shlex
+import subprocess
+import sys
+import threading
+import urllib.error
+import urllib.request
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+
+STATE_DIR = Path.home() / ".local/state/gitlab-redact-proxy"
+# REST uses snake_case, GraphQL camelCase.
+USER_FIELDS = (
+    "username",
+    "name",
+    "email",
+    "public_email",
+    "publicEmail",
+    "commit_email",
+    "commitEmail",
+)
+DROPPED_USER_FIELDS = {
+    "email",
+    "public_email",
+    "publicEmail",
+    "commit_email",
+    "commitEmail",
+    "avatar_url",
+    "avatarUrl",
+    "web_url",
+    "webUrl",
+    "webPath",
+}
+COMMIT_PEOPLE = (
+    ("author_name", "author_email"),
+    ("committer_name", "committer_email"),
+    ("authorName", "authorEmail"),
+    ("committerName", "committerEmail"),
+)
+PROSE_FIELDS = {"title", "description", "body", "note", "message"}
+PSEUDONYM = re.compile(r"user-[0-9a-f]{6}")
+TRAILER = re.compile(r"^(\s*[\w-]+-by:[ \t]*)(.+)$", re.MULTILINE | re.IGNORECASE)
+MENTION = re.compile(r"(?<![\w.@-])@([A-Za-z0-9_][\w.-]*\w)")
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+UNFORWARDED_HEADERS = {
+    "host",
+    "connection",
+    "keep-alive",
+    "transfer-encoding",
+    "content-length",
+    "content-encoding",
+    "accept-encoding",
+    "authorization",
+    "private-token",
+}
+
+
+class Redactor:
+    """Pseudonymises everyone but the token's owner, consistently across runs."""
+
+    def __init__(self, state_dir: Path):
+        state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        key_file = state_dir / "key"
+        if not key_file.exists():
+            key_file.write_text(secrets.token_hex(32))
+            key_file.chmod(0o600)
+        self._key = bytes.fromhex(key_file.read_text())
+        self._known_file = state_dir / "known.json"
+        self._known = (
+            json.loads(self._known_file.read_text()) if self._known_file.exists() else {}
+        )
+        self._known_pattern: re.Pattern[str] | None = None
+        self._lock = threading.Lock()
+        self.own: set[str] = set()
+
+    def pseudonym(self, identity: str) -> str:
+        digest = hmac.new(self._key, identity.encode(), hashlib.sha256).hexdigest()
+        return f"user-{digest[:6]}"
+
+    def remember(self, identity: str, texts) -> None:
+        """Map each of a person's texts to the pseudonym of their identity."""
+        alias = self.pseudonym(identity)
+        new = {
+            text: alias
+            for text in texts
+            if isinstance(text, str)
+            and text
+            and text not in self.own
+            and self._known.get(text) != alias
+        }
+        if not new:
+            return
+        with self._lock:
+            self._known |= new
+            self._known_pattern = None
+            self._known_file.write_text(json.dumps(self._known, indent=2))
+
+    def collect(self, value) -> None:
+        """Remember the users and commit people anywhere in a JSON value."""
+        if isinstance(value, dict):
+            if "username" in value:
+                identity = value.get("id", value["username"])
+                self.remember(f"id:{identity}", (value.get(f) for f in USER_FIELDS))
+            for name_field, email_field in COMMIT_PEOPLE:
+                email = value.get(email_field)
+                if isinstance(email, str):
+                    self.remember(
+                        f"email:{email.lower()}", (value.get(name_field), email)
+                    )
+            items = list(value.values())
+        elif isinstance(value, list):
+            items = value
+        else:
+            return
+        for item in items:
+            self.collect(item)
+
+    def redact(self, value, field: str = ""):
+        if isinstance(value, dict):
+            if "username" in value and value["username"] not in self.own:
+                value = {k: v for k, v in value.items() if k not in DROPPED_USER_FIELDS}
+            return {key: self.redact(item, key) for key, item in value.items()}
+        if isinstance(value, list):
+            return [self.redact(item, field) for item in value]
+        if isinstance(value, str):
+            return self.redact_text(value, prose=field in PROSE_FIELDS)
+        return value
+
+    def redact_text(self, text: str, prose: bool = False) -> str:
+        text = self._replace_known(text)
+        text = TRAILER.sub(self._trailer, text)
+        if prose:
+            text = MENTION.sub(self._mention, text)
+        return EMAIL.sub(self._email, text)
+
+    def _replace_known(self, text: str) -> str:
+        with self._lock:
+            if self._known_pattern is None and self._known:
+                alternatives = "|".join(
+                    map(re.escape, sorted(self._known, key=len, reverse=True))
+                )
+                self._known_pattern = re.compile(
+                    rf"(?<![\w.-])(?:{alternatives})(?![\w-])"
+                )
+            pattern, known = self._known_pattern, self._known
+        return pattern.sub(lambda m: known[m[0]], text) if pattern else text
+
+    def _trailer(self, match: re.Match) -> str:
+        person = match[2]
+        already_redacted = not PSEUDONYM.sub("", person).strip(" <>")
+        if already_redacted or any(own in person for own in self.own):
+            return match[0]
+        email = EMAIL.search(person)
+        identity = f"email:{email[0].lower()}" if email else f"name:{person.strip()}"
+        return match[1] + self.pseudonym(identity)
+
+    def _mention(self, match: re.Match) -> str:
+        handle = match[1]
+        if handle in self.own or PSEUDONYM.fullmatch(handle):
+            return match[0]
+        return "@" + self.pseudonym(f"username:{handle}")
+
+    def _email(self, match: re.Match) -> str:
+        email = match[0]
+        if email in self.own:
+            return email
+        return self.pseudonym(f"email:{email.lower()}")
+
+
+class Upstream:
+    """Authenticated access to the real GitLab, set up on the first request."""
+
+    def __init__(self, url: str, token_command: str, redactor: Redactor):
+        self.url = url.rstrip("/")
+        self._token_command = token_command
+        self._redactor = redactor
+        self._token: str | None = None
+        self._lock = threading.Lock()
+
+    def request(self, method: str, path: str, headers: dict, body: bytes | None):
+        with self._lock:
+            if self._token is None:
+                self._authenticate()
+        return self._send(method, path, headers, body, self._token)
+
+    def _authenticate(self) -> None:
+        """Load the token and learn whose it is, so that user stays readable."""
+        token = subprocess.run(
+            shlex.split(self._token_command),
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        status, _, content = self._send("GET", "/api/v4/user", {}, None, token)
+        if status != 200:
+            raise RuntimeError(f"GET /api/v4/user returned {status}")
+        own = json.loads(content)
+        self._redactor.own = {own.get(f) for f in USER_FIELDS} - {None, ""}
+        self._token = token
+
+    def _send(self, method, path, headers, body, token):
+        request = urllib.request.Request(
+            self.url + path,
+            data=body,
+            method=method,
+            headers=headers
+            | {"Authorization": f"Bearer {token}", "Accept-Encoding": "identity"},
+        )
+        try:
+            with urllib.request.urlopen(request) as response:
+                return response.status, response.headers, response.read()
+        except urllib.error.HTTPError as error:
+            return error.code, error.headers, error.read()
+
+
+def make_handler(upstream: Upstream, redactor: Redactor):
+    class Handler(BaseHTTPRequestHandler):
+        def forward(self):
+            length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(length) if length else None
+            headers = {
+                name: value
+                for name, value in self.headers.items()
+                if name.lower() not in UNFORWARDED_HEADERS
+            }
+            try:
+                status, response_headers, content = upstream.request(
+                    self.command, self.path, headers, body
+                )
+            except Exception as error:
+                self.send_error(502, explain=f"{type(error).__name__}: {error}")
+                return
+            content = self.redact_body(response_headers.get_content_type(), content)
+            self.send_response(status)
+            for name, value in response_headers.items():
+                if name.lower() in UNFORWARDED_HEADERS:
+                    continue
+                if name.lower() == "link":
+                    value = value.replace(upstream.url, f"http://{self.headers['Host']}")
+                self.send_header(name, value)
+            self.send_header("Content-Length", str(len(content)))
+            self.end_headers()
+            if self.command != "HEAD":
+                self.wfile.write(content)
+
+        def redact_body(self, content_type: str, content: bytes) -> bytes:
+            try:
+                text = content.decode()
+            except UnicodeDecodeError:
+                return content
+            if content_type == "application/json" and text:
+                value = json.loads(text)
+                redactor.collect(value)
+                return json.dumps(redactor.redact(value)).encode()
+            return redactor.redact_text(text).encode()
+
+        do_GET = do_POST = do_PUT = do_PATCH = do_DELETE = do_HEAD = forward
+
+    return Handler
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("--port", type=int, default=8383)
+    parser.add_argument("--upstream", default="https://gitlab.tudelft.nl")
+    parser.add_argument(
+        "--token-command", default="glab config get token --host gitlab.tudelft.nl"
+    )
+    args = parser.parse_args()
+
+    redactor = Redactor(STATE_DIR)
+    upstream = Upstream(args.upstream, args.token_command, redactor)
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", args.port), make_handler(upstream, redactor)
+    )
+    print(
+        f"gitlab-redact-proxy: {args.upstream} on 127.0.0.1:{args.port}", file=sys.stderr
+    )
+    server.serve_forever()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
