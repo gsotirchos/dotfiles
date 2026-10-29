@@ -212,11 +212,12 @@ class CMakeFormatter:
     def wrap(self, pad, tokens):
         """Render one keyword group, keeping it on a single `pad`-indented line
         and exploding it to one token per line only when that line would
-        overflow (or always_wrap_subgroups forces it)."""
+        overflow, or when always_wrap_subgroups forces it for a group with
+        several values (a single-value group like `DESTINATION lib` stays)."""
         line = f"{pad}{' '.join(tokens)}"
-        if len(tokens) == 1:
-            return [line]
-        if self.always_wrap_subgroups or len(line) > self.line_width:
+        values = [tok for tok in tokens if not self.is_kwarg(tok)]
+        multi_value = len(values) > 1
+        if len(line) > self.line_width or (self.always_wrap_subgroups and multi_value):
             return [f"{pad}{tok}" for tok in tokens]
         return [line]
 
