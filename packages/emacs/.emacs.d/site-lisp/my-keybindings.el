@@ -76,6 +76,14 @@ Elsewhere, copy the visited file's path."
          (dired-copy-filename-as-kill 0))
         (t (call-interactively #'my/copy-file-relative-path))))
 
+(defun my/delete-visited-file ()
+  "Delete the file visited by the current buffer, then kill the buffer."
+  (interactive)
+  (let ((file (or buffer-file-name (user-error "Buffer is not visiting a file"))))
+    (when (yes-or-no-p (format "Delete %s? " file))
+      (delete-file file t)
+      (kill-buffer))))
+
 ;;; ----------------------------------------------------------------------------
 ;;; Keymaps
 ;;; ----------------------------------------------------------------------------
@@ -102,6 +110,7 @@ Elsewhere, copy the visited file's path."
   "t" `("prefix toggle" . ,my/toggles-map)
   "m" 'memory-report
   "y" 'my/copy-dwim
+  "D" 'my/delete-visited-file
   "C-d" 'help-follow-symbol)
 
 (defvar-keymap my-keybindings-mode-map
