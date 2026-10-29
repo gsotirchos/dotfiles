@@ -34,17 +34,26 @@ class CMakeFormatter:
 
     BLOCK_OPEN = ("if", "foreach", "while", "function", "macro", "block")
     BLOCK_MID = ("else", "elseif")
-    BLOCK_CLOSE = ("endif", "endforeach", "endwhile", "endfunction", "endmacro", "endblock")
+    BLOCK_CLOSE = (
+        "endif",
+        "endforeach",
+        "endwhile",
+        "endfunction",
+        "endmacro",
+        "endblock",
+    )
 
     KWARG_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
-    NAME_FIRST_RE = re.compile(r"^(add_(executable|library|test))|((ament_)?target_\w*)$")
+    NAME_FIRST_RE = re.compile(
+        r"^(add_(executable|library|test))|((ament_)?target_\w*)$"
+    )
 
     def __init__(
         self,
         indent_width=2,
         line_width=100,
-        always_wrap_groups=True,
+        always_wrap_groups=False,
         always_wrap_subgroups=False,
     ):
         self.indent_width = indent_width
@@ -298,8 +307,12 @@ class CMakeFormatter:
 
 def main():
     parser = argparse.ArgumentParser(description="A very barebones CMake formatter.")
-    parser.add_argument("file", nargs="?", help="CMake file to format; reads stdin if omitted")
-    parser.add_argument("--indent-width", type=int, default=2, help="spaces per indent level")
+    parser.add_argument(
+        "file", nargs="?", help="CMake file to format; reads stdin if omitted"
+    )
+    parser.add_argument(
+        "--indent-width", type=int, default=2, help="spaces per indent level"
+    )
     parser.add_argument("--line-width", type=int, default=100, help="column to wrap at")
     parser.add_argument(
         "--always-wrap-groups",
@@ -310,7 +323,7 @@ def main():
     parser.add_argument(
         "--always-wrap-subgroups",
         action=argparse.BooleanOptionalAction,
-        default=False,
+        default=True,
         help="wrap each token within a group",
     )
     args = parser.parse_args()
