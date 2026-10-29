@@ -6,3 +6,6 @@
 - Demo/manual-test tooling: one standalone script (usage in docstring); user starts nodes/echo/RViz by hand. If launch/RViz files are requested: inside the package (scripts/ config/ launch/), named for what they show.
 - RViz jazzy segfaults on MESH_RESOURCE with <65536 verts and ≥65536 faces (https://github.com/ros2/rviz/pull/1869); use TRIANGLE_LIST.
 - Before building anything with several fundamental pieces (nodes, drivers, BT/SMACC clients, RViz plugins, planners, calibration, registration), search the org toolbox and report what exists and how it maps onto the task; prefer reusing/extending it. `<org>` = prefix of `~/Projects/reference-src/<org>_toolbox`. Refresh with `gitlab-mirror <org>/toolbox ~/Projects/reference-src/<org>_toolbox`, grep there (empty → browse `<org>/toolbox` on gitlab.tudelft.nl). Projects: `glab api "groups/<org>%2Ftoolbox/projects?include_subgroups=true&per_page=100&search=<term>"` (no group code search).
+- CMake files: format with `format-cmake <file>` (~/.dotfiles/bin; prints to stdout) after every edit.
+- Links to ROS docs/sources (docs.ros.org, GitHub branches): the distro in use (e.g. `jazzy`), never `rolling`.
+- Tests that talk over ROS: `ament_add_ros_isolated_gtest`/`_pytest` (test_depend `ament_cmake_ros`), not `ament_add_gtest`.

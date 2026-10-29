@@ -8,5 +8,5 @@ description: Fold fixes/renames into the originating commits of a stacked branch
   - Dry-run on archived snapshots; verify per-commit diffs are rename-only; run tests at each tip.
   - If `git for-each-ref refs/original` shows old backups, pass `--original refs/original-<topic>`; don't `-f` or delete them.
   - Package renames: `git grep` every branch of every affected repo, not just the working tree.
-- Review follow-ups: one commit per part on the tip of the branch it concerns, then `git rebase --onto` the branches above, even past the size limit; never a lumped commit/new branch.
+- Review follow-ups: usually one commit per part on the tip of the branch it concerns, then `git rebase --onto` the branches above, even past the size limit; never a lumped commit/new branch. A couple of small fixes may instead be amended/fixup'd into the commit they fix, to keep successive commits focused.
 - Ask before rewriting pushed branches; never push (force-push is the user's call).
