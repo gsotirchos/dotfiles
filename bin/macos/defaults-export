@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# "domain key" pairs we care about. Each tracked key is written whole (nested
+# dicts included) to config/defaults/<domain>.plist. Add/remove pairs to
+# change what gets tracked.
+DEFAULTS_KEYS=(
+    "com.apple.finder ShowSidebar"
+    "com.apple.finder ShowStatusBar"
+    "com.apple.finder ShowToolbar"
+    "com.apple.finder ShowPathbar"
+    "com.apple.finder FXPreferredViewStyle"
+    "com.apple.finder StandardViewOptions"
+    "com.apple.finder SearchRecentsSavedViewStyle"
+    "com.apple.finder SearchRecentsViewSettings"
+    "com.apple.finder DesktopViewSettings"
+    "com.apple.finder ShowHardDrivesOnDesktop"
+    "com.apple.finder ShowExternalHardDrivesOnDesktop"
+    "com.apple.finder ShowRemovableMediaOnDesktop"
+    "com.apple.finder ShowMountedServersOnDesktop"
+)
+
+dotfiles="$(builtin cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../.." > /dev/null && pwd)"
+outdir="${dotfiles}/config/defaults"
+mkdir -p "${outdir}"
+
+tmpdir="$(mktemp -d)"
+for pair in "${DEFAULTS_KEYS[@]}"; do
+    read -r domain key <<< "${pair}"
+    file="${tmpdir}/${domain}.plist"
+    [[ -f "${file}" ]] || plutil -create xml1 "${file}"
+    plutil -insert "${key}" \
+        -xml "$(defaults export "${domain}" - | plutil -extract "${key}" xml1 -o - -)" \
+        "${file}"
+done
+
+mv "${tmpdir}"/*.plist "${outdir}/"
+rmdir "${tmpdir}"
+echo "Exported defaults → config/defaults/ (tracked keys only)"
+echo "Review with: git -C '${dotfiles}' diff config/defaults"

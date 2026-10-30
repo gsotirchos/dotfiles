@@ -144,3 +144,9 @@ if [[ "${os}" == "macos" ]] && command -v launchctl &> /dev/null; then
     "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchDaemons" /Library/LaunchDaemons
     "${dotfiles}/etc/setup_launch_daemons_agents.sh" "${dotfiles}/Library/LaunchAgents" ~/Library/LaunchAgents
 fi
+
+if [[ "${os}" == "macos" ]]; then
+    echo -e "${bright_style}- Importing macOS defaults${normal_style}"
+    bash "${dotfiles}/bin/macos/defaults-import"
+    killall Finder
+fi

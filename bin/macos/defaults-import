@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+dotfiles="$(builtin cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../.." > /dev/null && pwd)"
+indir="${dotfiles}/config/defaults"
+
+# Each config/defaults/<domain>.plist holds whole top-level keys of <domain>;
+# each is written back as-is, replacing that key's current value.
+for file in "${indir}"/*.plist; do
+    domain="$(basename "${file}" .plist)"
+    while IFS= read -r key; do
+        defaults write "${domain}" "${key}" "$(plutil -extract "${key}" xml1 -o - "${file}")"
+    done < <(plutil -convert json -o - "${file}" | jq -r 'keys[]')
+done
+echo "Imported config/defaults → defaults (restart the apps, e.g. \`killall Finder\`)"

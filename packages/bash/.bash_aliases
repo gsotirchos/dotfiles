@@ -208,6 +208,11 @@ fi
 
 if [[ "$OS" == "macos" ]]; then
     alias update="brew update && brew upgrade -y && brew autoremove && brew cleanup --prune=all"
+    function dsclean {
+        env find "$(realpath "${1:-${HOME}}")" \
+            \( -path "${HOME}/Library" -o -path /System -o -path /Volumes -o -path /private -o -path /dev \) -prune \
+            -o -type f -name .DS_Store -exec rm -fv {} +
+    }
 else
     alias update="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y"
 fi
