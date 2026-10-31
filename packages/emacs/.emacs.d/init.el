@@ -130,7 +130,7 @@ Returns nil rather than `unspecified', so callers can guard with `when-let*'."
   (defun my/fixed-pitch-mode ()
     (variable-pitch-mode -1))
 
-  (dolist (hook '(Custom-mode-hook Info-mode-hook org-mode-hook markdown-ts-view-mode-hook))
+  (dolist (hook '(Custom-mode-hook Info-mode-hook))
     (add-hook hook #'variable-pitch-mode))
   ;; (add-hook 'text-mode-hook #'variable-pitch-mode)
   ;; (add-hook 'LaTeX-mode-hook #'my/fixed-pitch-mode)
@@ -1096,7 +1096,7 @@ the pixel scrolling of any other window under the mouse."
   (add-to-list 'consult-preview-allowed-hooks #'visual-wrap-prefix-mode)
   (add-to-list 'consult-preview-allowed-hooks #'visual-line-mode)
   (add-to-list 'consult-preview-allowed-hooks #'variable-pitch-mode)
-  ;; (add-to-list 'consult-preview-allowed-hooks #'my/fixed-pitch-mode)
+  (add-to-list 'consult-preview-allowed-hooks #'my/fixed-pitch-mode)
   (add-to-list 'consult-preview-allowed-hooks #'my/csv-mode-hook)
   (add-to-list 'consult-preview-allowed-hooks #'my/pdf-view-mode-hook)
   (add-to-list 'consult-preview-allowed-hooks #'my/org-mode-hook))
@@ -1426,8 +1426,15 @@ two windows draws the pages the other one scrolls to."
     ;; glues an ATX heading onto the paragraph that follows it.
     (setq-local paragraph-start (concat paragraph-start "\\|[ \t]*#+ ")
                 paragraph-separate (concat paragraph-separate "\\|[ \t]*#+ ")))
+  (defun my/markdown-ts-view-mode-hook ()
+    (my/markdown-ts-mode-hook)
+    (variable-pitch-mode 1)
+    (add-hook
+     'change-major-mode-hook
+     (lambda () (setq buffer-read-only (and buffer-file-name
+                                            (not (file-writable-p buffer-file-name))))) nil t))
   (add-hook 'markdown-ts-mode-hook #'my/markdown-ts-mode-hook)
-  (add-hook 'markdown-ts-view-mode-hook #'my/markdown-ts-mode-hook)
+  (add-hook 'markdown-ts-view-mode-hook #'my/markdown-ts-view-mode-hook)
   (defun my/markdown-ts-flyspell-verify ()
     "Return nil for words inside `$...$' or `$$...$$' math."
     (not (memq 'markdown-ts-latex
@@ -1502,7 +1509,8 @@ the line following an item onto it."
   :vc (markdown-ts-appear
        :url "https://github.com/Thysrael/markdown-ts-appear"
        :rev :newest)
-  :hook (markdown-ts-mode . markdown-ts-appear-mode)
+  ;; :hook ((markdown-ts-mode markdown-ts-view-mode) . markdown-ts-appear-mode)
+  :hook (markdown-ts-mode markdown-ts-view-mode)
   :defines markdown-ts-hide-markup
   :custom
   (markdown-ts-appear-enable-math-preview (and (executable-find "node") t))
@@ -2346,6 +2354,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
                (eq (following-char) (matching-paren last-command-event)))
       (save-excursion (insert ?\\))))
   (defun my/org-mode-hook ()
+    (variable-pitch-mode 1)
     (my/set-local-indent-width org-src-content-indentation)
     (setq-local tab-width 8)
     ;; Run after `electric-pair-post-self-insert-function', at depth 50.
