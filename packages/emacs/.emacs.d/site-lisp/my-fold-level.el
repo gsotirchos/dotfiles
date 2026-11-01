@@ -29,9 +29,12 @@
 ;; Levels here are 1-based -- level 1 leaves only the outermost constructs
 ;; visible -- while the echo area reports Vim's 0-based `foldlevel'.
 ;;
-;; Buffers driven by neither `outline-minor-mode' nor `hs-minor-mode'
-;; (`treesit-fold', vdiff...) have no level notion to step, so `zM' and `zR' fall
-;; back to `kirigami', which knows how to fold them.
+;; `treesit-fold' reads nesting off the ranges of its foldable nodes and gives each
+;; block an overlay of its own, so it steps like hideshow.  It is checked first
+;; because `hs-minor-mode' stays on in its buffers through the `prog-mode' hook.
+;;
+;; Buffers driven by none of these (vdiff...) have no level notion to step, so
+;; `zM' and `zR' fall back to `kirigami', which knows how to fold them.
 
 ;;; Code:
 
@@ -41,10 +44,17 @@
 (defvar hs-allow-nesting)
 (defvar hs-block-start-regexp)
 (defvar hs-block-start-mdata-select)
+(defvar treesit-fold-mode)
+(defvar treesit-fold-range-alist)
 (declare-function hs-hide-block-at-point "hideshow" (&optional end comment-reg))
 (declare-function hs-hide-block "hideshow" ())
 (declare-function hs-show-all "hideshow" ())
 (declare-function hs-discard-overlays "hideshow" (beg end))
+(declare-function treesit-buffer-root-node "treesit" (&optional language))
+(declare-function treesit-fold-close "treesit-fold" (&optional node))
+(declare-function treesit-fold-open-all "treesit-fold" ())
+(declare-function treesit-fold--get-fold-range "treesit-fold" (node))
+(declare-function treesit-fold--range-on-same-line "treesit-fold" (range))
 (declare-function kirigami-open-folds "kirigami" ())
 (declare-function kirigami-close-folds "kirigami" ())
 (declare-function kirigami-open-fold "kirigami" ())
@@ -67,9 +77,12 @@ nothing folded.")
 
 (defun my/fold-level--backend ()
   "Return the folding backend of the current buffer.
-Either the symbol `outline' or `hideshow', or nil if neither is in use.
-Outline wins when both are active: it is the more faithful of the two."
-  (cond ((or (bound-and-true-p outline-minor-mode)
+Either the symbol `treesit-fold', `outline' or `hideshow', or nil if none is in
+use.  Outline wins over hideshow when both are active: it is the more faithful
+of the two."
+  (cond ((bound-and-true-p treesit-fold-mode)
+         'treesit-fold)
+        ((or (bound-and-true-p outline-minor-mode)
              (derived-mode-p 'outline-mode))
          'outline)
         ((bound-and-true-p hs-minor-mode)
@@ -154,6 +167,37 @@ what makes opening a block uncover just the next level, as in Vim."
    (seq-filter (lambda (block) (>= (car block) level))
                (my/fold-level--hideshow-blocks))))
 
+(defun my/fold-level--treesit-fold-blocks ()
+  "Return a (DEPTH . NODE) pair for each `treesit-fold' block outside comments.
+DEPTH is the number of fold ranges enclosing the block's own, itself included.
+Only blocks spanning several lines count, as `treesit-fold-close-all' has it."
+  (let* ((types (seq-remove (lambda (type)
+                              (string-search "comment" (symbol-name type)))
+                            (mapcar #'car (alist-get major-mode
+                                                     treesit-fold-range-alist))))
+         (query (seq-mapcat (lambda (type) `((,type) @block)) types))
+         (ranges (seq-keep
+                  (pcase-lambda (`(,_ . ,node))
+                    (when-let* ((range (treesit-fold--get-fold-range node))
+                                ((not (treesit-fold--range-on-same-line range))))
+                      (cons range node)))
+                  (treesit-query-capture (treesit-buffer-root-node) query)))
+         open-ends
+         blocks)
+    (pcase-dolist (`((,start . ,end) . ,node)
+                   (sort ranges :key (pcase-lambda (`((,start . ,end) . ,_))
+                                       (list start (- end)))))
+      (setq open-ends (seq-drop-while (lambda (open-end) (<= open-end start))
+                                      open-ends))
+      (push end open-ends)
+      (push (cons (length open-ends) node) blocks))
+    blocks))
+
+(defun my/fold-level--treesit-fold-hide-blocks (blocks)
+  "Fold each of BLOCKS, a list of (DEPTH . NODE) pairs."
+  (dolist (block blocks)
+    (treesit-fold-close (cdr block))))
+
 (defun my/fold-level--max-level ()
   "Return the lowest level at which the buffer is fully unfolded.
 The result is cached until the buffer text changes."
@@ -164,6 +208,10 @@ The result is cached until the buffer text changes."
             (pcase (my/fold-level--backend)
               ('outline (my/fold-level--outline-max))
               ('hideshow (my/fold-level--hideshow-max))
+              ('treesit-fold
+               (1+ (seq-reduce #'max
+                               (mapcar #'car (my/fold-level--treesit-fold-blocks))
+                               0)))
               (_ 1))))
     my/fold-level--max))
 
@@ -180,7 +228,13 @@ The result is cached until the buffer text changes."
      ;; down the new one.
      (hs-show-all)
      (unless (>= level (my/fold-level--max-level))
-       (my/fold-level--hideshow-hide level)))))
+       (my/fold-level--hideshow-hide level)))
+    ('treesit-fold
+     (treesit-fold-open-all)
+     (unless (>= level (my/fold-level--max-level))
+       (my/fold-level--treesit-fold-hide-blocks
+        (seq-filter (lambda (block) (>= (car block) level))
+                    (my/fold-level--treesit-fold-blocks)))))))
 
 ;;;; Level stepping
 
@@ -283,6 +337,27 @@ With a numeric prefix COUNT, unfold COUNT levels more."
   "Unfold just the hideshow blocks hiding the current line."
   (mapc #'delete-overlay (my/fold-level--hideshow-line-overlays)))
 
+(defun my/fold-level--treesit-fold-close (beg end)
+  "Fold every `treesit-fold' block containing a line between BEG and END."
+  (my/fold-level--treesit-fold-hide-blocks
+   (seq-filter (pcase-lambda (`(,_ . ,node))
+                 (and (<= (treesit-node-start node) end)
+                      (>= (treesit-node-end node) beg)))
+               (my/fold-level--treesit-fold-blocks))))
+
+(defun my/fold-level--treesit-fold-line-overlays ()
+  "Return the `treesit-fold' overlays hiding the current line or its end."
+  (seq-filter (lambda (overlay) (eq (overlay-get overlay 'creator) 'treesit-fold))
+              (seq-union (overlays-at (point)) (overlays-at (pos-eol)))))
+
+(defun my/fold-level--treesit-fold-open-recursive ()
+  "Unfold the outermost `treesit-fold' block hiding the line and all blocks in it."
+  (when-let* ((outermost (car (sort (my/fold-level--treesit-fold-line-overlays)
+                                    :key #'overlay-start))))
+    (dolist (overlay (overlays-in (overlay-start outermost) (overlay-end outermost)))
+      (when (eq (overlay-get overlay 'creator) 'treesit-fold)
+        (delete-overlay overlay)))))
+
 (defun my/fold-level--outline-up-heading ()
   "Move to the parent of the heading at point, returning nil if it has none."
   (let ((from (point)))
@@ -317,7 +392,8 @@ With a numeric prefix COUNT, unfold COUNT levels more."
   (pcase (my/fold-level--backend)
     ('outline (save-excursion (outline-back-to-heading t)
                               (outline-show-subtree)))
-    ('hideshow (my/fold-level--hideshow-open-recursive))))
+    ('hideshow (my/fold-level--hideshow-open-recursive))
+    ('treesit-fold (my/fold-level--treesit-fold-open-recursive))))
 
 ;;;###autoload
 (defun my/fold-level-close-recursive (beg end)
@@ -332,6 +408,7 @@ line.  Folds that contain none of them are left as they are."
     (pcase (my/fold-level--backend)
       ('outline (my/fold-level--outline-close beg end))
       ('hideshow (my/fold-level--hideshow-close beg end))
+      ('treesit-fold (my/fold-level--treesit-fold-close beg end))
       (_ (my/fold-level--fallback #'kirigami-close-fold))))
   ;; Ends evil's Visual state as well.
   (deactivate-mark)
@@ -355,6 +432,7 @@ it, otherwise close every fold containing the line."
   (pcase (my/fold-level--backend)
     ('outline (my/fold-level--outline-reveal))
     ('hideshow (my/fold-level--hideshow-reveal))
+    ('treesit-fold (mapc #'delete-overlay (my/fold-level--treesit-fold-line-overlays)))
     (_ (my/fold-level--fallback #'kirigami-open-fold))))
 
 (provide 'my-fold-level)

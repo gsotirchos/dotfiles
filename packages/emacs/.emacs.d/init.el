@@ -1603,9 +1603,14 @@ the line following an item onto it."
   (advice-add 'outline-toggle-children :around #'patch/outline-toggle-children-advice))
 
 (use-package outline-indent
-  :hook ((conf-mode yaml-ts-mode nxml-mode python-base-mode sh-base-mode
-                    c-ts-base-mode json-ts-mode)
-         . outline-indent-minor-mode))
+  :hook ((conf-mode nxml-mode sh-mode) . outline-indent-minor-mode))
+
+(use-package treesit-fold
+  :custom-face (treesit-fold-replacement-face ((t :inherit my/fold-ellipsis-face)))
+  :hook (after-init . global-treesit-fold-mode)
+  :config
+  (setq treesit-fold-range-alist
+        (assq-delete-all 'markdown-ts-mode treesit-fold-range-alist)))
 
 (use-package kirigami
   :custom (kirigami-preserve-visual-position t)
