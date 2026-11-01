@@ -22,6 +22,8 @@
 ;;
 ;; Neither backend offers a hook that hands over the overlay it has just made,
 ;; so `outline-flag-region' is advised; hideshow has `hs-set-up-overlay' for it.
+;; `treesit-fold' builds its text in one function, which is advised to return the
+;; marker.
 
 ;;; Code:
 
@@ -101,6 +103,10 @@ of a buffer-local table stay as their owners left them."
                   (not (overlay-get o 'invisible)))
              (overlay-put o 'display nil))))))
 
+(defun my/fold-ellipsis-treesit-fold-text (&rest _)
+  "Return the marker `treesit-fold' shows in place of the text it hides."
+  (my/fold-ellipsis-string))
+
 (defun my/fold-ellipsis-set-up-overlay (ov)
   "Show the fold marker in place of the text hideshow hides under OV."
   (overlay-put ov 'display (my/fold-ellipsis-string)))
@@ -110,7 +116,7 @@ of a buffer-local table stay as their owners left them."
   "Stand a dimmed, boxed badge in place of folded text.
 Both fold render paths are covered: the display table, which Org draws its
 ellipsis from, and the `display' property of the fold overlays made by
-`outline-minor-mode' and by hideshow."
+`outline-minor-mode', by hideshow and by `treesit-fold'."
   :global t
   :group 'faces
   (if my-fold-ellipsis-mode
@@ -120,6 +126,8 @@ ellipsis from, and the `display' property of the fold overlays made by
         (add-hook 'after-load-theme-hook #'my/customize-fold-ellipsis)
         (add-hook 'buffer-face-mode-hook #'my/fold-ellipsis-set-display-table)
         (advice-add 'outline-flag-region :after #'my/fold-ellipsis-mark-overlay)
+        (advice-add 'treesit-fold--format-overlay-text
+                    :override #'my/fold-ellipsis-treesit-fold-text)
         ;; Set before hideshow loads: its `defcustom' leaves a value that is
         ;; already there alone, and it calls nil as no handler at all.
         (setq my/fold-ellipsis-saved-hs-set-up-overlay
@@ -133,6 +141,8 @@ ellipsis from, and the `display' property of the fold overlays made by
     (remove-hook 'after-load-theme-hook #'my/customize-fold-ellipsis)
     (remove-hook 'buffer-face-mode-hook #'my/fold-ellipsis-set-display-table)
     (advice-remove 'outline-flag-region #'my/fold-ellipsis-mark-overlay)
+    (advice-remove 'treesit-fold--format-overlay-text
+                   #'my/fold-ellipsis-treesit-fold-text)
     (setq hs-set-up-overlay my/fold-ellipsis-saved-hs-set-up-overlay)
     (dolist (buf (buffer-list))
       (with-current-buffer buf
