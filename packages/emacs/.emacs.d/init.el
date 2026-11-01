@@ -1846,6 +1846,8 @@ kill Aspell first so that it cannot save the word back."
   :bind (:map my/personal-map ("er" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
+  (eglot-sync-connect nil)
+  (eglot-max-file-watches 5000)
   ;; A header reached by `M-.' from a TU stays with that TU's server, rather
   ;; than getting a server of its own per directory it happens to live in.
   (eglot-extend-to-xref t)
@@ -1857,7 +1859,8 @@ kill Aspell first so that it cannot save the word back."
      ;; :codeActionProvider
      ;; :colorProvider
      :foldingRangeProvider
-     :executeCommandProvider))
+     :executeCommandProvider
+     :documentOnTypeFormattingProvider))
   :preface
   (defun my/eglot-ensure-file-buffer ()
     "Only run `eglot-ensure' in a buffer visiting a file."
