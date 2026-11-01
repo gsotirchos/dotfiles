@@ -1502,10 +1502,6 @@ the line following an item onto it."
               #'patch/markdown-ts-fill-forward-by-item-paragraph))
 
 (use-package markdown-ts-appear
-  :vc (markdown-ts-appear
-       :url "https://github.com/Thysrael/markdown-ts-appear"
-       :rev :newest)
-  ;; :hook ((markdown-ts-mode markdown-ts-view-mode) . markdown-ts-appear-mode)
   :hook (markdown-ts-mode markdown-ts-view-mode)
   :defines markdown-ts-hide-markup
   :custom
