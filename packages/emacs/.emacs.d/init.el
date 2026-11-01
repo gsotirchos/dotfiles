@@ -1678,15 +1678,14 @@ the line following an item onto it."
 (use-package indent-bars
   :preface
   (defun my/indent-bars-maybe-enable ()
-    (unless (or (derived-mode-p 'emacs-lisp-mode 'lisp-data-mode)
-                (string-prefix-p " " (buffer-name)))
+    (unless (string-prefix-p " " (buffer-name))
       (indent-bars-mode 1)))
   (defun patch/indent-bars-fill-whitespace-prefix ()
     "Let `adaptive-fill-first-line-regexp' also accept whitespace-only prefixes.
 Modes that replace it, such as those of cc-mode and c-ts-common, make
 `visual-wrap-prefix-mode' merge a `min-width' spec into the bars'
 display property, which `add-display-text-property' corrupts on
-refontification (see docs/INDENT-BARS-VISUAL-WRAP.md)."
+refontification (see visual-wrap-display-spec in docs/CONTRIBUTIONS.org)."
     (let ((regexp adaptive-fill-first-line-regexp))
       (unless (and regexp (string-match-p regexp " "))
         (setq-local adaptive-fill-first-line-regexp
@@ -1694,14 +1693,34 @@ refontification (see docs/INDENT-BARS-VISUAL-WRAP.md)."
   :hook (((prog-mode yaml-ts-mode) . my/indent-bars-maybe-enable)
          (indent-bars-mode . patch/indent-bars-fill-whitespace-prefix))
   :custom
-  (indent-bars-display-on-blank-lines nil)
-  ;; (indent-bars-no-descend-lists t)  ; no extra bars in contd. func. args
+  (indent-bars-pattern ".")
+  (indent-bars-width-frac 0.1)
+  (indent-bars-display-on-blank-lines 'least)
+  (indent-bars-no-descend-lists t)  ; no extra bars in contd. func. args
   (indent-bars-treesit-support t)
-  ;; (indent-bars-treesit-scope
-  ;;  '((python
-  ;;     function_definition class_definition
-  ;;     for_statement if_statement with_statement while_statement)))
-  (indent-bars-prefer-character t)
+  ;; Node types around point whose bars keep the in-scope style; all other bars
+  ;; use the dimmer `indent-bars-ts-color'.
+  (indent-bars-treesit-scope
+   '((bash function_definition)
+     (c function_definition struct_specifier enum_specifier)
+     (cmake function_def macro_def)
+     (cpp function_definition class_specifier struct_specifier enum_specifier)
+     (json pair)
+     (python function_definition class_definition)
+     (yaml block_mapping_pair)))
+  ;; Node types inside which bars go at most one level deeper than the line
+  ;; opening the node.
+  (indent-bars-treesit-wrap
+   '((c argument_list parameter_list initializer_list)
+     (cmake argument_list)
+     (cpp argument_list parameter_list initializer_list
+          template_argument_list template_parameter_list)
+     (python argument_list parameters list tuple set dictionary subscript
+             list_comprehension set_comprehension dictionary_comprehension
+             generator_expression parenthesized_expression)))
+  ;; Root node types whose blank lines get no bars, separating top-level forms.
+  (indent-bars-treesit-ignore-blank-lines-types
+   '("document" "module" "program" "source_file" "stream" "translation_unit"))
   (indent-bars-no-stipple-char ?·)
   (indent-bars-color '(highlight :face default :blend 0.2))
   (indent-bars-zigzag nil)
