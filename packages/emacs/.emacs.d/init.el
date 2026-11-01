@@ -2025,9 +2025,11 @@ stops their compilation at the first `require'."
 ;; Vimscript
 
 (use-package vimscript-ts-mode
-  :ensure nil
-  :no-require t
-  :mode "/\\.?\\(vimrc\\|vims?\\)\\'")
+  :mode ("\\.vim\\'" "/\\.?vimrc\\'")
+  :init
+  (with-eval-after-load 'treesit
+    (add-to-list 'treesit-language-source-alist '(vim "https://github.com/neovim/tree-sitter-vim")))
+  :config (treesit-ensure-installed 'vim))
 
 
 ;; Python
