@@ -96,9 +96,9 @@
 
 ;; Initialize package sources and set up `use-package'
 (require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
-                         ("elpa" . "https://elpa.gnu.org/packages/")))
+(setq package-archives '(("elpa" . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
 ;; Regenerate missing autoload files before package activation
 (let ((elpa-dir (expand-file-name "elpa" user-emacs-directory)))
@@ -107,8 +107,7 @@
       (when (file-directory-p pkg-dir)
         (let* ((pkg-name (replace-regexp-in-string "-[0-9][0-9.]*\\'" ""
                                                    (file-name-nondirectory pkg-dir)))
-               (autoloads-file (expand-file-name
-                                (concat pkg-name "-autoloads.el") pkg-dir)))
+               (autoloads-file (expand-file-name (concat pkg-name "-autoloads.el") pkg-dir)))
           (unless (file-exists-p autoloads-file)
             (package-generate-autoloads pkg-name pkg-dir)))))))
 
@@ -142,9 +141,8 @@
 
 ;; TODO: remove old homebrew paths
 ;; Set PATH
-(let ((path-list (split-string (format "/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/opt/findutils/libexec/gnubin:/opt/homebrew/opt/gnu-sed/libexec/gnubin:/opt/homebrew/opt/gnu-which/libexec/gnubin:/opt/homebrew/opt/grep/libexec/gnubin:/opt/homebrew/opt/gsed/libexec/gnubin:/opt/homebrew/opt/libtool/libexec/gnubin:/opt/homebrew/opt/make/libexec/gnubin:/opt/homebrew/opt/openjdk@20/bin:/opt/homebrew/opt/openjdk@21/bin:/opt/homebrew/opt/openjdk@22/bin:/opt/homebrew/opt/openjdk@23/bin:/opt/homebrew/opt/openjdk@24/bin:/opt/homebrew/opt/openjdk@25/bin:/opt/homebrew/opt/openjdk@26/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/llvm/bin:/Applications/Emacs.app/Contents/MacOS:/Applications/Emacs.app/Contents/MacOS/bin:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin:~/.bin:~/.local/bin:~/.dotfiles/bin:~/.dotfiles/bin/%s:~/.opencode/bin:~/.pixi/bin:~/.texlive/current/bin/universal-darwin:~/.texlive/current/bin/x86_64-linux:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/snap/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/sbin:/opt/pkg/bin:/pkg/env/global/bin:/opt/X11/bin:/opt/miniforge/condabin:/opt/miniforge/condabin/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/Ghostty.app/Contents/MacOS"
-                                       (if (eq system-type 'darwin) "macos" "linux"))
-                               path-separator)))
+(let* ((path-string "/opt/homebrew/opt/coreutils/libexec/gnubin:/opt/homebrew/opt/findutils/libexec/gnubin:/opt/homebrew/opt/gnu-sed/libexec/gnubin:/opt/homebrew/opt/gnu-which/libexec/gnubin:/opt/homebrew/opt/grep/libexec/gnubin:/opt/homebrew/opt/gsed/libexec/gnubin:/opt/homebrew/opt/libtool/libexec/gnubin:/opt/homebrew/opt/make/libexec/gnubin:/opt/homebrew/opt/openjdk@20/bin:/opt/homebrew/opt/openjdk@21/bin:/opt/homebrew/opt/openjdk@22/bin:/opt/homebrew/opt/openjdk@23/bin:/opt/homebrew/opt/openjdk@24/bin:/opt/homebrew/opt/openjdk@25/bin:/opt/homebrew/opt/openjdk@26/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/llvm/bin:/Applications/Emacs.app/Contents/MacOS:/Applications/Emacs.app/Contents/MacOS/bin:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/bin:~/.bin:~/.local/bin:~/.dotfiles/bin:~/.dotfiles/bin/%s:~/.opencode/bin:~/.pixi/bin:~/.texlive/current/bin/universal-darwin:~/.texlive/current/bin/x86_64-linux:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/snap/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/sbin:/opt/pkg/bin:/pkg/env/global/bin:/opt/X11/bin:/opt/miniforge/condabin:/opt/miniforge/condabin/Library/Apple/usr/bin:/Library/TeX/texbin:/Applications/Ghostty.app/Contents/MacOS")
+       (path-list (split-string (format path-string (if (eq system-type 'darwin) "macos" "linux")) path-separator)))
   (setenv "PATH" (mapconcat #'expand-file-name path-list path-separator)))
 (setenv "LIBRARY_PATH" "/opt/homebrew/lib:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib:/usr/local/lib")
 (setq-default exec-path (split-string (getenv "PATH") path-separator))
