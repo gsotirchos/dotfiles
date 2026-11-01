@@ -25,8 +25,9 @@
 
 ;;; Code:
 
+(require 'my-theme-color)
+
 (declare-function my/buffer-display-table "init" ())
-(declare-function my/theme-color "init" (name))
 (declare-function my/variable-pitch-p "init" ())
 
 (defvar hs-set-up-overlay)

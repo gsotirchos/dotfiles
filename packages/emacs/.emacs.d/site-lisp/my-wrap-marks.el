@@ -20,8 +20,9 @@
 
 ;;; Code:
 
+(require 'my-theme-color)
+
 (declare-function my/buffer-display-table "init" ())
-(declare-function my/theme-color "init" (name))
 
 (defvar my/wrap-ellipsis "…"
   "Mark at both ends of wrapped screen lines in `my-wrap-ellipsis-mode'.")
