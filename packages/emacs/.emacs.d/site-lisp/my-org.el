@@ -6,9 +6,8 @@
 
 ;;; Code:
 
-(declare-function my/theme-color "init" (name))
-
 (require 'browse-url)
+(require 'my-theme-color)
 (require 'org)
 (require 'org-archive)
 
