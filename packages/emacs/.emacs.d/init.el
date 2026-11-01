@@ -1117,12 +1117,12 @@ the pixel scrolling of any other window under the mouse."
 
 (use-package embark
   :bind
-  (nil
+  (("C-." . embark-act)
+   ("C-<return>" . embark-dwim)
+   :map evil-normal-state-map
+   ("C-." . embark-act)
    :map help-map
    ("B" . embark-bindings)  ; alternative for `describe-bindings'
-   :map minibuffer-local-map
-   ("C-." . embark-act)
-   ("C-<return>" . embark-dwim)
    :map embark-file-map
    ("P" . project-forget-project))
   :custom (embark-quit-after-action nil)
@@ -1811,7 +1811,9 @@ kill Aspell first so that it cannot save the word back."
   :init
   (add-hook 'text-mode-hook #'flyspell-mode)
   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-  :config (require 'ispell))
+  :config
+  (require 'ispell)
+  (keymap-unset flyspell-mode-map "C-." t))
 
 (use-package ispell
   :ensure nil
