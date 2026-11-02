@@ -102,7 +102,8 @@ Elsewhere, copy the visited file's path."
   :doc "My toggle commands map."
   "w" 'whitespace-mode
   "n" 'global-display-line-numbers-mode
-  "p" 'variable-pitch-mode)
+  "p" 'variable-pitch-mode
+  "L" 'visual-line-mode)
 
 (defvar-keymap my/personal-map
   :doc "My prefix map."
