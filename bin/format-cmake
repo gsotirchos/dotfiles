@@ -45,6 +45,8 @@ class CMakeFormatter:
 
     KWARG_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
+    FLAT_LIST_COMMANDS = ("ament_export_dependencies",)
+
     NAME_FIRST_RE = re.compile(
         r"^(add_(executable|library|test))|((ament_)?target_\w*)$"
     )
@@ -177,6 +179,8 @@ class CMakeFormatter:
     def _split(self, name, args):
         """Split args into (head, groups): the leading args that stay on the
         opening line, and the KEYWORD-led / standalone-value groups to break out."""
+        if name in self.FLAT_LIST_COMMANDS:
+            return [], [[a] for a in args]
         oc = self.opening_count(name, args)
         return args[:oc], self.group_args(args[oc:])
 
