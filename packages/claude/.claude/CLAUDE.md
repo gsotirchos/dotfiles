@@ -6,10 +6,11 @@
 - Check a repo's open issues before suggesting to report one.
 - After implementing anything, end with a commit message (summary ≤50 chars, body ≤73/line) built from `git status`/`git diff`/untracked files, not from memory.
 - Commit only the paths I changed (`git add <paths>`), never `commit -a` with others' edits in the tree.
-- Branch ≤~400 changed LOC vs its base (excl. binaries, config like RViz, licences, a new package's CMakeLists/README); beyond that stack a new branch, by content, unrelated packages unstacked. Tests ≈35% of branch LOC. Each commit builds with its tests. Fixes/renames across a stack: fold into the originating commits; review-requested changes: usually one commit on the tip of each branch they concern, then `rebase --onto`; a couple of small fixes may be amended into the commit they fix instead, to keep commits focused. Use the branch-stack-rewrite skill for both.
+- Branch ≤~400 changed LOC vs its base (excl. binaries, config like RViz, licences, a new package's CMakeLists/README); beyond that stack a new branch, by content, unrelated packages unstacked. Tests ≈35% of branch LOC. Each commit builds with its tests. Fixes/renames across a stack: fold into the originating commits; review-requested changes: one new commit on the tip of the reviewed branch (even for files from lower branches), then `rebase --onto` the branches above; a couple of small fixes may be amended into the commit they fix instead, to keep commits focused. Use the branch-stack-rewrite skill for both.
 - After using `glab` for CI/MR state, end with the exact commands so the user can check.
 - Test the top-level unit (e.g. a node through its topics); unit tests only for maths too precise to pin from above. Tests go in the package whose code they check.
 - Python packages: pipx/conda/venv only, never system-wide.
+- C/C++: include the project's own headers (generated ones too) with quotes, "pkg/x.hpp"; angle brackets only for external/system headers.
 - Shell utils are aliased: call `env rm`, `env ls`, etc.
 - Never `pkill -f`/`pgrep -f` a literal inside `bash -c`/`docker exec … bash -c` (self-match); track PIDs or use `timeout`; never kill by name in shared containers.
 - Memories: general lessons go to `~/.dotfiles/packages/claude/.claude/CLAUDE.md`, ROS/dev-container ones to `~/.dotfiles/packages/claude/.claude/context/{ros,devcontainer}.md` (injected by the SessionStart hook) (propose first, keep terse); project memory only for workspace-specific facts.
