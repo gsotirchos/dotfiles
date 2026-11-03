@@ -10,11 +10,14 @@
 ;;
 ;; The functions are meant to be hooked up by whoever configures AUCTeX;
 ;; only the `global-text-scale-adjust' advice is installed here, since that
-;; command is global and offers no hook.
+;; command is global and offers no hook.  The advice also resizes
+;; markdown-ts-appear's MathJax previews, which miss it for the same reason.
 
 ;;; Code:
 
 (require 'face-remap)
+
+(declare-function markdown-ts-appear-mathjax--appearance "markdown-ts-appear-mathjax")
 
 (defun my/latex-preview-overlays ()
   "Return the LaTeX preview overlays in the current buffer."
@@ -46,7 +49,11 @@ Combines the buffer's `text-scale-mode' factor with the ratio by which
   "Adjust the size of latex fragments in every buffer."
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
-      (my/text-scale-adjust-latex-previews))))
+      (my/text-scale-adjust-latex-previews)))
+  ;; TODO: Report upstream; the previews ignore `global-text-scale-adjust',
+  ;; and `markdown-ts-appear-mathjax--appearance' is private.
+  (when (fboundp 'markdown-ts-appear-mathjax--appearance)
+    (markdown-ts-appear-mathjax--appearance)))
 
 ;;;###autoload
 (defun my/delete-latex-preview-overlays (&rest _)
