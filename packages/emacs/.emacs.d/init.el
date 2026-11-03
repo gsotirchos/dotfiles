@@ -2300,11 +2300,17 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
       (if (and (stringp closer) (looking-at-p (regexp-quote closer)))
           (forward-char (length closer))
         (funcall cdlatex-dollar arg))))
+  (defun patch/cdlatex-fit-help-window (&rest _)
+    "Fit the help window by pixels, as its line count ignores a tall mode line."
+    (let ((window-resize-pixelwise t))
+      (fit-window-to-buffer)))
   :custom
   (cdlatex-takeover-parenthesis nil)  ; leave ( [ { to electric-pair
   (cdlatex-sub-super-scripts-outside-math-mode nil)  ; keep _ for Markdown emphasis
   (cdlatex-math-modify-prefix (kbd "C-'"))
-  :config (advice-add 'cdlatex-dollar :around #'my/cdlatex-dollar-skip-closer))
+  :config
+  (advice-add 'cdlatex-dollar :around #'my/cdlatex-dollar-skip-closer)
+  (advice-add 'cdlatex-turn-on-help :after #'patch/cdlatex-fit-help-window))
 
 
 ;; Org
