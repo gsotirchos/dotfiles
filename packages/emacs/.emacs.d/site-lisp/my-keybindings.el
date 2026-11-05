@@ -120,6 +120,7 @@ Elsewhere, copy the visited file's path."
   ;; Mouse/Wheel
   ;; "<wheel-left>" #'ignore
   ;; "<wheel-right>" #'ignore
+  "<remap> <text-scale-pinch>" #'ignore
 
   ;; Navigation/Edit
   "C-<delete>" #'ignore
