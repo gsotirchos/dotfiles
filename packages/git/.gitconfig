@@ -16,6 +16,9 @@
     recurseSubmodules = check
 [alias]
     spull = submodule update --init --recursive
+    drop-filter-backups = "!git for-each-ref --format='delete %(refname)' 'refs/original*/**' | tee /dev/stderr | git update-ref --stdin"
+[log]
+        initialDecorationSet = all
 [diff]
     tool = vimdiff
     submodule = log
