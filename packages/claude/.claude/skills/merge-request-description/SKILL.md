@@ -35,8 +35,10 @@ Arguments: $ARGUMENTS
   the template's placeholder text, but keep its `[comment]: #` lines.
 - Motivation must make sense to someone outside the project: the problem
   first, then why this solution.
-- Changes: one brief, flat bullet per behavioural change, not per file: what
-  it fixes or improves, plus its justification only when that is not obvious.
+- Changes: one short sentence per change a user of the code would notice,
+  not per file or commit: what it fixes or improves, plus its justification
+  only when that is not obvious. Leave out how it is implemented (helpers,
+  waits, workarounds) and lists of sub-cases. Name the area, not the cases.
   Do not describe what the reviewer can read in the diff (the contents of new
   docs or diagrams, nested detail, parameter values), and leave out routine
   bookkeeping such as CHANGELOG entries.
