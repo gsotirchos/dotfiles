@@ -1918,6 +1918,11 @@ kill Aspell first so that it cannot save the word back."
     "gd" #'eglot-find-declaration
     "gD" #'eglot-find-typeDefinition
     "gi" #'eglot-find-implementation)
+  (with-eval-after-load 'evil
+    (dolist (command '(eglot-find-declaration
+                       eglot-find-implementation
+                       eglot-find-typeDefinition))
+      (evil-set-command-property command :jump t)))
   (add-to-list 'eglot-server-programs
                `(python-base-mode
                  . ,(my-devcontainer-eglot-server "pyright-langserver" "--stdio")))
