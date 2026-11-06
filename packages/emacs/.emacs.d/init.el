@@ -1943,6 +1943,11 @@ kill Aspell first so that it cannot save the word back."
   (defun my/apheleia-format-after-save (&rest _)
     (apheleia-format-after-save))
   (defun my/apheleia-busy-p ()
+    "Return non-nil while an Apheleia formatter runs in this buffer.
+Pending sentinels run first: between one formatter of a chain exiting
+and its sentinel starting the next, no process is live, yet a new run
+would be interrupted by that next formatter."
+    (accept-process-output nil 0)
     (process-live-p apheleia--current-process))
   (defun my/apheleia-format-or (fallback &rest args)
     "Format the buffer with Apheleia if a formatter is configured for it.
@@ -1974,7 +1979,7 @@ inside a comment."
   :config
   (apheleia-global-mode 1)
   (setf (alist-get 'ruff apheleia-formatters)
-        '("ruff" "format" "--silent" "--stdin-filename" filepath "-"))
+        '("ruff" "format" "--stdin-filename" filepath "-"))
   ;; Also sorts imports where the ruff config sets `extend-select = ["I"]'.
   (setf (alist-get 'ruff-check apheleia-formatters)
         '("ruff" "check" "-n" "--fix" "--fix-only" "--stdin-filename" filepath "-"))
