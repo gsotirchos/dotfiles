@@ -59,14 +59,9 @@ workspace_folder() {
         || die "no .devcontainer above $1"
 }
 
-# Both the CLI and VS Code label containers with the folder they were
-# started from, so whichever editor started one is found and reused.
-running_containers() {
-    docker ps -q --no-trunc --filter "label=devcontainer.local_folder${1:+=$1}"
-}
-
-workspace_folder_of() {
-    docker inspect --format '{{index .Config.Labels "devcontainer.local_folder"}}' "$1"
+# The container the CLI started for workspace folder $1, which it labels.
+running_container_of() {
+    docker ps -q --no-trunc --filter "label=devcontainer.local_folder=$1"
 }
 
 # Mutter's Xwayland cookie path changes per login, while a container's
@@ -81,10 +76,11 @@ stable_xauthority() {
 }
 
 # The container serving $1: the running one mounting it most specifically,
-# or else one started for the configuration above it.
+# however it was started (CLI, VS Code, plain docker compose), or else one
+# started for the configuration above it.
 container_id() {
     local dir="$1" id folder mount host best="" best_host=""
-    for id in $(running_containers); do
+    for id in $(docker ps -q --no-trunc); do
         mount="$(covering_mount "$(bind_mounts "${id}")" "${dir}")" || continue
         host="${mount%%=*}"
         if (( ${#host} > ${#best_host} )); then
@@ -99,7 +95,7 @@ container_id() {
     printf 'devcontainer-exec: starting the container for %s\n' "${folder}" >&2
     stable_xauthority
     devcontainer_cli up --workspace-folder "${folder}" > /dev/null
-    id="$(running_containers "${folder}")"
+    id="$(running_container_of "${folder}")"
     [[ -n "${id}" ]] || die "no container is running for ${folder}"
     printf '%s\n' "${id}"
 }
@@ -143,17 +139,17 @@ container_path() {
 
 # Snapshot a VS Code terminal's environment, plus ~/.local/bin and the
 # workspace's colcon overlay, as docker --env-file lines (so multi-line
-# values are dropped). Takes the container's ID and mount table.
+# values are dropped). Takes the container's ID and mount table, and the
+# host directory served, above which the overlay is looked for.
 probe_environment() {
-    local id="$1" mounts="$2" env_file folder overlay entry
+    local id="$1" mounts="$2" dir="$3" env_file overlay entry
     env_file="$(environment_file_of "${id}")"
-    folder="$(workspace_folder_of "${id}")"
-    overlay="$(overlay_install_dir "${folder}")" \
+    overlay="$(overlay_install_dir "${dir}")" \
         && overlay="$(container_path "${mounts}" "${overlay}")" \
         || overlay=""
     mkdir -p "$(dirname "${env_file}")"
     # shellcheck disable=SC2016  # expanded by the container's shell
-    devcontainer_cli exec --workspace-folder "${folder}" bash -c \
+    devcontainer_cli exec --container-id "${id}" bash -c \
         '[[ -z "$1" ]] || source "$1/setup.bash"; PATH="${HOME}/.local/bin:${PATH}" env -0' \
         bash "${overlay}" \
         | while IFS= read -r -d '' entry; do
@@ -163,7 +159,7 @@ probe_environment() {
             esac
             printf '%s\n' "${entry}"
         done > "${env_file}.tmp"
-    [[ -s "${env_file}.tmp" ]] || die "could not probe the environment of ${folder}"
+    [[ -s "${env_file}.tmp" ]] || die "could not probe the environment of container ${id}"
     mv "${env_file}.tmp" "${env_file}"
 }
 
@@ -175,7 +171,7 @@ overlay_install_dir() {
     printf '%s\n' "${dir}/install"
 }
 
-# Whether the overlay above workspace folder $2 gained or lost a package
+# Whether the overlay above host directory $2 gained or lost a package
 # since environment file $1 was probed: colcon gives each package an entry
 # in the install directory, whose mtime thus changes with the set of them.
 environment_is_stale() {
@@ -188,14 +184,14 @@ environment_file_of() {
     printf '%s\n' "${CACHE_DIR}/$1.env"
 }
 
-# The environment file of container $1 (mount table $2), probed anew if
-# missing or stale.
+# The environment file of container $1 (mount table $2) serving host
+# directory $3, probed anew if missing or stale.
 environment_file() {
     local env_file
     env_file="$(environment_file_of "$1")"
     if [[ ! -s "${env_file}" ]] \
-        || environment_is_stale "${env_file}" "$(workspace_folder_of "$1")"; then
-        probe_environment "$1" "$2"
+        || environment_is_stale "${env_file}" "$3"; then
+        probe_environment "$1" "$2" "$3"
     fi
     printf '%s\n' "${env_file}"
 }
@@ -253,7 +249,7 @@ main() {
     case "${action}" in
         mappings) paste -sd ',' <<< "${mounts}" ;;
         container) printf '%s@%s\n' "$(container_user "${id}")" "${id}" ;;
-        refresh) probe_environment "${id}" "${mounts}" ;;
+        refresh) probe_environment "${id}" "${mounts}" "${dir}" ;;
         provision) provision "${id}" "${mounts}" "${dir}" ;;
         run)
             # Assigned first: a failure inside a substitution on the exec
@@ -261,7 +257,7 @@ main() {
             local workdir env_file tty=()
             workdir="$(container_path "${mounts}" "${dir}")" \
                 || die "${dir} is not mounted into the container"
-            env_file="$(environment_file "${id}" "${mounts}")"
+            env_file="$(environment_file "${id}" "${mounts}" "${dir}")"
             [[ -t 0 ]] && tty=(-t)
             exec docker exec -i "${tty[@]}" -u "$(container_user "${id}")" \
                 -w "${workdir}" --env-file "${env_file}" "${id}" "$@"
