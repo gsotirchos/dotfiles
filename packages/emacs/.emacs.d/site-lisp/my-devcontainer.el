@@ -4,8 +4,9 @@
 
 ;; Buffers stay on the host while the tools needing the image's filesystem
 ;; (clangd, pyright, mypy, colcon) run in the container via `devcontainer-exec'.
-;; clangd gets the bind mounts as --path-mappings; paths only the container
-;; has are visited over Tramp.
+;; The language servers are sent the container's paths, translated through
+;; the bind mounts, and their answers are translated back; paths only the
+;; container has are visited over Tramp.
 
 ;;; Code:
 
@@ -88,11 +89,10 @@ Nil if no container serves DIR."
   "Return clangd's arguments for the container's MAPPINGS.
 It is pointed at the workspace's merged compile database, the only one
 covering generated headers."
-  (cons (concat "--path-mappings=" (my-devcontainer--query "--mappings"))
-        (when-let* ((workspace (my-devcontainer-workspace))
-                    (build (my-devcontainer--container-path
-                            (expand-file-name "build" workspace) mappings)))
-          (list (concat "--compile-commands-dir=" build)))))
+  (when-let* ((workspace (my-devcontainer-workspace))
+              (build (my-devcontainer--container-path
+                      (expand-file-name "build" workspace) mappings)))
+    (list (concat "--compile-commands-dir=" build))))
 
 (defun my-devcontainer--eglot-server (container-args program args)
   "Return an `eglot-server-programs' contact running PROGRAM with ARGS.
@@ -120,11 +120,14 @@ its paths to the host's."
 Those are private to the nodes of their packages, which re-execute
 themselves in them, so the container's interpreter does not report them
 to pyright.  Every environment of the workspace is returned: pyright
-takes one configuration per project, which may hold several packages."
-  (when-let* ((workspace (my-devcontainer-workspace dir)))
-    (file-expand-wildcards
-     (expand-file-name "install/*/share/*/venv/lib/python*/site-packages"
-                       workspace))))
+takes one configuration per project, which may hold several packages.
+The paths are the container's, as pyright runs there."
+  (when-let* ((workspace (my-devcontainer-workspace dir))
+              (mappings (my-devcontainer-mappings dir)))
+    (mapcar (lambda (path) (my-devcontainer--container-path path mappings))
+            (file-expand-wildcards
+             (expand-file-name "install/*/share/*/venv/lib/python*/site-packages"
+                               workspace)))))
 
 
 ;;;; Locations inside the container
@@ -163,6 +166,19 @@ Filter for `eglot-uri-to-path'."
             (concat "/docker:" (my-devcontainer--query "--container") ":" path))
       path)))
 
+(defun my-devcontainer--containerize-path (args)
+  "Return ARGS of `eglot-path-to-uri' with the path moved into the container.
+Filter for `eglot-path-to-uri': the server runs there, so it only knows
+the container's paths.  The path is already a truename then, which the
+host could not resolve."
+  (pcase-let ((`(,path . ,keys) args))
+    (if-let* (((file-name-absolute-p path))
+              (mappings (my-devcontainer-mappings))
+              (container (my-devcontainer--container-path (file-truename path)
+                                                          mappings)))
+        (cons container (plist-put keys :truenamep t))
+      args)))
+
 (defun my-devcontainer--withhold-process-id (fn &rest args)
   "Call FN with ARGS, sending no client PID to a container-side server."
   (let ((eglot-withhold-process-id (or eglot-withhold-process-id
@@ -171,6 +187,7 @@ Filter for `eglot-uri-to-path'."
 
 (with-eval-after-load 'eglot
   (advice-add 'eglot-uri-to-path :filter-return #'my-devcontainer--localize-path)
+  (advice-add 'eglot-path-to-uri :filter-args #'my-devcontainer--containerize-path)
   (advice-add 'eglot--connect :around #'my-devcontainer--withhold-process-id))
 
 
