@@ -96,15 +96,19 @@
                :noquery t
                :connection-type 'pipe
                :buffer (generate-new-buffer "*flymake-mypy-output*")
+               ;; Patched (upstream: absolute paths in and out): paths
+               ;; relative to the working directory, which a mypy run in a
+               ;; container resolves the same as the host.
                :command (mapcar (lambda (x) (shell-quote-argument x))
                                 (flatten-list (list (split-string flymake-mypy-executable " ")
                                                     "--show-column-numbers"
                                                     "--show-error-end"
-                                                    "--show-absolute-path"
                                                     "--shadow-file"
-                                                    (buffer-file-name source-buffer)
-                                                    temp-file
-                                                    (buffer-file-name source-buffer))))
+                                                    (file-relative-name
+                                                     (buffer-file-name source-buffer))
+                                                    (file-relative-name temp-file)
+                                                    (file-relative-name
+                                                     (buffer-file-name source-buffer)))))
                :sentinel
                (lambda (proc _event)
                  (when (memq (process-status proc) '(exit signal))
@@ -115,7 +119,7 @@
                              (goto-char (point-min))
                              (cl-loop
                               while (search-forward-regexp flymake-mypy-output-pattern nil t)
-                              for filename = (match-string 1)
+                              for filename = (expand-file-name (match-string 1))
                               for line-num = (string-to-number (match-string 2))
                               ;; mypy column numbers are off by 1
                               for col-num = (1- (string-to-number (or (match-string 3) "1")))
