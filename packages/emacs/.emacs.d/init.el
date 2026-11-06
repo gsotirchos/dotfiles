@@ -1160,6 +1160,8 @@ the pixel scrolling of any other window under the mouse."
   :config (advice-add 'eldoc-box--get-frame :around #'patch/eldoc-box-recreate-hidden-frame))
 
 (use-package diff-hl
+  ;; TODO: Drop once https://github.com/dgutov/diff-hl/issues/274 is fixed.
+  :defines vc-git-diff-switches vc-hg-diff-switches
   :custom
   (diff-hl-draw-borders nil)
   (diff-hl-margin-symbols-alist
@@ -1201,9 +1203,14 @@ The upstream path-based name exceeds NAME_MAX for deeply nested files."
       (concat (make-auto-save-file-name)
               ".~" (subst-char-in-string ?/ ?_ rev)
               (unless manual ".") "~")))
+  ;; TODO: Drop once https://github.com/dgutov/diff-hl/issues/274 is fixed.
+  (defun patch/diff-hl-flydiff-diff-switches (changes-buffer &rest args)
+    (diff-hl-with-diff-switches (apply changes-buffer args)))
   :config
   (advice-add 'diff-hl-make-temp-file-name :override
               #'patch/diff-hl-make-temp-file-name)
+  (advice-add 'diff-hl-flydiff-changes-buffer :around
+              #'patch/diff-hl-flydiff-diff-switches)
   (my/diff-hl-faces)
   (add-hook 'after-load-theme-hook #'my/diff-hl-faces)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
