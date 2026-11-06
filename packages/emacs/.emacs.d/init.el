@@ -1241,7 +1241,9 @@ The `upstream' color mirrors the `pager.log' filter in ~/.gitconfig."
                      (magit-head                      cyan           normal)
                      (magit-branch-local              green-faint    normal)
                      (magit-branch-remote             red-faint      normal)
-                     (my/magit-branch-upstream-remote magenta-warmer normal)))
+                     (magit-refname-stash             magenta-warmer normal)
+                     (magit-refname                   slate          normal)
+                     (my/magit-branch-upstream-remote blue           normal)))
       (when-let* ((fg (my/theme-color color)))
         (set-face-attribute face nil :foreground fg :weight weight))))
   :config
