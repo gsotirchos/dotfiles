@@ -37,6 +37,7 @@ mkdir -p \
     ~/.config/pixi \
     ~/.conda \
     ~/.claude \
+    ~/.vibe \
     ~/Zotero
 if [[ "${os}" == "linux" ]]; then
     mkdir -p ~/.local/share/fonts ~/.config/gtk-3.0
@@ -69,7 +70,7 @@ mkdir -p ~/.emacs.d
 echo -e "${bright_style}- Stowing dotfiles${normal_style}"
 common=(
     bash git vim emacs ghostty starship op conda linters claude
-    opencode pixi clang cmake latex zotero
+    opencode pixi clang cmake latex zotero vibe
 )
 ignore=()
 [[ "${os}" == "macos" ]] && ignore=(--ignore='^\.profile$')

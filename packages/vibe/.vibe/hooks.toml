@@ -1,0 +1,36 @@
+# Vibe hooks — mirrors the Claude Code hooks in packages/claude/.claude/settings.json
+# Loaded from ~/.vibe/hooks.toml (stowed from this file).
+
+# PreToolUse on Bash → pre_tool: block commands that bypass gitlab-redact-proxy
+[[hooks]]
+name = "guard-gitlab-token"
+type = "pre_tool"
+match = "re:bash|process_start"
+strict = true
+command = '$HOME/.dotfiles/packages/claude/.claude/hooks/guard-gitlab-token.sh'
+description = "Block Bash commands that bypass gitlab-redact-proxy"
+
+# PostToolUse on Edit|Write → post_tool: clang-format C/C++ files
+[[hooks]]
+name = "clang-format"
+type = "post_tool"
+match = "re:edit|write_file"
+command = 'f=$(jq -r ".tool_input.file_path // empty"); case "$f" in *.c|*.cc|*.cpp|*.cxx|*.h|*.hh|*.hpp|*.hxx) ;; *) exit 0 ;; esac; clang-format -i --style=file --fallback-style=none "$f" >&2 || exit 2'
+description = "Format C/C++ files with clang-format after edits"
+
+# PostToolUse on Edit|Write → post_tool: ruff check + format Python files
+[[hooks]]
+name = "ruff"
+type = "post_tool"
+match = "re:edit|write_file"
+command = 'f=$(jq -r ".tool_input.file_path // empty"); case "$f" in *.py) ;; *) exit 0 ;; esac; cd "$(dirname "$f")" || exit 2; ruff check --fix --quiet "$f" >&2; unfixed=$?; ruff format --silent "$f" >&2 || exit 2; [ "$unfixed" -eq 0 ] || exit 2'
+description = "Fix and format Python files with ruff after edits"
+
+# SessionStart → post_tool on the first tool call of the session (Vibe has no
+# SessionStart event). Injects ROS/devcontainer workspace context once per
+# session via additional_context.
+[[hooks]]
+name = "workspace-context"
+type = "post_tool"
+command = '$HOME/.vibe/hooks/workspace-context-once.sh'
+description = "Inject ROS/devcontainer workspace context once per session"
