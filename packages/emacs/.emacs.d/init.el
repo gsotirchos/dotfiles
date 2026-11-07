@@ -2366,7 +2366,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (org-image-max-width (/ 2 (+ 1 (sqrt 5))))
   (org-archive-location "org_archive/%s_archive::")
   (org-directory "~/Documents/org")
-  (org-agenda-files (list org-directory "~/Desktop"))
+  (org-agenda-files (list org-directory (expand-file-name "journal" org-directory) "~/Desktop"))
   (org-todo-keywords '((sequence "TODO" "NEXT" "WIP" "WAIT" "|" "DONE" "SKIP" "FAIL")))
   (org-enforce-todo-dependencies t)
   (org-agenda-dim-blocked-tasks t)
