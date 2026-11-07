@@ -81,12 +81,13 @@ commands with plain `docker exec` — a few tens of milliseconds, against the
 better part of a second for `devcontainer exec`.
 
 Paths differ between the two sides (`~/Projects/ws` on the host is
-`/workspace` in the container). clangd is told the mapping; pyright and mypy
-are given host paths, which resolve in the container through a symlink
-`--provision` creates. In the other direction, `site-lisp/my-devcontainer.el`
-translates the locations servers report back to host files where they exist,
-and to TRAMP paths where they do not. Buffers outside any devcontainer are
-untouched.
+`/workspace` in the container). `site-lisp/my-devcontainer.el` translates
+the paths Eglot sends a server in the container through the bind mounts,
+pyright's `extraPaths` included, and translates the locations it reports back
+to host files where they exist, and to TRAMP paths where they do not. mypy
+is given paths relative to the workspace, the same on both sides. Servers
+running on the host, such as lemminx for `package.xml`, keep host paths, and
+buffers outside any devcontainer are untouched.
 
 ## Troubleshooting
 
