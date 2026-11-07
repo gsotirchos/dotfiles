@@ -1625,12 +1625,17 @@ the line following an item onto it."
              kirigami-toggle-fold
              kirigami-open-folds
              kirigami-close-folds)
+  :defines hs-allow-nesting
+  :preface
+  (defun patch/kirigami-hs-open-rec ()
+    "Open the hideshow block at point and every block nested inside it.
+`kirigami' leaves `:open-rec' unimplemented for hideshow.  With
+`hs-allow-nesting' on, `hs-show-block' keeps the nested blocks hidden."
+    (let ((hs-allow-nesting nil))
+      (kirigami--call-preserve-column 'hs-show-block)))
   :config
-  ;; `kirigami' leaves `:open-rec' unimplemented for hideshow.  Since Emacs 31.1
-  ;; `hs-show-block' opens the blocks nested inside the one at point, so the
-  ;; plain opener already is the recursive one.
-  (let ((hideshow (cdr (assoc '(hs-minor-mode) kirigami-fold-list))))
-    (plist-put hideshow :open-rec (plist-get hideshow :open))))
+  (plist-put (cdr (assoc '(hs-minor-mode) kirigami-fold-list))
+             :open-rec #'patch/kirigami-hs-open-rec))
 
 (use-package my-fold-level
   :ensure nil
