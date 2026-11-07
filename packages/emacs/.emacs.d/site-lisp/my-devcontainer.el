@@ -155,10 +155,31 @@ which MAPPINGS translate."
                      (expand-file-name target (file-name-directory path)) mappings)))
     (and (file-exists-p host) host)))
 
+(defvar my-devcontainer--servers-in-container
+  (make-hash-table :test #'eq :weakness 'key)
+  "The Eglot servers running in a container, as keys.")
+
+(defvar my-devcontainer--connecting-contact nil
+  "The contact `eglot--connect' is starting, while it does.
+Its server is not yet `eglot-current-server'.")
+
+(defun my-devcontainer--server-in-container-p ()
+  "Return non-nil if the current Eglot server runs in the container."
+  (if my-devcontainer--connecting-contact
+      (equal (car my-devcontainer--connecting-contact) my-devcontainer-executable)
+    (gethash (eglot-current-server) my-devcontainer--servers-in-container)))
+
+(defun my-devcontainer--note-server (server)
+  "Record SERVER if it runs in the container.
+For `eglot-server-initialized-hook'."
+  (when (my-devcontainer--server-in-container-p)
+    (puthash server t my-devcontainer--servers-in-container)))
+
 (defun my-devcontainer--localize-path (path)
   "Return container PATH as something the host can visit.
 Filter for `eglot-uri-to-path'."
-  (if (or (file-exists-p path) (file-remote-p path))
+  (if (or (file-exists-p path) (file-remote-p path)
+          (not (my-devcontainer--server-in-container-p)))
       path
     (if-let* ((mappings (my-devcontainer-mappings)))
         (or (my-devcontainer--host-path path mappings)
@@ -173,22 +194,26 @@ the container's paths.  The path is already a truename then, which the
 host could not resolve."
   (pcase-let ((`(,path . ,keys) args))
     (if-let* (((file-name-absolute-p path))
+              ((my-devcontainer--server-in-container-p))
               (mappings (my-devcontainer-mappings))
               (container (my-devcontainer--container-path (file-truename path)
                                                           mappings)))
         (cons container (plist-put keys :truenamep t))
       args)))
 
-(defun my-devcontainer--withhold-process-id (fn &rest args)
-  "Call FN with ARGS, sending no client PID to a container-side server."
-  (let ((eglot-withhold-process-id (or eglot-withhold-process-id
-                                       (my-devcontainer-mappings))))
-    (apply fn args)))
+(defun my-devcontainer--connect (fn managed-modes project class contact &rest args)
+  "Call FN with MANAGED-MODES, PROJECT, CLASS, CONTACT and ARGS, noting CONTACT.
+A server in the container is sent no client PID."
+  (let* ((my-devcontainer--connecting-contact contact)
+         (eglot-withhold-process-id (or eglot-withhold-process-id
+                                        (my-devcontainer--server-in-container-p))))
+    (apply fn managed-modes project class contact args)))
 
 (with-eval-after-load 'eglot
   (advice-add 'eglot-uri-to-path :filter-return #'my-devcontainer--localize-path)
   (advice-add 'eglot-path-to-uri :filter-args #'my-devcontainer--containerize-path)
-  (advice-add 'eglot--connect :around #'my-devcontainer--withhold-process-id))
+  (advice-add 'eglot--connect :around #'my-devcontainer--connect)
+  (add-hook 'eglot-server-initialized-hook #'my-devcontainer--note-server))
 
 
 ;;;; Building
