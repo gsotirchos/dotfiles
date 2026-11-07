@@ -19,7 +19,7 @@ shift 3
 args=("$@")
 remote_opencode_bin='$HOME/.opencode/bin/opencode'
 local_config="$HOME/.config/opencode/opencode.json"
-local_tui="$HOME/.config/opencode/tui.json"
+local_cli="$HOME/.config/opencode/cli.json"
 SSH_PID=""
 
 sync_file_to_vm() {
@@ -36,7 +36,7 @@ sync_file_to_vm() {
 
 # 1. Sync local files to remote VM
 sync_file_to_vm "$local_config"
-sync_file_to_vm "$local_tui"
+sync_file_to_vm "$local_cli"
 
 # 2. Pre-emptively clear local and remote processes from previous runs
 (lsof -ti:"$port" | xargs kill -9 2> /dev/null) || true
