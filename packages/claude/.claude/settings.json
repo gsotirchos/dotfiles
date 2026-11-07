@@ -11,6 +11,10 @@
       "Bash(glab api:*)",
       "Bash(glab repo:*)"
     ],
+    "deny": [
+      "Read(~/Documents/org/journal/**)",
+      "Read(**/.gpg*)"
+    ],
     "defaultMode": "auto"
   },
   "model": "opus",
