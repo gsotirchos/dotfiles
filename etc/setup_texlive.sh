@@ -33,12 +33,14 @@ current_dir="${texlive_dir}/current"
 installer_url="https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz"
 
 # NOTE: dvisvgm, preview, and mylatexformat render the Org mode LaTeX
-# fragment previews
+# fragment previews; mylatex lets AUCTeX's preview-latex cache the preamble
+# (`preview-auto-cache-preamble')
 packages=(
     latexmk
     dvisvgm
     preview
     mylatexformat
+    mylatex
     babel-greek
     greek-fontenc
     cbfonts

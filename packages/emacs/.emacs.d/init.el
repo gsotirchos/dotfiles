@@ -2282,6 +2282,10 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (TeX-electric-math '("\\(" . "\\)"))
   (LaTeX-electric-left-right-brace t)  ; also pairs \( \[ \{ and \left( \right)
   (preview-auto-cache-preamble t)
+  (preview-image-type 'dvi*)
+  (preview-dvi*-command #'preview-dvisvgm-command)
+  (preview-dvi*-image-type 'svg)
+  (preview-LaTeX-command-replacements '(preview-LaTeX-disable-pdfoutput))
   (preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
   (preview-preserve-counters t)
   (preview-scale-function my/scale-factor)
@@ -2294,18 +2298,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
     (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t)
     (add-hook 'post-self-insert-hook #'my/electric-pair-skip-math-closer nil t))
   (add-hook 'LaTeX-mode-hook #'my/LaTeX-mode-hook)
-  (defun my/TeX-PDF-mode-off (&rest _) (TeX-PDF-mode -1))
-  (defun my/TeX-PDF-mode-on (&rest _) (TeX-PDF-mode 1))
   :init
-  (advice-add 'preview-document :before #'my/TeX-PDF-mode-off)
-  (advice-add 'preview-region :before #'my/TeX-PDF-mode-off)
-  (advice-add 'TeX-command :before #'my/TeX-PDF-mode-on)
   (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
-
-(use-package preview-dvisvgm
-  :after preview
-  :custom
-  (preview-image-type 'dvisvgm))
 
 (use-package cdlatex
   :hook
