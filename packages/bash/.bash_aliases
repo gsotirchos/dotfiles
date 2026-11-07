@@ -95,7 +95,7 @@ alias gs="git status"
 alias gd="git diff"
 alias ga="git add"
 alias gc="git commit"
-alias glog="git log --graph --decorate --all --oneline"
+alias gl="git log --graph --decorate --all --oneline"
 function gsync {
     git stash \
         && git pull --recurse-submodules=off \
