@@ -8,7 +8,9 @@ blocked+='|GITLAB_(TOKEN|API_HOST|HOST|URI)|GL_HOST|API_PROTOCOL'
 blocked+='|env +(-[a-zA-Z]*[iu]|--ignore-environment|--unset)'
 blocked+='|gitlab\.tudelft\.nl/api|state/gitlab-redact-proxy'
 
-command="$(jq -r '.tool_input.command // empty')"
+# The command comes either as $1 (OpenCode's gitlab-redact-guard plugin) or as
+# the Claude Code hook JSON on stdin.
+command="${1:-$(jq -r '.tool_input.command // empty')}"
 if match="$(grep -oE -m1 -- "$blocked" <<< "$command")"; then
     echo "Blocked '${match%%$'\n'*}': it bypasses gitlab-redact-proxy." \
         "Use plain glab, whose output the proxy redacts." >&2

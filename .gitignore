@@ -56,5 +56,8 @@ __pycache__/
 .Python
 .pixi
 
+# OpenCode plugin dependencies
+packages/opencode/.config/opencode/plugins/*/node_modules/
+
 
 **/.claude/settings.local.json
