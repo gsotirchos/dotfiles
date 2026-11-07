@@ -1,38 +1,73 @@
 {
-    "$schema": "https://opencode.ai/config.json",
-    "provider": {
-        "google": {
-            "options": {
-                "apiKey": "{env:GOOGLE_API_KEY}"
-            }
-        },
-        "mistral": {
-            "options": {
-                "apiKey": "{env:MISTRAL_API_KEY}"
-            }
-        },
-        "deepseek": {
-            "options": {
-                "apiKey": "{env:DEEPSEEK_API_KEY}"
-            }
-        },
-        "fireworks": {
-            "options": {
-                "apiKey": "{env:FIREWORKS_API_KEY}"
-            }
-        },
-        "zen": {
-            "options": {
-                "apiKey": "{env:ZEN_API_KEY}"
-            }
-        }
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "google": {
+      "options": {
+        "apiKey": "{env:GOOGLE_API_KEY}"
+      }
     },
-    "agent": {
-        "plan": {
-            "model": "google/gemini-3-flash-preview"
-        },
-        "build": {
-            "model": "google/gemini-3-flash-preview"
-        }
+    "mistral": {
+      "options": {
+        "apiKey": "{env:MISTRAL_API_KEY}"
+      }
+    },
+    "deepseek": {
+      "options": {
+        "apiKey": "{env:DEEPSEEK_API_KEY}"
+      }
+    },
+    "fireworks": {
+      "options": {
+        "apiKey": "{env:FIREWORKS_API_KEY}"
+      }
+    },
+    "zen": {
+      "options": {
+        "apiKey": "{env:ZEN_API_KEY}"
+      }
     }
+  },
+  "permissions": [
+    { "action": "shell", "resource": "emacs-query *", "effect": "allow" },
+    { "action": "shell", "resource": "glab api *", "effect": "allow" },
+    { "action": "shell", "resource": "glab repo *", "effect": "allow" }
+  ],
+  "formatter": true,
+  "lsp": {
+    "astro": { "disabled": true },
+    "bash": { "disabled": true },
+    "clojure-lsp": { "disabled": true },
+    "csharp": { "disabled": true },
+    "dart": { "disabled": true },
+    "deno": { "disabled": true },
+    "elixir-ls": { "disabled": true },
+    "eslint": { "disabled": true },
+    "fsharp": { "disabled": true },
+    "gleam": { "disabled": true },
+    "gopls": { "disabled": true },
+    "haskell-language-server": { "disabled": true },
+    "jdtls": { "disabled": true },
+    "julials": { "disabled": true },
+    "kotlin-ls": { "disabled": true },
+    "lua-ls": { "disabled": true },
+    "nixd": { "disabled": true },
+    "ocaml-lsp": { "disabled": true },
+    "oxlint": { "disabled": true },
+    "php": { "disabled": true },
+    "prisma": { "disabled": true },
+    "razor": { "disabled": true },
+    "rubocop": { "disabled": true },
+    "rust": { "disabled": true },
+    "sourcekit-lsp": { "disabled": true },
+    "svelte": { "disabled": true },
+    "terraform": { "disabled": true },
+    "tinymist": { "disabled": true },
+    "typescript": { "disabled": true },
+    "vue": { "disabled": true },
+    "yaml-ls": { "disabled": true },
+    "zls": { "disabled": true }
+  },
+  "skills": [
+    "~/.local/src/claude-plugins/emacs-query/skills"
+  ]
 }

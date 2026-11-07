@@ -84,6 +84,17 @@ echo -e "${bright_style}- Cloning Claude plugins${normal_style}"
     "${dotfiles}/packages/claude/.claude/settings.json" \
     ~/.local/src/claude-plugins
 
+# opencode plugins: install local plugin dependencies
+for plugin_dir in "${dotfiles}"/packages/opencode/.config/opencode/plugins/*/; do
+    [[ -f "${plugin_dir}package.json" ]] || continue
+    echo -e "${bright_style}- Installing OpenCode plugin deps: $(basename "${plugin_dir}")${normal_style}"
+    if command -v bun &> /dev/null; then
+        (cd "${plugin_dir}" && bun install)
+    elif command -v npm &> /dev/null; then
+        (cd "${plugin_dir}" && npm install --no-audit --no-fund)
+    fi
+done
+
 # OS-specific
 if [[ "${os}" == "linux" ]]; then
     stow -vd "${dotfiles}/packages" -t "${HOME}" -R fontconfig gtk autostart-linux
