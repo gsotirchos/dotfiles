@@ -35,6 +35,10 @@ Otherwise, apply emphasis to the word at point (CHAR)."
   (font-lock-update)
   (message "Emphasis markers are now %s." (if org-hide-emphasis-markers "hidden" "visible")))
 
+(defconst my/org-journal-file-regexp
+  "\\`[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\.org\\'"
+  "Name of a journal file, YYYY-MM-DD.org.")
+
 ;;;###autoload
 (defun my/org-open-journal (&optional arg)
   "Open today's journal file at `org-directory'/journal/YYYY-MM-DD.org.
@@ -47,11 +51,28 @@ With a prefix ARG, open the most recent journal file dated before today."
      (if arg
          (let ((previous (car (last (seq-filter
                                      (lambda (file) (string< file today))
-                                     (directory-files dir nil "\\`[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\.org\\'"))))))
+                                     (directory-files dir nil my/org-journal-file-regexp))))))
            (unless previous
              (user-error "No journal entries before today"))
            (expand-file-name previous dir))
        (expand-file-name today dir)))))
+
+(defun my/org-journal-schedule-todos ()
+  "Schedule the undated TODO headings of a journal file on the file's date.
+Unschedule the headings without a TODO keyword from that date."
+  (when-let* ((file buffer-file-name)
+              ((file-in-directory-p file (expand-file-name "journal" org-directory)))
+              ((string-match-p my/org-journal-file-regexp (file-name-nondirectory file))))
+    (let ((date (file-name-base file)))
+      (org-map-entries
+       (lambda ()
+         (let ((scheduled (org-entry-get nil "SCHEDULED")))
+           (cond ((not (org-get-todo-state))
+                  (when (and scheduled (string-prefix-p (concat "<" date) scheduled))
+                    (org-schedule '(4))))
+                 ((not (or scheduled (org-entry-get nil "DEADLINE")))
+                  (org-schedule nil date)))))
+       nil 'file))))
 
 ;;;###autoload
 (defun my/convert-md-region-to-org (start end)
@@ -219,9 +240,11 @@ Its keywords override the face of every blank, which drops `fixed-pitch'."
         (visual-wrap-prefix-mode -1)
         ;; Re-fontify for the new `org-todo-keyword-faces' and emphasis.
         (add-hook 'after-load-theme-hook #'font-lock-flush nil t)
-        (add-hook 'whitespace-mode-hook #'my/org-fixed-pitch-over-whitespace nil t))
+        (add-hook 'whitespace-mode-hook #'my/org-fixed-pitch-over-whitespace nil t)
+        (add-hook 'before-save-hook #'my/org-journal-schedule-todos nil t))
     (remove-hook 'after-load-theme-hook #'font-lock-flush t)
-    (remove-hook 'whitespace-mode-hook #'my/org-fixed-pitch-over-whitespace t)))
+    (remove-hook 'whitespace-mode-hook #'my/org-fixed-pitch-over-whitespace t)
+    (remove-hook 'before-save-hook #'my/org-journal-schedule-todos t)))
 
 (provide 'my-org)
 
