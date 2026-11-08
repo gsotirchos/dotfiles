@@ -208,6 +208,9 @@ Callers edit their own entries of it in place, so modes sharing it compose."
   ;; (package-check-signature t)
   ;; (package-review-policy '(not (archive . "elpa")))
   (auth-sources '("~/.authinfo.gpg"))
+  ;; The Homebrew pinentry is a terminal one; ask in the minibuffer instead.
+  (epg-pinentry-mode 'loopback)
+  (user-mail-address "gsotirch@gmail.com")
   (vc-follow-symlinks t)
   (browse-url-mailto-function 'browse-url-default-browser)
   (ad-redefinition-action 'accept)
@@ -1296,6 +1299,27 @@ commit message.")
   :load-path "site-lisp/"
   :after git-commit
   :demand t)
+
+(use-package smtpmail
+  :ensure nil
+  :custom
+  (send-mail-function #'smtpmail-send-it)
+  (smtpmail-smtp-server "smtp.gmail.com")
+  (smtpmail-smtp-service 587)
+  (smtpmail-stream-type 'starttls)
+  (smtpmail-smtp-user "gsotirch@gmail.com"))
+
+(use-package auth-source-1password
+  :demand t
+  :custom
+  (auth-source-1password-construct-secret-reference
+   (lambda (_backend _type host _user _port)
+     (when (equal host "smtp.gmail.com")
+       "Private/Google Emacs app password/token")))
+  :config (auth-source-1password-enable))
+
+(use-package debbugs
+  :custom (debbugs-gnu-mail-backend 'rmail))
 
 (use-package ghostel
   :bind
