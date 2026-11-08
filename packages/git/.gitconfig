@@ -2,8 +2,13 @@
     helper = store
 [user]
     name = George Sotirchos
-    #email = gsotirch@gmail.com
-    email = G.Sotirchos@tudelft.nl
+    email = gsotirch@gmail.com
+[includeIf "hasconfig:remote.*.url:git@gitlab.tudelft.nl:*/**"]
+    path = ~/.gitconfig-tud
+[includeIf "hasconfig:remote.*.url:git@gitlab.tudelft.nl:*"]
+    path = ~/.gitconfig-tud
+[includeIf "hasconfig:remote.*.url:https://gitlab.tudelft.nl/**"]
+    path = ~/.gitconfig-tud
 [init]
     defaultBranch = main
 [pull]
