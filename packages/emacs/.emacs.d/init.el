@@ -552,7 +552,6 @@ the window."
   (tab-bar-new-button-show nil)
   (tab-bar-close-button-show nil)
   (tab-bar-separator "")
-  (tab-bar-auto-width-max nil)
   (tab-bar-truncate t)
   (tab-bar-format
    '(tab-bar-format-tabs

@@ -9,9 +9,12 @@
 ;; - its cache is keyed by width and name only, so after a font or theme
 ;;   change it keeps serving names sized for the old metrics;
 ;; - it pads with whole spaces, so each tab falls short of its share;
-;; - it ignores the borders that adjacent tabs sharing a :box face merge.
+;; - it ignores the borders that adjacent tabs sharing a :box face merge;
+;; - with `tab-bar-auto-width-max' nil its cache misses on every pixel
+;;   of a frame resize, and it pads by measuring once per added space.
 ;;
-;; This package corrects all of these and centers each name in its tab.
+;; This package replaces it with a function free of these defects, which
+;; also centers each name in its tab.
 ;; An underlined last tab ends on a pixel-wide unboxed sliver, as Emacs
 ;; does not underline the box border that ends the tab bar.
 ;;
@@ -19,7 +22,7 @@
 ;; otherwise wraps onto an empty second line.
 ;;
 ;; TODO: Report the `tab-bar-auto-width' issues above to bug-gnu-emacs;
-;; none reported as of 2026-10-03.
+;; none reported as of 2026-11-08.
 
 ;;; Code:
 
@@ -30,32 +33,18 @@
   "Split the full frame width evenly among the tabs."
   :group 'tab-bar)
 
-(defvar patch/tab-bar-fill-tab-metrics nil
-  "Tab face metrics under which the auto-width cache was filled.")
-
-(defun patch/tab-bar-fill-invalidate-cache (&rest _)
-  "Drop the auto-width cache once the tab face metrics change."
-  (let ((metrics (string-pixel-width
-                  (propertize "x" 'face '(tab-bar-tab tab-bar)))))
-    (unless (eql metrics patch/tab-bar-fill-tab-metrics)
-      ;; NOTE: `tab-bar--auto-width-hash' is private; revisit on updates.
-      (setq patch/tab-bar-fill-tab-metrics metrics
-            tab-bar--auto-width-hash nil))))
-
 (defun patch/tab-bar-fill-labeled-p (item)
   "Return non-nil if tab-bar ITEM is a menu item with a string label."
   (and (eq (nth 1 item) 'menu-item)
        (stringp (nth 2 item))))
 
-(defun patch/tab-bar-fill-measure-with-base-face (args)
-  "Give the labels in the items of ARGS the `tab-bar' face they are drawn with."
-  (list (mapcar (lambda (item)
-                  (if (patch/tab-bar-fill-labeled-p item)
-                      (let ((label (copy-sequence (nth 2 item))))
-                        (add-face-text-property 0 (length label) 'tab-bar t label)
-                        `(,(car item) menu-item ,label ,@(nthcdr 3 item)))
-                    item))
-                (car args))))
+(defun patch/tab-bar-fill-with-base-face (item)
+  "Give the label of tab-bar ITEM the `tab-bar' face it is drawn with."
+  (if (patch/tab-bar-fill-labeled-p item)
+      (let ((label (copy-sequence (nth 2 item))))
+        (add-face-text-property 0 (length label) 'tab-bar t label)
+        `(,(car item) menu-item ,label ,@(nthcdr 3 item)))
+    item))
 
 (defun patch/tab-bar-fill-underlined-p (label)
   "Return non-nil if the end of LABEL is drawn underlined."
@@ -135,11 +124,12 @@ Each name is centered in its tab."
       (setf (nth 2 last-tab) (concat (nth 2 last-tab) sliver)))
     items))
 
-(defconst patch/tab-bar-fill-advice
-  '((:before . patch/tab-bar-fill-invalidate-cache)
-    (:filter-args . patch/tab-bar-fill-measure-with-base-face)
-    (:filter-return . patch/tab-bar-fill-stretch-tabs))
-  "How each function of this package advises function `tab-bar-auto-width'.")
+(defun patch/tab-bar-fill-auto-width (items)
+  "Split the frame width evenly among the auto-width tabs in ITEMS.
+Replaces function `tab-bar-auto-width', so its options
+`tab-bar-auto-width-min' and `tab-bar-auto-width-max' do not apply."
+  (patch/tab-bar-fill-stretch-tabs
+   (mapcar #'patch/tab-bar-fill-with-base-face items)))
 
 ;;;###autoload
 (define-minor-mode patch-tab-bar-fill-mode
@@ -147,12 +137,9 @@ Each name is centered in its tab."
 Takes effect while the option `tab-bar-auto-width' is non-nil."
   :global t
   :group 'patch/tab-bar-fill
-  (pcase-dolist (`(,how . ,function) patch/tab-bar-fill-advice)
-    (if patch-tab-bar-fill-mode
-        (advice-add 'tab-bar-auto-width how function)
-      (advice-remove 'tab-bar-auto-width function)))
-  (setq patch/tab-bar-fill-tab-metrics nil
-        tab-bar--auto-width-hash nil)
+  (if patch-tab-bar-fill-mode
+      (advice-add 'tab-bar-auto-width :override #'patch/tab-bar-fill-auto-width)
+    (advice-remove 'tab-bar-auto-width #'patch/tab-bar-fill-auto-width))
   (force-mode-line-update t))
 
 (provide 'patch-tab-bar-fill)
