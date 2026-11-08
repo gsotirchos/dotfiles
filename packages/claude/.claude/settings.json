@@ -18,6 +18,10 @@
     "defaultMode": "auto"
   },
   "model": "opus",
+  "statusLine": {
+    "type": "command",
+    "command": "dir=$(jq -r '.workspace.current_dir'); branch=$(git -C \"$dir\" --no-optional-locks branch --show-current 2>/dev/null); printf '\\033[1;36m%s\\033[0m' \"$(echo \"$dir\" | sed \"s|^$HOME|~|\")\"; [ -n \"$branch\" ] && printf ' \\033[1;35m%s\\033[0m' \"$branch\"; echo"
+  },
   "env": {
     "GITLAB_TOKEN": "via-redact-proxy",
     "GITLAB_API_HOST": "127.0.0.1:8383",
