@@ -128,7 +128,6 @@ Elsewhere, copy the visited file's path."
   "C-<down>" #'ignore
   ;; "C-<right>" #'ignore
   ;; "C-<left>" #'ignore
-  "M-<escape>" #'ignore
   "M-<backspace>" #'my/delete-back-to-indentation
   "M-<delete>" #'kill-line
   "M-<right>" #'end-of-visual-line
@@ -146,8 +145,8 @@ Elsewhere, copy the visited file's path."
 
   ;; Frames/Windows
   "C-z" #'ignore
-  "A-<escape>" #'ns-next-frame
-  "A-S-<escape>" #'ns-prev-frame
+  "M-<escape>" #'ns-next-frame
+  "M-S-<escape>" #'ns-prev-frame
   "C-M-e" #'ns-do-show-character-palette  ; TODO: use `emoji-insert' on Linux
   "C-M-f" #'toggle-frame-fullscreen
   "M-u" #'universal-argument
