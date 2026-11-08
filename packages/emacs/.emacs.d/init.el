@@ -298,6 +298,7 @@ Callers edit their own entries of it in place, so modes sharing it compose."
   :after no-littering
   :ensure nil
   :no-require t
+  :defines recentf-exclude
   :defer 1
   :custom
   (recentf-auto-cleanup 'never)
@@ -602,12 +603,13 @@ the window."
   :bind (([remap revert-buffer-quick] . #'my/revert-buffer-quick-preserve))
   :custom
   (enable-remote-dir-locals t)
-  (trusted-content (list site-lisp-dir))
+  (trusted-content (list (abbreviate-file-name (file-name-parent-directory site-lisp-dir))))
   :init (advice-add 'save-buffer :around #'my/silence-advice))
 
 (use-package tramp
   :ensure nil
   :no-require t
+  :defines tramp-remote-path
   :custom
   (tramp-verbose 2)
   (tramp-use-connection-share nil)  ; Control* options live in ~/.ssh/config
@@ -629,6 +631,7 @@ the window."
 (use-package dired
   :ensure nil
   :no-require t
+  :defines dired-mode-map
   :bind
   (nil
    :map dired-mode-map
@@ -684,6 +687,7 @@ the window."
 (use-package eshell
   :ensure nil
   :no-require t
+  :defines (eshell-prompt-function eshell-highlight-prompt eshell-prompt-regexp)
   :preface
   (defun my/eshell-mode-hook ()
     (setq-local pcomplete-termination-string ""))
@@ -1610,6 +1614,7 @@ the line following an item onto it."
 (use-package hideshow
   :ensure nil
   :no-require t
+  :defines hs-allow-nesting
   :hook ((prog-mode toml-ts-mode) . hs-minor-mode)
   :init (setq hs-allow-nesting t))
 
@@ -1816,6 +1821,7 @@ refontification (see visual-wrap-display-spec in docs/CONTRIBUTIONS.org)."
 (use-package flyspell
   :ensure nil
   :no-require t
+  :defines (ispell-current-personal-dictionary flyspell-mode-map)
   :bind
   (([remap ispell-word] . flyspell-correct-word-before-point)
    :map evil-normal-state-map
@@ -2059,13 +2065,13 @@ inside a comment."
   :no-require t
   :bind (:map my/personal-map ("(" . check-parens))
   :preface
-  (defun my/flymake-compile-site-lisp-with-packages ()
-    "Let Flymake compile `site-lisp-dir' modules against installed packages.
-They `require' packages that Flymake's default load path lacks, which
-stops their compilation at the first `require'."
-    (when (and buffer-file-name (file-in-directory-p buffer-file-name site-lisp-dir))
-      (setq-local elisp-flymake-byte-compile-load-path (cons "./" load-path))))
-  (add-hook 'emacs-lisp-mode-hook #'my/flymake-compile-site-lisp-with-packages)
+  (defun my/flymake-compile-with-packages ()
+    "Let Flymake compile against installed packages.
+Flymake's subprocess gets only the file's own directory on `load-path'
+\(`elisp-flymake-byte-compile-load-path'), which stops compilation at the
+first `require' of a package."
+    (setq-local elisp-flymake-byte-compile-load-path (cons "./" load-path)))
+  (add-hook 'emacs-lisp-mode-hook #'my/flymake-compile-with-packages)
   (add-hook 'emacs-lisp-mode-hook (lambda () (my/set-local-indent-width lisp-body-indent))))
 
 
@@ -2190,6 +2196,7 @@ the workspace, where no source folder shadows an installed package."
 (use-package json-ts-mode
   :ensure nil
   :no-require t
+  :defines json-ts-mode-indent-offset
   :mode ("\\.json\\'" "\\.jsonc\\'")
   :init (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
   :custom (json-ts-mode-indent-offset 2)
@@ -2256,6 +2263,7 @@ the workspace, where no source folder shadows an installed package."
 (use-package nxml-mode
   :ensure nil
   :no-require t
+  :defines (nxml-child-indent xmltok-start)
   :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'" "\\.launch\\'")
   :custom
   (nxml-child-indent 2)
@@ -2325,6 +2333,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
 
 (use-package cdlatex
+  :defines texmathp-why
   :hook
   ((org-mode . org-cdlatex-mode)
    (markdown-ts-mode . cdlatex-mode))
@@ -2359,6 +2368,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
 (use-package org
   :ensure nil
   :no-require t
+  :defines (org-mode-map org-cdlatex-mode-map org-src-content-indentation)
   :bind
   (nil
    :map org-mode-map
@@ -2518,5 +2528,5 @@ Rerun after upgrading mermaid-cli, whose Puppeteer pins a new build."
 ;;; init.el ends here
 
 ;; Local Variables:
-;; byte-compile-warnings: (not free-vars unresolved)
+;; byte-compile-warnings: (not unresolved)
 ;; End:

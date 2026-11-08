@@ -20,5 +20,5 @@ lint-elisp --flymake <path>
 
 Batch mode resolves package symbols differently from the editor, so `--flymake` is the authoritative check when a warning is in doubt. Also note:
 
-* **Do not remove the warning suppression like** `byte-compile-warnings: (not free-vars unresolved)`; local variables block is deliberate: without it, a config of lazily-loaded packages emits ~90 free-variable and undefined-function warnings. Never "fix" those individually.
+* **Keep `byte-compile-warnings: (not unresolved)` in init.el**: undefined-function warnings from lazily loaded packages are noise, but free-variable warnings catch stray symbols left by typos, so silence each one with `:defines`.
 * **Inside a `use-package` form, use `:defines` / `:functions`** rather than a hand-written `(defvar foo)` or `declare-function`. Both keywords exist solely to silence the byte-compiler, and cost nothing at startup. Plain libraries (e.g. those in `site-lisp/`) have no `use-package` form; there the bare idiom is correct.
