@@ -1908,6 +1908,23 @@ kill Aspell first so that it cannot save the word back."
     "Only run `eglot-ensure' in a buffer visiting a file."
     (when buffer-file-name
       (eglot-ensure)))
+  (defun my/eglot-lemminx-contact (_interactive)
+    "Return the LemMinX of the buffer's host, else start the local one.
+The local LemMinX gets a Tramp buffer's text over LSP, but looks up the
+files it reads itself, such as relative schemas, on the local disk."
+    (if (executable-find "lemminx" t)
+        '("lemminx")
+      `(eglot-lsp-server
+        :process
+        ,(lambda ()
+           (let ((default-directory temporary-file-directory))
+             (make-process
+              :name "lemminx"
+              :command '("lemminx")
+              :connection-type 'pipe
+              :coding 'utf-8-emacs-unix
+              :noquery t
+              :stderr (get-buffer-create "*lemminx stderr*")))))))
   (defun my/eglot-mode-hook ()
     (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
     (when flymake-mode (flymake-start)))
@@ -1976,7 +1993,7 @@ kill Aspell first so that it cannot save the word back."
                      "--completion-style=detailed"
                      "--query-driver=/usr/bin/*,**/.pixi/envs/**/bin/*")))
   (add-to-list 'eglot-server-programs
-               `((nxml-mode :language-id "xml") . ("lemminx"))))
+               '((nxml-mode :language-id "xml") . my/eglot-lemminx-contact)))
 
 (use-package apheleia
   :defer 1
