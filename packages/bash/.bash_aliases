@@ -11,7 +11,7 @@ else
 fi
 
 # rm wrapper to move file(s) to trash folder instead of deleting them
-trash() {
+function trash {
     if [[ "${TRASH}" == "" ]]; then
         echo "No trash folder found."
         return 1
@@ -42,13 +42,13 @@ trash() {
     done
 }
 
-play_trash_sound() {
+function play_trash_sound {
     if [[ "$OS" == "macos" ]]; then
         touch "${TRASH}"/.delete_me && osascript -e 'tell app "Finder" to empty' \;
     fi
 }
 
-empty_trash() {
+function empty_trash {
     if [[ "${TRASH}" == "" ]]; then
         echo "No trash folder found."
         return 1
@@ -67,16 +67,26 @@ empty_trash() {
     fi
 }
 
-touch_url_file() {
+function touch_url_file {
     local filename="${1:-file}"
     echo -e "[InternetShortcut]\nURL=$2" > "${filename%.url}.url"
 }
 
-benchmark_prompt() {
+function benchmark_prompt {
     time (
         [[ -n "$PROMPT_COMMAND" ]] && eval "$PROMPT_COMMAND"
         _prompt="${PS1@P}"
     )
+}
+
+function port-info {
+    sudo lsof -i -n | grep "${1:-""}"
+}
+
+function magit {
+    (cd "${1:-.}" \
+        && emacs --eval "(progn (require 'magit)
+                                (magit-status (or (magit-toplevel) default-directory)))")
 }
 
 alias rm=trash     # trash files instead of deleting
@@ -91,20 +101,22 @@ alias mkdir="mkdir -pv"           # recursive, verbose
 alias chmod="chmod -v"            # verbose
 alias chown="chown -v"            # verbose
 alias ec="emacsclient -a '' -c &" # start emacs daemon and/or client
-alias gs="git status"
-alias gd="git diff"
-alias ga="git add"
-alias gc="git commit"
-alias gl="git log --graph --decorate --all --oneline"
-function gsync {
-    git stash \
-        && git pull --recurse-submodules=off \
-        && git stash apply \
-        && git add . \
-        && git commit -m "${1:-"Update locally"}" \
-        && git push \
-        && git stash clear
-}
+if command -v "git" &> /dev/null; then
+    alias gs="git status"
+    alias gd="git diff"
+    alias ga="git add"
+    alias gc="git commit"
+    alias gl="git log --graph --decorate --all --oneline"
+    function gsync {
+        git stash \
+            && git pull --recurse-submodules=off \
+            && git stash apply \
+            && git add . \
+            && git commit -m "${1:-"Update locally"}" \
+            && git push \
+            && git stash clear
+    }
+fi
 if command -v "docker" &> /dev/null; then
     function devcontainer-shell {
         local last_file="${XDG_STATE_HOME:-${HOME}/.local/state}/devcontainer-shell-last"
@@ -119,11 +131,6 @@ if command -v "docker" &> /dev/null; then
     }
     alias ds=devcontainer-shell
 fi
-function magit {
-    (cd "${1:-.}" \
-        && emacs --eval "(progn (require 'magit)
-                                (magit-status (or (magit-toplevel) default-directory)))")
-}
 alias tree="tree \
     -FNC -L 2 \
     --dirsfirst \
@@ -137,9 +144,19 @@ alias py="python3"
 alias ipy="ipython"
 alias pyclean="find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete"
 
-function port-info {
-    sudo lsof -i -n | grep "${1:-""}"
-}
+if command -v "vint" &> /dev/null; then
+    function lint-vim {
+        if [[ -f "$1" ]]; then
+            vint "$1"
+        else
+            find "${1:-"."}" -path '*/pack' -prune -o -regex "\(.*\.vim\|.*vimrc\)" -print0 | xargs -0 -n 1 vint
+        fi
+    }
+fi
+
+if ! command -v "open" &> /dev/null; then
+    alias open=xdg-open
+fi
 
 if command -v "rg" &> /dev/null; then
     alias grep='rg -p -g "!.git" -g "!.venv" -g "!.conda" -g "!.pixi" -g "!pack"'
@@ -154,7 +171,7 @@ fi
 if command -v "fd" &> /dev/null; then
     alias find="fd -E .git -E .venv -E .conda -E .pixi -E pack"
 else
-    myfind() {
+    function myfind {
         local p=() x=(\( -name .git -o -name .venv -o -name .conda -o -name .pixi -o -name pack \) -prune -o)
         while [[ $1 && ! $1 =~ ^[-!\(] ]]; do
             p+=("$1")
@@ -172,13 +189,20 @@ else
     alias find=myfind
 fi
 
-if command -v "vint" &> /dev/null; then
-    lint-vim() {
-        if [[ -f "$1" ]]; then
-            vint "$1"
-        else
-            find "${1:-"."}" -path '*/pack' -prune -o -regex "\(.*\.vim\|.*vimrc\)" -print0 | xargs -0 -n 1 vint
+if command -v "sshfs" &> /dev/null; then
+    function tudelft_mount {
+        local mount_point="$XDG_RUNTIME_DIR/tudelft"
+        if ! timeout 2 bash -c '</dev/tcp/sftp.tudelft.nl/22' 2> /dev/null; then
+            echo "sftp.tudelft.nl unreachable: connect to TU Delft's network or VPN" >&2
+            return 1
         fi
+        fusermount3 -uq "$mount_point"
+        mkdir -p "$mount_point" || return
+        if ! sshfs -o reconnect tudelft-sftp: "$mount_point"; then
+            rmdir "$mount_point" 2> /dev/null
+            return 1
+        fi
+        ln -sfn "$mount_point" ~/tudelft
     }
 fi
 
@@ -202,10 +226,6 @@ if command -v "glab" &> /dev/null; then
     }
 fi
 
-if ! command -v "open" &> /dev/null; then
-    alias open=xdg-open
-fi
-
 if [[ "$OS" == "macos" ]]; then
     alias update="brew update && brew upgrade -y && brew autoremove && brew cleanup --prune=all"
     function dsclean {
@@ -225,7 +245,7 @@ fi
 # lazy Conda
 if [[ -f ~/.conda/conda_init.sh ]]; then
     # lazy conda initialization
-    conda() {
+    function conda {
         # TIME ~500ms
         unset "${FUNCNAME[0]}"
         echo -ne "-- Initializing conda ..."
@@ -249,7 +269,7 @@ fi
 
 # Catkin (ROS 1)
 if command -v "catkin" &> /dev/null; then
-    cdws() {
+    function cdws {
         if catkin locate --workspace "$(realpath "$1")" &> /dev/null; then
             cd "$1" && source "$(catkin locate --devel)"/setup.bash
         else
@@ -259,7 +279,7 @@ if command -v "catkin" &> /dev/null; then
     }
 
     # merge all build/*/copmile_commands.json to a single build/copmile_commands.json
-    merge_compile_commands() {
+    function merge_compile_commands {
         local build_dir="$(catkin locate --build)"
         jq -s 'map(.[])' "${build_dir}"/*/compile_commands.json > "${build_dir}"/compile_commands.json
     }
@@ -269,7 +289,7 @@ fi
 if command -v "colcon" &> /dev/null; then
     alias cb="colcon build --symlink-install"
     alias cbp="colcon build --symlink-install --packages-select"
-    alias ss="source install/setup.bash"
+    alias ws="source install/setup.bash"
 fi
 
 # Control BLE light bulb
