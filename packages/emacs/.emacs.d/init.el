@@ -764,7 +764,6 @@ scroll was undone, so the window only moved when it crossed a line."
   (evil-mode 1)
   (global-set-key [remap kill-ring-save] #'evil-yank)
   (global-set-key [remap my/quit-dwim] #'evil-quit)
-  (global-set-key [remap my/delete-back-to-indentation] #'evil-delete-back-to-indentation)
   (global-set-key [remap backward-kill-word] #'evil-delete-backward-word)
   (global-set-key (kbd "M-v") #'yank)
   (evil-define-key* 'insert 'global (kbd "C-v") #'ignore)

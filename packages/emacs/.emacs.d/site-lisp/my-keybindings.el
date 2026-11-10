@@ -18,10 +18,16 @@
 
 
 (defun my/delete-back-to-indentation ()
-  "Kill back to the first non-whitespace character."
+  "Kill back to the first non-whitespace character.
+Within the indentation, kill back to the line beginning; at the line
+beginning, join with the previous line."
   (interactive)
-  (kill-line 0)
-  (indent-for-tab-command))
+  (if (bolp)
+      (delete-char -1)
+    (kill-region (if (<= (current-column) (current-indentation))
+                     (line-beginning-position)
+                   (save-excursion (back-to-indentation) (point)))
+                 (point))))
 
 (defun my/maybe-make-frame ()
   "Make a new frame or move to next history element."
