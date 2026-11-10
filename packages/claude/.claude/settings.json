@@ -1,5 +1,10 @@
 {
   "respectGitignore": false,
+  "env": {
+    "GITLAB_TOKEN": "via-redact-proxy",
+    "GITLAB_API_HOST": "127.0.0.1:8383",
+    "GLAB_API_PROTOCOL": "http"
+  },
   "attribution": {
     "commit": "",
     "pr": "",
@@ -18,15 +23,6 @@
     "defaultMode": "auto"
   },
   "model": "opus",
-  "statusLine": {
-    "type": "command",
-    "command": "dir=$(jq -r '.workspace.current_dir'); branch=$(git -C \"$dir\" --no-optional-locks branch --show-current 2>/dev/null); printf '\\033[1;36m%s\\033[0m' \"$(echo \"$dir\" | sed \"s|^$HOME|~|\")\"; [ -n \"$branch\" ] && printf ' \\033[1;35m%s\\033[0m' \"$branch\"; echo"
-  },
-  "env": {
-    "GITLAB_TOKEN": "via-redact-proxy",
-    "GITLAB_API_HOST": "127.0.0.1:8383",
-    "GLAB_API_PROTOCOL": "http"
-  },
   "hooks": {
     "PreToolUse": [
       {
@@ -68,6 +64,10 @@
     ]
   },
   "workflowKeywordTriggerEnabled": false,
+  "statusLine": {
+    "type": "command",
+    "command": "dir=$(jq -r '.workspace.current_dir'); branch=$(git -C \"$dir\" --no-optional-locks branch --show-current 2>/dev/null); printf '\\033[1;36m%s\\033[0m' \"$(echo \"$dir\" | sed \"s|^$HOME|~|\")\"; [ -n \"$branch\" ] && printf ' \\033[1;35m%s\\033[0m' \"$branch\"; echo"
+  },
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
@@ -95,16 +95,17 @@
     }
   },
   "spinnerTipsEnabled": false,
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "autoCompactWindow": 400000
+    }
+  },
   "promptSuggestionEnabled": false,
   "theme": "auto",
   "editorMode": "normal",
   "preferredNotifChannel": "ghostty",
   "wheelScrollAccelerationEnabled": false,
+  "remoteControlAtStartup": false,
   "inputNeededNotifEnabled": true,
-  "agentPushNotifEnabled": true,
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "autoCompactWindow": 400000
-    }
-  }
+  "agentPushNotifEnabled": true
 }
