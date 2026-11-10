@@ -44,6 +44,7 @@
 (defvar hs-allow-nesting)
 (defvar hs-block-start-regexp)
 (defvar hs-block-start-mdata-select)
+(defvar org-cycle-hook)
 (defvar treesit-fold-mode)
 (defvar treesit-fold-range-alist)
 (declare-function hs-hide-block-at-point "hideshow" (&optional end comment-reg))
@@ -221,7 +222,14 @@ The result is cached until the buffer text changes."
     ('outline
      (if (>= level (my/fold-level--max-level))
          (outline-show-all)
-       (outline-hide-sublevels level)))
+       (outline-hide-sublevels level))
+     ;; Org hides separator lines along with the bodies and shows them again,
+     ;; as `org-cycle-separator-lines' asks, only through this hook.
+     (when (derived-mode-p 'org-mode)
+       (run-hook-with-args 'org-cycle-hook
+                           (cond ((>= level (my/fold-level--max-level)) 'all)
+                                 ((= level 1) 'overview)
+                                 (t 'contents)))))
     ('hideshow
      ;; Hideshow leaves its overlays alone while `hs-allow-nesting' is on, so
      ;; the state left by the previous level has to be cleared before laying
