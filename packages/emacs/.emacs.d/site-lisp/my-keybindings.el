@@ -10,6 +10,7 @@
 (declare-function ns-prev-frame "term/ns-win" ())
 (declare-function project-root "project" (project))
 (declare-function magit-copy-section-value "magit-extras" (arg))
+(declare-function magit-file-at-point "magit-git" (&optional expand assert))
 (declare-function dired-copy-filename-as-kill "dired" (&optional arg))
 
 (defgroup my/keybindings nil
@@ -63,24 +64,32 @@ With a prefix ARG, edit `~/.emacs.d/early-init.el' instead."
   (interactive)
   (switch-to-buffer-other-frame "*scratch*"))
 
-(defun my/copy-file-relative-path ()
-  "Copy the visited file's path, relative to its project root if any."
-  (interactive)
-  (let* ((file (or buffer-file-name (user-error "Buffer is not visiting a file")))
-         (project (project-current))
-         (path (if project (file-relative-name file (project-root project)) file)))
-    (kill-new path)
-    (message "Copied: %s" path)))
+(defun my/copy-path (path)
+  "Save PATH to the `kill-ring' and echo it."
+  (kill-new path)
+  (message "Copied: %s" path))
 
-(defun my/copy-dwim ()
+(defun my/copy-file-path (&optional absolute)
+  "Copy the visited file's path, relative to its project root if any.
+With prefix argument ABSOLUTE, copy its absolute path."
+  (interactive "P")
+  (let* ((file (or buffer-file-name (user-error "Buffer is not visiting a file")))
+         (project (and (not absolute) (project-current))))
+    (my/copy-path (if project (file-relative-name file (project-root project)) file))))
+
+(defun my/copy-dwim (absolute)
   "Copy the Magit section value or Dired file's absolute path at point.
-Elsewhere, copy the visited file's path."
-  (interactive)
-  (cond ((derived-mode-p 'magit-mode)
-         (call-interactively #'magit-copy-section-value))
-        ((derived-mode-p 'dired-mode)
-         (dired-copy-filename-as-kill 0))
-        (t (call-interactively #'my/copy-file-relative-path))))
+Elsewhere, copy the visited file's path, relative to its project root if any.
+With prefix argument ABSOLUTE, copy the absolute path of the file at
+point in Magit, or of the visited file."
+  (interactive "P")
+  (let ((magit-file (and absolute (derived-mode-p 'magit-mode) (magit-file-at-point t))))
+    (cond (magit-file (my/copy-path magit-file))
+          ((derived-mode-p 'magit-mode)
+           (call-interactively #'magit-copy-section-value))
+          ((derived-mode-p 'dired-mode)
+           (dired-copy-filename-as-kill 0))
+          (t (my/copy-file-path absolute)))))
 
 (defun my/delete-visited-file ()
   "Delete the file visited by the current buffer, then kill the buffer."
