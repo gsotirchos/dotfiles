@@ -211,7 +211,7 @@ if ! latexindent --version &> /dev/null; then
     hint_install \
         "latexindent cannot run, Apheleia formats .tex files with it." \
         "brew install latexindent" \
-        "sudo apt install libfile-homedir-perl"
+        "sudo apt install libyaml-tiny-perl libfile-homedir-perl"
 fi
 
 header "Start a new login shell to pick up ${current_dir}/bin on \$PATH"
