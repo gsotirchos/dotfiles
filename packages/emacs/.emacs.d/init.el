@@ -2343,7 +2343,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
     (turn-on-reftex)
     (add-hook 'text-scale-mode-hook #'my/text-scale-adjust-latex-previews nil t)
     (add-hook 'after-load-theme-hook #'my/delete-latex-preview-overlays nil t)
-    (add-hook 'post-self-insert-hook #'my/electric-pair-skip-math-closer nil t))
+    (add-hook 'post-self-insert-hook #'my/electric-pair-skip-math-closer nil t)
+    (when buffer-file-name (save-current-buffer (preview-buffer))))
   (add-hook 'LaTeX-mode-hook #'my/LaTeX-mode-hook)
   :init
   (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))

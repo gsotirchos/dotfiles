@@ -150,6 +150,11 @@ if [[ ! -x "${bindir[0]}/tlmgr" ]]; then
 fi
 export PATH="${bindir[0]}:${PATH}"
 
+# install-tl saves the one mirror the redirector picked for it as the
+# repository; `ctan' makes every tlmgr run pick a working mirror instead.
+header "Pointing tlmgr at the CTAN mirror redirector"
+tlmgr option repository ctan
+
 # --- packages -------------------------------------------------------
 header "Updating tlmgr and the installed packages"
 tlmgr update --self --all
