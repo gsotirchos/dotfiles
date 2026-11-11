@@ -9,6 +9,10 @@
     path = ~/.gitconfig-tud
 [includeIf "hasconfig:remote.*.url:https://gitlab.tudelft.nl/**"]
     path = ~/.gitconfig-tud
+[includeIf "hasconfig:remote.*.url:git@github.com:sam-xl/**"]
+    path = ~/.gitconfig-tud
+[includeIf "hasconfig:remote.*.url:https://github.com/sam-xl/**"]
+    path = ~/.gitconfig-tud
 [init]
     defaultBranch = main
 [pull]
