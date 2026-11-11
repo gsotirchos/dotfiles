@@ -1,4 +1,4 @@
-;;; my-latex-preview.el --- Sizing of LaTeX preview overlays  -*- lexical-binding: t; -*-
+;;; my-latex-preview.el --- Sizing and colour of LaTeX preview overlays  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
@@ -54,6 +54,16 @@ Combines the buffer's `text-scale-mode' factor with the ratio by which
   ;; and `markdown-ts-appear-mathjax--appearance' is private.
   (when (fboundp 'markdown-ts-appear-mathjax--appearance)
     (markdown-ts-appear-mathjax--appearance)))
+
+;;;###autoload
+(defun my/latex-preview-foreground-advice (icon)
+  "Draw ICON in the foreground colour of `preview-reference-face'.
+ICON is `preview-create-icon''s return value.  dvisvgm's --currentcolor
+leaves the colour to Emacs, which otherwise draws the image in the
+foreground of the math face it covers."
+  (setf (image-property (car icon) :foreground)
+        (face-attribute 'preview-reference-face :foreground nil 'default))
+  icon)
 
 ;;;###autoload
 (defun my/delete-latex-preview-overlays (&rest _)

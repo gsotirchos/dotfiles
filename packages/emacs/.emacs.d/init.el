@@ -17,9 +17,6 @@
   (defconst site-lisp-dir
     (abbreviate-file-name (expand-file-name "packages/emacs/.emacs.d/site-lisp/" dotfiles-dir)))
 
-  (defvar my/scale-factor 1.75
-    "Global scale factor for images and LaTeX overlays.")
-
   (defun my/prevent-in-home-dir-advice (fn &rest args)
     "Prevent running the advised function in the home directory."
     (if (file-equal-p default-directory "~/")
@@ -1443,7 +1440,7 @@ two windows draws the pages the other one scrolls to."
   :init (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
   :custom
   (markdown-ts-inline-images t)
-  (markdown-ts-image-max-width (round (* my/scale-factor 250)))
+  (markdown-ts-image-max-width 450)
   (markdown-ts-unordered-list-marker '(("• " . "- ") ("⚬ " . "- ") ("∙ " . "- ")))
   :preface
   (defvar my/markdown-list-indent-width 2)
@@ -2335,7 +2332,6 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (preview-LaTeX-command-replacements '(preview-LaTeX-disable-pdfoutput))
   (preview-default-option-list '("displaymath" "floats" "graphics" "textmath" "footnotes"))
   (preview-preserve-counters t)
-  (preview-scale-function my/scale-factor)
   :preface
   (defun my/LaTeX-mode-hook ()
     (outline-minor-mode 1)
@@ -2347,7 +2343,8 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
     (when buffer-file-name (save-current-buffer (preview-buffer))))
   (add-hook 'LaTeX-mode-hook #'my/LaTeX-mode-hook)
   :init
-  (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer))
+  (add-hook 'TeX-after-compilation-finished-functions-hook #'TeX-revert-document-buffer)
+  (advice-add 'preview-create-icon :filter-return #'my/latex-preview-foreground-advice))
 
 (use-package cdlatex
   :defines texmathp-why
