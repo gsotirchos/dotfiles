@@ -48,6 +48,11 @@
             "type": "command",
             "command": "f=$(jq -r \".tool_input.file_path // empty\"); case \"$f\" in *.py) ;; *) exit 0 ;; esac; cd \"$(dirname \"$f\")\" || exit 2; ruff check --fix --quiet \"$f\" >&2; unfixed=$?; ruff format --silent \"$f\" >&2 || exit 2; [ \"$unfixed\" -eq 0 ] || exit 2",
             "statusMessage": "Fixing Python with ruff"
+          },
+          {
+            "type": "command",
+            "command": "f=$(jq -r \".tool_input.file_path // empty\"); case \"$f\" in *.tex) ;; *) exit 0 ;; esac; cd \"$(dirname \"$f\")\" || exit 2; t=$(mktemp) || exit 2; trap 'env rm -f \"$t\"' EXIT; latexindent --logfile=/dev/null -m -rv < \"$f\" > \"$t\" || exit 2; cat \"$t\" > \"$f\"",
+            "statusMessage": "Formatting LaTeX with latexindent"
           }
         ]
       }
