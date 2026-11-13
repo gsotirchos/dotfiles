@@ -163,11 +163,21 @@ which MAPPINGS translate."
   "The contact `eglot--connect' is starting, while it does.
 Its server is not yet `eglot-current-server'.")
 
+(defvar my-devcontainer--handling-server nil
+  "The Eglot server whose request or notification is being handled.
+The current buffer is then its process buffer, not one it manages.")
+
 (defun my-devcontainer--server-in-container-p ()
   "Return non-nil if the current Eglot server runs in the container."
   (if my-devcontainer--connecting-contact
       (equal (car my-devcontainer--connecting-contact) my-devcontainer-executable)
-    (gethash (eglot-current-server) my-devcontainer--servers-in-container)))
+    (gethash (or my-devcontainer--handling-server (eglot-current-server))
+             my-devcontainer--servers-in-container)))
+
+(defun my-devcontainer--handle (fn server &rest args)
+  "Call FN with SERVER and ARGS, noting SERVER as the one being handled."
+  (let ((my-devcontainer--handling-server server))
+    (apply fn server args)))
 
 (defun my-devcontainer--note-server (server)
   "Record SERVER if it runs in the container.
@@ -213,6 +223,8 @@ A server in the container is sent no client PID."
   (advice-add 'eglot-uri-to-path :filter-return #'my-devcontainer--localize-path)
   (advice-add 'eglot-path-to-uri :filter-args #'my-devcontainer--containerize-path)
   (advice-add 'eglot--connect :around #'my-devcontainer--connect)
+  (advice-add 'eglot-handle-request :around #'my-devcontainer--handle)
+  (advice-add 'eglot-handle-notification :around #'my-devcontainer--handle)
   (add-hook 'eglot-server-initialized-hook #'my-devcontainer--note-server))
 
 
