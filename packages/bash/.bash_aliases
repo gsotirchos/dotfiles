@@ -116,6 +116,13 @@ if command -v "git" &> /dev/null; then
             && git push \
             && git stash clear
     }
+    if __load_completion git 2> /dev/null; then
+        __git_complete gs _git_status
+        __git_complete gd _git_diff
+        __git_complete ga _git_add
+        __git_complete gc _git_commit
+        __git_complete gl _git_log
+    fi
 fi
 if command -v "docker" &> /dev/null; then
     function devcontainer-shell {
