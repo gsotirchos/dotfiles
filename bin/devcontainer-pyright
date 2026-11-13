@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+#
+# Type-check Python files or directories with pyright in the devcontainer
+# that mounts them, the way Eglot does (see docs/DEVCONTAINER-EMACS.md).
+#
+#   devcontainer-pyright PATH...
+#
+# The interpreter is the ament_virtualenv of the colcon package holding the
+# first PATH, if it has one, so its pip dependencies resolve; otherwise the
+# container's own, with the workspace's ROS environment. Prints nothing and
+# succeeds when no running container mounts the PATHs (nothing is started);
+# otherwise exits with pyright's status, 1 if it reports errors.
+
+set -euo pipefail
+shopt -s inherit_errexit
+
+# The nearest ancestor of directory $1 (itself included) holding $2.
+ancestor_with() {
+    local dir="$1"
+    while [[ ! -e "${dir}/$2" ]]; do
+        [[ "${dir}" != / ]] || return 1
+        dir="$(dirname "${dir}")"
+    done
+    printf '%s\n' "${dir}"
+}
+
+main() {
+    [[ $# -ge 1 ]] || { sed -n '3,/^$/{ s/^# \{0,1\}//; p }' "$0"; exit 2; }
+
+    local dir package workspace name python
+    dir="$(realpath "$1")"
+    [[ -d "${dir}" ]] || dir="$(dirname "${dir}")"
+    devcontainer-exec --no-start --container "${dir}" > /dev/null 2>&1 || exit 0
+
+    local pythonpath=()
+    if package="$(ancestor_with "${dir}" package.xml)" \
+        && workspace="$(ancestor_with "${package}" install)"; then
+        name="$(sed -n 's|.*<name>\(.*\)</name>.*|\1|p' "${package}/package.xml" | head -n 1)"
+        python="${workspace}/install/${name}/share/${name}/venv/bin/python"
+        [[ ! -e "${python}" ]] || pythonpath=(--pythonpath "$(realpath -s --relative-to="${PWD}" "${python}")")
+    fi
+
+    # Relative paths stay valid in the container, which runs in the mapped $PWD.
+    # Absolute host paths may only exist there as a symlink into the mount,
+    # through which pyright does not resolve imports next to a file.
+    local paths=() path
+    for path; do
+        paths+=("$(realpath -s --relative-to="${PWD}" "${path}")")
+    done
+    # sed drops the container's $PWD from the absolute paths pyright prints.
+    # shellcheck disable=SC2016  # expanded by the container's bash
+    devcontainer-exec --no-start bash -c \
+        'pyright "$@" | sed "s|${PWD}/||"; exit "${PIPESTATUS[0]}"' \
+        pyright "${pythonpath[@]}" "${paths[@]}"
+}
+
+main "$@"

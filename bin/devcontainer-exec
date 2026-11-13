@@ -9,6 +9,9 @@
 #   devcontainer-exec --refresh [DIR]        re-probe the container's environment
 #   devcontainer-exec --provision [DIR]      install the editing tools into the container
 #
+# --no-start before any of these fails instead of starting a container
+# when none running mounts DIR (for hooks and other unattended callers).
+#
 # Commands go through plain `docker exec' (~40 ms, vs ~700 ms for
 # `devcontainer exec'), with the container's probed environment cached.
 
@@ -16,6 +19,7 @@ set -euo pipefail
 shopt -s inherit_errexit
 
 CACHE_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/devcontainer-exec"
+NO_START=""
 
 die() {
     printf 'devcontainer-exec: %s\n' "$*" >&2
@@ -91,6 +95,7 @@ container_id() {
         printf '%s\n' "${best}"
         return 0
     fi
+    [[ -z "${NO_START}" ]] || die "no running container mounts ${dir}"
     folder="$(workspace_folder "${dir}")"
     printf 'devcontainer-exec: starting the container for %s\n' "${folder}" >&2
     stable_xauthority
@@ -214,6 +219,10 @@ provision() {
 
 main() {
     local action="run" dir="${PWD}"
+    if [[ "${1:-}" == --no-start ]]; then
+        NO_START=1
+        shift
+    fi
     case "${1:-}" in
         --mappings | --container | --refresh | --provision)
             action="${1#--}"

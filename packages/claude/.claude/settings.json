@@ -51,6 +51,11 @@
           },
           {
             "type": "command",
+            "command": "f=$(jq -r \".tool_input.file_path // empty\"); case \"$f\" in *.py) ;; *) exit 0 ;; esac; cd \"$(dirname \"$f\")\" || exit 2; devcontainer-pyright \"$f\" >&2 || exit 2",
+            "statusMessage": "Type-checking Python in the dev container"
+          },
+          {
+            "type": "command",
             "command": "f=$(jq -r \".tool_input.file_path // empty\"); case \"$f\" in *.tex) ;; *) exit 0 ;; esac; cd \"$(dirname \"$f\")\" || exit 2; t=$(mktemp) || exit 2; trap 'env rm -f \"$t\"' EXIT; latexindent --logfile=/dev/null -m -rv < \"$f\" > \"$t\" || exit 2; cat \"$t\" > \"$f\"",
             "statusMessage": "Formatting LaTeX with latexindent"
           }
