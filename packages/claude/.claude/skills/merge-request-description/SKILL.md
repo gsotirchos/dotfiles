@@ -46,6 +46,8 @@ Arguments: $ARGUMENTS
   leaving out the checks the repo's CI already runs on the MR.
 - Tick checklist boxes only for what the diff shows; mention borderline ones
   to the user instead of guessing.
+- A box listing several items that only partly apply: tick it and strike the
+  rest, e.g. `- [x] ~Dependencies, version, and~ changelog are updated.`
 - Fenced code blocks for code and commands; GitLab/GitHub references
   (`group/repo#123`, `!45`) for anything that already exists.
 

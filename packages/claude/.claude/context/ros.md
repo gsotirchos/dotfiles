@@ -1,6 +1,6 @@
 - package.xml: precise dep tags (build/exec/build_export); test/verification-only deps → test_depend.
 - CMake code generators (generate_parameter_library, rosidl_default_generators) → buildtool_depend, never depend.
-- Never bump versions; CHANGELOG entries only under Forthcoming, describing what changes since the last release (not changes to unreleased additions).
+- Never bump versions; CHANGELOG entries only under Forthcoming, describing what users get compared to the last release (if none: everything): a new capability of something added since then updates its entry, a fix to it needs none.
 - Launch files: XML only, suffix `.launch` (not `.launch.xml`); node settings as ROS params, not argv.
 - Read ROS params right before use (runtime overridable).
 - Large data (meshes, clouds): latched transient-local topic the consumer subscribes to itself; not BT ports, service responses or file-shuffling nodes; no stamp handshakes.
