@@ -2527,15 +2527,14 @@ Rerun after upgrading mermaid-cli, whose Puppeteer pins a new build."
                        " browsers install chrome-headless-shell"))))
   :config (setf (alist-get :output-dir org-babel-default-header-args:mermaid) "mermaid"))
 
-(use-package newsticker
-  :ensure nil
+(use-package elfeed
   :after my-keybindings
-  :bind (:map my/personal-map ("nt" . newsticker-treeview))
+  :bind (:map my/personal-map ("f" . elfeed))
+  :hook (elfeed-search-mode . elfeed-update)
   :custom
-  (widget-image-enable nil)
-  (newsticker-url-list-defaults nil)
-  (newsticker-url-list
-   '(("Org: GNU ELPA releases" "https://elpa.gnu.org/packages/org.xml"))))
+  ;; (elfeed-search-trailing-width 40)
+  (elfeed-feeds
+   '(("https://elpa.gnu.org/packages/org.xml" emacs org))))
 
 (provide 'init)
 
