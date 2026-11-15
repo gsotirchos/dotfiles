@@ -2114,7 +2114,7 @@ first `require' of a package."
     (flymake-ruff-load))
   :hook (python-base-mode . my/flymake-ruff-load))
 
-;; Vendored from https://github.com/com4/flymake-mypy (BSD-2-Clause)
+;; Vendored from https://github.com/com4/flymake-mypy 0.3.3 (BSD-2-Clause)
 (use-package flymake-mypy
   :ensure nil
   :load-path "site-lisp/"

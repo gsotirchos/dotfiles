@@ -34,9 +34,10 @@
 (defvar flymake-mypy-output-pattern "^\\(.*\\.py\\):\\([0-9]+?\\):\\(?:\\([0-9]+?\\):\\([0-9]+?\\):\\([0-9]+?\\):\\)? \\(.*?\\): \\(.*\\)$"
   "The regex to use for parsing mypy output.")
 
-;; mypy puts its working directory ahead of site-packages on the search
-;; path, so a source folder there (a ROS *_msgs package holding only
-;; .srv files) shadows the installed package as an empty namespace package.
+;; Patched (upstream: no such options): mypy puts its working directory
+;; ahead of site-packages on the search path, so a source folder there (a
+;; ROS *_msgs package holding only .srv files) shadows the installed
+;; package as an empty namespace package.
 (defvar-local flymake-mypy-directory nil
   "Directory to run mypy from, or nil for the project root.")
 
@@ -66,80 +67,73 @@
       (point))))
 
 (defun flymake-mypy--run (report-fn &rest _args)
-  "Run flymake-mypy reporting diagnostics using the REPORT-FN."
-  ;; Patched (upstream: probes "python"): check the executable that is
-  ;; actually run, which `flymake-mypy-executable' may have redirected.
+  "Run flymake-mypy reporting diagnostics using the REPORT-FN.
+Not having a python interpreter is a serious problem which should cause
+the backend to disable itself, so an error is signaled."
   (let ((executable (car (split-string flymake-mypy-executable " "))))
     (unless (executable-find executable)
       (error "Cannot find the `%s' executable for flymake-mypy" executable)))
   (let ((source-buffer (current-buffer)))
     (save-restriction
       (widen)
-      ;; Patched (upstream: appends ".py" to a file it never deletes, leaving
-      ;; two files behind per check): one temporary file, removed when done.
       (let* ((temp-file (let ((temporary-file-directory
                                 (or flymake-mypy-temporary-directory
                                     temporary-file-directory)))
                           (make-temp-file "flymake-mypy" nil ".py")))
-             ;; Patched (upstream: (car (last (project-current)))): run from
-             ;; `flymake-mypy-directory', or the file's own directory for
-             ;; buffers outside any project.
              (default-directory (or flymake-mypy-directory
-                                    (if-let* ((proj (project-current)))
-                                        (project-root proj)
+                                    (if-let* ((project (project-current)))
+                                        (project-root project)
                                       default-directory))))
-        (write-region (point-min) (point-max) temp-file nil 'quiet)
+	(write-region (point-min) (point-max) temp-file nil 'quiet)
 
-        (setq flymake-mypy--proc
-              (make-process
-               :name "flymake-mypy"
-               :noquery t
-               :connection-type 'pipe
-               :buffer (generate-new-buffer "*flymake-mypy-output*")
-               ;; Patched (upstream: absolute paths in and out): paths
-               ;; relative to the working directory, which a mypy run in a
-               ;; container resolves the same as the host.
-               :command (mapcar (lambda (x) (shell-quote-argument x))
-                                (flatten-list (list (split-string flymake-mypy-executable " ")
-                                                    "--show-column-numbers"
+	(setq flymake-mypy--proc
+	      (make-process
+	       :name "flymake-mypy"
+	       :noquery t
+	       :connection-type 'pipe
+	       :buffer (generate-new-buffer "*flymake-mypy-output*")
+	       ;; Patched (upstream: absolute paths in and out): paths relative
+	       ;; to the working directory, which a mypy run in a container
+	       ;; resolves the same as the host.
+	       :command (mapcar (lambda (x) (shell-quote-argument x))
+	       			(flatten-list (list (split-string flymake-mypy-executable " ")
+						    "--show-column-numbers"
                                                     "--show-error-end"
-                                                    "--shadow-file"
-                                                    (file-relative-name
-                                                     (buffer-file-name source-buffer))
-                                                    (file-relative-name temp-file)
-                                                    (file-relative-name
-                                                     (buffer-file-name source-buffer)))))
-               :sentinel
-               (lambda (proc _event)
-                 (when (memq (process-status proc) '(exit signal))
-                   (unwind-protect
-                       ;; If the buffer local var for this process matches proceed
-                       (if (with-current-buffer source-buffer (eq proc flymake-mypy--proc))
-                           (with-current-buffer (process-buffer proc)
-                             (goto-char (point-min))
-                             (cl-loop
-                              while (search-forward-regexp flymake-mypy-output-pattern nil t)
-                              for filename = (expand-file-name (match-string 1))
-                              for line-num = (string-to-number (match-string 2))
-                              ;; mypy column numbers are off by 1
-                              for col-num = (1- (string-to-number (or (match-string 3) "1")))
+						    "--shadow-file"
+						    (file-relative-name (buffer-file-name source-buffer))
+						    (file-relative-name temp-file)
+						    (file-relative-name (buffer-file-name source-buffer)))))
+	       :sentinel
+	       (lambda (proc _event)
+		 (when (memq (process-status proc) '(exit signal))
+		   (unwind-protect
+		       ;; If the buffer local var for this process matches proceed
+		       (if (with-current-buffer source-buffer (eq proc flymake-mypy--proc))
+			   (with-current-buffer (process-buffer proc)
+			     (goto-char (point-min))
+			     (cl-loop
+			      while (search-forward-regexp flymake-mypy-output-pattern nil t)
+			      for filename = (expand-file-name (match-string 1))
+			      for line-num = (string-to-number (match-string 2))
+			      ;; mypy column numbers are off by 1
+			      for col-num = (1- (string-to-number (or (match-string 3) "1")))
                               for end-line-num = (string-to-number (or (match-string 4) "1"))
                               for end-col-num = (string-to-number (or (match-string 5) "1"))
-                              for error-level = (match-string 6)
-                              for description  = (format "Mypy (%s): (%s)" error-level (match-string 7))
-                              for flymake-err-type = (cond ((string-equal error-level "error") :error)
-                                                           ((string-equal error-level "warning") :warning)
-                                                           (t :note))
-                              collect
-                              ;; for some reason mypy will sometimes randomly include messages
-                              ;; for files not asked for
-                              (if (string-equal (buffer-file-name source-buffer) filename)
-                                  (progn
-                                    (let* ((beg-region (flymake-mypy--get-position
+			      for error-level = (match-string 6)
+			      for description  = (format "Mypy (%s): (%s)" error-level (match-string 7))
+			      for flymake-err-type = (cond ((string-equal error-level "error") :error)
+							   ((string-equal error-level "warning") :warning)
+							   (t :note))
+			      collect
+			      ;; for some reason mypy will sometimes randomly include messages
+			      ;; for files not asked for
+			      (if (string-equal (buffer-file-name source-buffer) filename)
+				  (progn
+				    (let* ((beg-region (flymake-mypy--get-position
                                                         source-buffer
                                                         line-num
                                                         col-num))
-                                           (end-region (flymake-mypy--get-position
+					   (end-region (flymake-mypy--get-position
                                                         source-buffer
                                                         (max line-num end-line-num)
                                                         (if (> end-line-num line-num)
@@ -147,27 +141,26 @@
                                                           (max col-num end-col-num)))))
 
                                       (flymake-make-diagnostic
-                                       source-buffer
-                                       beg-region
-                                       end-region
-                                       flymake-err-type
-                                       description)))
-                                (flymake-make-diagnostic
-                                 filename
-                                 (cons line-num col-num)
-                                 (cons line-num (1+ col-num))
-                                 flymake-err-type
-                                 description))
-                              into diags
-                              finally (progn
-                                        (if diags
-                                            (funcall report-fn diags)
-                                          (funcall report-fn (list))))))
-                         (flymake-log :warning "Canceling obsolete check %s" proc))
-                     ;; unwind protect is similar to try/finally. this is the finally clause
-                     (kill-buffer (process-buffer proc))
-                     (delete-file temp-file))))))))))
+				       source-buffer
+				       beg-region
+				       end-region
+				       flymake-err-type
+				       description)))
+				(flymake-make-diagnostic
+				 filename
+				 (cons line-num col-num)
+				 (cons line-num (1+ col-num))
+				 flymake-err-type
+				 description))
+			      into diags
+			      finally (progn
+					(if diags
+					    (funcall report-fn diags)
+					  (funcall report-fn (list))))))
+			 (flymake-log :warning "Canceling obsolete check %s" proc))
+		     ;; unwind protect is similar to try/finally. this is the finally clause
+		     (kill-buffer (process-buffer proc))
+		     (delete-file temp-file))))))))))
 
 (provide 'flymake-mypy)
-
 ;;; flymake-mypy.el ends here
