@@ -89,6 +89,20 @@ function magit {
                                 (magit-status (or (magit-toplevel) default-directory)))")
 }
 
+# route the robot LAN around eduVPN, which tunnels the whole Wi-Fi subnet
+function lan-bypass {
+    local routes="10.237.20.0/25 0.0.0.0 10, 10.237.20.128/25 0.0.0.0 10"
+    case "$1" in
+        on) nmcli con modify VLAN20 +ipv4.routes "$routes" ;;
+        off) nmcli con modify VLAN20 -ipv4.routes "$routes" ;;
+        *)
+            nmcli -g ipv4.routes con show VLAN20
+            return
+            ;;
+    esac
+    nmcli device reapply wlp1s0
+}
+
 alias rm=trash     # trash files instead of deleting
 alias mv="mv -iv"  # confirmatory, verbose
 alias cp="cp -ivr" # confirmatory, verbose, recursive
