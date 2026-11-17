@@ -568,7 +568,7 @@ the window."
 (use-package stripes
   :after (my-keybindings modus-themes)
   :demand t ; load at startup so the face is themed and my/stripes can build on it
-  :hook dired-mode
+  :hook (dired-mode tabulated-list-mode elfeed-search-mode)
   :bind (:map my/toggles-map ("s" . stripes-mode))
   :custom
   (stripes-unit 1)
