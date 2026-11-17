@@ -7,6 +7,7 @@
 - Saved notes (plans, issue write-ups, memories) that cite `file:line`: record the repo's branch and short commit they refer to (`Based on: main at 2de64ea`), after checking the lines match that commit.
 - Check a repo's open issues before suggesting to report one.
 - After implementing anything, end with a commit message (summary ≤50 chars, body ≤73/line) built from `git status`/`git diff`/untracked files, not from memory.
+- Changelog entries: present-tense imperative, like commit summaries ("Add X", "Fix Y"), not "Added X"/"Adds X".
 - Commit only the paths I changed (`git add <paths>`), never `commit -a` with others' edits in the tree.
 - Branch ≤~400 changed LOC vs its base (excl. binaries, config like RViz, licences, a new package's CMakeLists/README); beyond that stack a new branch, by content, unrelated packages unstacked. Tests ≈35% of branch LOC. Each commit builds with its tests. Fixes/renames across a stack: fold into the originating commits; review-requested changes: one new commit on the tip of the reviewed branch (even for files from lower branches), then `rebase --onto` the branches above; a couple of small fixes may be amended into the commit they fix instead, to keep commits focused. Use the branch-stack-rewrite skill for both.
 - After using `glab` for CI/MR state, end with the exact commands so the user can check.
