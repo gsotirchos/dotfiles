@@ -3,7 +3,7 @@
 - Prose (docs, comments, commits, MRs): concrete subject first, state the fact directly; no generalization-then-reveal.
 - Smallest mechanism that works, preferring what the repo already uses; no unrequested guards/scaffolding.
 - Justify designs by technical reasons, never "package X does it"; other code is at most an existence proof.
-- Write-ups for colleagues (team chat, how-tos): plain markdown text + diff/code blocks in the reply; no artifact pages unless asked.
+- Text I'll post to others (comments, issues, MR descriptions, team chat, how-tos): plain markdown with diff/code blocks, saved as a `.md` file in `~/Desktop` unless I say otherwise; under ~30 lines, also print it in a ```` ```markdown ```` block in the reply. No artifact pages unless asked.
 - Saved notes (plans, issue write-ups, memories) that cite `file:line`: record the repo's branch and short commit they refer to (`Based on: main at 2de64ea`), after checking the lines match that commit.
 - Check a repo's open issues before suggesting to report one.
 - After implementing anything, end with a commit message (summary ≤50 chars, body ≤73/line) built from `git status`/`git diff`/untracked files, not from memory.

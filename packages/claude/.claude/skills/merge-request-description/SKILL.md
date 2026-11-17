@@ -51,9 +51,7 @@ Arguments: $ARGUMENTS
 - Fenced code blocks for code and commands; GitLab/GitHub references
   (`group/repo#123`, `!45`) for anything that already exists.
 
-Save it as `mr_<source-branch-slug>.md` in the root of the outermost git repo
-enclosing the repo (e.g. a workspace containing it under `src/`), else in the
-repo root. Run `git check-ignore` on the path and tell the user if the file
-would show up as untracked. Never commit, push or open the MR. Report the path,
+Save it as `~/Desktop/mr_<source-branch-slug>.md`. Never commit, push or open
+the MR. Report the path,
 plus anything in the description that does not match the commits (for example
 a commit message describing changes made in another repo).

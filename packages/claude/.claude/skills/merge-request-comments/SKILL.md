@@ -92,10 +92,8 @@ Arguments: $ARGUMENTS
 - Points without a concrete edit, such as structural cleanups, get no
   suggestion. Mark a non-blocking one as a cleanup suggestion.
 
-Save it as `review_<source-branch-slug>.md` in the root of the outermost git
-repo enclosing the current directory, else in the current directory. Run
-`git check-ignore` on the path and tell the user if the file would show up as
-untracked. Never post the comments, push or open threads.
+Save it as `~/Desktop/review_<source-branch-slug>.md`. Never post the
+comments, push or open threads.
 
 ## Report
 

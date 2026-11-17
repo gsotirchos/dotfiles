@@ -67,7 +67,9 @@ overturn it.
 
 ## Draft
 
-Write the comment, issue or PR text as a fenced Markdown block in the reply,
+Save each comment, issue or PR text as `~/Desktop/<kind>-<number-or-slug>.md`
+(e.g. `comment-61880.md`), and also print it as a fenced Markdown block in the
+reply when it is under ~30 lines. Write it
 in the user's voice: plain sentences, no headings unless the template
 requires them, no lists of benefits. State the symptom and when it occurs,
 quote the exact message (shorten private paths), give the cause and the fix,
@@ -76,8 +78,9 @@ against the default branch, even when its commit sits on a stack, so the
 context lines are the code a reader of that one thread sees upstream.
 Add an AI-use line when the policy asks for one or Claude wrote the code.
 When the user edits the draft, review the edit and keep their wording. End
-with the exact commands to send it (`gh issue create`, `gh pr create --repo
-<owner>/<repo> --head gsotirchos:<branch>`, `gh issue comment`, `M-x
+with the exact commands to send it, reading the body from that file
+(`gh issue create`, `gh pr create --repo <owner>/<repo> --head
+gsotirchos:<branch>`, `gh issue comment … --body-file ~/Desktop/…`, `M-x
 report-emacs-bug`, or the list address for the patch).
 
 ## After submission
