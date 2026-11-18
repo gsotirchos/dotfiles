@@ -58,6 +58,7 @@ sudo apt install -y \
     ripgrep \
     fd-find \
     lsof \
+    pv \
     aspell \
     libsecret-1-0 \
     libsecret-1-dev \

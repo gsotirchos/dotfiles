@@ -83,6 +83,21 @@ function port-info {
     sudo lsof -i -n | grep "${1:-""}"
 }
 
+if command -v "pv" &> /dev/null; then
+    function compress-subdirs {
+        local dir
+        for dir in "${1:-.}"/*/; do
+            dir="${dir%/}"
+            # -T0 uses every core. Level 10 is a reasonable middle setting.
+            # Use -19 for smaller files that take much longer, or -3 for faster runs.
+            echo "$dir"
+            tar -C "$dir" -cf - . \
+                | pv -s "$(du -sb "$dir" | cut -f1)" \
+                | zstd -T0 -10 -q -o "$dir.tar.zst" || return
+        done
+    }
+fi
+
 function magit {
     (cd "${1:-.}" \
         && emacs --eval "(progn (require 'magit)
