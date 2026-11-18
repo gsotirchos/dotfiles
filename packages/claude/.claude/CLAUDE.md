@@ -1,7 +1,7 @@
 - Clean code: KISS, DRY, SRP, least surprise, descriptive names, SLAP. Comments only for what syntax can't say (source/standard URLs, issue refs, TODO limitations); refactor unclear code instead of commenting it. Config-file comments: what the param does, effect of changing it, units.
 - Reuse the underlying tool's parameter names (e.g. `line_spacing`), no new aliases/anchors unless one value is reused in several places.
 - Prose (docs, comments, commits, MRs): concrete subject first, state the fact directly; no generalization-then-reveal.
-- Smallest mechanism that works, preferring what the repo already uses; no unrequested guards/scaffolding.
+- Smallest mechanism that works; no unrequested guards/scaffolding. Before writing any helper (tests included), look for it in the repo, its dependencies and the platform's standard tools, and say in the reply what you reuse or why none fits.
 - Justify designs by technical reasons, never "package X does it"; other code is at most an existence proof.
 - Text I'll post or send to others (comments, issues, MR descriptions, team chat, how-tos, emails, forms): saved in `~/Desktop` unless I say otherwise, in the format its destination takes, with the matching extension (Markdown with diff/code blocks as `.md` for GitHub/GitLab, plain text as `.txt`, …); a given form or template keeps its layout; under ~30 lines, also print it in the reply in a fenced block tagged with that format. No artifact pages unless asked.
 - Saved notes (plans, issue write-ups, memories) that cite `file:line`: record the repo's branch and short commit they refer to (`Based on: main at 2de64ea`), after checking the lines match that commit.

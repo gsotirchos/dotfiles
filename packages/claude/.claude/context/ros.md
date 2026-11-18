@@ -10,3 +10,4 @@
 - CMake files: format with `format-cmake <file>` (~/.dotfiles/bin; prints to stdout) after every edit.
 - Links to ROS docs/sources (docs.ros.org, GitHub branches): the distro in use (e.g. `jazzy`), never `rolling`.
 - Tests that talk over ROS: `ament_add_ros_isolated_gtest`/`_pytest` (test_depend `ament_cmake_ros`), not `ament_add_gtest`.
+- Launch-test fixtures: existing nodes in the launch description (`static_transform_publisher`, `image_publisher`, `ros2 bag play`), `cv_bridge` for images, `transforms3d` for rotations; hand-write only the scene itself.
