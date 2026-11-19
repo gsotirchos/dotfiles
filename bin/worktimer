@@ -119,9 +119,12 @@ class Timer:
                     sys.stdout.flush()
                     self._ring_bell = False
 
-        os.system("clear")
-        print("\n   " + work_title + "        " + break_title)
-        print(" " + work_time + "   " + break_time)
+        # overwrite in place in a single write; clearing first shows a blank frame
+        sys.stdout.write(
+            "\033[H\033[K\n   " + work_title + "        " + break_title + "\033[K\n "
+            + work_time + "   " + break_time + "\033[K\n\033[J"
+        )
+        sys.stdout.flush()
 
     def _load_data(self):
         """Check whether an existing file's contents are properly formated"""
