@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+#
+# ~/bin/battery-drain [target_percent] [workers]
+#
+# Busy `workers` CPU cores and keep the Mac and display awake until the
+# battery drops to `target_percent`, or starts charging after having
+# discharged.
+#
+
+target_percent=${1:-11}
+workers=${2:-2}
+poll_seconds=60
+
+caffeinate -dis -w $$ &
+
+worker_pids=()
+for ((i = 0; i < workers; i++)); do
+    yes > /dev/null &
+    worker_pids+=($!)
+done
+trap 'kill "${worker_pids[@]}"' EXIT
+
+has_discharged=false
+while true; do
+    # e.g. "98%; charging;"
+    status=$(pmset -g batt | grep -Eo '[0-9]+%; [^;]+;')
+    percent=${status%%%*}
+    state=${status#*; }
+    state=${state%;}
+    echo "$(date +%H:%M) battery ${percent}%, ${state}"
+
+    if ((percent <= target_percent)); then
+        echo "Reached ${target_percent}%, done"
+        break
+    fi
+    if [[ ${state} == discharging ]]; then
+        has_discharged=true
+    elif [[ ${state} == charging ]] && ${has_discharged}; then
+        echo "Charging resumed, done"
+        break
+    fi
+    sleep "${poll_seconds}"
+done

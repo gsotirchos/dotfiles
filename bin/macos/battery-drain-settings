@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+#
+# ~/bin/battery-drain-settings apply|restore
+#
+# apply:   keep the Mac awake at full brightness, without overnight
+#          update restarts, for draining the battery unattended
+# restore: back to the macOS defaults
+#
+# Auto-brightness and the brightness slider have no public CLI, so the
+# Displays pane is opened to set them by hand.
+#
+
+case "${1:-}" in
+    apply)
+        lessbright=0
+        battery_sleep=0
+        displaysleep=0
+        auto_install_macos_updates=false
+        display_hint="turn off Automatically adjust brightness, slider to max"
+        ;;
+    restore)
+        lessbright=1
+        battery_sleep=1
+        displaysleep=10
+        auto_install_macos_updates=true
+        display_hint="turn on Automatically adjust brightness"
+        ;;
+    *)
+        echo "usage: ${0##*/} apply|restore" >&2
+        exit 2
+        ;;
+esac
+
+# lessbright: slightly dim the display on battery power (1 = on)
+# sleep: minutes idle before system sleep on battery (0 = never)
+sudo pmset -b lessbright "${lessbright}" sleep "${battery_sleep}"
+# displaysleep: minutes idle before display sleep (0 = never)
+sudo pmset -a displaysleep "${displaysleep}"
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate \
+    AutomaticallyInstallMacOSUpdates -bool "${auto_install_macos_updates}"
+open "x-apple.systempreferences:com.apple.Displays-Settings.extension"
+echo "In Displays: ${display_hint}"
