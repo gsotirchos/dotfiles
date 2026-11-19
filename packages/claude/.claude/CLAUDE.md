@@ -2,6 +2,8 @@
 - Reuse the underlying tool's parameter names (e.g. `line_spacing`), no new aliases/anchors unless one value is reused in several places.
 - Prose (docs, comments, commits, MRs): concrete subject first, state the fact directly; no generalization-then-reveal.
 - Smallest mechanism that works; no unrequested guards/scaffolding. Before writing any helper (tests included), look for it in the repo, its dependencies and the platform's standard tools, and say in the reply what you reuse or why none fits.
+  - "Why none fits" is a measured gap on the task's data that the user would act on, not a difference in method or a reason carried over from an earlier note. Without one, use the existing tool, list the difference as a possible follow-up, and let the user decide.
+  - When a hand-rolled version needs a workaround or grows a feature the existing tool already has, stop and re-check the existing tool before adding the next patch.
 - Justify designs by technical reasons, never "package X does it"; other code is at most an existence proof.
 - Text I'll post or send to others (comments, issues, MR descriptions, team chat, how-tos, emails, forms): saved in `~/Desktop` unless I say otherwise, in the format its destination takes, with the matching extension (Markdown with diff/code blocks as `.md` for GitHub/GitLab, plain text as `.txt`, …); a given form or template keeps its layout; under ~30 lines, also print it in the reply in a fenced block tagged with that format. No artifact pages unless asked.
 - Saved notes (plans, issue write-ups, memories) that cite `file:line`: record the repo's branch and short commit they refer to (`Based on: main at 2de64ea`), after checking the lines match that commit.
