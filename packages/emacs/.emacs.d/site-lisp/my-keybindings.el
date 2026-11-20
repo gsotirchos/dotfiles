@@ -37,6 +37,11 @@ beginning, join with the previous line."
       (call-interactively #'next-history-element)
     (make-frame)))
 
+(defun my/mouse-drag-frame-move (start-event)
+  "Move the frame by dragging the mouse from START-EVENT."
+  (interactive "e")
+  (mouse-drag-frame-move start-event))
+
 (defun my/quit-dwim ()
   "Close the current tab or frame."
   (interactive)
@@ -136,6 +141,9 @@ point in Magit, or of the visited file."
   ;; "<wheel-left>" #'ignore
   ;; "<wheel-right>" #'ignore
   "<remap> <text-scale-pinch>" #'ignore
+  "M-<down-mouse-1>" #'my/mouse-drag-frame-move
+  "M-<mouse-1>" #'ignore
+  "M-<drag-mouse-1>" #'ignore
 
   ;; Navigation/Edit
   "C-<delete>" #'ignore
