@@ -177,10 +177,16 @@ point in Magit, or of the visited file."
   ;; Apply Prefix Map to C-c
   "C-c" my/personal-map)
 
-(dolist (modifier '("C" "S" "M" "A" "s"))
-  (dolist (direction '("left" "right" "up" "down"))
-    (keymap-set my-keybindings-mode-map
-                (format "%s-<wheel-%s>" modifier direction) #'ignore)))
+(let ((prefixes '("")))
+  ;; `key-valid-p' requires the modifiers in the order A-C-H-M-S-s
+  (dolist (modifier '("A" "C" "M" "S" "s"))
+    (setq prefixes (append prefixes
+                           (mapcar (lambda (prefix) (concat prefix modifier "-"))
+                                   prefixes))))
+  (dolist (prefix (cdr prefixes))
+    (dolist (direction '("left" "right" "up" "down"))
+      (keymap-set my-keybindings-mode-map
+                  (format "%s<wheel-%s>" prefix direction) #'ignore))))
 
 ;;; Mode Definition
 
