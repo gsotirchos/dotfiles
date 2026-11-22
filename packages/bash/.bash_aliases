@@ -286,7 +286,6 @@ else
 fi
 
 if command -v "opencode" &> /dev/null; then
-    alias opencode="op-env opencode"
     alias oc="opencode"
 fi
 
