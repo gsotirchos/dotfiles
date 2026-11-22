@@ -115,7 +115,7 @@
   "editorMode": "normal",
   "preferredNotifChannel": "ghostty",
   "wheelScrollAccelerationEnabled": false,
-  "remoteControlAtStartup": false,
+  "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true
 }
