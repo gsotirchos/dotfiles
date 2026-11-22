@@ -317,6 +317,17 @@ Callers edit their own entries of it in place, so modes sharing it compose."
   ;; (add-to-list 'completion-at-point-functions #'comint-dynamic-complete-filename)
   (add-to-list 'comint-output-filter-functions #'comint-truncate-buffer))
 
+(use-package server
+  :ensure nil
+  :no-require t
+  ;; Named daemons are excluded: `lint-elisp' and `emacs-query' need theirs to
+  ;; keep running without frames.
+  :if (eq (daemonp) t)
+  ;; When to stop the daemon.  `empty' exits within seconds of the last frame
+  ;; closing, unless unsaved files or processes needing confirmation remain;
+  ;; nil keeps it running until killed.
+  :custom (server-stop-automatically 'empty))
+
 (use-package desktop
   :ensure nil
   :commands (desktop-save desktop-revert)
