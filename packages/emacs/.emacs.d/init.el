@@ -550,6 +550,11 @@ the window."
     (when (and (eq system-type 'darwin) (eq frame (selected-frame)))
       (when-let* ((survivor (get-mru-frame 'visible nil frame)))
         (x-focus-frame survivor))))
+  (defun patch/make-ns-frame ()
+    "Make and focus a macOS frame, even if a daemon has none left."
+    (interactive)
+    (select-frame-set-input-focus (make-frame '((window-system . ns)))))
+  :bind ("<ns-new-frame>" . patch/make-ns-frame)
   :init (add-hook 'delete-frame-functions #'patch/make-surviving-frame-key))
 
 (use-package tab-bar
