@@ -39,5 +39,6 @@ if [[ $# -eq 0 ]] ; then
     get_secrets
 else
     # exec op run --account "$ACCOUNT" --env-file <(generate_mappings) -- "$@"
-    eval "$(get_secrets)" && exec "$@"
+    secrets=$(get_secrets)
+    eval "$secrets" && exec "$@"
 fi
