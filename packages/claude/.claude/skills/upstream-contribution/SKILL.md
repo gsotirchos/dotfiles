@@ -29,6 +29,8 @@ Never push, open, comment or email; the user sends everything.
 4. Ground rules: CONTRIBUTING, an AI policy, the PR template, CI and tests,
    copyright assignment (GNU ELPA, Emacs core and Org take about 15 changed
    lines without papers), and the channel (GitHub, debbugs, a mailing list).
+   Read the project's AGENTS.md/CLAUDE.md before writing anything. Where it
+   refuses LLM-written text, give facts and review the user's text; don't draft.
 5. Pacing: the user's open threads with that maintainer
    (`gh search prs --author=@me --state=open --owner=<owner>`, same for
    issues).
