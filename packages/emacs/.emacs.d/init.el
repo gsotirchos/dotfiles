@@ -1334,7 +1334,14 @@ commit message.")
   :config (auth-source-1password-enable))
 
 (use-package debbugs
-  :custom (debbugs-gnu-mail-backend 'rmail))
+  :preface
+  (defun patch/debbugs-newest-bug-known-p (&rest _)
+    "Return non-nil if the newest bug number is known.
+An interrupted request leaves it nil in the cache for a second."
+    (car (debbugs-newest-bugs 1)))
+  :custom (debbugs-gnu-mail-backend 'rmail)
+  :config
+  (advice-add 'debbugs-gnu-proper-bug-number :before-while #'patch/debbugs-newest-bug-known-p))
 
 (use-package ghostel
   :bind
