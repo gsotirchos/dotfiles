@@ -44,7 +44,7 @@ touch ~/.hushlogin
 # stow the common packages
 echo -e "${bright_style}- Stowing dotfiles${normal_style}"
 common=(
-    bash git vim emacs ghostty starship op conda linters claude
+    bash git vim emacs ghostty starship conda linters claude
     opencode pixi clang cmake latex zotero vibe
 )
 ignore=()
