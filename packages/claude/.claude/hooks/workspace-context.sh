@@ -7,11 +7,11 @@ devcontainer=false
 pixi=false
 
 while :; do
-  compgen -G "$dir/package.xml" >/dev/null ||
-    compgen -G "$dir/colcon_defaults.yaml" >/dev/null ||
+  [ -e "$dir/package.xml" ] ||
+    [ -e "$dir/colcon_defaults.yaml" ] ||
     compgen -G "$dir/src/*/package.xml" >/dev/null ||
     compgen -G "$dir/src/*/*/package.xml" >/dev/null && ros=true
-  compgen -G "$dir/.devcontainer" >/dev/null ||
+  [ -e "$dir/.devcontainer" ] ||
     compgen -G "$dir/src/*/.devcontainer" >/dev/null && devcontainer=true
   [ -e "$dir/pixi.toml" ] && pixi=true
   [ "$dir" = / ] && break

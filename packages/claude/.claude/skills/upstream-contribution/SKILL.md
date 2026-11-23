@@ -24,8 +24,8 @@ Never push, open, comment or email; the user sends everything.
    (`git log -S'<symbol>'` commit bodies).
 3. Upstream now, following any procedure the subject's written source
    documents. Otherwise read the default-branch source, issues and PRs (open
-   and closed), the last activity and the latest release. Quote line numbers with the commit they
-   were read at.
+   and closed), the last activity and the latest release. Quote line numbers
+   with the commit they were read at.
 4. Ground rules: CONTRIBUTING, an AI policy, the PR template, CI and tests,
    copyright assignment (GNU ELPA, Emacs core and Org take about 15 changed
    lines without papers), and the channel (GitHub, debbugs, a mailing list).
@@ -70,10 +70,8 @@ overturn it.
 ## Draft
 
 Save each comment, issue or PR text as `~/Desktop/<kind>-<number-or-slug>.md`
-(e.g. `comment-61880.md`), and also print it as a fenced Markdown block in the
-reply when it is under ~30 lines. Write it
-in the user's voice: plain sentences, no headings unless the template
-requires them, no lists of benefits. State the symptom and when it occurs,
+(e.g. `comment-61880.md`). Write it in the user's voice: plain sentences, no
+headings unless the template requires them, no lists of benefits. State the symptom and when it occurs,
 quote the exact message (shorten private paths), give the cause and the fix,
 and link related threads by number. A diff in the text shows that fix alone
 against the default branch, even when its commit sits on a stack, so the

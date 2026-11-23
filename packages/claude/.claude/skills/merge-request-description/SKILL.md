@@ -52,6 +52,6 @@ Arguments: $ARGUMENTS
   (`group/repo#123`, `!45`) for anything that already exists.
 
 Save it as `~/Desktop/mr_<source-branch-slug>.md`. Never commit, push or open
-the MR. Report the path,
-plus anything in the description that does not match the commits (for example
-a commit message describing changes made in another repo).
+the MR. Report the path, plus anything in the description that does not match
+the commits (for example a commit message describing changes made in another
+repo).
