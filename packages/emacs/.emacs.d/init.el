@@ -1630,9 +1630,44 @@ the line following an item onto it."
 (use-package visual-wrap
   :ensure nil
   :no-require t
+  :functions (visual-wrap--remove-properties
+              visual-wrap--display-property-safe-p
+              visual-wrap--apply-to-line)
+  :preface
+  ;; TODO: Remove once bug#82120 is fixed in a release.
+  ;; https://debbugs.gnu.org/82120
+  (defun patch/visual-wrap-prefix-function (beg end)
+    "Indent the region between BEG and END with visual filling.
+Same as `visual-wrap-prefix-function', but the loop skipping unsafe
+`display' properties stops at `point-max'.  Without that, a `display'
+property running past the end of a narrowed buffer (a fold ellipsis
+under `count-screen-lines', for one) loops forever (bug#82120)."
+    (goto-char end)
+    (unless (bolp) (forward-line 1))
+    (setq end (point))
+    (goto-char beg)
+    (forward-line 0)
+    (setq beg (point))
+    (visual-wrap--remove-properties beg end)
+    (while (< (point) end)
+      (if (visual-wrap--display-property-safe-p
+           (get-char-property (pos-eol) 'display))
+          (progn
+            (visual-wrap--apply-to-line)
+            (forward-line))
+        (goto-char (next-single-char-property-change (pos-eol) 'display))
+        (while (and (< (point) (point-max))
+                    (not (visual-wrap--display-property-safe-p
+                          (get-char-property (point) 'display))))
+          (goto-char (next-single-char-property-change (point) 'display)))
+        (unless (bolp) (forward-line 1))))
+    `(jit-lock-bounds ,beg . ,end))
   :custom
   (global-visual-wrap-prefix-mode t)
-  (visual-wrap-extra-indent standard-indent))
+  (visual-wrap-extra-indent standard-indent)
+  :config
+  (advice-add 'visual-wrap-prefix-function :override
+              #'patch/visual-wrap-prefix-function))
 
 (use-package hideshow
   :ensure nil
