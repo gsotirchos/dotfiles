@@ -555,7 +555,11 @@ the window."
     (interactive)
     (select-frame-set-input-focus (make-frame '((window-system . ns)))))
   :bind ("<ns-new-frame>" . patch/make-ns-frame)
-  :init (add-hook 'delete-frame-functions #'patch/make-surviving-frame-key))
+  :init
+  (add-hook 'delete-frame-functions #'patch/make-surviving-frame-key)
+  (when (featurep 'ns)
+    (ns-setup-special-keys)
+    (add-hook 'tty-setup-hook #'ns-setup-special-keys)))
 
 (use-package tab-bar
   :ensure nil
