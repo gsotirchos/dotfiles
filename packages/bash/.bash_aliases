@@ -244,7 +244,7 @@ if command -v "sshfs" &> /dev/null; then
             echo "sftp.tudelft.nl unreachable: connect to TU Delft's network or VPN" >&2
             return 1
         fi
-        fusermount3 -uq "$mount_point"
+        fusermount3 -uzq "$mount_point"
         mkdir -p "$mount_point" || return
         if ! sshfs -o reconnect tudelft-sftp: "$mount_point"; then
             rmdir "$mount_point" 2> /dev/null
