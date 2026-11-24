@@ -268,20 +268,20 @@ elif prompt_yn "Install Emacs (GTK graphical)?"; then
     sudo snap install emacs --channel=pgtk/stable --classic
 fi
 
-# --- sysml-lsp (SysML v2 language server) --------------------------
-if command -v sysml-lsp &> /dev/null; then
-    header "sysml-lsp already installed — skipping."
-elif prompt_yn "Install sysml-lsp (SysML v2 language server)?"; then
-    header "Installing sysml-lsp → ~/.local/bin"
-    lsp_name="sysml-lsp-linux-$(dpkg --print-architecture)"
-    lsp_url="https://github.com/Open-MBEE/OpenSysML/releases/latest/download"
-    lsp_dir="$(mktemp -d)"
-    curl -fsSL -o "${lsp_dir}/${lsp_name}.tar.gz" "${lsp_url}/${lsp_name}.tar.gz"
-    curl -fsSL -o "${lsp_dir}/SHA256SUMS.txt" "${lsp_url}/SHA256SUMS.txt"
-    (builtin cd "${lsp_dir}" && sha256sum --check --ignore-missing --quiet SHA256SUMS.txt)
-    tar -xzf "${lsp_dir}/${lsp_name}.tar.gz" -C "${lsp_dir}"
-    install -D -m 755 "${lsp_dir}/${lsp_name}" "${HOME}/.local/bin/sysml-lsp"
-    rm -rf "${lsp_dir}"
+# --- OpenSysML (SysML v2 CLI and language server) ------------------
+if command -v sysml &> /dev/null && command -v sysml-lsp &> /dev/null; then
+    header "OpenSysML already installed — skipping."
+elif prompt_yn "Install OpenSysML (sysml CLI + sysml-lsp)?"; then
+    header "Installing sysml and sysml-lsp → ~/.local/bin"
+    sysml_name="opensysml-linux-$(dpkg --print-architecture)"
+    sysml_url="https://github.com/Open-MBEE/OpenSysML/releases/latest/download"
+    sysml_dir="$(mktemp -d)"
+    curl -fsSL -o "${sysml_dir}/${sysml_name}.tar.gz" "${sysml_url}/${sysml_name}.tar.gz"
+    curl -fsSL -o "${sysml_dir}/SHA256SUMS.txt" "${sysml_url}/SHA256SUMS.txt"
+    (builtin cd "${sysml_dir}" && sha256sum --check --ignore-missing --quiet SHA256SUMS.txt)
+    tar -xzf "${sysml_dir}/${sysml_name}.tar.gz" -C "${sysml_dir}"
+    install -D -m 755 -t "${HOME}/.local/bin" "${sysml_dir}/sysml" "${sysml_dir}/sysml-lsp"
+    rm -rf "${sysml_dir}"
 fi
 
 # --- 1password (desktop app + cli) ---------------------------------

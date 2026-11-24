@@ -2123,6 +2123,10 @@ inside a comment."
         '("format-json" (apheleia-formatters-indent '("--indent" "0") "--indent")))
   (setf (alist-get 'latexindent apheleia-formatters)
         '("latexindent" "--logfile=/dev/null" "-m" "-rv"))
+  (setf (alist-get 'sysml-fmt apheleia-formatters)
+        '("sysml" "-" "-convert" "sysml" "-from" "sysml"))
+  (setf (alist-get 'kerml-fmt apheleia-formatters)
+        '("sysml" "-" "-convert" "kerml" "-from" "kerml"))
   ;; Concrete modes, since apheleia prefers its more specific defaults, e.g.
   ;; `python-ts-mode' to black, over an entry for a parent mode.
   (pcase-dolist (`(,mode . ,formatter)
@@ -2131,7 +2135,9 @@ inside a comment."
                    (sh-mode . shfmt)
                    (bash-ts-mode . shfmt)
                    (cmake-ts-mode . cmake-fmt)
-                   (json-ts-mode . json-fmt)))
+                   (json-ts-mode . json-fmt)
+                   (sysml-mode . sysml-fmt)
+                   (kerml-mode . kerml-fmt)))
     (setf (alist-get mode apheleia-mode-alist) formatter)))
 
 (use-package prog-mode
