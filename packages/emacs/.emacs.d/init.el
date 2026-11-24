@@ -322,7 +322,7 @@ Callers edit their own entries of it in place, so modes sharing it compose."
   :no-require t
   ;; Named daemons are excluded: `lint-elisp' and `emacs-query' need theirs to
   ;; keep running without frames.
-  :if (eq (daemonp) t)
+  :if (not (stringp (daemonp)))
   :defines (server-buffer-clients cape-file-prefix)
   :preface
   (defun my/claude-prompt-setup ()
@@ -336,6 +336,8 @@ instead of the client's cwd, and only without the `@' that marks a path."
       (setq default-directory dir)
       (setq-local cape-file-prefix (cons "@" (ensure-list cape-file-prefix)))))
   :hook (server-switch . my/claude-prompt-setup)
+  ;; A GUI Emacs, e.g. one opened from the Dock, serves `emacsclient' too.
+  :init (when initial-window-system (server-start))
   ;; When to stop the daemon.  `empty' exits within seconds of the last frame
   ;; closing, unless unsaved files or processes needing confirmation remain;
   ;; nil keeps it running until killed.
