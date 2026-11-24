@@ -218,7 +218,7 @@ if prompt_yn "Install Python linters and tools (uv, pylint, lsp, proselint, vint
 fi
 
 # --- node (nvm) + global npm tools ---------------------------------
-if prompt_yn "Install nvm, Node LTS and npm tools (markdownlint-cli, devcontainer)?"; then
+if prompt_yn "Install nvm, Node LTS and npm tools (markdownlint-cli, devcontainer, mermaid-cli)?"; then
     export NVM_DIR="${HOME}/.nvm"
     if [[ -s "${NVM_DIR}/nvm.sh" ]]; then
         header "nvm already installed — skipping."
@@ -231,7 +231,7 @@ if prompt_yn "Install nvm, Node LTS and npm tools (markdownlint-cli, devcontaine
             | PROFILE=/dev/null bash
     fi
 
-    header "Installing Node LTS, markdownlint-cli and the Dev Containers CLI"
+    header "Installing Node LTS, markdownlint-cli, the Dev Containers CLI and mermaid-cli"
     set +eu  # nvm.sh is not `set -eu`-safe
     source "${NVM_DIR}/nvm.sh"
     nvm install --lts
@@ -240,7 +240,10 @@ if prompt_yn "Install nvm, Node LTS and npm tools (markdownlint-cli, devcontaine
     # the ~0.5 s of `nvm use`
     ln -sfn "${NVM_DIR}/versions/node/$(nvm current)" "${NVM_DIR}/current"
     # nvm does not carry global packages over to a new LTS; re-run to reinstall
-    npm install -g markdownlint-cli @devcontainers/cli
+    npm install -g markdownlint-cli @devcontainers/cli @mermaid-js/mermaid-cli
+    # mmdc renders through the Chrome that Puppeteer keeps in ~/.cache/puppeteer
+    sudo cp "${dotfiles}/etc/apparmor/puppeteer-chrome" /etc/apparmor.d/
+    sudo apparmor_parser -r /etc/apparmor.d/puppeteer-chrome
 fi
 
 # --- ghostty terminal -----------------------------------------------
@@ -263,6 +266,22 @@ if command -v emacs &> /dev/null; then
 elif prompt_yn "Install Emacs (GTK graphical)?"; then
     header "Installing Emacs (GTK graphical)"
     sudo snap install emacs --channel=pgtk/stable --classic
+fi
+
+# --- sysml-lsp (SysML v2 language server) --------------------------
+if command -v sysml-lsp &> /dev/null; then
+    header "sysml-lsp already installed — skipping."
+elif prompt_yn "Install sysml-lsp (SysML v2 language server)?"; then
+    header "Installing sysml-lsp → ~/.local/bin"
+    lsp_name="sysml-lsp-linux-$(dpkg --print-architecture)"
+    lsp_url="https://github.com/Open-MBEE/OpenSysML/releases/latest/download"
+    lsp_dir="$(mktemp -d)"
+    curl -fsSL -o "${lsp_dir}/${lsp_name}.tar.gz" "${lsp_url}/${lsp_name}.tar.gz"
+    curl -fsSL -o "${lsp_dir}/SHA256SUMS.txt" "${lsp_url}/SHA256SUMS.txt"
+    (builtin cd "${lsp_dir}" && sha256sum --check --ignore-missing --quiet SHA256SUMS.txt)
+    tar -xzf "${lsp_dir}/${lsp_name}.tar.gz" -C "${lsp_dir}"
+    install -D -m 755 "${lsp_dir}/${lsp_name}" "${HOME}/.local/bin/sysml-lsp"
+    rm -rf "${lsp_dir}"
 fi
 
 # --- 1password (desktop app + cli) ---------------------------------

@@ -1,0 +1,12 @@
+# Let the Chrome builds Puppeteer downloads into ~/.cache/puppeteer create user
+# namespaces despite Ubuntu 24.04+'s kernel.apparmor_restrict_unprivileged_userns;
+# without it their sandbox fails to start and mmdc (the Mermaid CLI) cannot render.
+# https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
+abi <abi/4.0>,
+include <tunables/global>
+
+profile puppeteer-chrome @{HOME}/.cache/puppeteer/chrome{,-headless-shell}/linux-*/chrome-*/chrome{,-headless-shell} flags=(unconfined) {
+  userns,
+
+  include if exists <local/puppeteer-chrome>
+}
