@@ -1571,6 +1571,7 @@ the line following an item onto it."
                          (forward-paragraph direction)))))))
   :config
   (face-spec-set 'markdown-ts-latex '((t (:foreground unspecified))) 'face-override-spec)
+  (face-spec-set 'markdown-ts-html-block '((t (:background unspecified))) 'face-override-spec)
   ;; TODO: Report upstream; `markdown-ts--fill-forward-paragraph' is private.
   (advice-add 'markdown-ts--fill-forward-paragraph :around
               #'patch/markdown-ts-fill-forward-by-item-paragraph))
