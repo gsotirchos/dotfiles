@@ -13,7 +13,9 @@
 ;; configured with elsewhere (see the `stripes' block in init.el).
 ;;
 ;; Also keeps `stripes-mode' from hiding the mark background of Dired file
-;; names: overlay faces override text-property faces regardless of priority.
+;; names: overlay faces override text-property faces regardless of priority,
+;; and stripes `tabulated-list-print' output once instead of on every insert,
+;; which otherwise freezes `list-packages'.
 
 ;;; Code:
 
@@ -81,8 +83,20 @@ and START are its arguments."
           (remove-overlays beg (line-end-position) 'face 'stripes))
         (forward-line 1)))))
 
+;;;; Tabulated lists (e.g. `list-packages')
+
+;;;###autoload
+(defun patch/stripes-once-per-print (orig &rest args)
+  "Call ORIG with ARGS, running the change hooks once instead of per insert.
+`stripes-create' restripes the whole buffer on each change, which makes
+printing thousands of rows quadratic."
+  (if (bound-and-true-p stripes-mode)
+      (combine-change-calls (point-min) (point-max) (apply orig args))
+    (apply orig args)))
+
 ;;;###autoload
 (with-eval-after-load 'stripes
+  (advice-add 'tabulated-list-print :around #'patch/stripes-once-per-print)
   (advice-add 'stripes-create :after #'patch/stripes-dired-unstripe-marked))
 ;;;###autoload
 (with-eval-after-load 'corfu
