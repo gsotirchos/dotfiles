@@ -1942,7 +1942,8 @@ kill Aspell first so that it cannot save the word back."
   :after my-keybindings
   :ensure nil
   :no-require t
-  :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode nxml-mode) . my/eglot-ensure-file-buffer)
+  :hook ((python-base-mode sh-base-mode c-ts-base-mode LaTeX-mode nxml-mode sysml-base-mode)
+         . my/eglot-ensure-file-buffer)
   :bind (:map my/personal-map ("er" . eglot-rename))
   :custom
   (eglot-autoshutdown t)
@@ -1994,6 +1995,18 @@ files it reads itself, such as relative schemas, on the local disk."
        ;; eglot-semantic-token-types (remove "namespace" eglot-semantic-token-types)
        eglot-semantic-token-modifiers (remove "defaultLibrary" eglot-semantic-token-modifiers))))
   (add-hook 'eglot-managed-mode-hook #'my/eglot-keep-c-library-fontification)
+  (defun my/eglot-keep-sysml-keyword-fontification ()
+    "Stop sysml-lsp's semantic tokens recolouring what `sysml-mode' colours.
+The mode colours keywords by group, which the server's single keyword type
+would flatten, and it marks a declaration's name itself."
+    (when (derived-mode-p 'sysml-base-mode)
+      (setq-local
+       eglot-semantic-token-types
+       (seq-difference eglot-semantic-token-types '("keyword" "comment" "string" "number"))
+       eglot-semantic-token-modifiers
+       (seq-difference eglot-semantic-token-modifiers
+                       '("declaration" "definition" "readonly" "abstract")))))
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-keep-sysml-keyword-fontification)
   (defun my/eglot-require-completion-prefix (fn &rest args)
     "Suppress the advised Capf's result when nothing precedes point."
     (let ((res (apply fn args)))
@@ -2051,7 +2064,8 @@ files it reads itself, such as relative schemas, on the local disk."
                      "--completion-style=detailed"
                      "--query-driver=/usr/bin/*,**/.pixi/envs/**/bin/*")))
   (add-to-list 'eglot-server-programs
-               '((nxml-mode :language-id "xml") . my/eglot-lemminx-contact)))
+               '((nxml-mode :language-id "xml") . my/eglot-lemminx-contact))
+  (add-to-list 'eglot-server-programs '((sysml-mode kerml-mode) "sysml-lsp")))
 
 (use-package apheleia
   :defer 1
@@ -2361,6 +2375,28 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :config
   (add-hook 'nxml-mode-hook #'my/nxml-mode-hook)
   (advice-add 'nxml-compute-indent-in-start-tag :around #'patch/nxml-close-tag-indent))
+
+
+;; SysML
+
+;; Vendored from https://github.com/Open-MBEE/OpenSysML editors/emacs at
+;; af30460 (Apache-2.0), with sysml-diagram.el ported from lsp-mode to Eglot.
+(use-package sysml-mode
+  :ensure nil
+  :load-path "site-lisp/"
+  :mode (("\\.sysml\\'" . sysml-mode)
+         ("\\.kerml\\'" . kerml-mode))
+  :preface
+  (defun my/sysml-base-mode-hook ()
+    (my/set-local-indent-width sysml-indent-offset))
+  (add-hook 'sysml-base-mode-hook #'my/sysml-base-mode-hook))
+
+(use-package sysml-diagram
+  :ensure nil
+  :load-path "site-lisp/"
+  :after sysml-mode
+  :commands (sysml-diagram-show)
+  :bind (:map sysml-base-mode-map ("C-c C-v" . sysml-diagram-show)))
 
 
 ;; ROS
