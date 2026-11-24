@@ -323,6 +323,19 @@ Callers edit their own entries of it in place, so modes sharing it compose."
   ;; Named daemons are excluded: `lint-elisp' and `emacs-query' need theirs to
   ;; keep running without frames.
   :if (eq (daemonp) t)
+  :defines (server-buffer-clients cape-file-prefix)
+  :preface
+  (defun my/claude-prompt-setup ()
+    "Complete file names in a Claude Code prompt as Claude Code does.
+Claude Code writes the prompt it opens with \\`C-g' to a temporary
+file, so `cape-file' would otherwise complete the temporary directory
+instead of the client's cwd, and only without the `@' that marks a path."
+    (when-let* (((string-prefix-p "claude-prompt-" (buffer-name)))
+                (client (car server-buffer-clients))
+                (dir (process-get client 'server-client-directory)))
+      (setq default-directory dir)
+      (setq-local cape-file-prefix (cons "@" (ensure-list cape-file-prefix)))))
+  :hook (server-switch . my/claude-prompt-setup)
   ;; When to stop the daemon.  `empty' exits within seconds of the last frame
   ;; closing, unless unsaved files or processes needing confirmation remain;
   ;; nil keeps it running until killed.
