@@ -209,7 +209,7 @@ fi
 if command -v "rg" &> /dev/null; then
     alias grep='rg -p -g "!.git" -g "!.venv" -g "!.conda" -g "!.pixi" -g "!pack"'
 else
-    alias grep2='env grep --color -I -H -E -n -r --exclude-dir={.git,.venv,.conda,.pixi,pack}'
+    alias grep='env grep --color -I -H -E -n -r --exclude-dir={.git,.venv,.conda,.pixi,pack}'
 fi
 
 if command -v "fdfind" &> /dev/null; then
@@ -219,7 +219,7 @@ fi
 if command -v "fd" &> /dev/null; then
     alias find="fd -E .git -E .venv -E .conda -E .pixi -E pack"
 else
-    function myfind {
+    function find {
         local p=() x=(\( -name .git -o -name .venv -o -name .conda -o -name .pixi -o -name pack \) -prune -o)
         while [[ $1 && ! $1 =~ ^[-!\(] ]]; do
             p+=("$1")
@@ -234,7 +234,6 @@ else
         fi
         command find "${p[@]:-.}" "${x[@]}" "$@"
     }
-    alias find=myfind
 fi
 
 if command -v "sshfs" &> /dev/null; then
