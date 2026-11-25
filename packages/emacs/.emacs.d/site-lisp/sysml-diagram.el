@@ -268,6 +268,9 @@ none shows its model tree, as the VS Code panel does."
                 ""
               (concat " " (propertize (format "(%s)" detail) 'face 'sysml-diagram-detail-face))))))
 
+(define-button-type 'sysml-diagram-element
+  'face nil)
+
 (defun sysml-diagram--insert-element (text origin id)
   "Insert TEXT as one element line, visiting ORIGIN when activated.
 ID is the node it draws, or nil for a table row."
@@ -275,11 +278,11 @@ ID is the node it draws, or nil for a table row."
     (insert text)
     (when origin
       (make-text-button start (point)
+                        'type 'sysml-diagram-element
                         'sysml-diagram-origin origin
                         'sysml-diagram-node id
                         'action #'sysml-diagram--visit-button
                         'follow-link t
-                        'face nil
                         'help-echo "RET or mouse-1: visit the declaration"))
     (when id
       (put-text-property start (point) 'sysml-diagram-node id))
@@ -641,7 +644,9 @@ Needs `sysml-diagram-mmdc-program' and a frame that can display SVG."
           (let ((inhibit-read-only t))
             (erase-buffer)
             (insert-image (create-image svg 'svg t))
-            (special-mode)))
+            (special-mode)
+            ;; A view spans many frame widths, more so at a HiDPI output scale.
+            (setq-local max-image-size t)))
         (pop-to-buffer buffer)))))
 
 (defconst sysml-diagram--mmdc-config
