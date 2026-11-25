@@ -78,6 +78,17 @@ server: another build may bundle a different library."
             (goto-char (point-min)))
           buffer))))
 
+;;;; Formatting
+
+(defun sysml-eglot--format-with-mode-offset (format &rest args)
+  "Call FORMAT with ARGS, sending `sysml-indent-offset' as the indent width.
+Eglot sends `tab-width' as a formatting request's tabSize, the width the
+server indents by, while `sysml-mode' indents by `sysml-indent-offset'."
+  (let ((tab-width (if (derived-mode-p 'sysml-base-mode) sysml-indent-offset tab-width)))
+    (apply format args)))
+
+(advice-add 'eglot-format :around #'sysml-eglot--format-with-mode-offset)
+
 (provide 'sysml-eglot)
 
 ;;; sysml-eglot.el ends here
