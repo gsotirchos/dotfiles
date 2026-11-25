@@ -426,15 +426,16 @@ ID is the node it draws, or nil for a table row."
 (defun sysml-diagram--visit (origin)
   "Visit the declaration ORIGIN locates, selecting its name.
 A declaration in the bundled library is shown read-only, its text asked
-of the server of the view's model buffer."
+of the server of the view's model buffer.  A file is named as the model
+buffer's server names it, so on that buffer's host, while it is visited."
   (let* ((uri (plist-get origin :uri))
          (source sysml-diagram--source)
-         (buffer (if (sysml-eglot-stdlib-uri-p uri)
-                     (if (buffer-live-p source)
-                         (with-current-buffer source (sysml-eglot-stdlib-buffer uri))
-                       (user-error "The model this view shows is no longer visited"))
-                   (let ((file (eglot-uri-to-path uri)))
-                     (or (find-buffer-visiting file) (find-file-noselect file))))))
+         (buffer (with-current-buffer (if (buffer-live-p source) source (current-buffer))
+                   (cond ((not (sysml-eglot-stdlib-uri-p uri))
+                          (let ((file (eglot-uri-to-path uri)))
+                            (or (find-buffer-visiting file) (find-file-noselect file))))
+                         ((eq (current-buffer) source) (sysml-eglot-stdlib-buffer uri))
+                         (t (user-error "The model this view shows is no longer visited"))))))
     (pop-to-buffer buffer '((display-buffer-reuse-window display-buffer-use-some-window)))
     (let ((region (sysml-diagram--origin-region origin)))
       (push-mark (point) t)
