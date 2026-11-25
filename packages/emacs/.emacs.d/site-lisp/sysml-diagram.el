@@ -640,14 +640,15 @@ Needs `sysml-diagram-mmdc-program' and a frame that can display SVG."
         (user-error "A %s is not drawn; it is already shown as one" kind))
       (let ((svg (sysml-diagram--mermaid-to-svg mmdc (plist-get result :artifact)))
             (buffer (get-buffer-create (format "*SysML Image: %s*" (buffer-name source)))))
+        (with-current-buffer buffer
+          (special-mode))
         (pop-to-buffer buffer)
         (with-current-buffer buffer
           (let ((limit (sysml-diagram--image-size-limit
                         (window-frame (get-buffer-window buffer t))))
                 (inhibit-read-only t))
             (erase-buffer)
-            (insert-image (create-image svg 'svg t :max-width (car limit) :max-height (cdr limit)))
-            (special-mode)))))))
+            (insert-image (create-image svg 'svg t :max-width (car limit) :max-height (cdr limit)))))))))
 
 (defun sysml-diagram--image-size-limit (frame)
   "Return the largest (WIDTH . HEIGHT) image that FRAME can display.
