@@ -385,7 +385,11 @@ ID is the node it draws, or nil for a table row."
           (insert (propertize stated 'face 'shadow) "\n\n")))
       (cond
        ((equal sysml-diagram--form "text")
-        (insert (plist-get result :artifact)))
+        (insert (with-temp-buffer
+                  (insert (plist-get result :artifact))
+                  (delay-mode-hooks (sysml-mode))
+                  (font-lock-ensure)
+                  (buffer-string))))
        ((member (plist-get result :kind) sysml-diagram--tabular-kinds)
         (sysml-diagram--insert-table (plist-get result :columns) (plist-get result :rows)))
        (t
