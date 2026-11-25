@@ -1709,8 +1709,7 @@ under `count-screen-lines', for one) loops forever (bug#82120)."
   :config
   (advice-add 'outline-toggle-children :around #'patch/outline-toggle-children-advice))
 
-(use-package outline-indent
-  :hook ((conf-mode nxml-mode sh-mode) . outline-indent-minor-mode))
+(use-package outline-indent)
 
 (use-package treesit-fold
   :custom-face (treesit-fold-replacement-face ((t :inherit my/fold-ellipsis-face)))
@@ -2276,7 +2275,8 @@ the workspace, where no source folder shadows an installed package."
   :ensure nil
   :no-require t
   ;; :init (add-hook 'sh-base-mode-hook #'flymake-mode-off)
-  :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode))
+  :mode ("/\\.?\\(bashrc\\|bash_[^.]*\\)\\'" . sh-mode)
+  :hook (sh-mode . outline-indent-minor-mode))
 
 (use-package flymake-bashate
   :commands flymake-bashate-setup
@@ -2366,7 +2366,8 @@ the workspace, where no source folder shadows an installed package."
   :ensure nil
   :no-require t
   :mode (("/\\.gitignore\\'" . conf-unix-mode)
-         ("/\\.git/info/exclude\\'" . conf-unix-mode)))
+         ("/\\.git/info/exclude\\'" . conf-unix-mode))
+  :hook (conf-mode . outline-indent-minor-mode))
 
 
 ;; XML
@@ -2376,6 +2377,7 @@ the workspace, where no source folder shadows an installed package."
   :no-require t
   :defines (nxml-child-indent xmltok-start)
   :mode ("\\.xml\\'" "\\.urdf\\'" "\\.xacro\\'" "\\.launch\\'")
+  :hook (nxml-mode . outline-indent-minor-mode)
   :custom
   (nxml-child-indent 2)
   ;; Let LemMinX resolve and validate <?xml-model?> schema naming.
@@ -2383,7 +2385,6 @@ the workspace, where no source folder shadows an installed package."
   :preface
   (defun my/nxml-mode-hook ()
     (flyspell-mode -1)
-    (outline-minor-mode 1)
     (visual-line-mode -1)
     (setq-local eglot-code-action-indications nil)
     (setq-local nxml-attribute-indent nxml-child-indent)
@@ -2418,7 +2419,13 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :load-path "site-lisp/"
   :after sysml-mode
   :commands (sysml-diagram-show)
-  :bind (:map sysml-base-mode-map ("C-c C-v" . sysml-diagram-show)))
+  :bind (:map sysml-base-mode-map ("C-c C-v" . sysml-diagram-show))
+  :preface
+  (defun my/sysml-diagram-mode-hook ()
+    (setq-local outline-indent-default-offset 2)
+    (my/set-local-indent-width outline-indent-default-offset)
+    (outline-indent-minor-mode 1))
+  (add-hook 'sysml-diagram-mode-hook #'my/sysml-diagram-mode-hook))
 
 
 ;; ROS
