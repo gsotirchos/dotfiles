@@ -17,6 +17,6 @@
 - Test the top-level unit (e.g. a node through its topics); unit tests only for maths too precise to pin from above. Tests go in the package whose code they check.
 - Python packages: pipx/conda/venv only, never system-wide.
 - C/C++: include the project's own headers (generated ones too) with quotes, "pkg/x.hpp"; angle brackets only for external/system headers.
-- Shell utils are aliased: call `env rm`, `env ls`, etc.
+- Shell utils are aliased (`grep`=`rg -p`, `find`=`fd`, `rm`=`trash`, `cp`/`mv`/`ln` prompt, `ls`/`mkdir` add flags): prefix them with `env` in my tool calls and in every command or script I hand over to run.
 - Never `pkill -f`/`pgrep -f` a literal inside `bash -c`/`docker exec … bash -c` (self-match); track PIDs or use `timeout`; never kill by name in shared containers.
 - Memories: general lessons go to `~/.dotfiles/packages/claude/.claude/CLAUDE.md`, ROS/dev-container ones to `~/.dotfiles/packages/claude/.claude/context/{ros,devcontainer}.md` (injected by the SessionStart hook) (propose first, keep terse); project memory only for workspace-specific facts.
