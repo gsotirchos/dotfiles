@@ -2424,6 +2424,7 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   (defun my/sysml-diagram-mode-hook ()
     (setq-local outline-indent-default-offset 2)
     (my/set-local-indent-width outline-indent-default-offset)
+    (setq-local wrap-prefix (make-string visual-wrap-extra-indent ?\s))
     (outline-indent-minor-mode 1))
   (add-hook 'sysml-diagram-mode-hook #'my/sysml-diagram-mode-hook))
 

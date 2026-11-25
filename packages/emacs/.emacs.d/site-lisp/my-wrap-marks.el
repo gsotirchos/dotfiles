@@ -21,6 +21,7 @@
 ;;; Code:
 
 (require 'my-theme-color)
+(require 'subr-x)
 
 (declare-function my/buffer-display-table "init" ())
 
@@ -42,16 +43,39 @@
 (add-hook 'after-load-theme-hook #'my/customize-pilcrow)
 (my/customize-pilcrow)
 
+(defvar my-wrap-ellipsis-mode)
+
 (defun my/wrap-marks-refresh ()
   "Refontify, so `visual-wrap-prefix-mode' rebuilds its prefixes."
   (when (bound-and-true-p jit-lock-mode)
     (jit-lock-refontify)))
 
+(defun my/wrap-ellipsis-mark ()
+  "Return the ellipsis as it is displayed."
+  (propertize my/wrap-ellipsis 'face 'special-glyphs))
+
+(defun my/wrap-ellipsis-prefix (prefix)
+  "Return PREFIX ending in the ellipsis, the text after it kept in place.
+PREFIX is a `wrap-prefix' value.  The ellipsis takes the place of a
+trailing space or of the last column a `space' spec aligns to, and
+is appended to any other string."
+  (let ((mark (my/wrap-ellipsis-mark)))
+    (pcase prefix
+      ('nil mark)
+      ((pred stringp)
+       (concat (string-remove-suffix " " prefix) mark))
+      (`(space :align-to (,(and (pred integerp) width) . width))
+       (concat (make-string (1- width) ?\s) mark))
+      (_ prefix))))
+
 (defun my/wrap-ellipsis-append (beg end)
-  "Append the buffer's `wrap-prefix' to the `wrap-prefix' property from BEG to END."
-  (let ((wrap-prop (get-text-property beg 'wrap-prefix)))
-    (when (and wrap-prefix (stringp wrap-prop))
-      (put-text-property beg end 'wrap-prefix (concat wrap-prop wrap-prefix)))))
+  "Add the ellipsis to the wrap prefix of the text from BEG to END.
+The prefix is the `wrap-prefix' property there, or else the buffer's
+`wrap-prefix'."
+  (when my-wrap-ellipsis-mode
+    (put-text-property beg end 'wrap-prefix
+                       (my/wrap-ellipsis-prefix
+                        (or (get-text-property beg 'wrap-prefix) wrap-prefix)))))
 
 (defun my/wrap-ellipsis-visual-wrap-advice ()
   "Append the ellipsis to the prefix `visual-wrap-prefix-mode' set at point."
@@ -76,11 +100,9 @@ ORIG-FN leaves point on the next line, so the current one is noted first."
   (if my-wrap-ellipsis-mode
       (progn
         (my-pilcrow-mode -1)
-        (setq-local wrap-prefix (propertize my/wrap-ellipsis 'face 'special-glyphs))
         (set-display-table-slot (my/buffer-display-table) 'wrap
                                 (make-glyph-code (string-to-char my/wrap-ellipsis)
                                                  'special-glyphs)))
-    (kill-local-variable 'wrap-prefix)
     (when buffer-display-table
       (set-display-table-slot buffer-display-table 'wrap
                               (display-table-slot standard-display-table 'wrap))))
