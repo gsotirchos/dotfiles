@@ -171,6 +171,7 @@ point in Magit, or of the visited file."
   "M-w" #'my/quit-dwim
   "M-m" #'iconify-frame
   "M-h" #'ns-do-hide-emacs
+  "A-M-h" #'ns-do-hide-others
   "M-," #'my/edit-emacs-init
   "C-M-n" #'my/open-scratch-buffer-new-frame
 
