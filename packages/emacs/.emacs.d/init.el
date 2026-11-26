@@ -194,6 +194,8 @@ Callers edit their own entries of it in place, so modes sharing it compose."
   (use-dialog-box nil)
   (auto-save-default nil)
   (auto-save-visited-interval 1)
+  ;; Apheleia skips saves in Insert state (`apheleia-skip-functions').
+  (auto-save-visited-predicate (lambda () (not (evil-insert-state-p))))
   (auto-save-visited-mode t)
   (make-backup-files nil)
   (set-mark-command-repeat-pop t)
