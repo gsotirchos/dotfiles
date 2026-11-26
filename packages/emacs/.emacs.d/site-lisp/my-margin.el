@@ -58,14 +58,22 @@ width.")
            (flymake-diagnostics))
       1 0))
 
+(defun my/margin-apply (buffer)
+  "Give the windows showing BUFFER its `left-margin-width'."
+  (when (buffer-live-p buffer)
+    (dolist (win (get-buffer-window-list buffer nil t))
+      ;; Preserve the right margin -- it is not ours to manage.
+      (set-window-margins win (buffer-local-value 'left-margin-width buffer)
+                          (cdr (window-margins win))))))
+
 (defun my/margin-update (&rest _)
-  "Recompute and apply the left margin width for the current buffer."
+  "Recompute and apply the left margin width for the current buffer.
+The windows are resized from a timer, after any `save-window-excursion'
+around the caller (`save-some-buffers' has one) restores the old margins."
   (let ((width (apply #'+ (mapcar #'funcall my/margin-contributors))))
     (unless (eql left-margin-width width)
       (setq left-margin-width width)
-      (dolist (win (get-buffer-window-list (current-buffer) nil t))
-        ;; Preserve the right margin -- it is not ours to manage.
-        (set-window-margins win width (cdr (window-margins win)))))))
+      (run-at-time 0 nil #'my/margin-apply (current-buffer)))))
 
 ;;;###autoload
 (define-minor-mode my-margin-mode
