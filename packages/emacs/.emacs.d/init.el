@@ -2641,6 +2641,27 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
    ("m" . my/org-toggle-emphasis-marker-display)
    ("l" . org-toggle-link-display)))
 
+(use-package org-format
+  :vc (:url "https://codeberg.org/schrenker/org-format" :branch "master")
+  :after org
+  :demand t
+  :hook (org-mode . patch/org-format-on-save-mode)
+  :custom (org-format-blank-lines-before-content 1)
+  :preface
+  (defun patch/org-format-before-save ()
+    "Format the buffer as the hook of `org-format-on-save-mode' does."
+    (org-element-cache-reset)
+    (org-format-all-headings))
+  (define-minor-mode patch/org-format-on-save-mode
+    "`org-format-on-save-mode' with a named hook function.
+Upstream adds a lambda to `before-save-hook' but removes the symbol
+`org-format-all-headings', so the mode cannot be turned off."
+    :lighter nil
+    (if patch/org-format-on-save-mode
+        (add-hook 'before-save-hook #'patch/org-format-before-save
+                  org-format-on-save-mode-hook-depth t)
+      (remove-hook 'before-save-hook #'patch/org-format-before-save t))))
+
 (use-package org-appear
   :hook org-mode
   ;; :custom (org-appear-autolinks t)
