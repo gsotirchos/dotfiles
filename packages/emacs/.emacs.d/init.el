@@ -2151,6 +2151,7 @@ inside a comment."
         '("sysml" "-" "-convert" "sysml" "-from" "sysml"))
   (setf (alist-get 'kerml-fmt apheleia-formatters)
         '("sysml" "-" "-convert" "kerml" "-from" "kerml"))
+  (setf (alist-get 'org-format apheleia-formatters) #'patch/org-format-apheleia)
   ;; Concrete modes, since apheleia prefers its more specific defaults, e.g.
   ;; `python-ts-mode' to black, over an entry for a parent mode.
   (pcase-dolist (`(,mode . ,formatter)
@@ -2161,7 +2162,8 @@ inside a comment."
                    (cmake-ts-mode . cmake-fmt)
                    (json-ts-mode . json-fmt)
                    (sysml-mode . sysml-fmt)
-                   (kerml-mode . kerml-fmt)))
+                   (kerml-mode . kerml-fmt)
+                   (org-mode . org-format)))
     (setf (alist-get mode apheleia-mode-alist) formatter)))
 
 (use-package prog-mode
@@ -2645,22 +2647,20 @@ ORIG and POS are as for `nxml-compute-indent-in-start-tag'."
   :vc (:url "https://codeberg.org/schrenker/org-format" :branch "master")
   :after org
   :demand t
-  :hook (org-mode . patch/org-format-on-save-mode)
   :custom (org-format-blank-lines-before-content 1)
   :preface
-  (defun patch/org-format-before-save ()
-    "Format the buffer as the hook of `org-format-on-save-mode' does."
-    (org-element-cache-reset)
-    (org-format-all-headings))
-  (define-minor-mode patch/org-format-on-save-mode
-    "`org-format-on-save-mode' with a named hook function.
-Upstream adds a lambda to `before-save-hook' but removes the symbol
-`org-format-all-headings', so the mode cannot be turned off."
-    :lighter nil
-    (if patch/org-format-on-save-mode
-        (add-hook 'before-save-hook #'patch/org-format-before-save
-                  org-format-on-save-mode-hook-depth t)
-      (remove-hook 'before-save-hook #'patch/org-format-before-save t))))
+  (cl-defun patch/org-format-apheleia (&key scratch callback &allow-other-keys)
+    "Format SCRATCH with `org-format-all-headings', then call CALLBACK.
+Upstream formats only a buffer visiting a file, found by its name, so
+the mapper gets scope nil, the current buffer, instead of `file'."
+    (with-current-buffer scratch
+      (delay-mode-hooks (org-mode))
+      (cl-letf* ((map-entries (symbol-function 'org-format-map-entries))
+                 ((symbol-function 'org-format-map-entries)
+                  (lambda (func match _scope &rest skip)
+                    (apply map-entries func match nil skip))))
+        (org-format-all-headings)))
+    (funcall callback)))
 
 (use-package org-appear
   :hook org-mode
