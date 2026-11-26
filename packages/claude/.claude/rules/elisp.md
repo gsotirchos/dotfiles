@@ -22,3 +22,4 @@ Batch mode resolves package symbols differently from the editor, so `--flymake` 
 
 * **Keep `byte-compile-warnings: (not unresolved)` in init.el**: undefined-function warnings from lazily loaded packages are noise, but free-variable warnings catch stray symbols left by typos, so silence each one with `:defines`.
 * **Inside a `use-package` form, use `:defines` / `:functions`** rather than a hand-written `(defvar foo)` or `declare-function`. Both keywords exist solely to silence the byte-compiler, and cost nothing at startup. Plain libraries (e.g. those in `site-lisp/`) have no `use-package` form; there the bare idiom is correct.
+* **Guard machine-specific packages with `(when COND (use-package …))`, not `:if`**: `:ensure`, `:preface` and `:load-path` run before `:if` is checked, so with `use-package-always-ensure` an `:if`-guarded package is still installed everywhere. `:if` is fine for `:ensure nil` (built-in, `site-lisp/`) packages.
