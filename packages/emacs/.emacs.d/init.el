@@ -2662,7 +2662,17 @@ the mapper gets scope nil, the current buffer, instead of `file'."
                   (lambda (func match _scope &rest skip)
                     (apply map-entries func match nil skip))))
         (org-format-all-headings)))
-    (funcall callback)))
+    (funcall callback))
+  (defun patch/org-format-ensure-empty-lines (fn n)
+    "Call FN with N, unless only blank lines precede the current line.
+Upstream's backward search for content then signals `search-failed';
+delete those blank lines, as nothing precedes a heading at `bobp' either."
+    (if (save-excursion (beginning-of-line) (skip-chars-backward " \t\n") (bobp))
+        (delete-region (point-min) (line-beginning-position))
+      (funcall fn n)))
+  :config
+  (advice-add 'org-format--ensure-empty-lines :around
+              #'patch/org-format-ensure-empty-lines))
 
 (use-package org-appear
   :hook org-mode
