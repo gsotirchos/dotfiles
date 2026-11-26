@@ -341,7 +341,8 @@ instead of the client's cwd, and only without the `@' that marks a path."
   ;; When to stop the daemon.  `empty' exits within seconds of the last frame
   ;; closing, unless unsaved files or processes needing confirmation remain;
   ;; nil keeps it running until killed.
-  :custom (server-stop-automatically 'empty))
+  ;; :custom (server-stop-automatically 'empty)
+  )
 
 (use-package desktop
   :ensure nil
@@ -697,6 +698,14 @@ the window."
     (dired-hide-details-mode 1)
     (hl-line-mode 1))
   (add-hook 'dired-mode-hook #'my/dired-mode-hook))
+
+(use-package my-dired-finder-tags
+  :ensure nil
+  :load-path "site-lisp/"
+  :if (eq system-type 'darwin)
+  :commands my/dired-finder-tags-show
+  ;; Depth 90 runs it after `dired-omit-expunge' has removed omitted lines.
+  :init (add-hook 'dired-after-readin-hook #'my/dired-finder-tags-show 90))
 
 (use-package speedbar
   :ensure nil
